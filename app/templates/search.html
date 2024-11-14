@@ -1,0 +1,112 @@
+{% extends 'layout/base.html' %}
+{% block title %}
+    Home Page
+{% endblock %}
+
+{% block body %}
+    <div class="my-bg-color pt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 rounded">
+                    <div class="item-bg-color p-3 rounded">
+                        <div class="list-type">
+                            <p class="font-weight-bold mb-0">NHÓM SẢN PHẨM </p>
+                            <ol class="parent-category list-unstyled mb-0">
+                               {% for bt in book_type %}
+
+                               {% endfor %}
+                            </ol>
+                            <div class="current-category">
+                                <span class="selected-filter" href="#">Văn học</span>
+                            </div>
+                            <ol class="list-unstyled children-category text-filter">
+                                <li><span>Văn học</span></li>
+                                <li><span>Văn học</span></li>
+                                <li><span>Văn học</span></li>
+                                <li><span>Văn học</span></li>
+                            </ol>
+                        </div>
+                        <div class="price pb-0 pt-3 border-top">
+                            <p class="font-weight-bold mb-0 pb-1">Giá</p>
+                            <ul class="text-decoration-none list-unstyled box-filter pl-2">
+                                <li>
+                                    <a class="checkbox-checked"> 0đ - 150,000đ</a>
+                                </li>
+                                <li>
+                                    <a class="checkbox-unchecked"> 150,000đ - 300,000đ</a>
+                                </li>
+                                <li>
+                                    <a class="checkbox-unchecked"> 300,000đ - 500,000đ</a>
+                                </li>
+                                <li>
+                                    <a class="checkbox-unchecked"> 500,000đ - 700,000đ</a>
+                                </li>
+                                <li>
+                                    <a class="checkbox-unchecked"> 700,000đ - trở lên</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9 rounded">
+                    <div class="item-bg-color p-3 rounded">
+                        <div>
+                            <img class="w-100"
+                                 src="https://cdn0.fahasa.com/media/wysiwyg/Thang-11-2024/TanViet_Diamond_1124_Slide_840x320.png"/>
+                            <div class="pt-2">
+                                <span>Sắp xếp theo: </span>
+                                <div class="btn-group ml-2 mr-2">
+                                    <button type="button" class="btn btn-outline-dark dropdown-toggle"
+                                            data-toggle="dropdown">
+                                        Bán Chạy Tuần
+                                    </button>
+                                    <div class="dropdown-menu custom-dropdown-menu">
+                                        <span class="dropdown-item">Mới nhất</span>
+                                        <span class="dropdown-item">Giá bán</span>
+                                        <span class="dropdown-item">Bán chạy nhất tuần</span>
+                                        <span class="dropdown-item">Bán chạy nhất tháng</span>
+                                    </div>
+                                </div>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-outline-dark dropdown-toggle"
+                                            data-toggle="dropdown">
+                                        12 sản phẩm
+                                    </button>
+                                    <div class="dropdown-menu custom-dropdown-menu">
+                                        <span class="dropdown-item">24 sản phẩm</span>
+                                        <span class="dropdown-item">36 sản phẩm</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-4 pt-3 border-top">
+                            {% for b in books %}
+                                <a href="#" class="card col-md-3">
+                                    <span class="discount text-white">10%</span>
+                                    <img class="card-img-top"
+                                         src="{{ b.images[0].image_url }}"
+                                         alt="Card image">
+                                    <div class="card-body p-0">
+                                        <p class="card-text">{{ b.name }}</p>
+                                        <p class="text-primary font-weight-bold mb-1">{{ b.price }}đ</p>
+                                        <p class="text-secondary text-decoration-line-through mb-1">{{ b.price }}đ</p>
+                                    </div>
+                                    <div class="rating">
+                                        <i class="fa-regular fa-star"></i>
+                                        <i class="fa-regular fa-star"></i>
+                                        <i class="fa-regular fa-star"></i>
+                                        <i class="fa-regular fa-star"></i>
+                                        <i class="fa-regular fa-star"></i>
+                                    </div>
+                                </a>
+                            {% endfor %}
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+{% endblock %}
