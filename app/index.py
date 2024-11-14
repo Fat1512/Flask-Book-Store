@@ -10,7 +10,7 @@ def index():
 def get_category():
     with open('data/category.json') as f:
         data = json.load(f)
-        categories = data[1:4]
+        categories = data[1:5]
     return categories
 
 if __name__ == "__main__":

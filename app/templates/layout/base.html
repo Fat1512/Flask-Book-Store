@@ -10,12 +10,8 @@
             integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
             crossorigin="anonymous"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <script src="{{ url_for('static', filename='js/home.js')}}"></script>
-
-
-    <script src="{{ url_for('static', filename='js/cart.js')}}"></script>
-    <script src="{{ url_for('static', filename='js/other.js')}}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
+
     {% block css %} {% endblock %}
     {% block js %} {% endblock %}
 </head>
@@ -29,5 +25,7 @@
 {% block footer %}
 {% include 'layout/footer.html' %}
 {% endblock %}
+    <script src="{{ url_for('static', filename='js/home.js')}}"></script>
 </body>
+
 </html>
