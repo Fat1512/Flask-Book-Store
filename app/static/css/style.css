@@ -1,11 +1,15 @@
+* {
+    --red: #c92127;
+}
+
 .container {
     width: 70% !important;
 }
 
 .home-section {
     border-radius: 7px;
-    background-color: whitesmoke;
-    padding: 15px !important;
+    background-color: white;
+    padding: 0px 15px !important;
     margin: 15px 0;
 }
 
@@ -13,4 +17,14 @@
     width: 20%;
     flex: 0 0 20%;
     max-width: 20%;
+}
+
+.home_category_heading .active {
+    color: var(--red);
+    border-bottom: solid red 3px;
+    font-weight: 600;
+}
+
+.home_category_item {
+    padding: 10px 0;
 }
