@@ -1,9 +1,13 @@
 {%extends 'layout/base.html'%}
 
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+{% endblock %}
+
 {% block content %}
 
 <div class="container">
-    <div class="row gx-2">
+    <div class="row gx-2 pt-3">
         <div class="col-8">
             <div id="carouselExample" class="carousel slide h-100">
                 <div class="carousel-inner rounded">
@@ -68,18 +72,122 @@
         </div>
     </div>
 
-    <div class="home-section py-0" id="home_category_section">
+    <div class="home-section py-0 rounded" id="home_category_section">
         <div class="d-flex home_category_heading">
-<!--            <div class="px-5 home_category_item active">Thieu Nhi</div>-->
-<!--            <div class="px-5 home_category_item">Giao khoa - Tham khao</div>-->
-<!--            <div class="px-5 home_category_item">Van hoc</div>-->
-<!--            <div class="px-5 home_category_item">Tam ly - Ky nang song</div>-->
+            <!--            <div class="px-5 home_category_item active">Thieu Nhi</div>-->
+            <!--            <div class="px-5 home_category_item">Giao khoa - Tham khao</div>-->
+            <!--            <div class="px-5 home_category_item">Van hoc</div>-->
+            <!--            <div class="px-5 home_category_item">Tam ly - Ky nang song</div>-->
         </div>
         <div class="row home_product_container">
 
         </div>
     </div>
-    <div class="row pt-3">
+
+    <div class="row">
+        {% for category in category_section %}
+        <div class="col-3">
+            <a class="text-dark" href="{{category.path}}">
+                <div class="home-section pt-2">
+                    <div class="home_category_item fs-6 fw-bolder">{{category.name}}</div>
+                    <div class="d-flex flex-column">
+                        <div>
+                            <div class="pb-2">
+                                <img class="img-fluid w-100"
+                                     src="{{category.advertised_image}}"
+                                     alt="">
+                            </div>
+                        </div>
+                        <div class="d-flex pb-4">
+                            {% for product in category.product[0:3] %}
+                            <div>
+                                <img class="img-fluid w-100"
+                                     src="{{product.image_src}}"
+                                     alt="">
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="home-section">
+        <div class="f-flex">
+            <div class="fs-3 pl-3 pt-4 pb-4 fw-bolder">Sách bán chạy</div>
+        </div>
+        <div class="row pl-4 pr-4 pb-3">
+            {% for product in bestselling_books %}
+            <a href="#" class="card col-5th">
+                <span class="discount text-white">10%</span>
+                <img class="card-img-top"
+                     src="{{product['image_src']}}"
+                     alt="Card image">
+                <div class="card-body p-0">
+                    <p class="card-text">{{product['product_name']}}</p>
+                    <p class="text-primary font-weight-bold mb-1">{{product['product_price']}}đ</p>
+                    <p class="text-secondary text-decoration-line-through mb-1">
+                        {{product['product_price']}}đ</p>
+                </div>
+                <div class="rating">
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="home-section">
+        <div class="f-flex">
+            <div class="fs-3 pl-3 pt-2 pb-2 fw-bolder">Mới ra mắt</div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <div class="d-flex flex-column justify-content-center h-100">
+                    <div class="w-100">
+                        <img class="img-fluid w-100 h-100"
+                             src="https://res.cloudinary.com/dq27ted4k/image/upload/v1731750144/ydppggyww4sjmxspsfar.png"
+                             alt="">
+                    </div>
+                    <div class="h2">Get Extra</div>
+                    <div class="h1 text-red">Sale -25%</div>
+                </div>
+            </div>
+            <div class="col-8">
+                <div class="row home_product_container">
+                    {% for product in new_release %}
+                    <a href="#" class="card col-3">
+                        <span class="discount text-white">10%</span>
+                        <img class="card-img-top"
+                             src="{{product['image_src']}}"
+                             alt="Card image">
+                        <div class="card-body p-0">
+                            <p class="card-text">{{product['product_name']}}</p>
+                            <p class="text-primary font-weight-bold mb-1">{{product['product_price']}}đ</p>
+                            <p class="text-secondary text-decoration-line-through mb-1">
+                                {{product['product_price']}}đ</p>
+                        </div>
+                        <div class="rating">
+                            <i class="fa-regular fa-star"></i>
+                            <i class="fa-regular fa-star"></i>
+                            <i class="fa-regular fa-star"></i>
+                            <i class="fa-regular fa-star"></i>
+                            <i class="fa-regular fa-star"></i>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row pt-3 home-section pb-4">
         <div class="col-2">
             <div class="d-flex justify-content-around">
                 <img class="rounded"
