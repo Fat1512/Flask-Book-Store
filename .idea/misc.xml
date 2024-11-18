@@ -3,5 +3,9 @@
   <component name="Black">
     <option name="sdkName" value="Python 3.8 (BTL)" />
   </component>
+<<<<<<< HEAD
   <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.13 (Flask-Book-Store)" project-jdk-type="Python SDK" />
+=======
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.11 (Flask-Book-Store)" project-jdk-type="Python SDK" />
+>>>>>>> c611aa267059e59a2092d83eda37d616a3070367
 </project>

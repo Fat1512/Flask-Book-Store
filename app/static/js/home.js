@@ -5,13 +5,11 @@ let all_data;
 async function preLoadCategory() {
     const res = await fetch('/category');
     const data = await res.json();
+    const id = data[0].id;
     data.forEach(category => {
-        const div = document.createElement("div");
-        div.id = category.id;
-        div.className = 'px-5';
-        div.textContent = category.name;
-        ele.appendChild(div);
+        renderCategoryHeading(category.name, category.id, id == category.id)
     })
+
     all_data = data;
     homeProductContainer.innerHTML = '';
     console.log(data)
@@ -26,8 +24,13 @@ ele.addEventListener("click", function (e) {
     const id = ele.getAttribute("id");
     if (!id) return;
 
-    homeProductContainer.innerHTML = '';
+    e.currentTarget.innerHTML = '';
 
+    all_data.forEach(category => {
+        renderCategoryHeading(category.name, category.id, id == category.id)
+    })
+
+    homeProductContainer.innerHTML = '';
     all_data.forEach(category => {
         if (category.id == id) {
             category['product'].slice(0, 10).forEach(product => {
@@ -36,6 +39,11 @@ ele.addEventListener("click", function (e) {
         }
     })
 })
+
+const renderCategoryHeading = function (name, id, isActive) {
+    const html = `<div id="${id}" class="px-5 home_category_item ${isActive ? 'active' : ''}">${name}</div>`
+    ele.insertAdjacentHTML('beforeend', html);
+}
 
 const renderProduct = function(product) {
     const html = `

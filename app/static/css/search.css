@@ -8,7 +8,7 @@ body {
 }
 
 .item-bg-color {
-    background-color: #ffffff;
+    background-color: var(--white-color);
 }
 
 .my-bg-color {
@@ -17,7 +17,7 @@ body {
 
 .custom-dropdown-toggle {
     background-color: #5a9; /* Custom background color */
-    color: #fff; /* Custom text color */
+    color: var(--white-color); /* Custom text color */
     border: none; /* Remove border */
 }
 
@@ -26,32 +26,12 @@ body {
 }
 
 .icon-search {
-    position: absolute;
+    position: absolute !important;
     top: 50%;
     left: 93%;
     transform: translate(-50%, -50%);
 }
 
-.btn-primary {
-    background-color: #c92127;
-    border-color: #c92127;
-    color: #ffffff;
-}
-
-.btn-primary-outline {
-    border-color: #c92127;
-    background-color: #ffffff;
-    color: #c92127;
-}
-
-.btn-large {
-    width: 200px;
-}
-
-.btn-primary:hover {
-    background-color: #c92127;
-    border-color: #c92127;
-}
 
 .form-control {
     border-radius: 10px !important;
@@ -75,9 +55,15 @@ body {
 .sub-login {
     display: none;
     position: absolute;
+<<<<<<< HEAD
     top: 50%;
     /*left: 11%;*/
     background-color: #ffffff;
+=======
+    top: 150%;
+    left: 11%;
+    background-color: var(--white-color);
+>>>>>>> c611aa267059e59a2092d83eda37d616a3070367
     padding: 20px;
     z-index: 1;
     box-shadow: 0px 0px 4px 2px rgba(0, 0, 0, 0.1);
@@ -97,7 +83,7 @@ body {
 .sub-notification {
     position: absolute;
     z-index: 1;
-    background-color: white;
+    background-color: var(--white-color);
     border-radius: 10px;
     top: 150%;
     right: 65%;
@@ -134,7 +120,7 @@ body {
 
 a:hover {
     text-decoration: none;
-    color: black;
+    color: var(--black-color);
     /*transform: scale(1.2);*/
 }
 
@@ -146,12 +132,8 @@ a {
     text-decoration: none;
 }
 
-.text-primary {
-    color: #c92127 !important;
-}
-
 .text-filter {
-    color: #666;
+    color: var(--second-color);
 }
 
 .card {
@@ -159,7 +141,7 @@ a {
     border-radius: 0px;
     padding: 10px;
     position: relative;
-    color: black;
+    color: var(--black-color);
 }
 
 .card-text {
@@ -173,7 +155,7 @@ a {
 
 .discount {
     position: absolute;
-    background-color: #F7941E;
+    background-color: var(--yellow-color);
     border-radius: 50%;
     padding: 10px;
     right: 0;
@@ -233,26 +215,54 @@ a {
     transition: background-color 0.3s ease, color 0.5s ease;
 }
 
-.parent-category {
+.parent-gerne {
     padding-left: 10px;
 }
 
-.current-category {
+.current-gerne {
     padding-left: 20px;
 }
 
-.children-category {
+.children-gerne {
     padding-left: 30px;
 }
 
-.parent-category > li > a:hover, .current-category > a:hover, .children-category > li:hover {
+.parent-gerne > li > a:hover, .current-gerne > a:hover, .children-gerne > li:hover {
     color: #bf9a61 !important;
     transition: background-color 0.3s ease, color 0.5s ease;
     cursor: pointer;
 }
 
 .selected-filter {
-    color: #F7941E;
+    color: var(--yellow-color);
     font-weight: bold;
     font-size: 16px;
+}
+
+.page-item > a:hover {
+    background-color: #FCDAB0;
+    color: var(--black-color);
+}
+
+.page-item {
+    border: 5px;
+}
+
+.page-link {
+    padding: 9px 17px;
+    color: var(--black-color);
+    border: 0px;
+    margin: 5px;
+    transition: background-color 0.3s ease;
+    border-radius: 5px;
+}
+
+.page-link.active {
+    color: var(--white-color);
+    background-color: var(--red);
+}
+
+.page-link.active:hover {
+    color: var(--white-color);
+    background-color: var(--red);
 }

@@ -1,17 +1,13 @@
-from flask import render_template
-import json
+
 from app import app
+from app.controllers.SearchController import home_bp
+from app.controllers.employee import employee_bp
+from app.controllers.rest.BookGerneController import book_gerne_rest_bp
 
-@app.route("/")
-def index():
-    return render_template("home.html")
+app.register_blueprint(home_bp, url_prefix='/search')
+app.register_blueprint(employee_bp, url_prefix='/employee')
+app.register_blueprint(book_gerne_rest_bp, url_prefix='/api/v1/bookGerne')
 
-@app.route("/category")
-def get_category():
-    with open('data/category.json') as f:
-        data = json.load(f)
-        categories = data[0:4]
-    return categories
 
 @app.route("/login")
 def login_process():

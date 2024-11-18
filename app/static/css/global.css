@@ -1,0 +1,37 @@
+* {
+    --red: #c92127;
+    --yellow-color: #F7941E;
+    --white-color: #ffffff;
+    --btn-size-lagre: 200px;
+    --second-color: #666;
+    --black-color: #000
+}
+
+.container {
+    width: 90% !important;
+}
+
+.text-primary {
+    color: var(--red) !important;
+}
+
+.btn-primary {
+    background-color: var(--red);
+    border-color: var(--red);
+    color: var(--white-color);
+}
+
+.btn-primary-outline {
+    border-color: var(--red);
+    background-color: var(--white-color);
+    color: var(--red);
+}
+
+.btn-large {
+    width: var(--btn-size-lagre);
+}
+
+.btn-primary:hover {
+    background-color: var(--red);
+    border-color: var(--red);
+}
