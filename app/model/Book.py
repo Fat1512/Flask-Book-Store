@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Double
-from main import db
-from main.model.entity.ImageOfBook import ImageOfBook
+from app import db
+from app.model.BookImage import ImageOfBook
 
 class Book(db.Model):
     __tablename__ = 'book'
@@ -11,8 +11,8 @@ class Book(db.Model):
     price = Column(Double)
     description = Column(String)
     weight = Column(Double)
-    page_number = Column(Integer)
-    book_type_id = Column(Integer, ForeignKey('book_type.book_type_id'))
+    num_page = Column(Integer)
+    book_gerne_id = Column(Integer, ForeignKey('book_gerne.book_gerne_id'))
 
     images = db.relationship('ImageOfBook', backref='book', lazy=True)
 

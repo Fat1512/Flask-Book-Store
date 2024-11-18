@@ -2,10 +2,11 @@
 from app import app
 from app.controllers.SearchController import home_bp
 from app.controllers.employee import employee_bp
+from app.controllers.rest.BookGerneController import book_gerne_rest_bp
 
 app.register_blueprint(home_bp, url_prefix='/search')
 app.register_blueprint(employee_bp, url_prefix='/employee')
-
+app.register_blueprint(book_gerne_rest_bp, url_prefix='/api/v1/bookGerne')
 
 
 if __name__ == "__main__":
