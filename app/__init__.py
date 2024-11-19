@@ -1,12 +1,11 @@
 from flask import Flask
-from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from urllib.parse import quote
 
 app = Flask(__name__)
-app.secret_key = "HJGSHJS*&&*@#@&HSJAGDHJDHJFD"
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:%s@localhost/book_store?charset=utf8mb4" % quote('151204')
+app.secret_key = "8923yhr9fuwnsejksnpok@$I_I@$)opfk"
+app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql+pymysql://root:090224T%40n@localhost/book_store'
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
-app.config["PAGE_SIZE"] = 6
-
-db = SQLAlchemy(app)
+app.config['SQLALCHEMY_ECHO'] = True
+app.config['PAGE_SIZE'] =12
+app.config['ORDER'] ='desc'
+db = SQLAlchemy(app=app)

@@ -127,6 +127,7 @@ a.text-primary:focus, a.text-primary:hover {
 
 a {
     text-decoration: none;
+    color: var(--black-color);
 }
 
 .text-filter {
@@ -191,14 +192,15 @@ a {
 
 .checkbox-checked {
     padding-left: 20px;
-    background: transparent url(https://cdn0.fahasa.com/skin/frontend/base/default/images/manapro_filtercheckboxes/ico_checked.png) 0 50% no-repeat;
+    background: transparent url(https://cdn0.fahasa.com/skin/frontend/base/default/images/manapro_filtercheckboxes/ico_checked.png) 0 50% no-repeat !important;
 }
 
-.checkbox-unchecked {
+
+.checkbox {
     background: transparent url(https://cdn0.fahasa.com/skin/frontend/base/default/images/manapro_filtercheckboxes/ico_uncheck.png) 0 50% no-repeat;
 }
 
-.checkbox-checked, .checkbox-unchecked {
+.checkbox-checked, .checkbox {
     padding-left: 20px;
 }
 
@@ -213,15 +215,15 @@ a {
 }
 
 .parent-gerne {
-    padding-left: 10px;
+    padding-left: 5px;
 }
 
 .current-gerne {
-    padding-left: 20px;
+    padding-left: 15px;
 }
 
 .children-gerne {
-    padding-left: 30px;
+    padding-left: 25px;
 }
 
 .parent-gerne > li > a:hover, .current-gerne > a:hover, .children-gerne > li:hover {
@@ -262,4 +264,42 @@ a {
 .page-link.active:hover {
     color: var(--white-color);
     background-color: var(--red);
+}
+
+.spinner {
+    position: absolute;
+    z-index: 3;
+    left: 50%;
+    top: 35%;
+    z-index: 5;
+    background-color: #ffedd1;
+    padding: 15px 50px;
+    text-align: center;
+    border: 1px solid var(--yellow-color);
+    display: none;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+    background-color: rgba(0, 0, 0, 0.2);
+    animation: fadein linear 0.2s;
+    display: none;
+}
+
+.filter-item {
+    background-color: #fef4e8;
+    color: var(--yellow-color);
+    padding: 10px 20px;
+    border-radius: 10px;
+}
+.dropdown-toggle-order {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 175px;
 }

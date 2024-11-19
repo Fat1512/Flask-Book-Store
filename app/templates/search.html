@@ -6,45 +6,93 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
 {% endblock %}
 {% block js %}
-    <script src="{{ url_for('static', filename='js/search.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
 {% endblock %}
 {% block content %}
+
     <div class="my-bg-color pt-5">
-        <div class="container">
+        <div class="container position-relative">
+            <div class="spinner">
+                <div class="spinner-border text-warning" role="status">
+
+                </div>
+                <p>Loading...</p>
+                <div class="overlay">
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-3 rounded">
                     <div class="item-bg-color p-3 rounded">
                         <div class="list-type">
                             <p class="font-weight-bold mb-0">NHÓM SẢN PHẨM </p>
-                            <ol class="parent-gerne list-unstyled mb-0">
+                            <ol class="parent-gerne list-unstyled mb-0 cursor-pointer">
                             </ol>
-                            <div class="current-gerne">
-                                <span class="selected-filter">{{ current_gerne[0].name }}</span>
+                            <div class="current-gerne cursor-pointer">
+                                {#                                <span id="{{ current_gerne[0].id }}"#}
+                                {#                                      class="selected-filter">{{ current_gerne[0].name }}</span>#}
                             </div>
                             <ol class="list-unstyled children-gerne text-filter">
                                 {% for c in sub_gerne %}
                                     <li><span class="sub-item" id="{{ c.id }}">{{ c.name }}</span></li>
                                 {% endfor %}
-
                             </ol>
                         </div>
                         <div class="price pb-0 pt-3 border-top">
                             <p class="font-weight-bold mb-0 pb-1">Giá</p>
                             <ul class="text-decoration-none list-unstyled box-filter pl-2">
                                 <li>
-                                    <a class="checkbox-checked"> 0đ - 150,000đ</a>
+                                    <a class="checkbox {% if minPrice == 0 %}checkbox-checked {% else %} checkbox-unchecked{% endif %}"
+                                       minPrice="0"
+                                       maxPrice="150000"
+
+
+                                    > 0đ - 150,000đ</a>
                                 </li>
                                 <li>
-                                    <a class="checkbox-unchecked"> 150,000đ - 300,000đ</a>
+                                    <a class="checkbox
+                                        {% if minPrice == 150000 %}
+                                        checkbox-checked
+                                        {% else %}
+                                        checkbox-unchecked
+                                         {% endif %} "
+                                       minPrice="150000"
+                                       maxPrice="300000"
+
+                                            {#                                       href="/search?minPrice=150000&maxPrice=300000">#}
+                                    > 150,000đ - 300,000đ
+                                    </a>
                                 </li>
                                 <li>
-                                    <a class="checkbox-unchecked"> 300,000đ - 500,000đ</a>
+                                    <a class="checkbox {% if minPrice == 300000 %}
+                                        checkbox-checked
+                                        {% else %}
+                                        checkbox-unchecked
+                                         {% endif %} "
+                                       minPrice="300000"
+                                       maxPrice="500000"
+
+                                    >300,000đ - 500,000đ</a>
                                 </li>
                                 <li>
-                                    <a class="checkbox-unchecked"> 500,000đ - 700,000đ</a>
+                                    <a class="checkbox {% if minPrice == 500000 %}
+                                        checkbox-checked
+                                        {% else %}
+                                        checkbox-unchecked
+                                         {% endif %} "
+                                       minPrice="500000"
+                                       maxPrice="700000"
+
+                                    > 500,000đ - 700,000đ</a>
                                 </li>
                                 <li>
-                                    <a class="checkbox-unchecked"> 700,000đ - trở lên</a>
+                                    <a class="checkbox   {% if minPrice == 700000 %}
+                                        checkbox-checked
+                                        {% else %}
+                                        checkbox-unchecked
+                                         {% endif %} "
+                                       minPrice="700000"
+                                       maxPrice="9000000"
+                                    > 700,000đ - trở lên</a>
                                 </li>
                             </ul>
                         </div>
@@ -55,28 +103,64 @@
                         <div>
                             <img class="w-100"
                                  src="https://cdn0.fahasa.com/media/wysiwyg/Thang-11-2024/TanViet_Diamond_1124_Slide_840x320.png"/>
+                            <div class="filter-area d-flex pt-3 pb-2 align-items-center">
+                                {% if minPrice %}
+                                    <p class="">Lọc theo: </p>
+                                {% endif %}
+                                <ul class="filter-list ml-3 text-decoration-none list-unstyled">
+                                    {% if minPrice %}
+                                        <li class="filter-item price-filter">
+                                            <span>Giá {{ minPrice }}-{{ maxPrice }}đ</span>
+                                            <a class="cursor-pointer delete-filter ml-1"><i
+                                                    class="fa-solid fa-x"></i></a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
                             <div class="pt-2">
                                 <span>Sắp xếp theo: </span>
                                 <div class="btn-group ml-2 mr-2">
-                                    <button type="button" class="btn btn-outline-dark dropdown-toggle"
+                                    <button type="button" class="btn btn-outline-dark dropdown-toggle
+                                     dropdown-toggle-order"
                                             data-toggle="dropdown">
-                                        Bán Chạy Tuần
+                                        {% if order == 'latest' %}
+                                            Mới nhất
+                                        {% endif %}
+                                        {% if order == 'best_sell_week' %}
+                                            Bán chạy nhất tuần
+                                        {% endif %}
+                                        {% if order == 'best_sell_month' %}
+                                            Bán chạy nhất tháng
+                                        {% endif %}
+                                        {% if order == 'asc' %}
+                                            Giá tăng
+                                        {% endif %}
+                                        {% if order == 'desc' %}
+                                            Giá giảm
+                                        {% endif %}
+
                                     </button>
-                                    <div class="dropdown-menu custom-dropdown-menu">
-                                        <span class="dropdown-item">Mới nhất</span>
-                                        <span class="dropdown-item">Giá bán</span>
-                                        <span class="dropdown-item">Bán chạy nhất tuần</span>
-                                        <span class="dropdown-item">Bán chạy nhất tháng</span>
+                                    <div class="dropdown-menu dropdown-menu-order custom-dropdown-menu">
+                                        <span class="dropdown-item" value="latest">Mới nhất</span>
+                                        <span class="dropdown-item" value="best_sell_week">Bán chạy nhất tuần</span>
+                                        <span class="dropdown-item" value="best_sell_month">Bán chạy nhất tháng</span>
+                                        <span class="dropdown-item" value="asc">Giá tăng</span>
+                                        <span class="dropdown-item" value="desc">Giá giảm</span>
                                     </div>
                                 </div>
                                 <div class="btn-group">
-                                    <button type="button" class="btn btn-outline-dark dropdown-toggle"
+                                    <button type="button" class="btn btn-outline-dark dropdown-toggle
+                                                   dropdown-toggle-pagination"
                                             data-toggle="dropdown">
-                                        12 sản phẩm
+                                        {% if limit %}
+                                            {{ limit }}
+                                        {% else %} 12
+                                        {% endif %}  sản phẩm
                                     </button>
-                                    <div class="dropdown-menu custom-dropdown-menu">
-                                        <span class="dropdown-item">24 sản phẩm</span>
-                                        <span class="dropdown-item">36 sản phẩm</span>
+                                    <div class="dropdown-menu dropdown-menu-pagination custom-dropdown-menu">
+                                        <span class="dropdown-item" value="12">12 sản phẩm</span>
+                                        <span class="dropdown-item" value="24">24 sản phẩm</span>
+                                        <span class="dropdown-item" value="36">36 sản phẩm</span>
                                     </div>
                                 </div>
                             </div>
@@ -88,18 +172,18 @@
                                     <img class="card-img-top"
                                          src="{{ b.images[0].image_url }}"
                                          alt="Card image">
-                                        <div class="card-body p-0">
-                                            <p class="card-text">{{ b.name }}</p>
-                                            <p class="text-primary font-weight-bold mb-1">{{ b.price }}đ</p>
-                                            <p class="text-secondary text-decoration-line-through mb-1">{{ b.price }}đ</p>
-                                        </div>
-                                        <div class="rating">
-                                            <i class="fa-regular fa-star"></i>
-                                            <i class="fa-regular fa-star"></i>
-                                            <i class="fa-regular fa-star"></i>
-                                            <i class="fa-regular fa-star"></i>
-                                            <i class="fa-regular fa-star"></i>
-                                        </div>
+                                    <div class="card-body p-0">
+                                        <p class="card-text">{{ b.name }}</p>
+                                        <p class="text-primary font-weight-bold mb-1">{{ b.price }}đ</p>
+                                        <p class="text-secondary text-decoration-line-through mb-1">{{ b.price }}đ</p>
+                                    </div>
+                                    <div class="rating">
+                                        <i class="fa-regular fa-star"></i>
+                                        <i class="fa-regular fa-star"></i>
+                                        <i class="fa-regular fa-star"></i>
+                                        <i class="fa-regular fa-star"></i>
+                                        <i class="fa-regular fa-star"></i>
+                                    </div>
                                 </a>
                             {% endfor %}
 
