@@ -12,7 +12,6 @@ async function preLoadCategory() {
 
     all_data = data;
     homeProductContainer.innerHTML = '';
-    console.log(data)
     all_data[0]['product'].slice(0, 10).forEach(data => {
         renderProduct(data);
     })
@@ -25,7 +24,6 @@ ele.addEventListener("click", function (e) {
     if (!id) return;
 
     e.currentTarget.innerHTML = '';
-
     all_data.forEach(category => {
         renderCategoryHeading(category.name, category.id, id == category.id)
     })

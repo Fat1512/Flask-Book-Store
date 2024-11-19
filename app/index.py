@@ -1,5 +1,6 @@
 
 from app import app
+from flask import render_template
 from app.controllers.SearchController import home_bp
 from app.controllers.employee import employee_bp
 from app.controllers.rest.BookGerneController import book_gerne_rest_bp

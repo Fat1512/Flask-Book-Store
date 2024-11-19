@@ -4,7 +4,6 @@ import json
 
 employee_bp = Blueprint('employee', __name__)
 
-
 @employee_bp.route("/")
 def index():
     with open('data/category.json', encoding="utf8") as f:
@@ -33,6 +32,10 @@ def index():
                            bestselling_books=bestselling_books,
                            new_release=new_release,
                            category_section=category_section)
+
+@employee_bp.route("/test")
+def get():
+    return render_template("employee.html")
 
 @employee_bp.route("/category")
 def get_category():

@@ -15,6 +15,10 @@
     color: var(--red) !important;
 }
 
+.text-secondary {
+    color: #6c757d !important;
+}
+
 .btn-primary {
     background-color: var(--red);
     border-color: var(--red);
