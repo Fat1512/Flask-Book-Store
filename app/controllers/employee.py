@@ -1,8 +1,9 @@
 from flask import Blueprint
-from flask import render_template
+from flask import render_template, request
 import json
 
 employee_bp = Blueprint('employee', __name__)
+
 
 @employee_bp.route("/")
 def index():
@@ -33,9 +34,23 @@ def index():
                            new_release=new_release,
                            category_section=category_section)
 
-@employee_bp.route("/test")
-def get():
+
+@employee_bp.route("/order")
+def get_order():
     return render_template("employee.html")
+
+
+@employee_bp.route("/order/update")
+def update_order():
+    request.args.get("order_id")
+    order = None
+    return render_template("employee-order-update.html", order=order)
+
+@employee_bp.route("/order/detail")
+def get_order_detail():
+    request.args.get("order_id")
+    order = None
+    return render_template("employee-order-detail.html", order=order)
 
 @employee_bp.route("/category")
 def get_category():
