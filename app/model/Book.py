@@ -5,7 +5,7 @@ from app.model.BookImage import ImageOfBook
 class Book(db.Model):
     __tablename__ = 'book'
     book_id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String)
+    title = Column(String)
     author = Column(String)
     quantity = Column(Integer)
     price = Column(Double)

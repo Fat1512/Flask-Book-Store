@@ -5,7 +5,6 @@ class BookGerne(db.Model):
     __tablename__ = 'book_gerne'
     book_gerne_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String)
-    description = db.Column(db.String)
     lft = db.Column(db.Integer)
     rgt = db.Column(db.Integer)
 
@@ -25,6 +24,6 @@ class BookGerne(db.Model):
         return {
             'book_type_id': self.book_type_id,
             'name': self.name,
-            'description': self.description,
+
             "books": books
         }
