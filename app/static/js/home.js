@@ -3,7 +3,7 @@ const homeProductContainer = document.querySelector('.home_product_container');
 
 let all_data;
 async function preLoadCategory() {
-    const res = await fetch('/category');
+    const res = await fetch('/employee/category');
     const data = await res.json();
     const id = data[0].id;
     data.forEach(category => {
