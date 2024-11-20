@@ -34,6 +34,10 @@ def index():
                            new_release=new_release,
                            category_section=category_section)
 
+@employee_bp.route("/checkout")
+def checkout():
+    return render_template("employee_checkout.html")
+
 
 @employee_bp.route("/order")
 def get_order():
