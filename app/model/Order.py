@@ -47,6 +47,9 @@ class Order(db.Model):
         else:
             json['type'] = 0
             json.update(self.offline_order.to_dict())
+
+        if self.payment_detail:
+            json['payment_detail'] = self.payment_detail.to_dict()
         return json
 
 class OfflineOrder(db.Model):
@@ -85,17 +88,9 @@ class PaymentDetail(db.Model):
     created_at = Column(DATETIME)
     amount = Column(Double)
     order_id = Column(Integer, ForeignKey('order.order_id'), unique=True)
-
-
-
-
-
-
-
-
-
-
-
-
-
+    def to_dict(self):
+        return {
+            'amount': self.amount,
+            'created_at': self.created_at
+        }
 

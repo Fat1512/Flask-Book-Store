@@ -8,7 +8,6 @@ from app.dao.BookGerneDAO import get_depth_gerne
 
 home_bp = Blueprint('search', __name__)
 
-
 @home_bp.route('/')
 def search_main():
     keyword = request.args.get('keyword')

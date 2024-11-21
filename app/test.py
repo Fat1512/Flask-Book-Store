@@ -25,3 +25,5 @@ obj2 = {
 obj1.update(obj2)
 print(obj1)
 print(obj2)
+
+print(obj1.get("width", 1))
