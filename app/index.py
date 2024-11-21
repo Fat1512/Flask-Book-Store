@@ -9,6 +9,9 @@ app.register_blueprint(home_bp, url_prefix='/search')
 app.register_blueprint(employee_bp, url_prefix='/employee')
 app.register_blueprint(book_gerne_rest_bp, url_prefix='/api/v1/bookGerne')
 
+@app.route("/home")
+def home_process():
+    return render_template("employee-order-update.html")
 
 @app.route("/login")
 def login_process():
