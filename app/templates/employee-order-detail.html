@@ -430,228 +430,66 @@
                         <div class="col-6">
                             <div class="d-flex">
                                 <h1 class="pr-3">Mã đơn: </h1>
-                                <h1 class="font-weight-400">10023</h1>
+                                <h1 class="font-weight-400">{{ order['order_id'] }}</h1>
                             </div>
                             <div class="d-flex">
                                 <h1 class="pr-3">Loại đơn: </h1>
-                                <h1 class="font-weight-400">Offline</h1>
+                                <h1 class="font-weight-400">{{ order['type'] }}</h1>
                             </div>
-                            <div class="d-flex">
-                                <h1 class="pr-3">Nhân viên thanh toán: </h1>
-                                <h1 class="font-weight-400">Phát đẹp trai số 1 OU</h1>
-                            </div>
-
-                        </div>
-                        <div class="col-6">
                             <div class="d-flex">
                                 <h1 class="pr-3">Trạng thái: </h1>
-                                <h1 class="font-weight-400">Đã thanh toán</h1>
+                                <h1 class="font-weight-400">{{ order['status'] }}</h1>
                             </div>
                             <div class="d-flex">
                                 <h1 class="pr-3">Phương thức thanh toán: </h1>
-                                <h1 class="font-weight-400">Tiền mặt</h1>
+                                <h1 class="font-weight-400">{{ order['payment_method'] }}</h1>
                             </div>
                             <div class="d-flex">
                                 <h1 class="pr-3">Ngày tạo: </h1>
-                                <h1 class="font-weight-400">28/01/2022</h1>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header bg-transparent border-0">
-                        <h3 class="mb-0">Sản phẩm</h3>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table align-items-center table-flush">
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col" class="sort text-center" data-sort="name">Ten san pham</th>
-                                <th scope="col" class="sort text-center" data-sort="budget">Gia</th>
-                                <th scope="col" class="sort text-center" data-sort="status">Giam gia</th>
-                                <th scope="col" class="text-center">So luong</th>
-                                <th scope="col" class="sort text-center" data-sort="completion">Tong tien</th>
-                                <th scope="col"></th>
-                            </tr>
-                            </thead>
-                            <tbody class="list">
-                            <tr>
-                                <th scope="row">
-                                    <div class="media align-items-center">
-                                        <div class="media-body text-center">
-                                            <span class="name mb-0 text-sm text-center">Chai nuoc</span>
-                                        </div>
-                                    </div>
-                                </th>
-                                <td class="budget text-center">
-                                    $25002 USD
-                                </td>
-                                <td>
-                                    <span class="badge badge-dot mr-4 text-center w-100">
-                                    <span class="status text-center">10%</span>
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class="d-flex justify-content-center">
-                                        <div class="d-flex justify-content-center w-100">
-                                            <div>1220</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center w-100 justify-content-center">
-                                        <span class="completion mr-2">2000</span>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row">
-                                    <div class="media align-items-center">
-                                        <div class="media-body text-center">
-                                            <span class="name mb-0 text-sm text-center">Chai nuoc</span>
-                                        </div>
-                                    </div>
-                                </th>
-                                <td class="budget text-center">
-                                    $2500 USD
-                                </td>
-                                <td>
-                          <span class="badge badge-dot mr-4 text-center w-100">
-                            <span class="status text-center">10%</span>
-                          </span>
-                                </td>
-                                <td>
-                                    <div class="d-flex justify-content-center">
-                                        <div class="d-flex text-center justify-content-center w-100">
-                                            <div>1220</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center w-100 justify-content-center">
-                                        <span class="completion mr-2">2000</span>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row">
-                                    <div class="media align-items-center">
-                                        <div class="media-body text-center">
-                                            <span class="name mb-0 text-sm text-center">Chai nuoc</span>
-                                        </div>
-                                    </div>
-                                </th>
-                                <td class="budget text-center">
-                                    $2500 USD
-                                </td>
-                                <td>
-                          <span class="badge badge-dot mr-4 text-center w-100">
-                            <span class="status text-center">10%</span>
-                          </span>
-                                </td>
-                                <td>
-                                    <div class="d-flex justify-content-center">
-                                        <div class="d-flex justify-content-center w-100">
-                                            <div>98</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center w-100 justify-content-center">
-                                        <span class="completion mr-2">2000</span>
-                                    </div>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                        <div class="d-flex px-5 py-4 justify-content-between ">
-                            <div class="font-weight-bolder display-4">
-                                Tổng tiền:
-                            </div>
-                            <div class="font-weight-bolder display-4">1.000.000 VNĐ</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12">
-                <div class="card p-5">
-                    <div class="row justify-content-between">
-                        <div class="col-12 pb-5">
-                            <a class="fa fa-arrow-left display-4 cursor-pointer product-detail-back-btn"
-                               href="/employee/order"
-                               aria-hidden="true"></a>
-                        </div>
-                        <div class="col-6">
-                            <div class="d-flex">
-                                <h1 class="pr-3">Mã đơn: </h1>
-                                <h1 class="font-weight-400">10023</h1>
-                            </div>
-                            <div class="d-flex">
-                                <h1 class="pr-3">Loại đơn: </h1>
-                                <h1 class="font-weight-400">Online</h1>
-                            </div>
-                            <div class="d-flex">
-                                <h1 class="pr-3">Phương thức vận chuyển: </h1>
-                                <h1 class="font-weight-400">Lấy tại chỗ / COD</h1>
+                                <h1 class="font-weight-400">{{ order['created_at'] }}</h1>
                             </div>
                         </div>
                         <div class="col-6">
-                            <div class="d-flex">
-                                <h1 class="pr-3">Trạng thái: </h1>
-                                <h1 class="font-weight-400">Đã thanh toán</h1>
-                            </div>
-                            <div class="d-flex">
-                                <h1 class="pr-3">Phương thức thanh toán: </h1>
-                                <h1 class="font-weight-400">Tiền mặt</h1>
-                            </div>
-                            <div class="d-flex">
-                                <h1 class="pr-3">Ngày tạo: </h1>
-                                <h1 class="font-weight-400">15/12/2023</h1>
-                            </div>
+                            {% if order['employee_name'] %}
+                                <div class="d-flex">
+                                    <h1 class="pr-3">Nhân viên thanh toán: </h1>
+                                    <h1 class="font-weight-400">{{ order['employee_name'] }}</h1>
+                                </div>
+                            {% endif %}
+                            {% if order['shipping_method'] %}
+                                <div class="d-flex">
+                                    <h1 class="pr-3">Phương thức vận chuyển: </h1>
+                                    <h1 class="font-weight-400">{{ order['shipping_method'] }}</h1>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                     <div class="card-body">
                         <form>
-                            <div class="row">
+                            <div class="row pb-4">
                                 <div class="col-6">
-                                    <h6 class="text-muted mb-4 display-4">Thông tin cá nhân</h6>
+                                    <h6 class=" display-4 text-muted mb-4">Thông tin</h6>
                                     <div class="pl-lg-4">
                                         <div class="row">
                                             <div class="col-lg-12">
-                                                <span class="form-control-label" for="input-username">Họ và Tên: </span>
-                                                <span>Lê Tấn Phát</span>
+                                                <span class="form-control-label" for="input-address">Họ và tên: </span>
+                                                <span>{{ order['address']['first_name'] }} {{ order['address']['last_name'] }}</span>
                                             </div>
                                             <div class="col-lg-12">
-                                                <span class="form-control-label"
-                                                      for="input-email">Số điện thoại: </span>
-                                                <span>0382289866</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <h6 class=" display-4 text-muted mb-4">Địa chỉ</h6>
-                                    <div class="pl-lg-4">
-                                        <div class="row">
-                                            <div class="col-md-12">
                                                 <span class="form-control-label" for="input-address">Địa chỉ: </span>
-                                                <span>97 Võ Văn Tần, Võ Thị Sáu, Quận 3</span>
+                                                <span>{{ order['address']['address'] }}</span>
                                             </div>
-                                        </div>
-                                        <div class="row">
                                             <div class="col-lg-12">
                                                 <span class="form-control-label" for="input-city">Thành phố: </span>
-                                                <span>Hồ Chí Minh</span>
+                                                <span>{{ order['address']['city'] }}</span>
                                             </div>
                                             <div class="col-lg-12">
                                                 <span class="form-control-label" for="input-city">Nước: </span>
-                                                <span>Việt Nam</span>
+                                                <span>{{ order['address']['country'] }}</span>
                                             </div>
                                             <div class="col-lg-12">
-                                                <span class="form-control-label" for="input-city">Postal code: </span>
-                                                <span>00700</span>
+                                                <span class="form-control-label" for="input-city">Số điện thoại: </span>
+                                                <span>{{ order['address']['phone_number'] }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -659,27 +497,20 @@
                             </div>
 
                             <!-- Address -->
-
                             <!-- <hr class="my-2" /> -->
                             <!-- Description -->
+                            {% if order['note'] %}
                             <h6 class=" display-4 text-muted mb-4">Ghi chú</h6>
                             <div class="col-lg-12">
-                                <div>Lorem ipsum dolor sit amet consectetur adipisicing elit. Similique provident sint
-                                    quaerat
-                                    veritatis, magnam cum voluptas dolores est veniam eaque praesentium sequi
-                                    perspiciatis
-                                    accusantium
-                                    illum, et eligendi consequatur laborum reiciendis? Lorem ipsum dolor sit amet,
-                                    consectetur adipisicing elit. Blanditiis impedit laboriosam nam praesentium
-                                    provident
-                                    rerum temporibus! Ab, ea et eum eveniet exercitationem facere hic in ipsa, iusto
-                                    laborum, quisquam rem!
+                                <div>{{ order['note'] }}
                                 </div>
                             </div>
+                            {% endif %}
                         </form>
                     </div>
                 </div>
             </div>
+
             <div class="col-12">
                 <div class="card">
                     <div class="card-header bg-transparent border-0">
@@ -698,100 +529,54 @@
                             </tr>
                             </thead>
                             <tbody class="list">
-                            <tr>
-                                <th scope="row">
-                                    <div class="media align-items-center">
-                                        <div class="media-body text-center">
-                                            <span class="name mb-0 text-sm text-center">Chai nuoc</span>
+                            {% for orderItem in order['order_detail'] %}
+                                <tr>
+                                    <th scope="row">
+                                        <div class="media align-items-center">
+                                            <div class="media-body text-center">
+                                                <span class="name mb-0 text-sm text-center">{{ orderItem['book']['title'] }}</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                </th>
-                                <td class="budget text-center">
-                                    $25002 USD
-                                </td>
-                                <td>
+                                    </th>
+                                    <td class="budget text-center">
+                                        {{ orderItem['price'] }} USD
+                                    </td>
+                                    <td>
                                     <span class="badge badge-dot mr-4 text-center w-100">
                                     <span class="status text-center">10%</span>
                                     </span>
-                                </td>
-                                <td>
-                                    <div class="d-flex justify-content-center">
-                                        <div class="d-flex justify-content-center w-100">
-                                            <div>1220</div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex justify-content-center">
+                                            <div class="d-flex justify-content-center w-100">
+                                                <div> {{ orderItem['quantity'] }}</div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center w-100 justify-content-center">
-                                        <span class="completion mr-2">2000</span>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row">
-                                    <div class="media align-items-center">
-                                        <div class="media-body text-center">
-                                            <span class="name mb-0 text-sm text-center">Chai nuoc</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center w-100 justify-content-center">
+                                            <span class="completion mr-2"> {{ orderItem['price'] * orderItem['quantity'] }} </span>
                                         </div>
-                                    </div>
-                                </th>
-                                <td class="budget text-center">
-                                    $2500 USD
-                                </td>
-                                <td>
-                          <span class="badge badge-dot mr-4 text-center w-100">
-                            <span class="status text-center">10%</span>
-                          </span>
-                                </td>
-                                <td>
-                                    <div class="d-flex justify-content-center">
-                                        <div class="d-flex text-center justify-content-center w-100">
-                                            <div>1220</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center w-100 justify-content-center">
-                                        <span class="completion mr-2">2000</span>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row">
-                                    <div class="media align-items-center">
-                                        <div class="media-body text-center">
-                                            <span class="name mb-0 text-sm text-center">Chai nuoc</span>
-                                        </div>
-                                    </div>
-                                </th>
-                                <td class="budget text-center">
-                                    $2500 USD
-                                </td>
-                                <td>
-                          <span class="badge badge-dot mr-4 text-center w-100">
-                            <span class="status text-center">10%</span>
-                          </span>
-                                </td>
-                                <td>
-                                    <div class="d-flex justify-content-center">
-                                        <div class="d-flex justify-content-center w-100">
-                                            <div>98</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center w-100 justify-content-center">
-                                        <span class="completion mr-2">2000</span>
-                                    </div>
-                                </td>
-                            </tr>
+                                    </td>
+                                </tr>
+                            {% endfor %}
                             </tbody>
                         </table>
+                        {% if order['shipping_fee'] %}
+                            <div class="d-flex px-5 py-4 justify-content-between">
+                                <div class="font-weight-bold display-4">
+                                    Phí ship
+                                </div>
+                                <div class="font-weight-bold display-4">{{ order['shipping_fee'] }} VNĐ</div>
+                            </div>
+                        {% endif %}
                         <div class="d-flex px-5 py-4 justify-content-between ">
                             <div class="font-weight-bolder display-4">
                                 Tổng tiền:
                             </div>
-                            <div class="font-weight-bolder display-4">1.000.000 VNĐ</div>
+                            <div class="font-weight-bolder display-4">{{ order['total_amount'] + order['shipping_fee'] if order['shipping_fee'] else order['total_amount'] }}
+                                VNĐ
+                            </div>
                         </div>
                     </div>
                 </div>

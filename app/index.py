@@ -16,6 +16,10 @@ app.register_blueprint(book_gerne_rest_bp, url_prefix='/api/v1/bookGerne')
 app.register_blueprint(order_api_bp, url_prefix='/api/v1/order')
 app.register_blueprint(index_bp, url_prefix='/')
 
+@app.route("/home")
+def home_process():
+    return render_template("employee-order-update.html")
+
 @app.route("/login")
 def login_process():
     return render_template("login.html")

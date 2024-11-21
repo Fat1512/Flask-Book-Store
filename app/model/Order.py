@@ -1,8 +1,13 @@
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, Enum, DATETIME, Double
-from app import db, app
-from app.model import Book
+from app import db, app, utils
+import functools
+from app.model import Book, User, Address
 from enum import Enum as PythonEnum
+
+
+# TYPE = 1 => OnlineOrder
+# TYPE = 2 => OfflineOrder
 
 
 class OrderStatus(PythonEnum):
@@ -28,6 +33,10 @@ class Order(db.Model):
     status = Column(Enum(OrderStatus), default=OrderStatus.DANG_XU_LY)
     payment_method = Column(Enum(PaymentMethod))
     created_at = Column(DATETIME)
+
+    address_id = Column(Integer, ForeignKey('address.address_id'))
+    address = relationship("Address", back_populates="order")
+
     order_detail = relationship("OrderDetail", backref='order', lazy=True)
     online_order = relationship('OnlineOrder', backref='order', lazy=True, uselist=False)
     offline_order = relationship('OfflineOrder', backref='order', lazy=True, uselist=False)
@@ -36,25 +45,40 @@ class Order(db.Model):
     def to_dict(self):
         json = {
             'order_id': self.order_id,
-            'status': self.status.value,
-            'payment_method': self.payment_method.value,
+            'status': utils.ORDER_STATUS_TEXT[self.status.value - 1],
+            'payment_method': utils.PAYMENT_METHOD_TEXT[self.payment_method.value - 1],
             'created_at': self.created_at,
-            'order_detail': [order_detail.to_dict() for order_detail in self.order_detail]
+            'order_detail': [order_detail.to_dict() for order_detail in self.order_detail],
+            'address': self.address.to_dict()
         }
         if self.online_order:
-            json['type'] = 1
+            json['type'] = utils.ORDER_TYPE_TEXT[0]
             json.update(self.online_order.to_dict())
         else:
-            json['type'] = 0
+            json['type'] = utils.ORDER_TYPE_TEXT[1]
             json.update(self.offline_order.to_dict())
 
         if self.payment_detail:
             json['payment_detail'] = self.payment_detail.to_dict()
+        order_detail = [order_detail.to_dict() for order_detail in self.order_detail]
+        total_amount = functools.reduce(lambda a, b: a['price'] * a['quantity'] + b['price'] * b['quantity'],
+                                        order_detail) if len(order_detail) >= 2 else order_detail[0]['price'] * \
+                                                                                         order_detail[0]['quantity']
+        json['total_amount'] = total_amount
         return json
+
 
 class OfflineOrder(db.Model):
     __tablename__ = 'offline_order'
     order_id = Column(Integer, ForeignKey('order.order_id'), primary_key=True)
+
+    employee_id = Column(Integer, ForeignKey('user.user_id'))
+    employee = relationship("User", back_populates="offline_orders")
+
+    def to_dict(self):
+        return {
+            'employee_name': self.employee.first_name + ' ' + self.employee.last_name
+        }
 
 
 class OnlineOrder(db.Model):
@@ -62,11 +86,19 @@ class OnlineOrder(db.Model):
     order_id = Column(Integer, ForeignKey('order.order_id'), primary_key=True)
     shipping_method = Column(Enum(ShippingMethod))
     shipping_fee = Column(Double)
+    note = Column(String)
+
+    customer_id = Column(Integer, ForeignKey('user.user_id'))
+    customer = relationship("User", back_populates="online_orders")
+
     def to_dict(self):
         return {
-            'shipping_method': self.shipping_method.value,
-            'shipping_fee': self.shipping_fee
+            'shipping_method': utils.SHIPPING_METHOD_TEXT[self.shipping_method.value - 1],
+            'shipping_fee': self.shipping_fee,
+            'note': self.note,
+            'customer_id': self.customer_id,
         }
+
 
 class OrderDetail(db.Model):
     __tablename__ = 'order_detail'
@@ -75,6 +107,7 @@ class OrderDetail(db.Model):
     book = relationship("Book", back_populates="order_detail")
     quantity = Column(Integer)
     price = Column(Double)
+
     def to_dict(self):
         return {
             'quantity': self.quantity,
@@ -82,15 +115,16 @@ class OrderDetail(db.Model):
             'book': self.book.to_dict()
         }
 
+
 class PaymentDetail(db.Model):
     __tablename__ = 'payment_detail'
     payment_detail_id = Column(Integer, primary_key=True, autoincrement=True)
     created_at = Column(DATETIME)
     amount = Column(Double)
     order_id = Column(Integer, ForeignKey('order.order_id'), unique=True)
+
     def to_dict(self):
         return {
             'amount': self.amount,
             'created_at': self.created_at
         }
-

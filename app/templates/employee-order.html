@@ -25,7 +25,6 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
-
 </head>
 
 <body>
@@ -431,7 +430,7 @@
                             <thead class="thead-light">
                             <tr>
                                 <th scope="col" class="sort" data-sort="name">Order ID</th>
-                                <th scope="col" class="sort" data-sort="budget">Ten khach hang</th>
+                                <th scope="col" class="sort" data-sort="budget">Loại đơn</th>
                                 <th scope="col" class="sort" data-sort="status">Tong Tien</th>
                                 <th scope="col">Trang thai</th>
                                 <th scope="col" class="sort" data-sort="completion">Thoi Gian Dat</th>
@@ -440,34 +439,35 @@
                             </tr>
                             </thead>
                             <tbody class="list">
+                            {% for order in orders %}
                             <tr>
                                 <th scope="row">
                                     <div class="media align-items-center">
-                                        <div id="order-id">123123123123</div>
+                                        <div id="{{ order['order_id'] }}">{{ order['order_id'] }}</div>
                                     </div>
                                 </th>
                                 <td>
                                     <div class="media-body">
-                                        <span class="name mb-0 text-sm">Le Tan Phat</span>
+                                        <span class="name mb-0 text-sm">{{ order['type'] }}</span>
                                     </div>
                                 </td>
                                 <td class="budget">
-                                    $2500 USD
+                                    {{ order['total_amount'] }}
                                 </td>
                                 <td>
                                     <span class="badge badge-dot mr-4">
                                     <i class="bg-warning"></i>
-                                    <span class="status">pending</span>
+                                    <span class="status">{{ order['status'] }}</span>
                                     </span>
                                 </td>
                                 <td>
                                     <div class="avatar-group">
-                                        6th, November, 2024
+                                        {{ order['created_at'] }}
                                     </div>
                                 </td>
                                 <td>
                                     <div class="avatar-group">
-                                        The
+                                        {{ order['payment_method'] }}
                                     </div>
                                 </td>
                                 <td class="text-right">
@@ -480,13 +480,14 @@
                                         <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
                                             <a class="dropdown-item" href="/employee/order/update?order_id={{ 123 }}">Cap
                                                 nhat</a>
-                                            <a class="dropdown-item" href="/employee/order/detail?order_id={{ 123 }}">Chi
+                                            <a class="dropdown-item" href="/employee/order/{{ order['order_id'] }}/detail">Chi
                                                 tiet</a>
                                             <a class="dropdown-item" href="#">Huy</a>
                                         </div>
                                     </div>
                                 </td>
                             </tr>
+                            {% endfor %}
                             <tr>
                                 <th scope="row">
                                     <div class="media align-items-center">
@@ -495,7 +496,7 @@
                                 </th>
                                 <td>
                                     <div class="media-body">
-                                        <span class="name mb-0 text-sm">Le Tan Phat</span>
+                                        <span class="name mb-0 text-sm">Offline</span>
                                     </div>
                                 </td>
                                 <td class="budget">
@@ -540,7 +541,7 @@
                                 </th>
                                 <td>
                                     <div class="media-body">
-                                        <span class="name mb-0 text-sm">Le Tan Phat</span>
+                                        <span class="name mb-0 text-sm">Offline</span>
                                     </div>
                                 </td>
                                 <td class="budget">
@@ -861,6 +862,7 @@
                             </tr>
                             </tbody>
                         </table>
+
                         <div class="d-flex px-5 py-4 justify-content-between ">
                             <div class="font-weight-bolder display-4">
                                 Tổng tiền:

@@ -12,18 +12,17 @@ def get_order_by_id(order_id):
 
 @order_bp.route("/")
 def filter_orders():
-    return "Phat dep trai"
-    # status = request.args.get("status")
-    # paymentMethod = request.args.get("paymentMethod")
-    # sortBy = request.args.get("sortBy")
-    # sortDir = request.args.get("sortDir")
-    # page = request.args.get("page", 1)
-    # orders = find_all(status=status,
-    #          paymentMethod=paymentMethod,
-    #          sortBy=sortBy,
-    #          sortDir=sortDir,
-    #          page=int(page))
-    # return orders.all()
+    status = request.args.get("status")
+    paymentMethod = request.args.get("paymentMethod")
+    sortBy = request.args.get("sortBy")
+    sortDir = request.args.get("sortDir")
+    page = request.args.get("page", 1)
+    orders = find_all(status=status,
+             paymentMethod=paymentMethod,
+             sortBy=sortBy,
+             sortDir=sortDir,
+             page=int(page))
+    return [order.to_dict() for order in orders]
 
 if __name__ == "__main__":
     app.run(debug=True)

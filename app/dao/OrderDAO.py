@@ -25,11 +25,11 @@ def find_all(**kwargs):
     if payment_method:
         orders = orders.filter(Order.payment_method.value.__eq__(int(payment_method)))
 
-    if sort_by.__eq__('date'):
+    if 'date' == sort_by:
         orders = orders.order_by(desc(Order.created_at)) if sort_dir.__eq__("DESC") else orders.order_by(
             asc(Order.created_at))
 
-    if sort_by.__eq__('total_amount'):
+    if 'total_amount' == sort_by:
         orders = orders.join(Order.payment_detail)
         orders = orders.order_by(desc(PaymentDetail.amount)) if sort_dir.__eq__("DESC") \
             else orders.order_by(asc(PaymentDetail.amount))
@@ -39,4 +39,4 @@ def find_all(**kwargs):
     end = start + page_size
     orders = orders.slice(start, end)
 
-    return orders
+    return orders.all()
