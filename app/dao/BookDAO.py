@@ -1,18 +1,26 @@
 from app.model.Book import Book
 from app import app
+from app.model.BookGerne import BookGerne
+from app.model.Book import Book
 import math
 
 
 def find_by_id(id):
     return Book.query.get(id)
 
+def find_by_gerne(gerne_id):
+    query = Book.query
+    gerne = BookGerne.query.get(gerne_id)
+    query = query.join(BookGerne)
+    query = query.filter(BookGerne.lft.between(gerne.lft, gerne.rgt))
+    return query.all()
 
 def find_all(page=1):
     return Book.query.all()
 
 
-def paginate_book(page=1):
-    page_size = app.config['PAGE_SIZE']
+def paginate_book(page=1,limit=app.config['PAGE_SIZE']):
+    page_size = limit
     start = (page - 1) * page_size
     end = start + page_size
     total = Book.query.count()

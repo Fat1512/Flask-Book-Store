@@ -1,0 +1,137 @@
+{% extends 'layout/base.html' %}
+
+{% block css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/book-detail.css') }}">
+{% endblock %}
+{% block content %}
+    <div class="my-bg-color pt-5">
+        <div class="container">
+            <div class="row">
+
+                <div class="col-md-5 rounded banner">
+                    <div class="item-bg-color rounded p-3">
+                        <div class="poster d-flex justify-content-center">
+                            <img src="{{ book.images[0].image_url }}">
+                        </div>
+                        <div class="images">
+                            <ul class="list-unstyled list-image d-flex justify-content-between pb-3">
+                                {% for img in book.images %}
+                                    <li class="image-item">
+                                        <img src="{{ img.image_url }}">
+                                    </li>
+                                {% endfor %}
+
+                            </ul>
+                        </div>
+                        <div class="controller d-flex align-items-center justify-content-around">
+                            <button class="btn pt-2 pb-2 pr-3 pl-3 btn-primary-outline btn-large">
+                                <a class="text-decoration-none text-primary" href="#">
+
+                                    <i class="fa-solid fa-cart-shopping"></i> Thêm vào giỏ hàng</a>
+                            </button>
+                            <button class="btn pt-2 pb-2 pr-3 pl-3 btn-primary btn-large">
+                                <a class="text-decoration-none text-white" href="#">Mua ngay</a>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-7 rounded">
+                    <div class="item-bg-color p-2 rounded">
+                        <div class="item-header">
+                            <h4>{{ book.title }}</h4>
+                        </div>
+                        <div class="item-text row m-0">
+                            <span class="col-md-6">Nhà cung cấp: <span
+                                    class="font-weight-bold">Nhà Xuất Bản Kim Đồng</span></span>
+                            <span class="col-md-6"> Tác giả: <span class="font-weight-bold">Gosho Aoyama, Takahiro Okura, Shima Mizuki</span>
+                                </span>
+                            <span class="col-md-6"> Nhà xuất bản:
+                                 <span class="font-weight-bold">Kim Đồng</span>
+                                </span>
+                            <span class="col-md-6">Hình thức bìa:
+                                 <span class="font-weight-bold">Bìa Mềm</span>
+                                </span>
+                        </div>
+                        <div class="rating">
+                            <span><i class="fa-regular fa-star"></i></span>
+                            <span><i class="fa-regular fa-star"></i></span>
+                            <span><i class="fa-regular fa-star"></i></span>
+                            <span><i class="fa-regular fa-star"></i></span>
+                            <span><i class="fa-regular fa-star"></i></span>
+                            <span class="text-warning">(0 đánh giá)</span>
+                            <span class="ml-3 text-center"> | Đã bán 100</span>
+                        </div>
+                    </div>
+                    <div class="item-bg-color p-2 mt-3 rounded">
+                        <div class="item-header">
+                            <h4>Thông tin chi tiết</h4>
+                        </div>
+                        <div class="row m-0 item-information">
+                            <div class="col-md-3 p-0">
+                                Mã hàng
+                            </div>
+                            <div class="col-md-9">123</div>
+                        </div>
+                        <div class="row m-0 item-information">
+                            <div class="col-md-3 p-0">hal</div>
+                            <div class="col-md-9">jaf</div>
+                        </div>
+                    </div>
+                    <div class="item-bg-color p-2 mt-3 rounded position-relative">
+                        <div class="item-header">
+                            <h4>Mô tả sản phẩm</h4>
+                        </div>
+                        <div class="item-content">
+                            <p>  {{ book.description }}</p>
+                        </div>
+                        <div class="block-gradient">
+                        </div>
+                        <div class="item-more-detail text-center cursor-pointer">
+                            <span class="text-primary">Xem thêm </span>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+            <div class="item-bg-color position-relative rounded p-3 mt-3">
+                <h2>Sản phẩm liên quan</h2>
+                <div class="my-carousel d-flex justify-content-between">
+                    {% for b in books %}
+                        <div style="width: 244px;">
+                            <span class="discount text-white">10%</span>
+                            <img class="card-img-top"
+                                 src="{{ b.images[0].image_url }}"
+                                 alt="Card image">
+                            <div class="card-body p-0">
+                                <p class="card-text">{{ b.title }}</p>
+                                <p class="text-primary font-weight-bold mb-1">{{ b.price|currency('VND') }}</p>
+                                <p class="text-secondary text-decoration-line-through mb-1">{{ b.price|currency('VND') }}</p>
+                            </div>
+                            <div class="rating">
+                                <i class="fa-regular fa-star"></i>
+                                <i class="fa-regular fa-star"></i>
+                                <i class="fa-regular fa-star"></i>
+                                <i class="fa-regular fa-star"></i>
+                                <i class="fa-regular fa-star"></i>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                </div>
+                <button class="custom-prev"><i class="fa-solid fa-arrow-left"></i></button>
+                <button class="custom-next"><i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+    <script src="{{ url_for('static', filename='js/slickyCarousel.js') }}"></script>
+
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Slick JS -->
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script> {% endblock %}

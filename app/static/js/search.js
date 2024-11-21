@@ -1,6 +1,11 @@
 //API
 const BOOK_GERNE_API = '/api/v1/bookGerne'
+const BOOK_API = '/api/v1/book'
 const currentUrl = new URL(window.location);
+const VND = new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+});
 // DECLARE VARIABLE
 var margin = 0
 
@@ -12,10 +17,107 @@ async function fetchGerne(id) {
     return data
 }
 
+async function fetchBook(params) {
+    const res = await fetch(`${BOOK_API}/?${params}`)
+    if (!res.ok) throw Error("Failed getting book")
+    const data = await res.json()
+    console.log(data)
+    return data
+}
+
 function showSpinner() {
     document.querySelector('.spinner').style.display = 'block';
     document.querySelector('.overlay').style.display = 'block';
-    console.log("ok")
+
+}
+
+async function render_book(params) {
+    const {books, current_page, pages} = await fetchBook(params)
+    const el = document.querySelector('.list-book')
+    console.log(books)
+    if (!books.length) {
+        const el_pg = document.querySelector('.pagination')
+        el.innerHTML = `
+             <p class="label-warning">
+                Không có sản phẩm phù hợp với tìm kiếm của bạn
+             </p>
+        `
+        el_pg.innerHTML = ""
+        return
+    }
+
+
+    const html = books.map(b => `
+        <a href="#" class="card col-md-3">
+        <span class="discount text-white">10%</span>
+        <img class="card-img-top"
+             src="${b.images.length ? b.images[0].image_url : null}"
+             alt="Card image">
+        <div class="card-body p-0">
+            <p class="card-text">${b.title}</p>
+            <p class="text-primary font-weight-bold mb-1">${VND.format(b.price)}</p>
+            <p class="text-secondary text-decoration-line-through mb-1">${b.price}</p>
+        </div>
+        <div class="rating">
+            <i class="fa-regular fa-star"></i>
+            <i class="fa-regular fa-star"></i>
+            <i class="fa-regular fa-star"></i>
+            <i class="fa-regular fa-star"></i>
+            <i class="fa-regular fa-star"></i>
+        </div>
+    </a>
+    `).join("")
+    el.innerHTML = html
+    render_pagination(current_page, pages)
+}
+
+const render_pagination = function (current_page, pages) {
+    const el = document.querySelector('.pagination')
+    const html = []
+    const prevButton = current_page === 1 ? null : `
+           <li class="page-item">
+                <a class="page-link prev-button" href="#" aria-label="Previous">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+            </li>
+    `
+    html.push(prevButton)
+    for (let i = 1; i < pages + 1; i++) {
+        html.push(`
+         <li class="page-item item-button">
+            <a class="page-link ${i === current_page ? 'active' : ""}"  href="#" aria-label=${i}>
+                ${i}
+            </a>
+        </li>
+       `)
+
+    }
+    const nextButton = current_page === pages ? null : ` 
+         <li class="page-item next-button">
+            <a class="page-link" href="#" aria-label="Next">
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </li>
+    `
+    html.push(nextButton)
+    el.innerHTML = html.join("")
+    document.querySelectorAll('.item-button').forEach(item => {
+        item.addEventListener('click', () => {
+            addParamURL('page', item.textContent.trim())
+            render_book(currentUrl.toString().split("?")[1])
+        })
+    })
+    document.querySelector('.next-button').addEventListener('click', (e) => {
+        next_page = currentUrl.searchParams.get('page') ? parseInt(currentUrl.searchParams.get('page')) + 1 : 2
+        console.log(currentUrl.searchParams.get('page'))
+        addParamURL('page', next_page)
+        render_book(currentUrl.toString().split("?")[1])
+    })
+    document.querySelector('.prev-button') && document.querySelector('.prev-button').addEventListener('click', (e) => {
+        prev_page = parseInt(currentUrl.searchParams.get('page')) - 1
+        addParamURL('page', prev_page)
+        render_book(currentUrl.toString().split("?")[1])
+    })
 }
 
 // Hide spinner
@@ -36,6 +138,7 @@ const render_gerne = function (current_gerne, sub_gerne) {
             document.querySelector('.selected-filter').classList.remove("selected-filter")
             document.getElementById(id).classList.add("selected-filter")
         }
+        render_book(currentUrl.toString().split("?")[1])
     }
 
     async function handleRemoveElement(elements) {
@@ -65,6 +168,7 @@ const render_gerne = function (current_gerne, sub_gerne) {
 
         render_current_gerne(current_gerne, margin)
         render_sub_gerne(sub_gerne, handleOnClick, margin)
+        render_book(currentUrl.toString().split("?")[1])
     }
 
     render_parent_gerne(handleParentOnclick, margin)
@@ -116,13 +220,6 @@ const deleteParamURL = function (param) {
     window.history.pushState({}, '', currentUrl);
 }
 
-async function app_start() {
-    const {current_gerne, sub_gerne} = await fetchGerne(1)
-    render_gerne(current_gerne, sub_gerne)
-    handleSelectedFileter()
-    handleSelectOrder('pagination', 'limit')
-    handleSelectOrder('order', 'order')
-}
 
 //INVOKE FUNCTION
 const sub_item = document.querySelectorAll(".sub-item")
@@ -145,9 +242,11 @@ function handleSelectedFileter() {
                 () => {
                     deleteParamURL('minPrice');
                     deleteParamURL('maxPrice');
+                    deleteParamURL('page')
                     document.querySelector('.price-filter').remove()
                     checkboxEl.classList.remove('checkbox-checked')
                     window.history.pushState({}, '', currentUrl);
+                    render_book(currentUrl.searchParams.toString().split("?")[1])
                 })
     }
 
@@ -158,12 +257,11 @@ function handleSelectedFileter() {
         const prev = document.querySelector('.checkbox-checked')
         const listFiler = document.querySelector('.filter-list')
         p.classList.add('checkbox-checked')
-
-
         window.history.pushState({}, '', currentUrl);
         if (prev && prev !== p) {
             addParamURL('minPrice', p.getAttribute("minPrice"))
             addParamURL('maxPrice', p.getAttribute("maxPrice"))
+            deleteParamURL("page")
             listFiler.insertAdjacentHTML('beforeend',
                 `<li class="filter-item price-filter">
                 <span >Giá ${p.textContent}</span>
@@ -174,8 +272,10 @@ function handleSelectedFileter() {
         } else if (prev === p) {
             deleteParamURL('minPrice');
             deleteParamURL('maxPrice');
+            deleteParamURL("page")
             prev.classList.remove('checkbox-checked')
             document.querySelector('.price-filter').remove()
+
         } else {
             addParamURL('minPrice', p.getAttribute("minPrice"))
             addParamURL('maxPrice', p.getAttribute("maxPrice"))
@@ -185,11 +285,9 @@ function handleSelectedFileter() {
                 <a class="cursor-pointer delete-filter ml-1"><i class="fa-solid fa-x"></i></a>
               </li>`)
         }
-
         handleDeleteFilter(p)
-
-
         window.history.pushState({}, '', currentUrl);
+        render_book(currentUrl.toString().split("?")[1])
     }))
 }
 
@@ -201,9 +299,27 @@ function handleSelectOrder(nameNode, param) {
             document.querySelector(`.dropdown-toggle-${nameNode}`).textContent
                 = el.textContent
             currentUrl.searchParams.set(param, value)
+            deleteParamURL('page')
             window.history.pushState({}, '', currentUrl);
+            render_book(currentUrl.toString().split("?")[1])
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth' // Adds smooth scrolling
+            });
         })
     )
+}
+
+
+async function app_start() {
+    const gerne_id = currentUrl.searchParams.get("gerneId")
+        ? parseInt(currentUrl.searchParams.get("gerneId")) : 1
+    const {current_gerne, sub_gerne} = await fetchGerne(1)
+    render_gerne(current_gerne, sub_gerne)
+    handleSelectedFileter()
+    handleSelectOrder('pagination', 'limit')
+    handleSelectOrder('order', 'order')
+    render_book(currentUrl.toString().split("?")[1])
 }
 
 app_start()
