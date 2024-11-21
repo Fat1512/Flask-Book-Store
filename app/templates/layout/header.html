@@ -45,12 +45,22 @@
                 <i class="fa-regular fa-user"></i>
                 <span>Tài khoản</span>
                 <div class="sub-login flex-column border-1">
+                    {% if current_user.is_authenticated %}
+                    <img src="{{ current_user.avt_url }}" style="margin-left: auto; margin-right: auto;" width="100" class="rounded-circle"/>
+                    <a class="nav-link text-info" href="/">
+                        Chào {{ current_user.full_name }}
+                    </a>
                     <button class="btn mb-3 pt-1 pb-1 pr-3 pl-3 btn-primary btn-large">
-                        <a class="text-decoration-none text-white" href="#">Đăng nhập</a>
+                        <a class="text-decoration-none text-white" href="/logout">Đăng xuất</a>
+                    </button>
+                    {% else %}
+                    <button class="btn mb-3 pt-1 pb-1 pr-3 pl-3 btn-primary btn-large">
+                        <a class="text-decoration-none text-white" href="/login">Đăng nhập</a>
                     </button>
                     <button class="btn pt-1 pb-1 pr-3 pl-3 btn-primary-outline">
-                        <a class="text-decoration-none text-primary" href="#">Đăng ký </a>
+                        <a class="text-decoration-none text-primary" href="/register">Đăng ký </a>
                     </button>
+                    {% endif %}
                 </div>
             </div>
 
