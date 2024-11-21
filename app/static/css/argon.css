@@ -8769,7 +8769,7 @@ a.close.disabled
 
 .bg-primary
 {
-    background-color: #5e72e4 !important;
+    background-color: #c92127 !important;
 }
 
 a.bg-primary:hover,
@@ -18391,7 +18391,7 @@ a.text-darker:focus
 
 .btn-neutral
 {
-    color: #5e72e4;
+    color: #c92127;
 }
 
 .btn-facebook
@@ -21590,6 +21590,8 @@ textarea[resize='horizontal']
 }
 .navbar-vertical.navbar-expand-xs .navbar-nav > .nav-item > .nav-link.active
 {
+    color: #c92127;
+    font-weight: 600;
     margin-right: .5rem;
     margin-left: .5rem;
     padding-right: 1rem;
