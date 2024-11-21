@@ -1,9 +1,5 @@
-from xmlrpc.client import DateTime
-
 from sqlalchemy import Column, Integer, String, ForeignKey, Double
-import random
-
-from app import db, app
+from app import db
 from app.model.BookImage import ImageOfBook
 
 

@@ -35,5 +35,9 @@ def paginate_book(page=1,limit=app.config['PAGE_SIZE']):
     }
 
 
+def find_by_barcode(barcode):
+    return Book.query.filter(Book.barcode.__eq__(barcode))
+
+
 def countBook():
     return Book.query.count()
