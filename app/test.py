@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Double
 from app import db
 from app.model.BookImage import ImageOfBook
 from enum import Enum
+import functools
 
 
 class Status(Enum):
@@ -17,11 +18,16 @@ obj1 = {
     'age': 12
 }
 
-obj2 = {
-    'width': 120,
-    'height': 102
-}
+obj2 = [
+    {
+        'width': 2,
+        'height': 2
+    }, {
+        'width': 3,
+        'height': 3
 
-obj1.update(obj2)
-print(obj1)
-print(obj2)
+    }
+]
+
+x = functools.reduce(lambda a, b: a['width'] * a['height'] + b['width'] * b['height'], obj2)
+print(x)

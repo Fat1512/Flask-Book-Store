@@ -2,10 +2,10 @@ from flask import Blueprint
 from flask import render_template, request
 import json
 
-employee_bp = Blueprint('employee', __name__)
+index_bp = Blueprint('index', __name__)
 
 
-@employee_bp.route("/")
+@index_bp.route("/")
 def index():
     with open('data/category.json', encoding="utf8") as f:
         data = json.load(f)
@@ -33,33 +33,3 @@ def index():
                            bestselling_books=bestselling_books,
                            new_release=new_release,
                            category_section=category_section)
-
-@employee_bp.route("/checkout")
-def checkout():
-    return render_template("employee_checkout.html")
-
-
-@employee_bp.route("/order")
-def get_order():
-    return render_template("employee.html")
-
-
-@employee_bp.route("/order/update")
-def update_order():
-    request.args.get("order_id")
-    order = None
-    return render_template("employee-order-update.html", order=order)
-
-@employee_bp.route("/order/detail")
-def get_order_detail():
-    request.args.get("order_id")
-    order = None
-    return render_template("employee-order-detail.html", order=order)
-
-@employee_bp.route("/category")
-def get_category():
-    with open('data/category.json', encoding="utf8") as f:
-        data = json.load(f)
-        categories = data[0:4]
-
-    return categories

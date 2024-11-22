@@ -1,17 +1,12 @@
-from flask import Blueprint, request, render_template
-from app import app
 from app.dao.OrderDAO import *
-from flask import jsonify, json
+from flask import Blueprint
+from flask import render_template, request
+import json
 
-order_bp = Blueprint('order', __name__)
+order_api_bp = Blueprint('order_api', __name__)
 
-@order_bp.route("/<order_id>")
-def get_order_by_id(order_id):
-    order = find_by_id(order_id)
-    return order.to_dict()
-
-@order_bp.route("/")
-def filter_orders():
+@order_api_bp.route("/")
+def get_order():
     status = request.args.get("status")
     paymentMethod = request.args.get("paymentMethod")
     sortBy = request.args.get("sortBy")
@@ -22,7 +17,3 @@ def filter_orders():
              sortBy=sortBy,
              sortDir=sortDir,
              page=int(page))
-    return [order.to_dict() for order in orders]
-
-if __name__ == "__main__":
-    app.run(debug=True)

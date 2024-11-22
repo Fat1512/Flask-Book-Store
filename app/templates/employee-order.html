@@ -25,7 +25,6 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
-
 </head>
 
 <body>
@@ -394,9 +393,9 @@
                             </ol>
                         </nav>
                     </div>
-                    <form class="col-4 navbar-search navbar-search-light form-inline mr-sm-3" id="navbar-search-main">
-                        <div class="form-group mb-0">
-                            <div class="input-group input-group-alternative input-group-merge">
+                    <form class="col-8 navbar-search navbar-search-light form-inline mr-sm-3" id="navbar-search-main">
+                        <div class="form-group mb-0 w-100">
+                            <div class="input-group input-group-alternative input-group-merge w-50">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text"><i class="fas fa-search"></i></span>
                                 </div>
@@ -408,425 +407,218 @@
                             <span aria-hidden="true">×</span>
                         </button>
                     </form>
-                    <div class="col-4 text-right">
-                        <a href="#" class="btn btn-sm btn-neutral">Tìm kiếm mã đơn</a>
-                        <a href="#" class="btn btn-sm btn-neutral">Tìm kiếm số điện thoại khách hàng</a>
-                    </div>
+{#                    <div class="col-4 text-right">#}
+{#                        <a href="#" class="btn btn-sm btn-neutral">Tìm kiếm mã đơn</a>#}
+{#                        <a href="#" class="btn btn-sm btn-neutral">Tìm kiếm số điện thoại khách hàng</a>#}
+{#                    </div>#}
                 </div>
             </div>
         </div>
     </div>
     <!-- Page content -->
     <div class="container-fluid mt--6">
-        <div class="row product-detail">
-            <div class="col-12">
-                <div class="card p-5">
-                    <div class="row justify-content-between">
-                        <div class="col-12 pb-5">
-                            <a class="fa fa-arrow-left display-4 cursor-pointer product-detail-back-btn" href="/employee/order"
-                               aria-hidden="true"></a>
-                        </div>
-                        <div class="col-6">
-                            <div class="d-flex">
-                                <h1 class="pr-3">Mã đơn: </h1>
-                                <h1 class="font-weight-400">10023</h1>
-                            </div>
-                            <div class="d-flex">
-                                <h1 class="pr-3">Loại đơn: </h1>
-                                <h1 class="font-weight-400">Online</h1>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="d-flex">
-                                <h1 class="pr-3">Trạng thái: </h1>
-                                <h1 class="font-weight-400">Đang chờ giao hàng</h1>
-                            </div>
-                            <div class="d-flex">
-                                <h1 class="pr-3">Phương thức thanh toán: </h1>
-                                <h1 class="font-weight-400">Tiền mặt</h1>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <form>
-                            <div class="row">
-                                <div class="col-6">
-                                    <h6 class="text-muted mb-4 display-4">Thông tin cá nhân</h6>
-                                    <div class="pl-lg-4">
-                                        <div class="row">
-                                            <div class="col-lg-12">
-                                                <span class="form-control-label" for="input-username">Họ và Tên: </span>
-                                                <span>Offline</span>
-                                            </div>
-                                            <div class="col-lg-12">
-                                                <span class="form-control-label"
-                                                      for="input-email">Số điện thoại: </span>
-                                                <span>0382289866</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <h6 class=" display-4 text-muted mb-4">Địa chỉ</h6>
-                                    <div class="pl-lg-4">
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <span class="form-control-label" for="input-address">Địa chỉ: </span>
-                                                <span>97 Võ Văn Tần, Võ Thị Sáu, Quận 3</span>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-12">
-                                                <span class="form-control-label" for="input-city">Thành phố: </span>
-                                                <span>Hồ Chí Minh</span>
-                                            </div>
-                                            <div class="col-lg-12">
-                                                <span class="form-control-label" for="input-city">Nước: </span>
-                                                <span>Việt Nam</span>
-                                            </div>
-                                            <div class="col-lg-12">
-                                                <span class="form-control-label" for="input-city">Postal code: </span>
-                                                <span>00700</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Address -->
-
-                            <!-- <hr class="my-2" /> -->
-                            <!-- Description -->
-                            <h6 class=" display-4 text-muted mb-4">Ghi chú</h6>
-                            <div class="col-lg-12">
-                                <div>Lorem ipsum dolor sit amet consectetur adipisicing elit. Similique provident sint
-                                    quaerat
-                                    veritatis, magnam cum voluptas dolores est veniam eaque praesentium sequi
-                                    perspiciatis
-                                    accusantium
-                                    illum, et eligendi consequatur laborum reiciendis? Lorem ipsum dolor sit amet,
-                                    consectetur adipisicing elit. Blanditiis impedit laboriosam nam praesentium
-                                    provident
-                                    rerum temporibus! Ab, ea et eum eveniet exercitationem facere hic in ipsa, iusto
-                                    laborum, quisquam rem!
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6">
+        <div class="row order-table">
+            <div class="col">
                 <div class="card">
-                    <div class="card-header bg-transparent border-0">
-                        <h3 class="mb-0">Sản phẩm</h3>
+                    <!-- Card header -->
+                    <div class="card-header border-0">
+                        <h3 class="mb-0">Quản lý đơn đặt</h3>
+                        <div class="d-flex sort-type justify-content-between">
+                            <div class="pt-2 order-type">
+                                <button type="button" class="btn border border-dark">Đặt online</button>
+                                <button type="button" class="btn border border-dark">Mua trực tiếp</button>
+                            </div>
+                            <div class="pt-2">
+{#                            <span>Lọc: </span>#}
+                                <div class="btn-group">
+                                    <button  class="btn btn-outline-dark dropdown-toggle
+                                                       dropdown-toggle-pagination"
+                                            data-toggle="dropdown">
+                                        Sắp xếp
+                                    </button>
+                                    <div class="dropdown-menu sort-type dropdown-menu-pagination">
+                                        <div class="form-check sort-type-item cursor-pointer" id="1">
+                                            <div class="form-check-label d-flex justify-content-between align-content-center">
+                                                <input type="checkbox" class="" >
+                                                <span class="dropdown-item">Thời gian đặt mới nhất</span>
+                                            </div>
+                                        </div>
+                                        <div class="form-check sort-type-item" id="2">
+                                            <div class="form-check-label d-flex justify-content-between align-content-center">
+                                                <input type="checkbox" class="" >
+                                                <span class="dropdown-item">Thời gian đặt cũ nhất</span>
+                                            </div>
+                                        </div>
+                                        <div class="form-check sort-type-item" id="3">
+                                            <div class="form-check-label d-flex justify-content-between align-content-center">
+                                                <input type="checkbox" class="" >
+                                                <span class="dropdown-item">Tổng tiền tăng dần</span>
+                                            </div>
+                                        </div>
+                                        <div class="form-check sort-type-item" id="4">
+                                            <div class="form-check-label d-flex justify-content-between align-content-center">
+                                                <input type="checkbox" class="" >
+                                                <span class="dropdown-item">Tổng tiền giảm dần</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="btn-group status-type">
+                                    <button type="button" class="btn btn-outline-dark dropdown-toggle
+                                                       dropdown-toggle-pagination"
+                                            data-toggle="dropdown">
+                                        Trạng thái
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-pagination">
+                                        <div class="form-check cursor-pointer">
+                                            <label class="form-check-label d-flex justify-content-between align-content-center">
+                                                <input type="checkbox" class="" >
+                                                <span class="dropdown-item">Đang xử lý</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="form-check-label d-flex justify-content-between align-content-center">
+                                                <input type="checkbox" class="" >
+                                                <span class="dropdown-item">Chờ giao hàng</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="form-check-label d-flex justify-content-between align-content-center">
+                                                <input type="checkbox" class="" >
+                                                <span class="dropdown-item">Đang giao hàng</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="form-check-label d-flex justify-content-between align-content-center">
+                                                <input type="checkbox" class="" >
+                                                <span class="dropdown-item">Đã hoàn thành</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="form-check-label d-flex justify-content-between align-content-center">
+                                                <input type="checkbox" class="" >
+                                                <span class="dropdown-item">Đã hủy</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="btn-group payment-method-type">
+                                    <button type="button" class="btn btn-outline-dark dropdown-toggle
+                                                       dropdown-toggle-pagination"
+                                            data-toggle="dropdown">
+                                        Phương thức thanh toán
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-pagination">
+                                        <div class="form-check cursor-pointer">
+                                            <label class="form-check-label d-flex justify-content-between align-content-center">
+                                                <input type="checkbox" class="" >
+                                                <span class="dropdown-item">Thẻ</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check cursor-pointer">
+                                            <label class="form-check-label d-flex justify-content-between align-content-center">
+                                                <input type="checkbox" class="" >
+                                                <span class="dropdown-item">Tiền mặt</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                    <!-- Light table -->
                     <div class="table-responsive">
                         <table class="table align-items-center table-flush">
                             <thead class="thead-light">
                             <tr>
-                                <th scope="col" class="sort text-center" data-sort="name">Ten san pham</th>
-                                <th scope="col" class="sort text-center" data-sort="budget">Gia</th>
-                                <th scope="col" class="sort text-center" data-sort="status">Giam gia</th>
-                                <th scope="col" class="text-center">So luong</th>
-                                <th scope="col" class="sort text-center" data-sort="completion">Tong tien</th>
+                                <th scope="col" class="sort" data-sort="name">Order ID</th>
+                                <th scope="col" class="sort" data-sort="budget">Loại đơn</th>
+                                <th scope="col" class="sort" data-sort="status">Tong Tien</th>
+                                <th scope="col">Trang thai</th>
+                                <th scope="col" class="sort" data-sort="completion">Thoi Gian Dat</th>
+                                <th scope="col" class="sort">Phuong thuc thanh toan</th>
                                 <th scope="col"></th>
                             </tr>
                             </thead>
                             <tbody class="list">
-                            <tr>
-                                <th scope="row">
-                                    <div class="media align-items-center">
-                                        <div class="media-body text-center">
-                                            <span class="name mb-0 text-sm text-center">Chai nuoc</span>
+                            {% for order in orders['orders'] %}
+                                <tr>
+                                    <th scope="row">
+                                        <div class="media align-items-center">
+                                            <div id="{{ order['order_id'] }}">{{ order['order_id'] }}</div>
                                         </div>
-                                    </div>
-                                </th>
-                                <td class="budget text-center">
-                                    $25002 USD
-                                </td>
-                                <td>
-                                    <span class="badge badge-dot mr-4 text-center w-100">
-                                    <span class="status text-center">10%</span>
+                                    </th>
+                                    <td>
+                                        <div class="media-body">
+                                            <span class="name mb-0 text-sm">{{ order['type']['name'] }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="budget">
+                                        {{ order['total_amount'] }}
+                                    </td>
+                                    <td>
+                                    <span class="badge badge-dot mr-4">
+                                    <i class="bg-warning"></i>
+                                    <span class="status">{{ order['status']['name'] }}</span>
                                     </span>
-                                </td>
-                                <td>
-                                    <div class="d-flex justify-content-center">
-                                        <div class="d-flex justify-content-between w-100">
-                                            <i class="fa fa-minus cursor-pointer" aria-hidden="true"></i>
-                                            <div>1220</div>
-                                            <i class="fa fa-plus cursor-pointer" aria-hidden="true"></i>
+                                    </td>
+                                    <td>
+                                        <div class="avatar-group">
+                                            {{ order['created_at'] }}
                                         </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center w-100 justify-content-center">
-                                        <span class="completion mr-2">2000</span>
-                                    </div>
-                                </td>
-                                <td class="text-right">
-                                    <div class="dropdown">
-                                        <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
-                                           data-toggle="dropdown"
-                                           aria-haspopup="true" aria-expanded="false">
-                                            <i class="fa fa-window-close" aria-hidden="true"></i>
-                                        </a>
-                                        <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                                            <a class="dropdown-item" href="#">Cap nhat</a>
-                                            <a class="dropdown-item" href="#">Chi tiet</a>
-                                            <a class="dropdown-item" href="#">Something else here</a>
+                                    </td>
+                                    <td>
+                                        <div class="avatar-group">
+                                            {{ order['payment_method']['name'] }}
                                         </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row">
-                                    <div class="media align-items-center">
-                                        <div class="media-body text-center">
-                                            <span class="name mb-0 text-sm text-center">Chai nuoc</span>
+                                    </td>
+                                    <td class="text-right">
+                                        <div class="dropdown">
+                                            <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
+                                               data-toggle="dropdown"
+                                               aria-haspopup="true" aria-expanded="false">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                                <a class="dropdown-item"
+                                                   href="/employee/order/update?order_id={{ 123 }}">Cap
+                                                    nhat</a>
+                                                <a class="dropdown-item"
+                                                   href="/employee/order/{{ order['order_id'] }}/detail">Chi
+                                                    tiet</a>
+                                                <a class="dropdown-item" href="#">Huy</a>
+                                            </div>
                                         </div>
-                                    </div>
-                                </th>
-                                <td class="budget text-center">
-                                    $2500 USD
-                                </td>
-                                <td>
-                          <span class="badge badge-dot mr-4 text-center w-100">
-                            <span class="status text-center">10%</span>
-                          </span>
-                                </td>
-                                <td>
-                                    <div class="d-flex justify-content-center">
-                                        <div class="d-flex justify-content-between w-100">
-                                            <i class="fa fa-minus cursor-pointer" aria-hidden="true"></i>
-                                            <div>1220</div>
-                                            <i class="fa fa-plus cursor-pointer" aria-hidden="true"></i>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center w-100 justify-content-center">
-                                        <span class="completion mr-2">2000</span>
-                                    </div>
-                                </td>
-                                <td class="text-right">
-                                    <div class="dropdown">
-                                        <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
-                                           data-toggle="dropdown"
-                                           aria-haspopup="true" aria-expanded="false">
-                                            <i class="fa fa-window-close" aria-hidden="true"></i>
-                                        </a>
-                                        <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                                            <a class="dropdown-item" href="#">Action</a>
-                                            <a class="dropdown-item" href="#">Another action</a>
-                                            <a class="dropdown-item" href="#">Something else here</a>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row">
-                                    <div class="media align-items-center">
-                                        <div class="media-body text-center">
-                                            <span class="name mb-0 text-sm text-center">Chai nuoc</span>
-                                        </div>
-                                    </div>
-                                </th>
-                                <td class="budget text-center">
-                                    $2500 USD
-                                </td>
-                                <td>
-                          <span class="badge badge-dot mr-4 text-center w-100">
-                            <span class="status text-center">10%</span>
-                          </span>
-                                </td>
-                                <td>
-                                    <div class="d-flex justify-content-center">
-                                        <div class="d-flex justify-content-between w-100">
-                                            <i class="fa fa-minus cursor-pointer" aria-hidden="true"></i>
-                                            <div>98</div>
-                                            <i class="fa fa-plus cursor-pointer" aria-hidden="true"></i>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center w-100 justify-content-center">
-                                        <span class="completion mr-2">2000</span>
-                                    </div>
-                                </td>
-                                <td class="text-right">
-                                    <div class="dropdown">
-                                        <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
-                                           data-toggle="dropdown"
-                                           aria-haspopup="true" aria-expanded="false">
-                                            <i class="fa fa-window-close" aria-hidden="true"></i>
-                                        </a>
-                                        <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                                            <a class="dropdown-item" href="#">Action</a>
-                                            <a class="dropdown-item" href="#">Another action</a>
-                                            <a class="dropdown-item" href="#">Something else here</a>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
+                                    </td>
+                                </tr>
+                            {% endfor %}
                             </tbody>
                         </table>
-                        <div class="d-flex px-5 py-4 justify-content-between ">
-                            <div class="font-weight-bolder display-4">
-                                Tổng tiền:
-                            </div>
-                            <div class="font-weight-bolder display-4">1000 VNĐ</div>
-                        </div>
-                        <div class="d-flex py-3">
-                            <div class="w-50 px-3">
-                                <button type="button" class="w-100 btn btn-primary bg-red text-white border border-0">
-                                    Thoát
-                                </button>
-                            </div>
-                            <div class="w-50 px-3">
-                                <button type="button" class="w-100 btn btn-primary bg-blue text-white border border-0">
-                                    Cập
-                                    Nhật
-                                </button>
-                            </div>
-                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="col-6">
-                <div class="card pb-3">
-                    <div class="d-flex justify-content-between align-content-center">
-                        <form class="col-6 navbar-search-light form-inline mr-sm-3 p-3" id="navbar-search-main">
-                            <div class="form-group mb-0 w-100">
-                                <div class="input-group input-group-alternative input-group-merge w-100 border border-1">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text"><i class="fas fa-search"></i></span>
-                                    </div>
-                                    <input class="form-control product-search-box" placeholder="Nhap ten san pham"
-                                           type="text">
-                                </div>
-                            </div>
-                        </form>
-                        <div class="dropdown col-5 dropdown-btn align-content-center text-right">
-                            <button type="button" class="btn btn-primary dropdown-toggle dropdown-btn-change justify-content-end"
-                                    data-toggle="dropdown">
-                                Lọc
-                            </button>
-                            <div class="dropdown-menu">
-                                <div class="dropdown-item" id="0" href="">Tên sản phẩm</div>
-                                <div class="dropdown-item" id="1" href="">Barcode</div>
-                            </div>
-                        </div>
+                    <!-- Card footer -->
+                    <div class="card-footer py-4">
+                        <nav aria-label="...">
+                            <ul class="pagination justify-content-end mb-0">
+                                <li class="page-item {% if orders['current_page'] == 1 %} disabled {% endif %}">
+                                    <a class="page-link" href="?page={{ orders['current_page'] - 1 }}" tabindex="-1">
+                                        <i class="fas fa-angle-left "></i>
+                                        <span class="sr-only">Previous</span>
+                                    </a>
+                                </li>
+                                {% for page in range(orders['total_page']) %}
+                                    <li class="page-item {% if page + 1 == orders['current_page'] %} active {% endif %}">
+                                        <a class="page-link" href="?page={{ page + 1 }}">{{ page + 1 }}</a>
+                                    </li>
+                                {% endfor %}
+                                <li class="page-item {% if orders['current_page'] == orders['total_page'] %} disabled {% endif %}">
+                                    <a class="page-link" href="?page={{ orders['current_page'] + 1 }}">
+                                        <i class="fas fa-angle-right"></i>
+                                        <span class="sr-only">Next</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
                     </div>
-                    <div class="row px-5">
-                        <a href="#" class="card col-3">
-                            <span class="discount text-white">10%</span>
-                            <img class="card-img-top"
-                                 src="https://cdn0.fahasa.com/media/catalog/product/8/9/8935244874389.jpg"
-                                 alt="Card image">
-                            <div class="card-body p-0">
-                                <p class="card-text">Sach lich su</p>
-                                <p class="text-primary font-weight-bold mb-1">10000đ</p>
-                                <p class="text-secondary text-decoration-line-through mb-1">1000đ</p>
-                            </div>
-                        </a>
-                        <a href="#" class="card col-3">
-                            <span class="discount text-white">10%</span>
-                            <img class="card-img-top"
-                                 src="https://cdn0.fahasa.com/media/catalog/product/8/9/8935244874389.jpg"
-                                 alt="Card image">
-                            <div class="card-body p-0">
-                                <p class="card-text">Sach lich su</p>
-                                <p class="text-primary font-weight-bold mb-1">10000đ</p>
-                                <p class="text-secondary text-decoration-line-through mb-1">1000đ</p>
-                            </div>
-                        </a>
-                        <a href="#" class="card col-3">
-                            <span class="discount text-white">10%</span>
-                            <img class="card-img-top"
-                                 src="https://cdn0.fahasa.com/media/catalog/product/8/9/8935244874389.jpg"
-                                 alt="Card image">
-                            <div class="card-body p-0">
-                                <p class="card-text">Sach lich su</p>
-                                <p class="text-primary font-weight-bold mb-1">10000đ</p>
-                                <p class="text-secondary text-decoration-line-through mb-1">1000đ</p>
-                            </div>
-                        </a>
-                        <a href="#" class="card col-3">
-                            <span class="discount text-white">10%</span>
-                            <img class="card-img-top"
-                                 src="https://cdn0.fahasa.com/media/catalog/product/8/9/8935244874389.jpg"
-                                 alt="Card image">
-                            <div class="card-body p-0">
-                                <p class="card-text">Sach lich su</p>
-                                <p class="text-primary font-weight-bold mb-1">10000đ</p>
-                                <p class="text-secondary text-decoration-line-through mb-1">1000đ</p>
-                            </div>
-                        </a>
-                        <a href="#" class="card col-3">
-                            <span class="discount text-white">10%</span>
-                            <img class="card-img-top"
-                                 src="https://cdn0.fahasa.com/media/catalog/product/8/9/8935244874389.jpg"
-                                 alt="Card image">
-                            <div class="card-body p-0">
-                                <p class="card-text">Sach lich su</p>
-                                <p class="text-primary font-weight-bold mb-1">10000đ</p>
-                                <p class="text-secondary text-decoration-line-through mb-1">1000đ</p>
-                            </div>
-                        </a>
-                        <a href="#" class="card col-3">
-                            <span class="discount text-white">10%</span>
-                            <img class="card-img-top"
-                                 src="https://cdn0.fahasa.com/media/catalog/product/8/9/8935244874389.jpg"
-                                 alt="Card image">
-                            <div class="card-body p-0">
-                                <p class="card-text">Sach lich su</p>
-                                <p class="text-primary font-weight-bold mb-1">10000đ</p>
-                                <p class="text-secondary text-decoration-line-through mb-1">1000đ</p>
-                            </div>
-                        </a>
-                        <a href="#" class="card col-3">
-                            <span class="discount text-white">10%</span>
-                            <img class="card-img-top"
-                                 src="https://cdn0.fahasa.com/media/catalog/product/8/9/8935244874389.jpg"
-                                 alt="Card image">
-                            <div class="card-body p-0">
-                                <p class="card-text">Sach lich su</p>
-                                <p class="text-primary font-weight-bold mb-1">10000đ</p>
-                                <p class="text-secondary text-decoration-line-through mb-1">1000đ</p>
-                            </div>
-                        </a>
-                        <a href="#" class="card col-3">
-                            <span class="discount text-white">10%</span>
-                            <img class="card-img-top"
-                                 src="https://cdn0.fahasa.com/media/catalog/product/8/9/8935244874389.jpg"
-                                 alt="Card image">
-                            <div class="card-body p-0">
-                                <p class="card-text">Sach lich su</p>
-                                <p class="text-primary font-weight-bold mb-1">10000đ</p>
-                                <p class="text-secondary text-decoration-line-through mb-1">1000đ</p>
-                            </div>
-                        </a>
-                    </div>
-                    <nav aria-label="Page navigation example" class="d-flex justify-content-center">
-                        <ul class="pagination">
-                            <li class="page-item">
-                                <a class="page-link" href="#" aria-label="Previous">
-                                    <i class="fa-solid fa-arrow-left"></i>
-                                </a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link active"
-                                   href="/search?page=1" aria-label="1">
-                                    1
-                                </a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#" aria-label="Next">
-                                    <i class="fa-solid fa-arrow-right"></i>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
                 </div>
             </div>
         </div>
@@ -876,8 +668,6 @@
         integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
 <script src="{{ url_for('static', filename='js/employeeOrder.js') }}"></script>
-<script src="{{ url_for('static', filename='js/employeeOrderUpdate.js') }}"></script>
-
 </body>
 
 </html>

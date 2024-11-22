@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean, Text, Date, DateTime, Enum
 from app import db
+from sqlalchemy.orm import relationship
 from enum import Enum as RoleEnum
 from datetime import datetime
 
@@ -9,7 +10,6 @@ class UserRole(RoleEnum):
 
 class User(db.Model):
     __tablename__ = 'user'
-
     user_id = Column(Integer, primary_key=True, autoincrement=True)
     first_name = Column(String(20), nullable=False)
     last_name = Column(String(50), nullable=False)
@@ -23,6 +23,10 @@ class User(db.Model):
     isActive = Column(Boolean, default=True)
     last_access = Column(DateTime, default=datetime.utcnow)
     user_role = Column(Enum(UserRole), default=UserRole.USER)
+    address = relationship('Address', backref='user', lazy=True)
+
+    offline_orders = relationship("OfflineOrder", back_populates="employee")
+    online_orders = relationship("OnlineOrder", back_populates="customer")
 
     @property
     def full_name(self):

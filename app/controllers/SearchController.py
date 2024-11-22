@@ -9,7 +9,6 @@ from app.dao.SearchDAO import searchBook
 
 home_bp = Blueprint('search', __name__)
 
-
 @home_bp.route('/')
 def search_main():
     keyword = request.args.get('keyword')
