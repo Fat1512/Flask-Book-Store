@@ -10,12 +10,12 @@ from enum import Enum as PythonEnum
 # TYPE = 1 => OnlineOrder
 # TYPE = 2 => OfflineOrder
 
-
 class OrderStatus(PythonEnum):
     DANG_XU_LY = 1
     CHO_GIAO_HANG = 2
     DANG_GIAO_HANG = 3
     DA_HOAN_THANH = 4
+    DA_HUY = 5
 
 
 class PaymentMethod(PythonEnum):
@@ -46,25 +46,37 @@ class Order(db.Model):
     def to_dict(self):
         json = {
             'order_id': self.order_id,
-            'status': ORDER_STATUS_TEXT[self.status.value - 1],
-            'payment_method': PAYMENT_METHOD_TEXT[self.payment_method.value - 1],
+            'status': {
+                'id': self.status.value,
+                'name': ORDER_STATUS_TEXT[self.status.value - 1],
+            },
+            'payment_method': {
+                'id': self.payment_method.value,
+                'name': PAYMENT_METHOD_TEXT[self.payment_method.value - 1]
+            },
             'created_at': self.created_at,
             'order_detail': [order_detail.to_dict() for order_detail in self.order_detail],
             'address': self.address.to_dict()
         }
         if self.online_order:
-            json['type'] = ORDER_TYPE_TEXT[0]
+            json['type'] = {
+                'id': 0,
+                'name': ORDER_TYPE_TEXT[0]
+            }
             json.update(self.online_order.to_dict())
         else:
-            json['type'] = ORDER_TYPE_TEXT[1]
+            json['type'] = {
+                'id': 1,
+                'name': ORDER_TYPE_TEXT[1]
+            }
             json.update(self.offline_order.to_dict())
 
         if self.payment_detail:
             json['payment_detail'] = self.payment_detail.to_dict()
-        order_detail = [order_detail.to_dict() for order_detail in self.order_detail]
-        total_amount = functools.reduce(lambda a, b: a['price'] * a['quantity'] + b['price'] * b['quantity'],
-                                        order_detail) if len(order_detail) >= 2 else order_detail[0]['price'] * \
-                                                                                         order_detail[0]['quantity']
+        total_amount = 0
+        for order_detail in [order_detail.to_dict() for order_detail in self.order_detail]:
+            total_amount = total_amount + order_detail['price'] * order_detail['quantity']
+
         json['total_amount'] = total_amount
         return json
 
@@ -91,13 +103,33 @@ class OnlineOrder(db.Model):
 
     customer_id = Column(Integer, ForeignKey('user.user_id'))
     customer = relationship("User", back_populates="online_orders")
+    order_cancellation = relationship('OrderCancellation', backref='online_order', lazy=True, uselist=False)
+
+    def to_dict(self):
+        json = {
+            'shipping_method': {
+                'id': self.shipping_method.value,
+                'name': SHIPPING_METHOD_TEXT[self.shipping_method.value - 1]
+            },
+            'shipping_fee': self.shipping_fee,
+            'note': self.note,
+            'customer_id': self.customer_id
+        }
+        if self.order_cancellation:
+            json['cancel'] = self.order_cancellation.to_dict()
+        return json
+
+
+class OrderCancellation(db.Model):
+    __tablename__ = 'order_cancellation'
+    order_id = Column(Integer, ForeignKey('online_order.order_id'), primary_key=True)
+    created_at = Column(DATETIME)
+    reason = Column(String)
 
     def to_dict(self):
         return {
-            'shipping_method': SHIPPING_METHOD_TEXT[self.shipping_method.value - 1],
-            'shipping_fee': self.shipping_fee,
-            'note': self.note,
-            'customer_id': self.customer_id,
+            'reason': self.reason,
+            'created_at': self.created_at
         }
 
 
@@ -122,6 +154,7 @@ class PaymentDetail(db.Model):
     payment_detail_id = Column(Integer, primary_key=True, autoincrement=True)
     created_at = Column(DATETIME)
     amount = Column(Double)
+
     order_id = Column(Integer, ForeignKey('order.order_id'), unique=True)
 
     def to_dict(self):

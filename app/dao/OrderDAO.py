@@ -1,7 +1,7 @@
 from app.model.Order import Order, PaymentDetail
 from sqlalchemy import desc, asc
 from app import app
-
+import math
 
 # find by id, find by sdt khach hang
 # filter by status, PTTT
@@ -37,6 +37,14 @@ def find_all(**kwargs):
     page_size = app.config['ORDER_PAGE_SIZE']
     start = (page - 1) * page_size
     end = start + page_size
+    total_page = math.ceil(count_order() / page_size)
+
     orders = orders.slice(start, end)
 
-    return orders.all()
+    return {
+        'orders': orders.all(),
+        'total_page': total_page,
+        'current_page': page
+    }
+def count_order():
+    return Order.query.count()

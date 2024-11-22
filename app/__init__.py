@@ -23,7 +23,7 @@ app.config['SQLALCHEMY_ECHO'] = True
 app.config['PAGE_SIZE'] = 12
 app.config['ORDER'] ='desc'
 
-app.config["ORDER_PAGE_SIZE"] = 2
+app.config["ORDER_PAGE_SIZE"] = 6
 
 db = SQLAlchemy(app=app)
 login = LoginManager(app)

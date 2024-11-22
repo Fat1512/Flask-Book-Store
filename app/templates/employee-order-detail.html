@@ -434,15 +434,15 @@
                             </div>
                             <div class="d-flex">
                                 <h1 class="pr-3">Loại đơn: </h1>
-                                <h1 class="font-weight-400">{{ order['type'] }}</h1>
+                                <h1 class="font-weight-400">{{ order['type']['name'] }}</h1>
                             </div>
                             <div class="d-flex">
                                 <h1 class="pr-3">Trạng thái: </h1>
-                                <h1 class="font-weight-400">{{ order['status'] }}</h1>
+                                <h1 class="font-weight-400">{{ order['status']['name'] }}</h1>
                             </div>
                             <div class="d-flex">
                                 <h1 class="pr-3">Phương thức thanh toán: </h1>
-                                <h1 class="font-weight-400">{{ order['payment_method'] }}</h1>
+                                <h1 class="font-weight-400">{{ order['payment_method']['name'] }}</h1>
                             </div>
                             <div class="d-flex">
                                 <h1 class="pr-3">Ngày tạo: </h1>
@@ -459,7 +459,7 @@
                             {% if order['shipping_method'] %}
                                 <div class="d-flex">
                                     <h1 class="pr-3">Phương thức vận chuyển: </h1>
-                                    <h1 class="font-weight-400">{{ order['shipping_method'] }}</h1>
+                                    <h1 class="font-weight-400">{{ order['shipping_method']['name'] }}</h1>
                                 </div>
                             {% endif %}
                         </div>

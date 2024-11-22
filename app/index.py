@@ -1,5 +1,5 @@
 from flask import render_template
-import dao.UserDao
+import app.dao.UserDao
 from app import app, login
 from flask import render_template, request, redirect
 from app.controllers.SearchController import home_bp

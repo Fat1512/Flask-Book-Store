@@ -21,7 +21,7 @@ def get_order():
              sortBy=sortBy,
              sortDir=sortDir,
              page=int(page))
-    orders = [order.to_dict() for order in orders]
+    orders['orders'] = [order.to_dict() for order in orders['orders']]
     return render_template("employee-order.html", orders=orders)
 
 
