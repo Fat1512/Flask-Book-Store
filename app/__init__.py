@@ -2,7 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from urllib.parse import quote
 import cloudinary
-
+from flask_login import LoginManager
 app = Flask(__name__)
 app.secret_key = "8923yhr9fuwnsejksnpok@$I_I@$)opfk"
 app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql+pymysql://root:151204@localhost/book_store'
@@ -23,3 +23,4 @@ app.config['ORDER'] ='desc'
 app.config["ORDER_PAGE_SIZE"] = 2
 
 db = SQLAlchemy(app=app)
+login = LoginManager(app)
