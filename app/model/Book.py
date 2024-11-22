@@ -21,6 +21,9 @@ class Book(db.Model):
     order_detail = relationship("OrderDetail", back_populates="book")
 
     def to_dict(self):
+        images = []
+        for image in self.images:
+            images.append(image.to_dict())
         # Convert the set to a list here
         return {
             "book_id": self.book_id,

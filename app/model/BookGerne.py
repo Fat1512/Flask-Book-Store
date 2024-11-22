@@ -18,12 +18,9 @@ class BookGerne(db.Model):
         self.rgt = rgt
 
     def to_dict(self):
-        books = []
-        for book in self.books:
-            books.append(book.to_dict())
         return {
             'book_type_id': self.book_type_id,
             'name': self.name,
-
-            "books": books
+            'lft': self.lft,
+            'rgt': self.rgt,
         }

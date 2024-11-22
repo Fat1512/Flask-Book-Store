@@ -1,0 +1,114 @@
+.poster {
+    width: 100%;
+    height: 400px;
+    padding: 20px;
+}
+
+.images {
+    padding: 5px;
+    width: 100%;
+}
+
+.image-item > img {
+    width: 100%;
+    height: 86px;
+}
+
+.image-item {
+    padding: 2px;
+}
+
+a:hover {
+    color: inherit;
+}
+
+.btn-primary-outline a:hover {
+    color: var(--red) !important;
+}
+
+.image-item > img:hover {
+    border: 1px solid blue;
+}
+
+.item-text {
+    font-size: 14px;
+}
+
+.item-text > span {
+    width: 50%;
+    padding: 0px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+
+.rating {
+    margin: 5px 0px;
+}
+
+.rating > span {
+    font-size: 14px;
+    text-align: center;
+}
+
+.item-information {
+    padding: 3px 0;
+    border-bottom: 0.5px solid #F2F4F5;
+    color: #777;
+}
+
+.item-content {
+    max-height: 300px;
+    overflow: hidden;
+}
+
+.block-gradient {
+    position: absolute;
+    width: 100%;
+    height: 200px;
+    bottom: 30px;
+    left: 0;
+    background-image: linear-gradient(rgba(255, 255, 255, 0), rgb(255, 255, 255));
+}
+
+.banner {
+    position: sticky !important;
+    top: 16px;
+}
+
+.slick-list {
+    width: 100%;
+
+}
+
+.my-carousel {
+    padding: 30px;
+    border-top: 1px solid #CCCCCC !important;
+}
+
+.custom-prev, .custom-next {
+    font-size: 30px; /* Size of the buttons */
+    background-color: #fff !important;
+    box-shadow: 0px 2px 8px #00000029 !important;
+    border-radius: 50%; /* Rounded buttons */
+    width: 40px; /* Button width */
+    height: 40px; /* Button height */
+    display: inline-block;
+    line-height: 25px; /* Vertically center the text */
+    text-align: center; /* Horizontally center the text */
+    position: absolute;
+    font-size: 16px;
+    top: 60%;
+    border: 1px solid #CCCCCC !important;
+    transform: translateY(-50%);
+}
+
+.custom-prev {
+    left: -20px; /* Position left button */
+}
+
+.custom-next {
+    right: -20px; /* Position right button */
+}
