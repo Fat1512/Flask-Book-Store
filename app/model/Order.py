@@ -1,6 +1,7 @@
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, Enum, DATETIME, Double
-from app import db, app, utils
+from app import db, app
+from app.utils.helper import *
 import functools
 from app.model import Book, User, Address
 from enum import Enum as PythonEnum
@@ -45,17 +46,17 @@ class Order(db.Model):
     def to_dict(self):
         json = {
             'order_id': self.order_id,
-            'status': utils.ORDER_STATUS_TEXT[self.status.value - 1],
-            'payment_method': utils.PAYMENT_METHOD_TEXT[self.payment_method.value - 1],
+            'status': ORDER_STATUS_TEXT[self.status.value - 1],
+            'payment_method': PAYMENT_METHOD_TEXT[self.payment_method.value - 1],
             'created_at': self.created_at,
             'order_detail': [order_detail.to_dict() for order_detail in self.order_detail],
             'address': self.address.to_dict()
         }
         if self.online_order:
-            json['type'] = utils.ORDER_TYPE_TEXT[0]
+            json['type'] = ORDER_TYPE_TEXT[0]
             json.update(self.online_order.to_dict())
         else:
-            json['type'] = utils.ORDER_TYPE_TEXT[1]
+            json['type'] = ORDER_TYPE_TEXT[1]
             json.update(self.offline_order.to_dict())
 
         if self.payment_detail:
@@ -93,7 +94,7 @@ class OnlineOrder(db.Model):
 
     def to_dict(self):
         return {
-            'shipping_method': utils.SHIPPING_METHOD_TEXT[self.shipping_method.value - 1],
+            'shipping_method': SHIPPING_METHOD_TEXT[self.shipping_method.value - 1],
             'shipping_fee': self.shipping_fee,
             'note': self.note,
             'customer_id': self.customer_id,
