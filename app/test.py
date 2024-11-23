@@ -11,6 +11,10 @@ class Status(Enum):
     PHAT = 3
 
 print(type(Status.LE))
+obj = {
+    "name": "Phat",
+    "age": 12
+}
 
 # print(Status.LE.value.__eq__('1'))
 

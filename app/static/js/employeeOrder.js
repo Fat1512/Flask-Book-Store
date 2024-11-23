@@ -78,7 +78,7 @@ const renderOrder = function (order) {
             </th>
             <td>
                 <div class="media-body">
-                    <span class="name mb-0 text-sm">${order['type']['name']}</span>
+                    <span class="name mb-0 text-sm">${order['order_type']['name']}</span>
                 </div>
             </td>
             <td class="budget">
@@ -97,7 +97,7 @@ const renderOrder = function (order) {
             </td>
             <td>
                 <div class="avatar-group">
-                    ${ order['payment_method']['name'] }
+                    ${ order['payment']['payment_method']['name'] }
                 </div>
             </td>
             <td class="text-right">
@@ -110,7 +110,7 @@ const renderOrder = function (order) {
                     <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
                         ${+order['status']['id'] === 1 || +order['status']['id'] === 2 ? `
                             <a class="dropdown-item"
-                               href="/employee/order/update?order_id=${order['order_id']}">Cap nhat</a>`: ''}
+                               href="/employee/order/${order['order_id']}/update">Cap nhat</a>`: ''}
                         <a class="dropdown-item"
                            href="/employee/order/${order['order_id']}/detail">Chi
                             tiet</a>

@@ -50,29 +50,35 @@ class Order(db.Model):
                 'id': self.status.value,
                 'name': ORDER_STATUS_TEXT[self.status.value - 1],
             },
-            'payment_method': {
-                'id': self.payment_method.value,
-                'name': PAYMENT_METHOD_TEXT[self.payment_method.value - 1]
+            'payment': {
+                'payment_method': {
+                    'id': self.payment_method.value,
+                    'name': PAYMENT_METHOD_TEXT[self.payment_method.value - 1]
+                }
             },
             'created_at': self.created_at,
             'order_detail': [order_detail.to_dict() for order_detail in self.order_detail],
             'address': self.address.to_dict()
         }
+
         if self.online_order:
-            json['type'] = {
-                'id': 0,
-                'name': ORDER_TYPE_TEXT[0]
-            }
-            json.update(self.online_order.to_dict())
-        else:
-            json['type'] = {
+            json['order_type'] = {
                 'id': 1,
-                'name': ORDER_TYPE_TEXT[1]
+                'name': ORDER_TYPE_TEXT[0],
+                'detail': self.online_order.to_dict()
             }
-            json.update(self.offline_order.to_dict())
+            # json.update(self.online_order.to_dict())
+        else:
+            json['order_type'] = {
+                'id': 2,
+                'name': ORDER_TYPE_TEXT[1],
+                'detail': self.offline_order.to_dict()
+            }
+            # json.update(self.offline_order.to_dict())
 
         if self.payment_detail:
-            json['payment_detail'] = self.payment_detail.to_dict()
+            json['payment']['payment_detail'] = self.payment_detail.to_dict()
+
         total_amount = 0
         for order_detail in [order_detail.to_dict() for order_detail in self.order_detail]:
             total_amount = total_amount + order_detail['price'] * order_detail['quantity']
