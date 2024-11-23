@@ -34,7 +34,7 @@
         <!-- Brand -->
         <div class="sidenav-header  align-items-center">
             <a class="navbar-brand" href="javascript:void(0)">
-                <img src="../assets/img/brand/blue.png" class="navbar-brand-img" alt="...">
+                <img class="navbar-brand-img" alt="...">
             </a>
         </div>
         <div class="navbar-inner">
@@ -185,7 +185,7 @@
                                     <div class="row align-items-center">
                                         <div class="col-auto">
                                             <!-- Avatar -->
-                                            <img alt="Image placeholder" src="../assets/img/theme/team-1.jpg"
+                                            <img alt="Image placeholder"
                                                  class="avatar rounded-circle">
                                         </div>
                                         <div class="col ml--2">
@@ -205,7 +205,7 @@
                                     <div class="row align-items-center">
                                         <div class="col-auto">
                                             <!-- Avatar -->
-                                            <img alt="Image placeholder" src="../assets/img/theme/team-2.jpg"
+                                            <img alt="Image placeholder"
                                                  class="avatar rounded-circle">
                                         </div>
                                         <div class="col ml--2">
@@ -225,7 +225,7 @@
                                     <div class="row align-items-center">
                                         <div class="col-auto">
                                             <!-- Avatar -->
-                                            <img alt="Image placeholder" src="../assets/img/theme/team-3.jpg"
+                                            <img alt="Image placeholder"
                                                  class="avatar rounded-circle">
                                         </div>
                                         <div class="col ml--2">
@@ -245,7 +245,8 @@
                                     <div class="row align-items-center">
                                         <div class="col-auto">
                                             <!-- Avatar -->
-                                            <img alt="Image placeholder" src="../assets/img/theme/team-4.jpg"
+                                            <img alt="Image placeholder">
+                                            <img alt="Image placeholder"
                                                  class="avatar rounded-circle">
                                         </div>
                                         <div class="col ml--2">
@@ -265,7 +266,7 @@
                                     <div class="row align-items-center">
                                         <div class="col-auto">
                                             <!-- Avatar -->
-                                            <img alt="Image placeholder" src="../assets/img/theme/team-5.jpg"
+                                            <img alt="Image placeholder"
                                                  class="avatar rounded-circle">
                                         </div>
                                         <div class="col ml--2">
@@ -340,7 +341,7 @@
                            aria-expanded="false">
                             <div class="media align-items-center">
                   <span class="avatar avatar-sm rounded-circle">
-                    <img alt="Image placeholder" src="../assets/img/theme/team-4.jpg">
+                    <img alt="Image placeholder">
                   </span>
                                 <div class="media-body  ml-2  d-none d-lg-block">
                                     <span class="mb-0 text-sm  font-weight-bold">John Snow</span>
@@ -407,10 +408,10 @@
                             <span aria-hidden="true">×</span>
                         </button>
                     </form>
-{#                    <div class="col-4 text-right">#}
-{#                        <a href="#" class="btn btn-sm btn-neutral">Tìm kiếm mã đơn</a>#}
-{#                        <a href="#" class="btn btn-sm btn-neutral">Tìm kiếm số điện thoại khách hàng</a>#}
-{#                    </div>#}
+                    {#                    <div class="col-4 text-right">#}
+                    {#                        <a href="#" class="btn btn-sm btn-neutral">Tìm kiếm mã đơn</a>#}
+                    {#                        <a href="#" class="btn btn-sm btn-neutral">Tìm kiếm số điện thoại khách hàng</a>#}
+                    {#                    </div>#}
                 </div>
             </div>
         </div>
@@ -423,103 +424,133 @@
                     <!-- Card header -->
                     <div class="card-header border-0">
                         <h3 class="mb-0">Quản lý đơn đặt</h3>
-                        <div class="d-flex sort-type justify-content-between">
-                            <div class="pt-2 order-type">
-                                <button type="button" class="btn border border-dark">Đặt online</button>
-                                <button type="button" class="btn border border-dark">Mua trực tiếp</button>
-                            </div>
+                        <div class="d-flex justify-content-end">
                             <div class="pt-2">
-{#                            <span>Lọc: </span>#}
                                 <div class="btn-group">
-                                    <button  class="btn btn-outline-dark dropdown-toggle
+                                    <button class="btn btn-outline-dark dropdown-toggle
+                                                       dropdown-toggle-pagination"
+                                            data-toggle="dropdown">
+                                        Loại đơn
+                                    </button>
+                                    <div class="dropdown-menu order-type dropdown-menu-pagination">
+                                        <div class="form-check filter-type-item cursor-pointer" id="1">
+                                            <div class="form-check-label d-flex justify-content-between align-content-center">
+                                                <input type="checkbox" {% if orderType == "1" %} checked {% endif %}
+                                                       class="">
+                                                <span class="dropdown-item">Đặt online</span>
+                                            </div>
+                                        </div>
+                                        <div class="form-check filter-type-item" id="2">
+                                            <div class="form-check-label d-flex justify-content-between align-content-center">
+                                                <input type="checkbox" {% if orderType == "2" %} checked {% endif %}
+                                                       class="">
+                                                <span class="dropdown-item">Mua trực tiếp</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="btn-group">
+                                    <button class="btn btn-outline-dark dropdown-toggle
                                                        dropdown-toggle-pagination"
                                             data-toggle="dropdown">
                                         Sắp xếp
                                     </button>
                                     <div class="dropdown-menu sort-type dropdown-menu-pagination">
-                                        <div class="form-check sort-type-item cursor-pointer" id="1">
+                                        <div class="form-check filter-type-item cursor-pointer" id="1">
                                             <div class="form-check-label d-flex justify-content-between align-content-center">
-                                                <input type="checkbox" class="" >
+                                                <input type="checkbox" {% if sortBy == "date" and sortDir == "asc" %}
+                                                       checked {% endif %} class="">
                                                 <span class="dropdown-item">Thời gian đặt mới nhất</span>
                                             </div>
                                         </div>
-                                        <div class="form-check sort-type-item" id="2">
+                                        <div class="form-check filter-type-item" id="2">
                                             <div class="form-check-label d-flex justify-content-between align-content-center">
-                                                <input type="checkbox" class="" >
+                                                <input type="checkbox" {% if sortBy == "date" and sortDir == "desc" %}
+                                                       checked {% endif %} class="">
                                                 <span class="dropdown-item">Thời gian đặt cũ nhất</span>
                                             </div>
                                         </div>
-                                        <div class="form-check sort-type-item" id="3">
+                                        <div class="form-check filter-type-item" id="3">
                                             <div class="form-check-label d-flex justify-content-between align-content-center">
-                                                <input type="checkbox" class="" >
+                                                <input type="checkbox"
+                                                        {% if sortBy == "total-amount" and sortDir == "asc" %}
+                                                       checked {% endif %} class="">
                                                 <span class="dropdown-item">Tổng tiền tăng dần</span>
                                             </div>
                                         </div>
-                                        <div class="form-check sort-type-item" id="4">
+                                        <div class="form-check filter-type-item" id="4">
                                             <div class="form-check-label d-flex justify-content-between align-content-center">
-                                                <input type="checkbox" class="" >
+                                                <input type="checkbox" {% if sortBy == "date" and sortDir == "desc" %}
+                                                       checked {% endif %} class="">
                                                 <span class="dropdown-item">Tổng tiền giảm dần</span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="btn-group status-type">
+                                <div class="btn-group ">
                                     <button type="button" class="btn btn-outline-dark dropdown-toggle
                                                        dropdown-toggle-pagination"
                                             data-toggle="dropdown">
                                         Trạng thái
                                     </button>
-                                    <div class="dropdown-menu dropdown-menu-pagination">
-                                        <div class="form-check cursor-pointer">
-                                            <label class="form-check-label d-flex justify-content-between align-content-center">
-                                                <input type="checkbox" class="" >
+                                    <div class="dropdown-menu status-type dropdown-menu-pagination">
+                                        <div class="form-check filter-type-item" id="1">
+                                            <div class="form-check-label d-flex justify-content-between align-content-center">
+                                                <input type="checkbox" {% if status == "1" %} checked {% endif %}
+                                                       class="">
                                                 <span class="dropdown-item">Đang xử lý</span>
-                                            </label>
+                                            </div>
                                         </div>
-                                        <div class="form-check">
-                                            <label class="form-check-label d-flex justify-content-between align-content-center">
-                                                <input type="checkbox" class="" >
+                                        <div class="form-check filter-type-item" id="2">
+                                            <div class="form-check-label d-flex justify-content-between align-content-center">
+                                                <input type="checkbox" {% if status == "2" %} checked {% endif %}
+                                                       class="">
                                                 <span class="dropdown-item">Chờ giao hàng</span>
-                                            </label>
+                                            </div>
                                         </div>
-                                        <div class="form-check">
-                                            <label class="form-check-label d-flex justify-content-between align-content-center">
-                                                <input type="checkbox" class="" >
+                                        <div class="form-check filter-type-item" id="3">
+                                            <div class="form-check-label d-flex justify-content-between align-content-center">
+                                                <input type="checkbox" {% if status == "3" %} checked {% endif %}
+                                                       class="">
                                                 <span class="dropdown-item">Đang giao hàng</span>
-                                            </label>
+                                            </div>
                                         </div>
-                                        <div class="form-check">
-                                            <label class="form-check-label d-flex justify-content-between align-content-center">
-                                                <input type="checkbox" class="" >
+                                        <div class="form-check filter-type-item" id="4">
+                                            <div class="form-check-label d-flex justify-content-between align-content-center">
+                                                <input type="checkbox" {% if status == "4" %} checked {% endif %}
+                                                       class="">
                                                 <span class="dropdown-item">Đã hoàn thành</span>
-                                            </label>
+                                            </div>
                                         </div>
-                                        <div class="form-check">
-                                            <label class="form-check-label d-flex justify-content-between align-content-center">
-                                                <input type="checkbox" class="" >
+                                        <div class="form-check filter-type-item" id="5">
+                                            <div class="form-check-label d-flex justify-content-between align-content-center">
+                                                <input type="checkbox" {% if status == "5" %} checked {% endif %}
+                                                       class="">
                                                 <span class="dropdown-item">Đã hủy</span>
-                                            </label>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="btn-group payment-method-type">
+                                <div class="btn-group ">
                                     <button type="button" class="btn btn-outline-dark dropdown-toggle
                                                        dropdown-toggle-pagination"
                                             data-toggle="dropdown">
                                         Phương thức thanh toán
                                     </button>
-                                    <div class="dropdown-menu dropdown-menu-pagination">
-                                        <div class="form-check cursor-pointer">
-                                            <label class="form-check-label d-flex justify-content-between align-content-center">
-                                                <input type="checkbox" class="" >
+                                    <div class="dropdown-menu payment-method-type dropdown-menu-pagination">
+                                        <div class="form-check filter-type-item" id="1">
+                                            <div class="form-check-label d-flex justify-content-between align-content-center">
+                                                <input type="checkbox" {% if paymentMethod == "1" %} checked {% endif %}
+                                                       class="">
                                                 <span class="dropdown-item">Thẻ</span>
-                                            </label>
+                                            </div>
                                         </div>
-                                        <div class="form-check cursor-pointer">
-                                            <label class="form-check-label d-flex justify-content-between align-content-center">
-                                                <input type="checkbox" class="" >
+                                        <div class="form-check filter-type-item" id="2">
+                                            <div class="form-check-label d-flex justify-content-between align-content-center">
+                                                <input type="checkbox" {% if paymentMethod == "2" %} checked {% endif %}
+                                                       class="">
                                                 <span class="dropdown-item">Tiền mặt</span>
-                                            </label>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -540,7 +571,7 @@
                                 <th scope="col"></th>
                             </tr>
                             </thead>
-                            <tbody class="list">
+                            <tbody class="list order-list">
                             {% for order in orders['orders'] %}
                                 <tr>
                                     <th scope="row">
@@ -550,7 +581,7 @@
                                     </th>
                                     <td>
                                         <div class="media-body">
-                                            <span class="name mb-0 text-sm">{{ order['type']['name'] }}</span>
+                                            <span class="name mb-0 text-sm">{{ order['order_type']['name'] }}</span>
                                         </div>
                                     </td>
                                     <td class="budget">
@@ -569,7 +600,7 @@
                                     </td>
                                     <td>
                                         <div class="avatar-group">
-                                            {{ order['payment_method']['name'] }}
+                                            {{ order['payment']['payment_method']['name'] }}
                                         </div>
                                     </td>
                                     <td class="text-right">
@@ -580,12 +611,12 @@
                                                 <i class="fas fa-ellipsis-v"></i>
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                                {% if order['status']['id'] == 1 or order['status']['id'] == 2 %}
                                                 <a class="dropdown-item"
-                                                   href="/employee/order/update?order_id={{ 123 }}">Cap
-                                                    nhat</a>
+                                                   href="/employee/order/{{ 123 }}/update">Cap nhat</a>
+                                                {% endif %}
                                                 <a class="dropdown-item"
-                                                   href="/employee/order/{{ order['order_id'] }}/detail">Chi
-                                                    tiet</a>
+                                                   href="/employee/order/{{ order['order_id'] }}/detail">Chi tiet</a>
                                                 <a class="dropdown-item" href="#">Huy</a>
                                             </div>
                                         </div>
@@ -599,19 +630,22 @@
                     <div class="card-footer py-4">
                         <nav aria-label="...">
                             <ul class="pagination justify-content-end mb-0">
-                                <li class="page-item {% if orders['current_page'] == 1 %} disabled {% endif %}">
-                                    <a class="page-link" href="?page={{ orders['current_page'] - 1 }}" tabindex="-1">
+                                <li class="page-item{% if orders['current_page'] == 1 %} disabled {% endif %}"
+                                    page={{ orders['current_page'] - 1 }}>
+                                    <a class="page-link" tabindex="-1">
                                         <i class="fas fa-angle-left "></i>
                                         <span class="sr-only">Previous</span>
                                     </a>
                                 </li>
                                 {% for page in range(orders['total_page']) %}
-                                    <li class="page-item {% if page + 1 == orders['current_page'] %} active {% endif %}">
-                                        <a class="page-link" href="?page={{ page + 1 }}">{{ page + 1 }}</a>
+                                    <li class="page-item{% if page + 1 == orders['current_page'] %} active {% endif %}"
+                                        page={{ page + 1 }}>
+                                        <div class="page-link">{{ page + 1 }}</div>
                                     </li>
                                 {% endfor %}
-                                <li class="page-item {% if orders['current_page'] == orders['total_page'] %} disabled {% endif %}">
-                                    <a class="page-link" href="?page={{ orders['current_page'] + 1 }}">
+                                <li class="page-item {% if orders['current_page'] == orders['total_page'] %} disabled {% endif %}"
+                                    page={{ orders['current_page'] + 1 }}>
+                                    <a class="page-link">
                                         <i class="fas fa-angle-right"></i>
                                         <span class="sr-only">Next</span>
                                     </a>
