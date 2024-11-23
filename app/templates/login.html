@@ -45,7 +45,7 @@
                                     </a>
                                 </div>
                                 <h2 style="color: #5a5a5a;">Đăng nhập</h2>
-                                <form method="post" action="/login">
+                                <form method="post" action="{{ url_for('account.login_process') }}">
                                     <div class="form-group appoinment-body-1">
                                         <label for="username">
                                             <font>Tên đăng nhập</font>
@@ -84,7 +84,7 @@
                                     </div>
                                     {% endif %}
                                     <div class="form-group login-btn">
-                                        <a href="/employee">
+                                        <a href="{{ url_for('index.index') }}">
                                             <button class="btn-primary" type="submit">Đăng nhập</button>
                                         </a>
                                     </div>
@@ -94,7 +94,7 @@
                                 <div class="next-sign">
                                     <p>
                                         Bạn cần một tài khoản?
-                                        <a href="/register">Đăng ký</a>
+                                        <a href="/account/register">Đăng ký</a>
                                     </p>
                                     <div class="social-login row">
                                         <a href="javascript:;">

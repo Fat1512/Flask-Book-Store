@@ -11,13 +11,12 @@ from sqlalchemy import or_
 def auth_user(username, password, role=UserRole.USER):
     password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
 
-    # Sử dụng or_() thay vì toán tử bitwise |
     return User.query.filter(
         User.username == username.strip(),
         User.password == password,
         or_(
             User.user_role == role,
-            User.user_role == UserRole.ADMIN  # Kiểm tra cả vai trò User và Admin
+            User.user_role == UserRole.ADMIN
         )
     ).first()
 
@@ -29,9 +28,13 @@ def auth_user(username, password, role=UserRole.USER):
 #                              User.password.__eq__(password),
 #                              User.user_role.__eq__(role)).first()
 
-def add_user(first_name, last_name, username, password,email,avt_url, sex=None,  phone_number=None, date_of_birth=None,  isActive=None, last_access=None):
+def add_user(first_name, last_name, username, password, email, avt_url, sex=None, phone_number=None, date_of_birth=None,
+             isActive=None, last_access=None):
     password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
-    u = User(first_name=first_name, last_name=last_name, username=username,password=password, email=email, avt_url='https://png.pngtree.com/png-vector/20191101/ourmid/pngtree-cartoon-color-simple-male-avatar-png-image_1934459.jpg', sex=sex,phone_number=phone_number, date_of_birth=date_of_birth, isActive=isActive, last_access=last_access)
+    u = User(first_name=first_name, last_name=last_name, username=username, password=password, email=email,
+             avt_url='https://png.pngtree.com/png-vector/20191101/ourmid/pngtree-cartoon-color-simple-male-avatar-png-image_1934459.jpg',
+             sex=sex, phone_number=phone_number, date_of_birth=date_of_birth, isActive=isActive,
+             last_access=last_access)
     if not avt_url:
         avt_url = 'https://png.pngtree.com/png-vector/20191101/ourmid/pngtree-cartoon-color-simple-male-avatar-png-image_1934459.jpg'
     if avt_url:
@@ -40,6 +43,7 @@ def add_user(first_name, last_name, username, password,email,avt_url, sex=None, 
 
     db.session.add(u)
     db.session.commit()
+
 
 def get_user_by_id(user_id):
     return User.query.get(user_id)

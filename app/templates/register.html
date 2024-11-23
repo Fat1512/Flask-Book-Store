@@ -44,7 +44,7 @@
                                     </a>
                                 </div>
                                 <h2 style="color: #5a5a5a;">Đăng ký</h2>
-                                <form class="row" method="post" action="/register">
+                                <form class="row" method="post" action="{{ url_for('account.register_process') }}">
                                     <div class="form-group-1 appoinment-body-1">
                                         <div class="form-group appoinment-body-1">
                                             <label for="first_name">
@@ -143,7 +143,7 @@
                                     </div>
 
                                     <div class="form-group login-btn">
-                                        <a href="/login">
+                                        <a href="/account/login">
                                             <button class="btn-primary" type="submit">Đăng ký</button>
                                         </a>
                                     </div>

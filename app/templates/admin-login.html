@@ -45,7 +45,7 @@
                                     </a>
                                 </div>
                                 <h2 style="color: #5a5a5a;">Đăng nhập ADMIN</h2>
-                                <form method="post" action="{{ url_for('admin_login') }}">
+                                <form method="post" action="/account/admin-login">
                                     <div class="form-group appoinment-body-1">
                                         <label for="username">
                                             <font>Tên đăng nhập</font>
@@ -84,7 +84,7 @@
                                     </div>
                                     {% endif %}
                                     <div class="form-group login-btn">
-                                        <a href="/admin-home">
+                                        <a href="{{ url_for('admin.admin_home') }}">
                                             <button class="btn-primary" type="submit">Đăng nhập</button>
                                         </a>
                                     </div>
