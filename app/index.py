@@ -1,7 +1,7 @@
 from app.dao import UserDao
 from app import app, login
 from app.model.User import UserRole
-from flask import render_template, request, redirect
+from flask import render_template, request, redirect, url_for
 from app.controllers.SearchController import home_bp
 from app.controllers.HomeController import index_bp
 from app.controllers.EmployeeController import employee_bp
@@ -25,8 +25,20 @@ def add_products_process():
     return render_template("employee-add-products.html")
 
 
+def admin_required(f):
+    def wrap(*args, **kwargs):
+        if not current_user.is_authenticated:
+            return redirect(url_for('admin_login'))
+        if current_user.user_role != UserRole.ADMIN:
+            return redirect(url_for('admin_login'))
+        return f(*args, **kwargs)
+    wrap.__name__ = f.__name__
+    return wrap
+
+
 @app.route("/admin-home")
-@login_required
+# @login_required
+@admin_required
 def admin_home():
     return render_template("admin-home.html")
 
