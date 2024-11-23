@@ -1,8 +1,14 @@
 from flask import Blueprint, request
 from app import app
+from app.dao.BookDAO import find_by_id
 from app.dao.SearchDAO import searchBook
 
 book_rest_bp = Blueprint('book_rest', __name__)
+
+
+@book_rest_bp.route('/test')
+def get_books():
+    return find_by_id(54).to_dict()
 
 
 @book_rest_bp.route('/', methods=['GET'])

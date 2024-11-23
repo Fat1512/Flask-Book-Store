@@ -10,10 +10,13 @@
 .container {
     width: 90% !important;
 }
-
+.text-black {
+    color: var(--black-color);
+}
 .text-primary {
     color: var(--red) !important;
 }
+
 
 .text-secondary {
     color: #6c757d !important;
