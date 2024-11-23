@@ -68,12 +68,11 @@ def login_process():
 
         u = UserDao.auth_user(username=username, password=password, role=UserRole.USER)
 
-        # Nếu không tìm thấy user với vai trò user, thử tìm admin
         if not u:
             u = UserDao.auth_user(username=username, password=password, role=UserRole.ADMIN)
 
         if u:
-            login_user(u)  # Đăng nhập người dùng
+            login_user(u)
             return redirect('/')
         else:
             err_msg = "Tên đăng nhập hoặc mật khẩu không đúng!"
