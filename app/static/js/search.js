@@ -108,7 +108,7 @@ const render_pagination = function (current_page, pages) {
         })
     })
     document.querySelector('.next-button').addEventListener('click', (e) => {
-        next_page = currentUrl.searchParams.get('page') ? parseInt(currentUrl.searchParams.get('page')) + 1 : 2
+        next_page = currentUrl.searchParams.get('page') ? parsegInt(currentUrl.searchParams.get('page')) + 1 : 2
         console.log(currentUrl.searchParams.get('page'))
         addParamURL('page', next_page)
         render_book(currentUrl.toString().split("?")[1])
