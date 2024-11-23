@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/book-detail.css') }}">
 {% endblock %}
 {% block content %}
-    <div class="my-bg-color pt-5">
+    <div class="my-bg-color pt-3 pb-3">
         <div class="container">
             <div class="row">
 
@@ -14,19 +14,24 @@
                             <img src="{{ book.images[0].image_url }}">
                         </div>
                         <div class="images">
-                            <ul class="list-unstyled list-image d-flex justify-content-between pb-3">
-                                {% for img in book.images %}
+                            <ul class="list-unstyled list-image d-flex justify-content-start pb-3">
+                                {% for img in book.images[:4] %}
                                     <li class="image-item">
                                         <img src="{{ img.image_url }}">
                                     </li>
                                 {% endfor %}
-
+                                {% if book.images|length > 4 %}
+                                    <li class="image-item flex-fill h-100">
+                                        <div class="image-remain text-white">
+                                            +{{ (book.images|length) -4 }}
+                                        </div>
+                                    </li>
+                                {% endif %}
                             </ul>
                         </div>
                         <div class="controller d-flex align-items-center justify-content-around">
                             <button class="btn pt-2 pb-2 pr-3 pl-3 btn-primary-outline btn-large">
                                 <a class="text-decoration-none text-primary" href="#">
-
                                     <i class="fa-solid fa-cart-shopping"></i> Thêm vào giỏ hàng</a>
                             </button>
                             <button class="btn pt-2 pb-2 pr-3 pl-3 btn-primary btn-large">
@@ -61,21 +66,24 @@
                             <span class="text-warning">(0 đánh giá)</span>
                             <span class="ml-3 text-center"> | Đã bán 100</span>
                         </div>
+                        <div class="">
+                            <span class="text-large text-primary font-weight-bold">{{ book.price|currency('VND') }} </span>
+                            <span class="text-secondary text-decoration-line-through mb-1">{{ book.price|currency('VND') }}</span>
+                            <span class="discount">-10%</span>
+                        </div>
                     </div>
                     <div class="item-bg-color p-2 mt-3 rounded">
                         <div class="item-header">
                             <h4>Thông tin chi tiết</h4>
                         </div>
-                        <div class="row m-0 item-information">
-                            <div class="col-md-3 p-0">
-                                Mã hàng
+                        {% for key,value in detail_book.items() %}
+                            <div class="row m-0 pt-4 item-information">
+                                <div class="col-md-3 p-0">
+                                    {{ key }}
+                                </div>
+                                <div class="col-md-9 text-black">{{ value }}</div>
                             </div>
-                            <div class="col-md-9">123</div>
-                        </div>
-                        <div class="row m-0 item-information">
-                            <div class="col-md-3 p-0">hal</div>
-                            <div class="col-md-9">jaf</div>
-                        </div>
+                        {% endfor %}
                     </div>
                     <div class="item-bg-color p-2 mt-3 rounded position-relative">
                         <div class="item-header">
@@ -98,14 +106,15 @@
                 <h2>Sản phẩm liên quan</h2>
                 <div class="my-carousel d-flex justify-content-between">
                     {% for b in books %}
-                        <div style="width: 244px;">
-                            <span class="discount text-white">10%</span>
+                        <a class="text-decoration-none text-black" href="/search/detail?bookId={{ b.book_id }}"
+                           style="width: 244px;">
                             <img class="card-img-top"
                                  src="{{ b.images[0].image_url }}"
                                  alt="Card image">
                             <div class="card-body p-0">
                                 <p class="card-text">{{ b.title }}</p>
-                                <p class="text-primary font-weight-bold mb-1">{{ b.price|currency('VND') }}</p>
+                                <p class="text-primary font-weight-bold mb-1">{{ b.price|currency('VND') }} <span
+                                        class="discount">-10%</span></p>
                                 <p class="text-secondary text-decoration-line-through mb-1">{{ b.price|currency('VND') }}</p>
                             </div>
                             <div class="rating">
@@ -115,18 +124,81 @@
                                 <i class="fa-regular fa-star"></i>
                                 <i class="fa-regular fa-star"></i>
                             </div>
-                        </div>
+                        </a>
                     {% endfor %}
 
                 </div>
                 <button class="custom-prev"><i class="fa-solid fa-arrow-left"></i></button>
                 <button class="custom-next"><i class="fa-solid fa-arrow-right"></i></button>
             </div>
+            <div class="item-bg-color rounded p-3 mt-3">
+                <h4>Đánh giá sản phẩm</h4>
+                <div class="rating-infor d-flex align-items-center">
+                    <div class="overview text-center d-flex align-items-center">
+                        <div>
+                            <p class="mb-2 text-large"><span class="font-weight-bold">0</span>/5</p>
+                            <span><i class="fa-regular fa-star"></i></span>
+                            <span><i class="fa-regular fa-star"></i></span>
+                            <span><i class="fa-regular fa-star"></i></span>
+                            <span><i class="fa-regular fa-star"></i></span>
+                            <span><i class="fa-regular fa-star"></i></span>
+                            <p class="text-warning">(0 đánh giá)</p>
+                        </div>
+                        <div class="star-percent ml-3">
+                            {% for i in range(5,0,-1) %}
+                                <div class="d-flex align-items-center">
+                                    <p class="p-0 m-0">{{ i }} sao</p>
+                                    <div class="review-rating">
+                                        <div style="width: 0%;"></div>
+                                    </div>
+                                    <p class="p-0 m-0">0%</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="flex-fill text-center form-comment-open">
+                        <button class="btn pt-2 pb-2 pr-3 pl-3 btn-primary-outline btn-large">
+                            <i class="fa-solid fa-pen"></i> Viết đánh giá</a>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="modal">
+        <div class="overlay"></div>
+        <div class="modal-body item-bg-color">
+            <div class="header d-flex">
+                <p class="flex-fill text-center font-weight-bold">Viết đánh giá sản phẩm</p>
+                <span class="text-secondary cursor-pointer close-form">
+                    <i class="fa-solid fa-x"></i>
+                </span>
+            </div>
+            <div class="rating-form mb-2 text-center text-warning">
+                <span><i class="fa-regular fa-star text-medium"></i></span>
+                <span><i class="fa-regular fa-star text-medium"></i></span>
+                <span><i class="fa-regular fa-star text-medium"></i></span>
+                <span><i class="fa-regular fa-star text-medium"></i></span>
+                <span><i class="fa-regular fa-star text-medium"></i></span>
+            </div>
+            <div class="">
+                <textarea id="review_field" cols="5" rows="3"
+                          class="comment-area"
+                          placeholder="Nhập nhận xét của bạn về sản phẩm"></textarea>
+            </div>
+            <div class="control text-right">
+                <span class="text-secondary mr-3 cursor-pointer close-form">Hủy</span>
+                <button class="btn pt-2 pb-2 pr-3 pl-3 btn-primary btn-large">
+                    <a class="text-decoration-none text-white" href="#">Gửi nhận xét</a>
+                </button>
+            </div>
         </div>
     </div>
 {% endblock %}
 {% block js %}
     <script src="{{ url_for('static', filename='js/slickyCarousel.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bookDetail.js') }}"></script>
 
 
     <!-- jQuery -->
@@ -134,4 +206,5 @@
 
     <!-- Slick JS -->
     <script type="text/javascript"
-            src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script> {% endblock %}
+            src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+{% endblock %}

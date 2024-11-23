@@ -5,12 +5,29 @@ from app import db
 import cloudinary.uploader
 from app.model.User import UserRole
 
+from sqlalchemy import or_
+
+
 def auth_user(username, password, role=UserRole.USER):
     password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
 
-    return User.query.filter(User.username.__eq__(username.strip()),
-                             User.password.__eq__(password),
-                             User.user_role.__eq__(role)).first()
+    # Sử dụng or_() thay vì toán tử bitwise |
+    return User.query.filter(
+        User.username == username.strip(),
+        User.password == password,
+        or_(
+            User.user_role == role,
+            User.user_role == UserRole.ADMIN  # Kiểm tra cả vai trò User và Admin
+        )
+    ).first()
+
+
+# def auth_user(username, password, role=UserRole.USER):
+#     password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
+#
+#     return User.query.filter(User.username.__eq__(username.strip()),
+#                              User.password.__eq__(password),
+#                              User.user_role.__eq__(role)).first()
 
 def add_user(first_name, last_name, username, password,email,avt_url, sex=None,  phone_number=None, date_of_birth=None,  isActive=None, last_access=None):
     password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())

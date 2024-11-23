@@ -319,3 +319,6 @@ a {
     background-color: #fafaec;
     color: #3d6611;
 }
+.input-group .btn {
+    z-index: 5;
+}

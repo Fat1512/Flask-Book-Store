@@ -19,18 +19,22 @@ app.register_blueprint(book_rest_bp, url_prefix='/api/v1/book')
 app.register_blueprint(order_api_bp, url_prefix='/api/v1/order')
 app.register_blueprint(index_bp, url_prefix='/')
 
+
 @app.route("/add-products")
 def add_products_process():
     return render_template("employee-add-products.html")
+
 
 @app.route("/admin-home")
 @login_required
 def admin_home():
     return render_template("admin-home.html")
 
+
 @app.route("/admin-statistic")
 def admin_statistic():
     return render_template("admin-statistic.html")
+
 
 @app.route('/admin-login', methods=['GET', 'POST'])
 def admin_login():
@@ -48,10 +52,12 @@ def admin_login():
 
     return render_template('admin-login.html', err_msg=err_msg)
 
+
 @app.route("/admin-logout")
 def admin_logout():
     logout_user()
     return redirect('/admin-login')
+
 
 @app.route("/login", methods=['get', 'post'])
 def login_process():
@@ -60,14 +66,20 @@ def login_process():
         username = request.form.get('username')
         password = request.form.get('password')
 
-        u = UserDao.auth_user(username=username, password=password)
+        u = UserDao.auth_user(username=username, password=password, role=UserRole.USER)
+
+        # Nếu không tìm thấy user với vai trò user, thử tìm admin
+        if not u:
+            u = UserDao.auth_user(username=username, password=password, role=UserRole.ADMIN)
+
         if u:
-            login_user(u)
+            login_user(u)  # Đăng nhập người dùng
             return redirect('/')
         else:
             err_msg = "Tên đăng nhập hoặc mật khẩu không đúng!"
 
     return render_template("login.html", err_msg=err_msg)
+
 
 @app.route("/register", methods=['get', 'post'])
 def register_process():
@@ -92,14 +104,17 @@ def register_process():
 
     return render_template('register.html', err_msg=err_msg)
 
+
 @app.route("/logout")
 def logout_process():
     logout_user()
     return redirect('/')
 
+
 @login.user_loader
 def load_user(user_id):
     return UserDao.get_user_by_id(user_id)
+
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -7,8 +7,8 @@ from app import db
 from app.model.BookGerne import BookGerne
 
 
-def searchBook(keyword, min_price, max_price,
-               order, gerne_id, limit, page):
+def searchBook(keyword=None, min_price=None, max_price=None,
+               order=None, gerne_id=None, limit=None, page=None):
     query = Book.query
     if (keyword):
         query = query.filter(Book.title.contains(keyword))

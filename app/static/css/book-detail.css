@@ -62,6 +62,7 @@ a:hover {
 .item-content {
     max-height: 300px;
     overflow: hidden;
+    /*transition: max-height 0.5s ease-out;*/
 }
 
 .block-gradient {
@@ -111,4 +112,80 @@ a:hover {
 
 .custom-next {
     right: -20px; /* Position right button */
+}
+
+.review-rating {
+    margin: 5px 10px 0;
+    width: 200px;
+    height: 5px;
+    background-color: #F2F4F5;
+}
+
+.text-large {
+    font-size: 30px;
+}
+
+.text-medium {
+    font-size: 25px;
+}
+
+.discount {
+    margin-left: 8px;
+    padding: 4px;
+    border-radius: 4px;
+    position: unset !important;
+    background-color: var(--red);
+    color: #fff;
+}
+
+.btn:hover {
+    color: var(--red) !important;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    display: none;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+    background-color: rgba(0, 0, 0, 0.2);
+    animation: fadein linear 0.2s;
+    display: block;
+}
+
+.modal-body {
+    --growth-from: 0.7;
+    --growth-to: 1;
+    background-color: var(--white-color);
+    margin: auto;
+    z-index: 3;
+    position: relative;
+    border-radius: 5px;
+    animation: growth linear 0.2s;
+    flex: 0.5;
+}
+
+.comment-area {
+    height: 122px;
+    resize: none;
+    width: 100%;
+    border-radius: 5px;
+}
+
+.image-remain {
+    height: 86px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(13, 14, 15, 0.8);
 }

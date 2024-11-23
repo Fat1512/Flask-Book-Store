@@ -291,7 +291,7 @@ function handleSelectOrder(nameNode, param) {
         })
     )
 }
-
+const search = document.querySelector(".icon-search")
 
 const sub_item = document.querySelectorAll(".sub-item")
 sub_item.forEach(s => {
