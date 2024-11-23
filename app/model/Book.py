@@ -3,6 +3,7 @@ from app import db
 from sqlalchemy.orm import relationship
 from app.model.BookImage import ImageOfBook
 
+
 class Book(db.Model):
     __tablename__ = 'book'
     book_id = Column(Integer, primary_key=True, autoincrement=True)
@@ -34,7 +35,8 @@ class Book(db.Model):
             "description": self.description,
             "book_gerne_id": self.book_gerne_id,
             "page_number": self.num_page,
-            "weight": self.weight
+            "weight": self.weight,
+            "images": images,
         }
 
     def __str__(self):

@@ -27,8 +27,8 @@
                             <ol class="parent-gerne list-unstyled mb-0 cursor-pointer">
                             </ol>
                             <div class="current-gerne cursor-pointer">
-                                {#                                <span id="{{ current_gerne[0].id }}"#}
-                                {#                                      class="selected-filter">{{ current_gerne[0].name }}</span>#}
+                                <span id="{{ current_gerne[0].id }}"
+                                      class="selected-filter">{{ current_gerne[0].name }}</span>
                             </div>
                             <ol class="list-unstyled children-gerne text-filter">
                                 {% for c in sub_gerne %}
@@ -106,7 +106,7 @@
                                     <p class="">Lọc theo: </p>
                                 {% endif %}
                                 <ul class="filter-list ml-3 text-decoration-none list-unstyled">
-                                    {% if minPrice %}
+                                    {% if maxPrice %}
                                         <li class="filter-item price-filter">
                                             <span>Giá {{ minPrice }}-{{ maxPrice }}đ</span>
                                             <a class="cursor-pointer delete-filter ml-1"><i

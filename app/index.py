@@ -6,6 +6,7 @@ from app.controllers.SearchController import home_bp
 from app.controllers.HomeController import index_bp
 from app.controllers.EmployeeController import employee_bp
 from app.controllers.OrderController import order_bp
+from app.controllers.rest.BookController import book_rest_bp
 from app.controllers.rest.OrderAPI import order_api_bp
 from app.controllers.rest.BookGerneController import book_gerne_rest_bp
 from flask_login import login_user, logout_user
@@ -14,16 +15,20 @@ app.register_blueprint(home_bp, url_prefix='/search')
 app.register_blueprint(employee_bp, url_prefix='/employee')
 app.register_blueprint(order_bp, url_prefix='/order')
 app.register_blueprint(book_gerne_rest_bp, url_prefix='/api/v1/bookGerne')
+app.register_blueprint(book_rest_bp, url_prefix='/api/v1/book')
 app.register_blueprint(order_api_bp, url_prefix='/api/v1/order')
 app.register_blueprint(index_bp, url_prefix='/')
+
 
 @app.route("/add-products")
 def add_products_process():
     return render_template("employee-order-detail.html")
 
+
 @app.route("/admin-statistic")
 def admin_statistic_process():
     return render_template("admin-statistic.html")
+
 
 @app.route("/login", methods=['get', 'post'])
 def login_process():
@@ -37,6 +42,7 @@ def login_process():
             return redirect('/employee')
 
     return render_template("login.html")
+
 
 @app.route("/register", methods=['get', 'post'])
 def register_process():
@@ -61,14 +67,17 @@ def register_process():
 
     return render_template('register.html', err_msg=err_msg)
 
+
 @app.route("/logout")
 def logout_process():
     logout_user()
     return redirect('/employee')
 
+
 @login.user_loader
 def load_user(user_id):
     return dao.UserDao.get_user_by_id(user_id)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
