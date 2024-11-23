@@ -1,4 +1,5 @@
 from app import db
+from app.model.Attribute import Attribute
 
 
 class BookGerne(db.Model):
@@ -9,8 +10,9 @@ class BookGerne(db.Model):
     rgt = db.Column(db.Integer)
 
     books = db.relationship('Book', backref='book_gerne', lazy=True)
+    attributes = db.relationship('Attribute', backref='book_gerne', lazy=True)
 
-    def __init__(self, book_type_id,name, description, lft, rgt):
+    def __init__(self, book_type_id, name, description, lft, rgt):
         self.book_type_id = book_type_id
         self.name = name
         self.description = description
@@ -18,9 +20,11 @@ class BookGerne(db.Model):
         self.rgt = rgt
 
     def to_dict(self):
+        attributes_dict = [attriubte.to_dict() for attriubte in self.attributes]
         return {
             'book_type_id': self.book_type_id,
             'name': self.name,
             'lft': self.lft,
             'rgt': self.rgt,
+            'attributes': attributes_dict
         }

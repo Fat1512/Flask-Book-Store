@@ -9,10 +9,11 @@ from app.dao.SearchDAO import searchBook
 
 home_bp = Blueprint('search', __name__)
 
+
 @home_bp.route('/')
 def search_main():
     keyword = request.args.get('keyword')
-    minPrice = request.args.get('minPrice', type=float,default=None)
+    minPrice = request.args.get('minPrice', type=float, default=None)
     maxPrice = request.args.get('maxPrice', type=float)
     order = request.args.get('order', default=app.config['ORDER'])
     limit = request.args.get('limit', type=int, default=app.config['PAGE_SIZE'])
@@ -32,9 +33,21 @@ def search_main():
                            , limit=limit
                            , pagination=pagination)
 
+
 @home_bp.route('/detail')
 def get_detail():
-    book_id = request.args.get('bookId',type=int)
+    book_id = request.args.get('bookId', type=int)
     book = find_by_id(book_id)
     books = find_by_gerne(book.book_gerne_id)
-    return render_template("book-detail.html",book = book,books=books)
+    detail_book = {
+        "Mã sản phẩm": book.book_id,
+        "Tác giả": book.author,
+        "Trọng lượng (gr)": book.weight,
+        "Kích thước bao bì": book.dimension,
+        "Số trang": book.num_page,
+        "Hình thức": book.format,
+    }
+    for ex in book.extended_books:
+        detail_book[ex.attribute.attribute_name] = ex.value
+
+    return render_template("book-detail.html", book=book, detail_book=detail_book, books=books)

@@ -613,7 +613,7 @@
                                             <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
                                                 {% if order['status']['id'] == 1 or order['status']['id'] == 2 %}
                                                 <a class="dropdown-item"
-                                                   href="/employee/order/{{ 123 }}/update">Cap nhat</a>
+                                                   href="/employee/order/{{ order['order_id'] }}/update">Cap nhat</a>
                                                 {% endif %}
                                                 <a class="dropdown-item"
                                                    href="/employee/order/{{ order['order_id'] }}/detail">Chi tiet</a>

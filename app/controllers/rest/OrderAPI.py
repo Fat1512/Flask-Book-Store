@@ -5,6 +5,7 @@ import json
 
 order_api_bp = Blueprint('order_api', __name__)
 
+
 @order_api_bp.route("/")
 def get_order():
     status = request.args.get("status")
@@ -22,3 +23,15 @@ def get_order():
                       page=int(page))
     # orders['orders'] = [order.to_dict() for order in orders['orders']]
     return orders
+
+
+@order_api_bp.route("/<order_id>/update", methods=['GET', 'POST'])
+def test(order_id):
+    print(request.json)
+    return request.json
+
+
+@order_api_bp.route("/<order_id>/detail", methods=['GET', 'POST'])
+def find(order_id):
+    order = find_by_id(order_id)
+    return order.to_dict()

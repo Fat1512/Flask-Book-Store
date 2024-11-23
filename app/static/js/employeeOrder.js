@@ -3,7 +3,7 @@ const url = new URL(window.location)
 
 const orderParams = [
     {
-        "orderType": 1 //online
+        "orderType": 1 //Dat online
     },
     {
         "orderType": 2 //Mua truc tiep
@@ -46,14 +46,13 @@ const statusParams = [
 ]
 const paymentMethodParams = [
     {
-        "paymentMethod": 1
+        "paymentMethod": 1 //The
     },
     {
-        "paymentMethod": 2
+        "paymentMethod": 2 //Tien mat
     }
 ]
 //---------------------------------------------CONTAINER---------------------------------------------
-const dropDownBtn = document.querySelector(".dropdown-btn");
 const productSearchBox = document.querySelector('.product-search-box');
 const orderTable = document.querySelector(".order-table");
 const orderList = document.querySelector(".order-list");

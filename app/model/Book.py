@@ -1,7 +1,9 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Double
-from app import db
+from sqlalchemy import Column, Integer, String, ForeignKey, Double, DATETIME
+from app import db, app
 from sqlalchemy.orm import relationship
 from app.model.BookImage import ImageOfBook
+from app.model.ExtendedBook import ExtendedBook
+
 
 class Book(db.Model):
     __tablename__ = 'book'
@@ -11,8 +13,9 @@ class Book(db.Model):
     quantity = Column(Integer)
     price = Column(Double)
     description = Column(String)
-    release_date = Column(String)
+    release_date = Column(DATETIME)
     num_page = Column(Integer)
+    dimension = Column(String)
     weight = Column(Double)
     barcode = Column(String)
     format = Column(String)
@@ -20,11 +23,11 @@ class Book(db.Model):
     images = db.relationship('ImageOfBook', backref='book', lazy=True)
     order_detail = relationship("OrderDetail", back_populates="book")
 
+    extended_books = db.relationship('ExtendedBook', back_populates='book', lazy=True)
+
     def to_dict(self):
-        images = []
-        for image in self.images:
-            images.append(image.to_dict())
-        # Convert the set to a list here
+        images_dict = [image.to_dict() for image in self.images]
+        extended_books_dict = [ex.to_dict() for ex in self.extended_books]
         return {
             "book_id": self.book_id,
             "author": self.author,
@@ -34,7 +37,9 @@ class Book(db.Model):
             "description": self.description,
             "book_gerne_id": self.book_gerne_id,
             "page_number": self.num_page,
-            "weight": self.weight
+            "weight": self.weight,
+            "images": images_dict,
+            "extended_books": extended_books_dict,
         }
 
     def __str__(self):
