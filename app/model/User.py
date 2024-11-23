@@ -1,8 +1,9 @@
 from sqlalchemy import Column, Integer, String, Boolean, Text, Date, DateTime, Enum
-from app import db
+from app import db, app
 from sqlalchemy.orm import relationship
 from enum import Enum as RoleEnum
 from datetime import datetime
+import hashlib
 
 class UserRole(RoleEnum):
     ADMIN = 1
@@ -46,3 +47,11 @@ class User(db.Model):
 
     def get_id(self):
         return str(self.user_id)
+
+# if __name__ == '__main__':
+#     with app.app_context():
+#         db.create_all()
+#         u = User(first_name="Quan Tri", last_name="Vien", username="admin", password=str(hashlib.md5('admin'.encode('utf-8')).hexdigest()),email="admin@gmail.com",
+#                  user_role=UserRole.ADMIN)
+#         db.session.add(u)
+#         db.session.commit()

@@ -1,13 +1,16 @@
+import app.model.User
 from app.model.User import User
 import hashlib
-from app import app, db
+from app import db
 import cloudinary.uploader
+from app.model.User import UserRole
 
-def auth_user(username, password):
+def auth_user(username, password, role=UserRole.USER):
     password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
 
     return User.query.filter(User.username.__eq__(username.strip()),
-                             User.password.__eq__(password)).first()
+                             User.password.__eq__(password),
+                             User.user_role.__eq__(role)).first()
 
 def add_user(first_name, last_name, username, password,email,avt_url, sex=None,  phone_number=None, date_of_birth=None,  isActive=None, last_access=None):
     password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
