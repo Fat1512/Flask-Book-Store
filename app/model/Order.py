@@ -43,7 +43,6 @@ class Order(db.Model):
     offline_order = relationship('OfflineOrder', backref='order', lazy=True, uselist=False)
     payment_detail = relationship('PaymentDetail', backref='order', lazy=True, uselist=False)
 
-
     def to_dict(self):
         json = {
             'order_id': self.order_id,
@@ -82,7 +81,7 @@ class Order(db.Model):
         return json
 
 
-class OfflineOrder(db.Model):
+class OfflineOrder(Order):
     __tablename__ = 'offline_order'
     order_id = Column(Integer, ForeignKey('order.order_id'), primary_key=True)
 
@@ -95,7 +94,7 @@ class OfflineOrder(db.Model):
         }
 
 
-class OnlineOrder(db.Model):
+class OnlineOrder(Order):
     __tablename__ = 'online_order'
     order_id = Column(Integer, ForeignKey('order.order_id'), primary_key=True)
     shipping_method = Column(Enum(ShippingMethod))

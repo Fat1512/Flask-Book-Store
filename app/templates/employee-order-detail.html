@@ -432,10 +432,7 @@
                                 <h1 class="pr-3">Mã đơn: </h1>
                                 <h1 class="font-weight-400">{{ order['order_id'] }}</h1>
                             </div>
-                            <div class="d-flex">
-                                <h1 class="pr-3">Loại đơn: </h1>
-                                <h1 class="font-weight-400">{{ order['type']['name'] }}</h1>
-                            </div>
+
                             <div class="d-flex">
                                 <h1 class="pr-3">Trạng thái: </h1>
                                 <h1 class="font-weight-400">{{ order['status']['name'] }}</h1>
@@ -450,6 +447,10 @@
                             </div>
                         </div>
                         <div class="col-6">
+                            <div class="d-flex">
+                                <h1 class="pr-3">Loại đơn: </h1>
+                                <h1 class="font-weight-400">{{ order['type']['name'] }}</h1>
+                            </div>
                             {% if order['employee_name'] %}
                                 <div class="d-flex">
                                     <h1 class="pr-3">Nhân viên thanh toán: </h1>

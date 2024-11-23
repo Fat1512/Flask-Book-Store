@@ -14,22 +14,24 @@ def checkout():
 @employee_bp.route("/order")
 def get_order():
     status = request.args.get("status")
-    paymentMethod = request.args.get("paymentMethod")
-    sortBy = request.args.get("sortBy")
-    sortDir = request.args.get("dir")
+    payment_method = request.args.get("paymentMethod")
+    sort_by = request.args.get("sortBy")
+    sort_dir = request.args.get("dir")
+    order_type = request.args.get("orderType")
     page = request.args.get("page", 1)
+
     orders = find_all(status=status,
-                      paymentMethod=paymentMethod,
-                      sortBy=sortBy,
-                      sortDir=sortDir,
+                      payment_method=payment_method,
+                      sort_by=sort_by,
+                      sort_dir=sort_dir,
+                      order_type=order_type,
                       page=int(page))
-    orders['orders'] = [order.to_dict() for order in orders['orders']]
-    return render_template("employee-order.html", orders=orders, status=status, paymentMethod=paymentMethod,
-                           sortBy=sortBy, sortDir=sortDir)
+    return render_template("employee-order.html", orders=orders, status=status, paymentMethod=payment_method,
+                           sortBy=sort_by, sortDir=sort_dir, orderType=order_type)
 
 
-@employee_bp.route("/order/update")
-def update_order():
+@employee_bp.route("/order/<order_id>/update")
+def update_order(order_id):
     request.args.get("order_id")
     order = None
     return render_template("employee-order-update.html", order=order)
