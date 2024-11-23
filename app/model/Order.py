@@ -43,6 +43,7 @@ class Order(db.Model):
     offline_order = relationship('OfflineOrder', backref='order', lazy=True, uselist=False)
     payment_detail = relationship('PaymentDetail', backref='order', lazy=True, uselist=False)
 
+
     def to_dict(self):
         json = {
             'order_id': self.order_id,

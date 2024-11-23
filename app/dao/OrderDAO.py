@@ -1,6 +1,7 @@
 from app.model.Order import Order, PaymentDetail
 from sqlalchemy import desc, asc
 from app import app
+from app.model.Order import OrderStatus, PaymentMethod
 import math
 
 # find by id, find by sdt khach hang
@@ -16,20 +17,20 @@ def find_all(**kwargs):
     status = kwargs.get('status')
     payment_method = kwargs.get('paymentMethod')
     sort_by = kwargs.get('sortBy')
-    sort_dir = kwargs.get('dir', "DESC")
+    sort_dir = kwargs.get('dir', "desc")
     page = kwargs.get("page")
 
     if status:
-        orders = orders.filter(Order.status.value.__eq__(int(status)))
+        orders = orders.filter(Order.status == OrderStatus(int(status)))
 
     if payment_method:
-        orders = orders.filter(Order.payment_method.value.__eq__(int(payment_method)))
+        orders = orders.filter(Order.payment_method == PaymentMethod(int(payment_method)))
 
     if 'date' == sort_by:
         orders = orders.order_by(desc(Order.created_at)) if sort_dir.__eq__("DESC") else orders.order_by(
             asc(Order.created_at))
 
-    if 'total_amount' == sort_by:
+    if 'total-amount' == sort_by:
         orders = orders.join(Order.payment_detail)
         orders = orders.order_by(desc(PaymentDetail.amount)) if sort_dir.__eq__("DESC") \
             else orders.order_by(asc(PaymentDetail.amount))
