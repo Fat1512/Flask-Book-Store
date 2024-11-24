@@ -1,7 +1,7 @@
 from app.model.Order import Order, PaymentDetail
 from sqlalchemy import desc, asc, or_
-from app import app
-from app.model.Order import OrderStatus, PaymentMethod, OnlineOrder, OfflineOrder
+from app import app, db
+from app.model.Order import OrderStatus, PaymentMethod, OnlineOrder, OfflineOrder, OrderDetail
 import math
 
 

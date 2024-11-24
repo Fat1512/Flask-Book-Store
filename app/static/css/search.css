@@ -315,10 +315,23 @@ a {
 .label-warning {
 
     padding: 20px;
-    border:1px solid #fcd344;
+    border: 1px solid #fcd344;
     background-color: #fafaec;
     color: #3d6611;
 }
+
 .input-group .btn {
     z-index: 5;
+}
+
+input:-webkit-autofill {
+    background-color: #f0f8ff !important; /* Change the background color */
+    color: #000 !important; /* Change the text color */
+    border: 2px solid #007bff !important; /* Add a border */
+    box-shadow: 0 0 5px #007bff !important; /* Add a glow effect */
+    transition: background-color 0.3s ease-in-out; /* Add a smooth transition */
+}
+
+input[type="text"]:-webkit-autofill {
+    background-color: #e6ffe6; /* Light green for text fields */
 }

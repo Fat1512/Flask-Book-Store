@@ -9,9 +9,11 @@
         </div>
         <form class="col-md-6">
             <div class="input-group mw-md bg-white position-relative">
-                <input class="form-control p-4 border-1" id="search-desktop" type="text" placeholder="Search Book" name="keyword">
+                <input class="form-control p-4 border-1" id="search-desktop " autocomplete="on" type="text"
+                       placeholder="Search Book" name="keyword">
                 <button class="btn pt-1 pb-1 pr-3 pl-3 btn-primary icon-search">
-                    <i class="fa-solid fa-magnifying-glass"></i></button>
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
             </div>
         </form>
         <div class="col-md-3 d-flex justify-content-around p-0 cursor-pointer">
@@ -24,58 +26,59 @@
                         Thông báo
                     </p>
                     {% if current_user.is_authenticated %}
-                    <div class="sub-notification-menu text-center pl-4 pt-4 pr-4">
-                        <img src="{{ current_user.avt_url }}" style="margin-left: auto; margin-right: auto;" width="100"
-                             class="rounded-circle"/>
-                        <a class="nav-link text-info" href="/">
-                            Chào {{ current_user.full_name }}
-                        </a>
-                    </div>
-                    <div class="pl-4 pb-4 pr-4 ">
-                        <button class="btn mb-3 pt-1 pb-1 pr-3 pl-3 btn-primary btn-large">
-                            <a class="text-decoration-none text-white" href="/account/logout">Đăng xuất</a>
-                        </button>
-                    </div>
+                        <div class="sub-notification-menu text-center pl-4 pt-4 pr-4">
+                            <img src="{{ current_user.avt_url }}" style="margin-left: auto; margin-right: auto;"
+                                 width="100"
+                                 class="rounded-circle"/>
+                            <a class="nav-link text-info" href="/">
+                                Chào {{ current_user.full_name }}
+                            </a>
+                        </div>
+                        <div class="pl-4 pb-4 pr-4 ">
+                            <button class="btn mb-3 pt-1 pb-1 pr-3 pl-3 btn-primary btn-large">
+                                <a class="text-decoration-none text-white" href="/account/logout">Đăng xuất</a>
+                            </button>
+                        </div>
                     {% else %}
-                    <div class="sub-notification-menu text-center pl-4 pt-4 pr-4">
-                        <span class="sub-notification-menu-icon"></span>
-                        <p class="pt-3 pb-3">Vui lòng đăng nhập để xem thông báo </p>
-                    </div>
-                    <div class="pl-4 pb-4 pr-4 ">
-                        <button class="btn mb-3 pt-1 pb-1 pr-3 pl-3 btn-primary btn-large">
-                            <a class="text-decoration-none text-white" href="/account/login">Đăng nhập</a>
-                        </button>
-                        <button class="btn pt-1 pb-1 pr-3 pl-3 btn-primary-outline btn-large">
-                            <a class="text-decoration-none text-primary" href="/account/register">Đăng ký</a>
-                        </button>
-                    </div>
+                        <div class="sub-notification-menu text-center pl-4 pt-4 pr-4">
+                            <span class="sub-notification-menu-icon"></span>
+                            <p class="pt-3 pb-3">Vui lòng đăng nhập để xem thông báo </p>
+                        </div>
+                        <div class="pl-4 pb-4 pr-4 ">
+                            <button class="btn mb-3 pt-1 pb-1 pr-3 pl-3 btn-primary btn-large">
+                                <a class="text-decoration-none text-white" href="/account/login">Đăng nhập</a>
+                            </button>
+                            <button class="btn pt-1 pb-1 pr-3 pl-3 btn-primary-outline btn-large">
+                                <a class="text-decoration-none text-primary" href="/account/register">Đăng ký</a>
+                            </button>
+                        </div>
                     {% endif %}
                 </div>
             </div>
-            <div class="d-flex flex-column align-items-center ">
+            <a href="/cart/" class="d-flex flex-column align-items-center ">
                 <i class="fa-solid fa-cart-shopping"></i>
                 <span>Giỏ hàng</span>
-            </div>
+            </a>
             <div class="d-flex flex-column align-items-center account ">
                 <i class="fa-regular fa-user"></i>
                 <span>Tài khoản</span>
                 <div class="sub-login flex-column border-1">
                     {% if current_user.is_authenticated %}
-                    <img src="{{ current_user.avt_url }}" style="margin-left: auto; margin-right: auto;" width="100"
-                         class="rounded-circle"/>
-                    <a class="nav-link text-info" href="/">
-                        Chào {{ current_user.full_name }}
-                    </a>
-                    <button class="btn mb-3 pt-1 pb-1 pr-3 pl-3 btn-primary btn-large">
-                        <a class="text-decoration-none text-white" href="/account/logout">Đăng xuất</a>
-                    </button>
+                        <img src="{{ current_user.avt_url }}" style="margin-left: auto; margin-right: auto;" width="100"
+                             class="rounded-circle"/>
+                        <a class="nav-link text-info" href="/">
+                            Chào {{ current_user.full_name }}
+                        </a>
+                        <button class="btn mb-3 pt-1 pb-1 pr-3 pl-3 btn-primary btn-large">
+                            <a class="text-decoration-none text-white" href="/account/logout">Đăng xuất</a>
+                        </button>
                     {% else %}
-                    <button class="btn mb-3 pt-1 pb-1 pr-3 pl-3 btn-primary btn-large">
-                        <a class="text-decoration-none text-white" href="/account/login">Đăng nhập</a>
-                    </button>
-                    <button class="btn pt-1 pb-1 pr-3 pl-3 btn-primary-outline">
-                        <a class="text-decoration-none text-primary" href="/account/register">Đăng ký </a>
-                    </button>
+                        <button class="btn mb-3 pt-1 pb-1 pr-3 pl-3 btn-primary btn-large">
+                            <a class="text-decoration-none text-white" href="/account/login">Đăng nhập</a>
+                        </button>
+                        <button class="btn pt-1 pb-1 pr-3 pl-3 btn-primary-outline">
+                            <a class="text-decoration-none text-primary" href="/account/register">Đăng ký </a>
+                        </button>
                     {% endif %}
                 </div>
             </div>
