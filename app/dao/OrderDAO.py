@@ -59,6 +59,20 @@ def find_all(**kwargs):
     }
 
 
+def update_order(order_id, order_list):
+    query = OrderDetail.query
+    query.filter(OrderDetail.order_id == order_id).delete()
+
+    for order_item in order_list:
+        book_id = order_item['book_id']
+        quantity = order_item['qty']
+        price = order_item['price']
+        order_detail = OrderDetail(order_id=order_id, book_id=book_id, quantity=quantity, price=price)
+        db.session.add(order_detail)
+
+    db.session.commit()
+
+
 def count_order():
     return Order.query.count()
 
