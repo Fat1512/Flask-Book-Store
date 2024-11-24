@@ -5,22 +5,23 @@ let currentTimeOutId;
 
 const productSearchBox = document.querySelector('.product-search-box');
 const dropDownBtn = document.querySelector(".dropdown-btn");
+const restoreOrderBtn = document.querySelector(".restore-btn");
+const updateBtn = document.querySelector(".update-btn");
 
 const orderContainer = document.querySelector(".order-container");
 const productContainer = document.querySelector(".product-container");
-const orderList = document.querySelector(".order-list");
-const currentOrderItem = {};
+
+let initialOrderItemsState = {};
+let currentOrderItemsState = {};
 
 const fetchProductByBarcode = async function () {
     console.log("Fetching by barcode");
     //Logic................
 }
-
 const fetchProductByName = async function () {
     console.log("Fetching by name");
     //Logic................
 }
-
 const productFetchingFunction = [fetchProductByName, fetchProductByBarcode];
 
 productSearchBox.addEventListener("input", function () {
@@ -29,7 +30,6 @@ productSearchBox.addEventListener("input", function () {
         productFetchingFunction[fetchOption]();
     }, TIME_OUT);
 });
-
 dropDownBtn.addEventListener("click", function (e) {
     e.preventDefault();
     const target = e.target.closest('.dropdown-item');
@@ -43,50 +43,112 @@ productContainer.addEventListener("click", function (e) {
     if (!productItem) return;
     const id = productItem.getAttribute("id");
 
-    if(currentOrderItem[id]) {
+    if (currentOrderItemsState[id]) {
         const input = orderContainer.querySelector(`[input-id="${id}"]`);
-        console.log(input)
-        input.value = +input.value + 1;
-        return;
+        currentOrderItemsState[id]['qty'] = +input.value + 1;
+    } else {
+        currentOrderItemsState[id] = {
+            'book_id': id,
+            'price': productItem.querySelector(".product-price").textContent.split(".")[0].trim(),
+            'discount': productItem.querySelector(".discount").textContent,
+            'title': productItem.querySelector(".product-name").textContent,
+            'qty': 1
+        };
     }
-    const book = {
-        'book_id': id,
-        'price': productItem.querySelector(".product-price").textContent.split(".")[0],
-        'image_url': productItem.querySelector(".card-img-top").getAttribute("src"),
-        'discount': productItem.querySelector(".discount").textContent,
-        'title': productItem.querySelector(".product-name").textContent,
-        'qty': 1
-    }
-    currentOrderItem[id] = true;
-    renderOrderItem(book);
-});
 
+    renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]));
+});
 
 orderContainer.addEventListener("click", function (e) {
     const removeBtn = e.target.closest(".remove-order-item-btn");
     const incrementBtn = e.target.closest(".increment-qty-btn");
     const decrementBtn = e.target.closest(".decrement-qty-btn");
-    if (removeBtn) {
-        delete currentOrderItem[+removeBtn.closest(".order-item").getAttribute("id")];
-        removeBtn.closest(".order-item").remove();
+    const id = e.target.closest(".order-item")?.getAttribute("id");
+    let isTriggered = false;
 
+    if (removeBtn) {
+        if (Object.keys(currentOrderItemsState).length === 1) {
+            alert('the order must have at least 1 item');
+            return;
+        }
+        delete currentOrderItemsState[+id];
+        isTriggered ||= true;
     }
     if (incrementBtn) {
         const input = incrementBtn.previousElementSibling;
-        input.value = +input.value + 1;
+        currentOrderItemsState[+id]['qty'] = +input.value + 1;
+        isTriggered ||= true;
     }
     if (decrementBtn) {
         const input = decrementBtn.nextElementSibling;
-        input.value = input.value > 1 ? +input.value - 1 : input.value;
+        currentOrderItemsState[+id]['qty'] = input.value > 1 ? +input.value - 1 : input.value;
+        isTriggered ||= true;
     }
+    isTriggered && renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]));
 });
 
+orderContainer.addEventListener("change", function (e) {
+    const input = e.target;
+    if (input.value == 0 || input.value == '') input.value = 1;
 
-orderContainer.querySelectorAll(".order-item").forEach(orderItem => currentOrderItem[orderItem.getAttribute("id")] = true)
-console.log(currentOrderItem)
-const renderOrderItem = function (book) {
-    console.log(book)
-    const html = `
+    currentOrderItemsState[+input.getAttribute("input-id")]['qty'] = +input.value;
+    renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]))
+})
+
+restoreOrderBtn.addEventListener("click", () => {
+    renderOrderItem(Object.entries(initialOrderItemsState).map(item => item[1]))
+    currentOrderItemsState = JSON.parse(JSON.stringify(initialOrderItemsState));
+});
+
+updateBtn.addEventListener("click", async function (e) {
+    updateBtn.classList.remove("bg-blue")
+    updateBtn.classList.add("btn-disable")
+    updateBtn.disabled = true
+    restoreOrderBtn.classList.remove("bg-red")
+    restoreOrderBtn.classList.add("btn-disable")
+    restoreOrderBtn.disabled = true
+    let msg = 'Successfully updated';
+
+    try {
+        const res = await fetch(`/api/v1/order/${+updateBtn.getAttribute("order-id")}/update`, {
+            method: "POST",
+            body: JSON.stringify(Object.values(currentOrderItemsState)),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!res.ok) throw new Error("Something went wrong");
+        initialOrderItemsState = JSON.parse(JSON.stringify(currentOrderItemsState));
+
+    } catch (err) {
+        msg = err.message;
+    } finally {
+        Toastify({
+            text: msg,
+            duration: 3000,
+            // destination: "https://github.com/apvarun/toastify-js",
+            newWindow: true,
+            close: true,
+            gravity: "top", // `top` or `bottom`
+            position: "center", // `left`, `center` or `right`
+            stopOnFocus: true, // Prevents dismissing of toast on hover
+            style: {
+                background: "#6cbf6c",
+            }
+        }).showToast();
+        updateBtn.classList.add("bg-blue")
+        updateBtn.classList.remove("btn-disable")
+        updateBtn.disabled = false
+        restoreOrderBtn.classList.add("bg-red")
+        restoreOrderBtn.classList.remove("btn-disable")
+        restoreOrderBtn.disabled = false
+    }
+})
+
+const renderOrderItem = function (books) {
+    const orderList = orderContainer.querySelector(".order-list");
+    orderList.innerHTML = '';
+    const html = books.map(book => `
         <tr class="order-item" id="${book.book_id}">
             <th scope="row">
                 <div class="media align-items-center">
@@ -126,34 +188,21 @@ const renderOrderItem = function (book) {
                     </a>
                 </div>
             </td>
-        </tr>`;
+        </tr>`).join('');
+    const totalAmount = books.reduce((acc, obj) => acc + +obj['price'] * +obj['qty'], 0);
+    const shippingFee = +document.querySelector(".shipping-fee").textContent.trim().split(" ")[0].trim();
+    document.querySelector(".total-amount").textContent = totalAmount + shippingFee + ' VND';
     orderList.insertAdjacentHTML('beforeend', html);
 }
 
-
-// async function test() {
-//     await fetch('/api/v1/order/1/update', {
-//         method: "POST",
-//         body: JSON.stringify(
-//             [
-//                 {
-//                     'order_id': 1,
-//                     'product_id': 2,
-//                     'quantity': 3,
-//                     'price': 12
-//                 },
-//                 {
-//                     'order_id': 2,
-//                     'product_id': 3,
-//                     'quantity': 3,
-//                     'price': 12
-//                 }
-//             ]
-//         ),
-//         headers: {
-//             'Content-Type': 'application/json'
-//         }
-//     })
-// }
-//
-// test();
+orderContainer.querySelectorAll(".order-item").forEach(orderItem => {
+    const obj = {
+        'book_id': orderItem.getAttribute("id"),
+        'price': orderItem.querySelector(".order-item-price").textContent.trim().split(".")[0],
+        'discount': orderItem.querySelector(".order-item-discount").textContent,
+        'title': orderItem.querySelector(".order-item-name").textContent,
+        'qty': orderItem.querySelector(`[input-id="${orderItem.getAttribute("id")}"]`).value
+    }
+    initialOrderItemsState[obj["book_id"]] = obj;
+    currentOrderItemsState[obj["book_id"]] = obj;
+});

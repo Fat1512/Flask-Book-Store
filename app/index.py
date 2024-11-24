@@ -16,9 +16,11 @@ from app.controllers.AdminController import admin_bp
 app.register_blueprint(home_bp, url_prefix='/search')
 app.register_blueprint(employee_bp, url_prefix='/employee')
 app.register_blueprint(order_bp, url_prefix='/order')
+
 app.register_blueprint(book_gerne_rest_bp, url_prefix='/api/v1/bookGerne')
 app.register_blueprint(book_rest_bp, url_prefix='/api/v1/book')
 app.register_blueprint(order_api_bp, url_prefix='/api/v1/order')
+
 app.register_blueprint(index_bp, url_prefix='/')
 app.register_blueprint(account_bp, url_prefix='/account')
 app.register_blueprint(admin_bp, url_prefix='/admin')

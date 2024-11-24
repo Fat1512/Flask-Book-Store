@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css"
           integrity="sha512-9xKTRVabjVeZmc+GUW8GgSmcREDunMM+Dt/GrzchfN8tkwHizc5RP4Ok/MXFFy5rIjJjzhndFScTceq5e6GvVQ=="
           crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 
     <!-- Argon CSS -->
 
@@ -548,73 +549,76 @@
                             </thead>
                             <tbody class="list order-list">
                             {% for order_item in order['order_detail'] %}
-                            <tr class="order-item" id="{{ order_item['book']['book_id'] }}">
-                                <th scope="row">
-                                    <div class="media align-items-center">
-                                        <div class="media-body text-left text-truncate book-item">
-                                            <span class="name mb-0 text-sm text-center w-100">{{ order_item['book']['title'] }}</span>
+                                <tr class="order-item" id="{{ order_item['book']['book_id'] }}">
+                                    <th scope="row">
+                                        <div class="media align-items-center">
+                                            <div class="media-body text-left text-truncate book-item">
+                                                <span class="order-item-name mb-0 text-sm text-center w-100">{{ order_item['book']['title'] }}</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                </th>
-                                <td class="budget text-center">
-                                    {{ order_item['price'] }} VNĐ
-                                </td>
-                                <td>
+                                    </th>
+                                    <td class="budget text-center order-item-price">
+                                        {{ order_item['price'] }} VNĐ
+                                    </td>
+                                    <td>
                                     <span class="badge badge-dot mr-4 text-center w-100">
-                                    <span class="status text-center">10%</span>
+                                    <span class="status text-center order-item-discount">10%</span>
                                     </span>
-                                </td>
-                                <td>
-                                    <div class="d-flex justify-content-center">
-                                        <div class="d-flex justify-content-between align-content-center w-100">
-                                            <span class="cursor-pointer decrement-qty-btn">-</span>
-                                            <input input-id="{{ order_item['book']['book_id'] }}" inputmode="numeric"
-                                                   oninput="this.value = this.value.replace(/\D+/g, '')"
-                                                   class="text-center" value="{{ order_item['quantity'] }}">
-                                            <span class="cursor-pointer increment-qty-btn">+</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex justify-content-center">
+                                            <div class="d-flex justify-content-between align-content-center w-100">
+                                                <span class="cursor-pointer decrement-qty-btn">-</span>
+                                                <input input-id="{{ order_item['book']['book_id'] }}"
+                                                       inputmode="numeric"
+                                                       oninput="this.value = this.value.replace(/\D+/g, '1')"
+                                                       class="text-center" value="{{ order_item['quantity'] }}">
+                                                <span class="cursor-pointer increment-qty-btn">+</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center w-100 justify-content-center">
-                                        <span class="completion mr-2">{{ order_item['price'] * order_item['quantity'] }}</span>
-                                    </div>
-                                </td>
-                                <td class="text-right remove-order-item-btn">
-                                    <div class="dropdown">
-                                        <a class="btn btn-sm btn-icon-only text-light cursor-pointer"  role="button">
-                                            <i class="fa fa-window-close" aria-hidden="true"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center w-100 justify-content-center">
+                                            <span class="completion mr-2">{{ order_item['price'] * order_item['quantity'] }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-right remove-order-item-btn">
+                                        <div class="dropdown">
+                                            <a class="btn btn-sm btn-icon-only text-light cursor-pointer" role="button">
+                                                <i class="fa fa-window-close" aria-hidden="true"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
                             {% endfor %}
                             </tbody>
                         </table>
                         {% if order['order_type']['id'] == 1 %}
-                        <div class="d-flex px-5 py-4 justify-content-between">
-                            <div class="font-weight-bold display-4">
-                                Phí ship
+                            <div class="d-flex px-5 py-4 justify-content-between">
+                                <div class="font-weight-bold display-4">
+                                    Phí ship
+                                </div>
+                                <div class="shipping-fee font-weight-bold display-4">{{ order['order_type']['detail']['shipping_fee'] }}
+                                    VNĐ
+                                </div>
                             </div>
-                            <div class="font-weight-bold display-4">{{ order['order_type']['detail']['shipping_fee'] }}
-                                VNĐ
-                            </div>
-                        </div>
                         {% endif %}
                         <div class="d-flex px-5 py-4 justify-content-between ">
                             <div class="font-weight-bolder display-4">
                                 Tổng tiền:
                             </div>
-                            <div class="font-weight-bolder display-4">{{ order['total_amount'] }} VNĐ</div>
+                            <div class="font-weight-bolder display-4 total-amount">{{ order['total_amount'] }} VNĐ</div>
                         </div>
                         <div class="d-flex py-3">
                             <div class="w-50 px-3">
-                                <button type="button" class="w-100 btn btn-primary bg-red text-white border border-0">
+                                <button type="button"
+                                        class="restore-btn w-100 btn btn-primary bg-red text-white border border-0">
                                     Khôi phục
                                 </button>
                             </div>
                             <div class="w-50 px-3">
-                                <button type="button" class="w-100 btn btn-primary bg-blue text-white border border-0">
+                                <button order-id="{{ order['order_id'] }}" type="button"
+                                        class="update-btn w-100 btn btn-primary bg-blue text-white border border-0">
                                     Cập
                                     Nhật
                                 </button>
@@ -651,17 +655,17 @@
                     </div>
                     <div class="row px-5 product-container">
                         {% for book in books['books'] %}
-                        <a  class="product-item card col-3 cursor-pointer" id="{{ book['book_id'] }}">
-                            <span class="discount text-white">10%</span>
-                            <img class="card-img-top"
-                                 src="{{ book['images'][0]['image_url'] }}"
-                                 alt="Card image">
-                            <div class="card-body p-0">
-                                <p class="card-text product-name">{{ book['title'] }}</p>
-                                <p class="text-primary font-weight-bold mb-1 product-price">{{ book['price'] }}đ</p>
-                                <p class="text-secondary text-decoration-line-through mb-1">1000đ</p>
-                            </div>
-                        </a>
+                            <a class="product-item card col-3 cursor-pointer" id="{{ book['book_id'] }}">
+                                <span class="discount text-white">10%</span>
+                                <img class="card-img-top"
+                                     src="{{ book['images'][0]['image_url'] }}"
+                                     alt="Card image">
+                                <div class="card-body p-0">
+                                    <p class="card-text product-name">{{ book['title'] }}</p>
+                                    <p class="text-primary font-weight-bold mb-1 product-price">{{ book['price'] }}đ</p>
+                                    <p class="text-secondary text-decoration-line-through mb-1">1000đ</p>
+                                </div>
+                            </a>
                         {% endfor %}
                     </div>
                     <nav aria-label="Page navigation example" class="d-flex justify-content-center">
@@ -702,6 +706,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"
         integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 <script src="{{ url_for('static', filename='js/employeeOrderUpdate.js') }}"></script>
 
 </body>

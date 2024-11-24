@@ -3,7 +3,7 @@ from flask import Blueprint
 from flask import render_template, request
 import json
 
-order_api_bp = Blueprint('order_api', __name__)
+order_api_bp = Blueprint('/api/v1/order', __name__)
 
 
 @order_api_bp.route("/")
@@ -21,13 +21,12 @@ def get_order():
                       sort_dir=sort_dir,
                       order_type=order_type,
                       page=int(page))
-    # orders['orders'] = [order.to_dict() for order in orders['orders']]
     return orders
 
 
 @order_api_bp.route("/<order_id>/update", methods=['GET', 'POST'])
 def test(order_id):
-    print(request.json)
+    update_order(order_id, request.json)
     return request.json
 
 
