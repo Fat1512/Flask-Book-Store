@@ -1,0 +1,77 @@
+{% extends 'layout/base.html' %}
+{% block css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cart.css') }}">
+{% endblock %}
+{% block content %}
+    <div class="my-bg-color pt-3 pb-3">
+        <div class="container">
+            <div class="row">
+                <div class=""><span class="font-weight-bold text-large">Giỏ hàng</span> (1 sản phẩm)</div>
+                <div class="col-md-9">
+                    <div class="item-bg-color rounded p-3 align-items-center">
+                        <div class="header-cart d-flex">
+                            <div class="check-all col-md-8">
+                                <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
+                                <span>Chọn tất cả (1 sản phẩm)</span>
+                            </div>
+                            <p class="col-md-2 m-0">Số lượng</p>
+                            <p class="col-md-2 m-0">Thành tiền</p>
+
+                        </div>
+                    </div>
+                    <div class="item-bg-color rounded mt-3 p-3 cart d-flex align-items-center">
+                        <div class="col-md-1">
+                            <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
+                        </div>
+                        <div class="col-md-11 p-0 d-flex align-items-center">
+                            <a class="d-flex group-infor">
+                                <img class="cart-item-image"
+                                     src="https://cdn0.fahasa.com/media/catalog/product//i/m/image_208345.jpg">
+                                <div class="cart-item-detail flex-column d-flex justify-content-between">
+                                    <p>How Psychology Works - Hiểu Hết Về Tâm Lý Học asfa</p>
+                                    <p>247.000d <span>45664</span></p>
+                                </div>
+                            </a>
+                            <div class="d-flex">
+                                <div class="controll ">
+                                    <span class="cart-item-descrease cursor-pointer">-</span>
+                                    <span class="cart-item-quantity">1</span>
+                                    <span class="cart-item-increase cursor-pointer">+</span>
+                                </div>
+                                <p class="cart-item-price font-weight-bold text-primary m-0">124.565d</p>
+                            </div>
+
+                        </div>
+                        <div class="col-md-1 p-0 trash cursor-pointer">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-md-3">
+                    <div class="item-bg-color rounded p-3">
+                        <div class="d-flex justify-content-between">
+                            <p>Thành tiền</p>
+                            <p>246.000đ</p>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <p class="font-weight-bold">Tổng số tiền (gồm VAT)</p>
+                            <p>246.000đ</p>
+                        </div>
+                        <div class="text-center">
+                            <a href="/cart/checkout">
+                                <button class="btn btn-primary w-100 text-uppercase font-weight-bold">
+                                    Thanh toán
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+{% endblock %}
