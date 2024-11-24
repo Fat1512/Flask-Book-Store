@@ -2,6 +2,7 @@ from app.model.User import UserRole
 from flask import render_template, redirect, url_for
 from flask_login import current_user
 from flask import Blueprint
+from app.utils.admin import book_gerne_statistic
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -32,4 +33,5 @@ def add_products_process():
 
 @admin_bp.route("/statistic")
 def admin_statistic():
-    return render_template("admin-statistic.html")
+    stats = book_gerne_statistic()
+    return render_template("admin-statistic.html", stats=stats)

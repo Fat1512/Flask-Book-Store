@@ -4,7 +4,7 @@ const BOOK_API = '/api/v1/book'
 
 
 // DECLARE VARIABLE
-var margin = 10
+var margin = 0
 const CURRENT_URL = new URL(window.location);
 
 //DECALE FUNCTION
@@ -70,7 +70,7 @@ async function render_book(params) {
         return
     }
     bookElemnts.innerHTML = books.map(b => `
-        <a href="#" class="card col-md-3">
+        <a href="/search/detail?bookId=${b.book_id}" class="card col-md-3">
         <span class="discount text-white">10%</span>
         <img class="card-img-top"
              src="${b.images.length ? b.images[0].image_url : null}"
@@ -143,6 +143,7 @@ const render_pagination = function (current_page, pages) {
 
 
 const renderGerne = async function (currentGerne, subGerne) {
+    console.log("ok")
     renderParentGerne()
     renderCurrentGerne(currentGerne)
     renderSubGerne(subGerne)
@@ -219,8 +220,6 @@ const renderSubGerne = function (listBookGerne) {
     const elements = document.querySelectorAll('.sub-item')
     elements.forEach(e => e.addEventListener('click', () => handleOnClickSubItem(e.id)))
 }
-
-
 //INVOKE FUNCTION
 const handleDeleteFilter = async function (e) {
     if (!(e.target.getAttribute('class') === "fa-solid fa-x")) return
@@ -291,17 +290,24 @@ function handleSelectOrder(nameNode, param) {
         })
     )
 }
+
 const search = document.querySelector(".icon-search")
 
-const sub_item = document.querySelectorAll(".sub-item")
-sub_item.forEach(s => {
-    async function handleOnCick(id) {
-        const {current_gerne: currentGerne, sub_gerne: subGerne} = await fetchGerne(id)
-        renderGerne(currentGerne, subGerne)
-    }
+// const sub_item = document.querySelectorAll(".sub-item")
+// sub_item.forEach(s => {
+//     async function handleOnClick(id) {
+//         const {current_gerne: currentGerne, sub_gerne: subGerne} = await fetchGerne(id)
+//         await renderGerne(currentGerne, subGerne)
+//     }
+//
+//     s.addEventListener("click", () => handleOnClick(s.id))
+// })
+async function test() {
+    const {current_gerne: currentGerne, sub_gerne: subGerne} = await fetchGerne(1)
+    await renderGerne(currentGerne, subGerne)
+}
 
-    s.addEventListener("click", () => handleOnCick(s.id))
-})
+test()
 const price_filter = document.querySelector('.box-filter')
 price_filter.addEventListener('click', (e) => handleSelectedFileter(e))
 const deleteFilter = document.querySelectorAll('.filter-list')

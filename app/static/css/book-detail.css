@@ -121,13 +121,6 @@ a:hover {
     background-color: #F2F4F5;
 }
 
-.text-large {
-    font-size: 30px;
-}
-
-.text-medium {
-    font-size: 25px;
-}
 
 .discount {
     margin-left: 8px;
@@ -188,4 +181,9 @@ a:hover {
     align-items: center;
     justify-content: center;
     background-color: rgb(13, 14, 15, 0.8);
+}
+
+
+input[type="radio"]:checked + .custom-label {
+    display: flex;
 }

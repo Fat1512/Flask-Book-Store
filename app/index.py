@@ -1,8 +1,4 @@
-import app.controllers.AccountController
-from app.dao import UserDao
-from app import app, login
-from app.model.User import UserRole
-from flask import render_template, request, redirect, url_for
+from app import app
 from app.controllers.SearchController import home_bp
 from app.controllers.HomeController import index_bp
 from app.controllers.EmployeeController import employee_bp
