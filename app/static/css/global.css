@@ -6,13 +6,21 @@
     --second-color: #666;
     --black-color: #000
 }
-
+a:hover {
+    color: inherit!important;
+    text-decoration: inherit!important;
+}
+a {
+    color: var(--black-color);
+}
 .container {
     width: 90% !important;
 }
+
 .text-black {
     color: var(--black-color);
 }
+
 .text-primary {
     color: var(--red) !important;
 }
@@ -41,4 +49,12 @@
 .btn-primary:hover {
     background-color: var(--red);
     border-color: var(--red);
+}
+
+.text-large {
+    font-size: 30px;
+}
+
+.text-medium {
+    font-size: 25px;
 }

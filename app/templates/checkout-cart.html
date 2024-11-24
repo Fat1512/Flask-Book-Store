@@ -1,0 +1,82 @@
+{% extends 'layout/base.html' %}
+{% block css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/checkout-cart.css') }}">
+{% endblock %}
+{% block js %}
+    <script src="{{ url_for('static', filename='js/checkout.js') }}"></script>
+{% endblock %}
+{% block content %}
+    <div class="my-bg-color pt-3 pb-3">
+        <div class="container checkout-cart">
+            <div class="item-bg-color p-3 rounded">
+                <p class="font-weight-bold">Thông tin khách hàng</p>
+                <div class="d-flex justify-content-between">
+                    <p class="">Họ và tên khách hàng: Lê Tân</p>
+                    <p class="">Số điện thoại khách hàng: 0914132508</p>
+                </div>
+            </div>
+            <div class="item-bg-color p-3 mt-3 rounded">
+                <p class="font-weight-bold">Thông tin nhận hàng</p>
+                <div class="group-address-option d-flex">
+                    <div class="col-md-6">
+                        <input checked type="radio" name="address" value="inperson">
+                        <span>Nhận tại cửa hàng</span>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="radio" name="address" value="ship">
+                        <span>Giao hàng tận nơi</span>
+                    </div>
+                </div>
+                <div class="group-address-infor position-relative">
+                    <label id="inperson" class="custom-label active" for="option-1">
+                        <input class="input-address" id="address" type="text" placeholder="Chọn địa chỉ cửa hàng">
+                        <span class="arrow"><svg data-v-99f06132="" width="16" height="16" viewBox="0 0 16 16"
+                                                 fill="none"
+                                                 xmlns="http://www.w3.org/2000/svg" class="icon"><path
+                                data-v-99f06132=""
+                                d="M8.00004 10.6668C7.84427 10.6671 7.69331 10.6128 7.57337 10.5135L3.57337 7.18012C3.28986 6.94448 3.25106 6.52362 3.4867 6.24012C3.72234 5.95661 4.1432 5.91781 4.4267 6.15345L8.00004 9.14012L11.5734 6.26012C11.7111 6.14827 11.8877 6.09594 12.0642 6.11471C12.2406 6.13348 12.4023 6.2218 12.5134 6.36012C12.6368 6.49869 12.6969 6.68244 12.6792 6.86716C12.6614 7.05188 12.5675 7.22086 12.42 7.33345L8.42004 10.5535C8.29665 10.6371 8.14877 10.677 8.00004 10.6668Z"
+                                fill="#717171"></path></svg></span>
+                        <input class="input-address" id="note" type="text" placeholder="Ghi chú khác (nếu có)">
+                    </label>
+
+                    <label id="ship" class="custom-label">
+                        <p class="font-weight-bold"> Địa chỉ của tôi</p>
+                        <ul class="list-unstyled">
+                            <li class="user-infor">
+                                <div class="address-card d-flex justify-content-between align-items-start">
+                                    <div class="address-info">
+                                        <label class="custom-radio">
+                                            <input type="radio" name="group1" value="option1">
+                                            <span class="radio-mark"></span>
+                                        </label>
+                                        <span class="name">Lê Tân</span>
+                                        <span class="phone">| 0914132508</span>
+                                    </div>
+                                    <span class="update-link text-primary font-weight-bold  cursor-pointer">Cập nhật</span>
+                                </div>
+                                <p class="address mt-2 ml-3">
+                                    B18/47v, Đường Liên Ấp, Ấp 3 (nhà giặt đồ) Xã Bình Hưng, Huyện Bình Chánh, TP. Hồ
+                                    Chí
+                                    Minh
+                                </p>
+                        </ul>
+                    </label>
+                </div>
+
+            </div>
+
+        </div>
+        <div class="checkout item-bg-color d-flex justify-content-between">
+            <div class="d-flex">
+                <input type="checkbox">
+                <div class="ml-2">
+                    <span>Bằng việc tiến hành Mua hàng, Bạn đã đồng ý với </br> Điều khoản &amp; Điều kiện của Fahasa.com </span>
+                </div>
+            </div>
+            <div>
+                <button class="btn btn-primary text-uppercase font-weight-bold">Xác nhận thanh toán</button>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
