@@ -39,6 +39,7 @@ class Book(db.Model):
             "book_gerne_id": self.book_gerne_id,
             "page_number": self.num_page,
             "weight": self.weight,
+            "barcode": self.barcode,
             "images": images_dict,
             "extended_books": extended_books_dict,
         }

@@ -9,6 +9,7 @@ import hashlib
 class UserRole(RoleEnum):
     ADMIN = 1
     USER = 2
+    ANONYMOUS = 3
 
 
 class User(db.Model):

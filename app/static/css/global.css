@@ -63,3 +63,37 @@ a {
 .text-medium {
     font-size: 25px;
 }
+
+
+.modal {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    display: none;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+    background-color: rgba(0, 0, 0, 0.2);
+    animation: fadein linear 0.2s;
+    display: block;
+}
+
+.modal-body {
+    --growth-from: 0.7;
+    --growth-to: 1;
+    background-color: var(--white-color);
+    margin: auto;
+    z-index: 3;
+    position: relative;
+    border-radius: 5px;
+    animation: growth linear 0.2s;
+    flex: 0.5;
+}

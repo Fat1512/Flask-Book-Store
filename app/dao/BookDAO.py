@@ -8,6 +8,13 @@ import math
 def find_by_id(id):
     return Book.query.get(id)
 
+
+def find_by_barcode(barcode):
+    book = Book.query
+    book = book.filter(Book.barcode == barcode)
+    return book.first()
+
+
 def find_by_gerne(gerne_id):
     query = Book.query
     gerne = BookGerne.query.get(gerne_id)

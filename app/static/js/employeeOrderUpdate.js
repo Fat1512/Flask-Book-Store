@@ -45,14 +45,14 @@ productContainer.addEventListener("click", function (e) {
 
     if (currentOrderItemsState[id]) {
         const input = orderContainer.querySelector(`[input-id="${id}"]`);
-        currentOrderItemsState[id]['qty'] = +input.value + 1;
+        currentOrderItemsState[id]['quantity'] = +input.value + 1;
     } else {
         currentOrderItemsState[id] = {
             'book_id': id,
             'price': productItem.querySelector(".product-price").textContent.split(".")[0].trim(),
             'discount': productItem.querySelector(".discount").textContent,
             'title': productItem.querySelector(".product-name").textContent,
-            'qty': 1
+            'quantity': 1
         };
     }
 
@@ -76,12 +76,12 @@ orderContainer.addEventListener("click", function (e) {
     }
     if (incrementBtn) {
         const input = incrementBtn.previousElementSibling;
-        currentOrderItemsState[+id]['qty'] = +input.value + 1;
+        currentOrderItemsState[+id]['quantity'] = +input.value + 1;
         isTriggered ||= true;
     }
     if (decrementBtn) {
         const input = decrementBtn.nextElementSibling;
-        currentOrderItemsState[+id]['qty'] = input.value > 1 ? +input.value - 1 : input.value;
+        currentOrderItemsState[+id]['quantity'] = input.value > 1 ? +input.value - 1 : input.value;
         isTriggered ||= true;
     }
     isTriggered && renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]));
@@ -91,7 +91,7 @@ orderContainer.addEventListener("change", function (e) {
     const input = e.target;
     if (input.value == 0 || input.value == '') input.value = 1;
 
-    currentOrderItemsState[+input.getAttribute("input-id")]['qty'] = +input.value;
+    currentOrderItemsState[+input.getAttribute("input-id")]['quantity'] = +input.value;
     renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]))
 })
 
@@ -126,7 +126,6 @@ updateBtn.addEventListener("click", async function (e) {
         Toastify({
             text: msg,
             duration: 3000,
-            // destination: "https://github.com/apvarun/toastify-js",
             newWindow: true,
             close: true,
             gravity: "top", // `top` or `bottom`
@@ -171,14 +170,14 @@ const renderOrderItem = function (books) {
                         <span class="cursor-pointer decrement-qty-btn">-</span>
                         <input input-id="${book.book_id}" inputmode="numeric"
                                oninput="this.value = this.value.replace(/\\D+/g, '')"
-                               class="text-center" value="${book.qty}">
+                               class="text-center" value="${book.quantity}">
                         <span class="cursor-pointer increment-qty-btn">+</span>
                     </div>
                 </div>
             </td>
             <td>
                 <div class="d-flex align-items-center w-100 justify-content-center">
-                    <span class="completion mr-2">${+book.price * +book.qty}</span>
+                    <span class="completion mr-2">${+book.price * +book.quantity}</span>
                 </div>
             </td>
             <td class="text-right remove-order-item-btn">
@@ -189,7 +188,7 @@ const renderOrderItem = function (books) {
                 </div>
             </td>
         </tr>`).join('');
-    const totalAmount = books.reduce((acc, obj) => acc + +obj['price'] * +obj['qty'], 0);
+    const totalAmount = books.reduce((acc, obj) => acc + +obj['price'] * +obj['quantity'], 0);
     const shippingFee = +document.querySelector(".shipping-fee").textContent.trim().split(" ")[0].trim();
     document.querySelector(".total-amount").textContent = totalAmount + shippingFee + ' VND';
     orderList.insertAdjacentHTML('beforeend', html);
@@ -201,7 +200,7 @@ orderContainer.querySelectorAll(".order-item").forEach(orderItem => {
         'price': orderItem.querySelector(".order-item-price").textContent.trim().split(".")[0],
         'discount': orderItem.querySelector(".order-item-discount").textContent,
         'title': orderItem.querySelector(".order-item-name").textContent,
-        'qty': orderItem.querySelector(`[input-id="${orderItem.getAttribute("id")}"]`).value
+        'quantity': orderItem.querySelector(`[input-id="${orderItem.getAttribute("id")}"]`).value
     }
     initialOrderItemsState[obj["book_id"]] = obj;
     currentOrderItemsState[obj["book_id"]] = obj;

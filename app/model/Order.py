@@ -38,10 +38,10 @@ class Order(db.Model):
     address_id = Column(Integer, ForeignKey('address.address_id'))
     address = relationship("Address", back_populates="order")
 
-    order_detail = relationship("OrderDetail", backref='order', lazy=True)
+    order_detail = relationship("OrderDetail", backref='order', lazy=True, cascade="all")
     online_order = relationship('OnlineOrder', backref='order', lazy=True, uselist=False)
-    offline_order = relationship('OfflineOrder', backref='order', lazy=True, uselist=False)
-    payment_detail = relationship('PaymentDetail', backref='order', lazy=True, uselist=False)
+    offline_order = relationship('OfflineOrder', backref='order', lazy=True, uselist=False, cascade="all")
+    payment_detail = relationship('PaymentDetail', backref='order', lazy=True, uselist=False, cascade="all")
 
     def to_dict(self):
         json = {
@@ -95,6 +95,7 @@ class OfflineOrder(Order):
 
     employee_id = Column(Integer, ForeignKey('user.user_id'))
     employee = relationship("User", back_populates="offline_orders")
+
 
     def to_dict(self):
         return {

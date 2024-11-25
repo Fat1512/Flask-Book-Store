@@ -14,6 +14,8 @@ from app.controllers.rest.OrderAPI import order_api_bp
 from app.controllers.rest.BookGerneController import book_gerne_rest_bp
 from app.controllers.AccountController import account_bp
 from app.controllers.AdminController import admin_bp
+from app.controllers.CartController import cart_bp
+from app.controllers.rest.CartAPI import cart_rest_bp
 
 app.register_blueprint(home_bp, url_prefix='/search')
 app.register_blueprint(employee_bp, url_prefix='/employee')

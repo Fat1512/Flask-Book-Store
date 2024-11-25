@@ -29,3 +29,9 @@ def book():
     data['books'] = book_dto
 
     return data
+
+
+@book_rest_bp.route('/barcode/<barcode>', methods=['GET'])
+def get_by_barcode(barcode):
+    x =  find_by_barcode(barcode).first().to_dict()
+    return x

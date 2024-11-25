@@ -3,6 +3,7 @@ from app import db
 from app.model.BookImage import ImageOfBook
 from enum import Enum
 import functools
+from datetime import datetime, timezone
 
 
 class Status(Enum):
@@ -10,11 +11,12 @@ class Status(Enum):
     TAN = 2
     PHAT = 3
 
-print(type(Status.LE))
 obj = {
     "name": "Phat",
     "age": 12
 }
+
+print(datetime.utcnow())
 
 # print(Status.LE.value.__eq__('1'))
 
