@@ -3,25 +3,36 @@ input:focus {
     border-color: #ff6f61; /* Highlight border */
     outline: none; /* Remove default outline */
 }
+
 .cart-item-image {
     max-height: 119px;
 
 }
+
 .group-infor {
     flex-basis: 66%;
 }
+
 .controll {
     border: 1px solid black;
     border-radius: 5px;
     padding: 4px 6px;
     margin-right: 65px;
 }
+
+.cart-item {
+    padding: 20px 0px;
+    border-bottom: 0.5px solid #F2F4F5
+}
+
 .cart-item-quantity {
     margin: 0 15px;
 }
+
 .trash {
     margin-left: -10px;
 }
+
 .cart-item-price {
     line-height: 35px;
 }

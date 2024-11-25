@@ -1,5 +1,6 @@
 import app.controllers.AccountController
 from app.controllers.CartController import cart_bp
+from app.controllers.rest.CartAPI import cart_rest_bp
 from app.dao import UserDao
 from app import app, login
 from app.model.User import UserRole
@@ -21,11 +22,12 @@ app.register_blueprint(order_bp, url_prefix='/order')
 app.register_blueprint(book_gerne_rest_bp, url_prefix='/api/v1/bookGerne')
 app.register_blueprint(book_rest_bp, url_prefix='/api/v1/book')
 app.register_blueprint(order_api_bp, url_prefix='/api/v1/order')
+app.register_blueprint(cart_rest_bp, url_prefix='/api/v1/cart')
 
 app.register_blueprint(index_bp, url_prefix='/')
 app.register_blueprint(account_bp, url_prefix='/account')
 app.register_blueprint(admin_bp, url_prefix='/admin')
-app.register_blueprint(cart_bp,url_prefix='/cart')
+app.register_blueprint(cart_bp, url_prefix='/cart')
 
 if __name__ == "__main__":
     app.run(debug=True)
