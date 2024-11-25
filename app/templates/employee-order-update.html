@@ -27,7 +27,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/employee.css') }}">
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/book-detail.css') }}">
 </head>
 
 <body>
@@ -546,8 +546,9 @@
                                 <th scope="col" class="sort text-center" data-sort="completion">Tong tien</th>
                                 <th scope="col"></th>
                             </tr>
+
                             </thead>
-                            <tbody class="list order-list">
+                            <tbody class="list order-list" style="max-height: 200px; overflow-y: scroll">
                             {% for order_item in order['order_detail'] %}
                                 <tr class="order-item" id="{{ order_item['book']['book_id'] }}">
                                     <th scope="row">
@@ -690,9 +691,19 @@
                     </nav>
                 </div>
             </div>
+
         </div>
     </div>
     <!-- Page content -->
+
+</div>
+<div class="modal">
+    <div class="overlay"></div>
+    <div class="modal-body item-bg-color">
+        <div id="reader">
+
+        </div>
+    </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
@@ -707,6 +718,9 @@
         integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script
+        src="https://unpkg.com/html5-qrcode"
+        type="text/javascript"></script>
 <script src="{{ url_for('static', filename='js/employeeOrderUpdate.js') }}"></script>
 
 </body>

@@ -22,8 +22,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css"
           integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/argon.css') }}" type="text/css">
-
     <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/employeeOrderDetail.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
 
 </head>
@@ -421,47 +421,53 @@
         <div class="row product-detail">
             <div class="col-12">
                 <div class="card p-5">
+                    <div class="d-flex justify-content-between">
+                        <a class="fa fa-arrow-left display-4 cursor-pointer product-detail-back-btn"
+                           href="/employee/order"
+                           aria-hidden="true"></a>
+                        <button class="btn primary-btn btn-invoice bg-red text-white"
+                                style="justify-items: flex-end !important;">
+                            Hiển thị in hóa đơn
+                        </button>
+                    </div>
+                    <div class="card-header pl-0 bg-transparent border-0">
+                        <h3 class="mb-0 display-4">Thông tin đơn</h3>
+                    </div>
                     <div class="row justify-content-between">
-                        <div class="col-12 pb-5">
-                            <a class="fa fa-arrow-left display-4 cursor-pointer product-detail-back-btn"
-                               href="/employee/order"
-                               aria-hidden="true"></a>
-                        </div>
                         <div class="col-6">
                             <div class="d-flex">
-                                <h1 class="pr-3">Mã đơn: </h1>
-                                <h1 class="font-weight-400">{{ order['order_id'] }}</h1>
-                            </div>
-
-                            <div class="d-flex">
-                                <h1 class="pr-3">Trạng thái: </h1>
-                                <h1 class="font-weight-400">{{ order['status']['name'] }}</h1>
+                                <h2 class="pr-3">Mã đơn: </h2>
+                                <h2 class="font-weight-400 order-id">{{ order['order_id'] }}</h2>
                             </div>
                             <div class="d-flex">
-                                <h1 class="pr-3">Phương thức thanh toán: </h1>
-                                <h1 class="font-weight-400">{{ order['payment']['payment_method']['name'] }}</h1>
+                                <h2 class="pr-3">Trạng thái: </h2>
+                                <h2 class="font-weight-400 ">{{ order['status']['name'] }}</h2>
                             </div>
                             <div class="d-flex">
-                                <h1 class="pr-3">Ngày tạo: </h1>
-                                <h1 class="font-weight-400">{{ order['created_at'] }}</h1>
+                                <h2 class="pr-3">Phương thức thanh toán: </h2>
+                                <h2 class="font-weight-400">{{ order['payment']['payment_method']['name'] }}</h2>
+                            </div>
+                            <div class="d-flex">
+                                <h2 class="pr-3">Ngày tạo: </h2>
+                                <h2 class="font-weight-400">{{ order['created_at'] }}</h2>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="d-flex">
-                                <h1 class="pr-3">Loại đơn: </h1>
-                                <h1 class="font-weight-400">{{ order['order_type']['name'] }}</h1>
+                                <h2 class="pr-3">Loại đơn: </h2>
+                                <h2 class="font-weight-400">{{ order['order_type']['name'] }}</h2>
                             </div>
 
                             {% if order['order_type']['id'] == 1 %}
                                 <div class="d-flex">
-                                    <h1 class="pr-3">Phương thức vận chuyển: </h1>
-                                    <h1 class="font-weight-400">{{ order['order_type']['detail']['shipping_method']['name'] }}</h1>
+                                    <h2 class="pr-3">Phương thức vận chuyển: </h2>
+                                    <h2 class="font-weight-400">{{ order['order_type']['detail']['shipping_method']['name'] }}</h2>
                                 </div>
                             {% endif %}
                             {% if order['order_type']['id'] == 2 %}
                                 <div class="d-flex">
-                                    <h1 class="pr-3">Nhân viên thanh toán: </h1>
-                                    <h1 class="font-weight-400">{{ order['order_type']['detail']['employee_name'] }}</h1>
+                                    <h2 class="pr-3">Nhân viên thanh toán: </h2>
+                                    <h2 class="font-weight-400">{{ order['order_type']['detail']['employee_name'] }}</h2>
                                 </div>
                             {% endif %}
                         </div>
@@ -469,16 +475,19 @@
                     <div class="card-body">
                         <form>
                             <div class="row pb-4">
+                                {#                                {% if order['order_type']['id'] == 1 %}#}
                                 <div class="col-6">
                                     <h6 class=" display-4 text-muted mb-4">Thông tin</h6>
                                     <div class="pl-lg-4">
                                         <div class="row">
                                             <div class="col-lg-12">
-                                                <span class="form-control-label" for="input-address">Họ và tên: </span>
+                                                    <span class="form-control-label"
+                                                          for="input-address">Họ và tên: </span>
                                                 <span>{{ order['address']['first_name'] }} {{ order['address']['last_name'] }}</span>
                                             </div>
                                             <div class="col-lg-12">
-                                                <span class="form-control-label" for="input-address">Địa chỉ: </span>
+                                                    <span class="form-control-label"
+                                                          for="input-address">Địa chỉ: </span>
                                                 <span>{{ order['address']['address'] }}</span>
                                             </div>
                                             <div class="col-lg-12">
@@ -490,23 +499,25 @@
                                                 <span>{{ order['address']['country'] }}</span>
                                             </div>
                                             <div class="col-lg-12">
-                                                <span class="form-control-label" for="input-city">Số điện thoại: </span>
+                                                    <span class="form-control-label"
+                                                          for="input-city">Số điện thoại: </span>
                                                 <span>{{ order['address']['phone_number'] }}</span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                                {#                                {% endif %}#}
                                 {% if order['order_type']['id'] == 1 %}
-                                <div class="col-6">
-                                    <h6 class=" display-4 text-muted mb-4">Ghi chú</h6>
-                                    <div class="pl-lg-4">
-                                        <div class="row">
-                                            <div class="col-lg-12">
-                                                <span>{{ order['order_type']['detail']['note'] }}</span>
+                                    <div class="col-6">
+                                        <h6 class=" display-4 text-muted mb-4">Ghi chú</h6>
+                                        <div class="pl-lg-4">
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <span>{{ order['order_type']['detail']['note'] }}</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
                                 {% endif %}
                             </div>
 
@@ -527,48 +538,60 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header bg-transparent border-0">
-                        <h3 class="mb-0">Sản phẩm</h3>
+                        <h3 class="mb-0 display-4">Chi tiết đơn</h3>
                     </div>
                     <div class="table-responsive">
                         <table class="table align-items-center table-flush">
                             <thead class="thead-light">
                             <tr>
-                                <th scope="col" class="sort text-center" data-sort="name">Ten san pham</th>
-                                <th scope="col" class="sort text-center" data-sort="budget">Gia</th>
-                                <th scope="col" class="sort text-center" data-sort="status">Giam gia</th>
-                                <th scope="col" class="text-center">So luong</th>
-                                <th scope="col" class="sort text-center" data-sort="completion">Tong tien</th>
+                                <th scope="col" class="sort text-center text-black display-4" style="color: black"
+                                    data-sort="name">Barcode No
+                                </th>
+                                <th scope="col" class="sort text-center text-black" data-sort="name"
+                                    style="color: black">Tên sản phẩm
+                                </th>
+                                <th scope="col" class="sort text-center text-black" data-sort="budget"
+                                    style="color: black">Giá
+                                </th>
+                                <th scope="col" class="sort text-center text-black" data-sort="status"
+                                    style="color: black">Giảm giá
+                                </th>
+                                <th scope="col" class="text-center text-black" style="color: black">Số lượng</th>
+                                <th scope="col" class="sort text-center text-black" data-sort="completion"
+                                    style="color: black">Tổng tiền
+                                </th>
                                 <th scope="col"></th>
                             </tr>
                             </thead>
                             <tbody class="list">
                             {% for orderItem in order['order_detail'] %}
-                                <tr>
-                                    <th scope="row">
+                                <tr class="order-item">
+                                    <th class="text-center order-item-barcode">{{ orderItem['book']['barcode'] }}</th>
+                                    <td scope="row">
                                         <div class="media align-items-center">
                                             <div class="media-body text-left">
-                                                <span class="name mb-0 text-sm text-center">{{ orderItem['book']['title'] }}</span>
+                                                <span class="name mb-0 text-sm text-center order-item-title">{{ orderItem['book']['title'] }}</span>
                                             </div>
                                         </div>
-                                    </th>
-                                    <td class="budget text-center">
+                                    </td>
+                                    <td class="budget text-center order-item-price">
                                         {{ orderItem['price'] }} USD
                                     </td>
                                     <td>
                                     <span class="badge badge-dot mr-4 text-center w-100">
-                                    <span class="status text-center">10%</span>
+                                    <span class="status text-center order-item-discount">10%</span>
                                     </span>
                                     </td>
                                     <td>
                                         <div class="d-flex justify-content-center">
-                                            <div class="d-flex justify-content-center w-100">
-                                                <div> {{ orderItem['quantity'] }}</div>
+                                            <div class="d-flex justify-content-center w-100 order-item-quantity">
+                                                 {{ orderItem['quantity'] }}
                                             </div>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="d-flex align-items-center w-100 justify-content-center">
-                                            <span class="completion mr-2"> {{ orderItem['price'] * orderItem['quantity'] }} </span>
+                                            <span class="completion mr-2 order-item-subtotal-amount"> {{ orderItem['price'] * orderItem['quantity'] }} </span>
                                         </div>
                                     </td>
                                 </tr>
@@ -580,16 +603,16 @@
                                 <div class="font-weight-bold display-4">
                                     Phí ship
                                 </div>
-                                <div class="font-weight-bold display-4">{{ order['order_type']['detail']['shipping_fee'] }}
+                                <div class="font-weight-bold display-4 order-shipping-fee">{{ order['order_type']['detail']['shipping_fee'] }}
                                     VNĐ
                                 </div>
                             </div>
                         {% endif %}
                         <div class="d-flex px-5 py-4 justify-content-between ">
-                            <div class="font-weight-bolder display-4">
+                            <div class="font-weight-bolder display-3">
                                 Tổng tiền:
                             </div>
-                            <div class="font-weight-bolder display-4">{{ order['total_amount'] }}
+                            <div class="font-weight-bolder display-3 order-total-amount">{{ order['total_amount'] }}
                                 VNĐ
                             </div>
                         </div>
@@ -597,37 +620,110 @@
                 </div>
             </div>
         </div>
-        <!-- Footer -->
-        <footer class="footer pt-0">
-            <div class="row align-items-center justify-content-lg-between">
-                <div class="col-lg-6">
-                    <div class="copyright text-center  text-lg-left  text-muted">
-                        &copy; 2020 <a href="https://www.creative-tim.com" class="font-weight-bold ml-1"
-                                       target="_blank">Creative
-                        Tim</a>
+    </div>
+</div>
+<div class="modal">
+    <div class="overlay"></div>
+    <div class="modal-body item-bg-color d-flex justify-content-center">
+        <div id="invoice" class="container mt-4">
+            <div class="card">
+                <div class="card-header text-center">
+                    <img class="image-fluid w-25"
+                         src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/fahasa-logo.png" alt="">
+                </div>
+                <div class="card-header invoice-header text-center">
+                    <class
+                    ="mb-0">Mã đơn: 79686 &nbsp; | &nbsp; Ngày đặt: 12/13/2022 &nbsp; | &nbsp; Hotline: 19008386
+                    &nbsp; | &nbsp; Trạng thái: Đã hoàn thành &nbsp; | &nbsp; Loại đơn: Mua trực tiếp</p>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <h1 class="text-center pb-3">THÔNG TIN HÓA ĐƠN</h1>
+                        </div>
+
+                        <div class="col-md-6">
+                            <p>
+                                <strong>Tên:</strong> Phát đẹp trai số 1 OU<br>
+                                <strong>Địa chỉ:</strong> 301 Hồ Hảo Hớn, P Cô Giang, Q1<br>
+                                <strong>Thành phố:</strong> Hố chí minh <br>
+                                <strong>Nước:</strong> Việt Nam <br>
+                                <strong>Số điện thoại:</strong> +02 782 390 782 <br>
+
+                            </p>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <p>
+                                <strong>Phương thức vận chuyển:</strong> Giao hàng <br>
+                                <strong>Phương thức thanh toán:</strong> Thẻ
+                            </p>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr class="text-center">
+                                <th>Barcode</th>
+                                <th>Tên sách</th>
+                                <th>Giá</th>
+                                <th>Số lượng</th>
+                                <th>Giảm giá</th>
+                                <th>Tổng tiền</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="text-center">
+                                <td>30566205</td>
+                                <td>3D Cannon Camera</td>
+                                <td>25.00</td>
+                                <td>1</td>
+                                <td>10.00</td>
+                                <td>23.00</td>
+                            </tr>
+                            <tr class="text-center">
+                                <td>30566206</td>
+                                <td>Green Lemon</td>
+                                <td>70.00</td>
+                                <td>1</td>
+                                <td>0.00</td>
+                                <td>70.00</td>
+                            </tr>
+                            <tr class="text-right">
+                                <td colspan="5"><strong>Tổng tiền:</strong></td>
+                                <td class="text-center">$93.00</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>
+                                <strong>Ghi chú:</strong> Lorem ipsum dolor sit amet consectetur adipisicing elit. Quos
+                                aut provident aperiam expedita mollitia cumque rerum pariatur, reprehenderit ab eveniet
+                                molestiae hic iure doloremque cum ullam fugit. Enim, assumenda incidunt.<br>
+                            </p>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <p>
+                                <strong>Phí ship:</strong> 100.00<br>
+                                <strong>Tổng tiền:</strong> 193.00<br>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <p>
+                                <strong>Created By:</strong> Richard Joseph<br>
+                                <strong>Email:</strong> info@example.com
+                            </p>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <button id="downloadPDF" class="btn text-white btn-print btn-download-pdf">Print</button>
+                        </div>
                     </div>
                 </div>
-                <div class="col-lg-6">
-                    <ul class="nav nav-footer justify-content-center justify-content-lg-end">
-                        <li class="nav-item">
-                            <a href="https://www.creative-tim.com" class="nav-link" target="_blank">Creative Tim</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="https://www.creative-tim.com/presentation" class="nav-link" target="_blank">About
-                                Us</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="http://blog.creative-tim.com" class="nav-link" target="_blank">Blog</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="https://github.com/creativetimofficial/argon-dashboard/blob/master/LICENSE.md"
-                               class="nav-link"
-                               target="_blank">MIT License</a>
-                        </li>
-                    </ul>
-                </div>
             </div>
-        </footer>
+        </div>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
@@ -642,8 +738,11 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"
         integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
-<script src="{{ url_for('static', filename='js/employeeOrder.js') }}"></script>
-<script src="{{ url_for('static', filename='js/employeeOrderUpdate.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script src="{{ url_for('static', filename='js/employeeOrderDetail.js') }}"></script>
 
 </body>
 

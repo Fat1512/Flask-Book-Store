@@ -1,5 +1,6 @@
 from app.model.Order import Order, PaymentDetail
 from sqlalchemy import desc, asc, or_
+from datetime import datetime
 from app import app, db
 from app.model.Order import OrderStatus, PaymentMethod, OnlineOrder, OfflineOrder, OrderDetail
 import math
@@ -65,7 +66,7 @@ def update_order(order_id, order_list):
 
     for order_item in order_list:
         book_id = order_item['book_id']
-        quantity = order_item['qty']
+        quantity = order_item['quantity']
         price = order_item['price']
         order_detail = OrderDetail(order_id=order_id, book_id=book_id, quantity=quantity, price=price)
         db.session.add(order_detail)
@@ -73,6 +74,33 @@ def update_order(order_id, order_list):
     db.session.commit()
 
 
+def create_offline_order(order_list):
+
+    offline_order = OfflineOrder(status=OrderStatus.DA_HOAN_THANH,
+                                 payment_method=PaymentMethod.TIEN_MAT,
+                                 created_at=datetime.utcnow(),
+                                 address_id=1,
+                                 employee_id=2)
+
+    db.session.add(offline_order)
+    db.session.flush()
+
+    order_detail_list = []
+    total_amount = 0
+    for order_item in order_list:
+        book_id = order_item['book_id']
+        quantity = int(order_item['quantity'])
+        price = int(order_item['price'])
+        order_detail = OrderDetail(order_id=offline_order.order_id, book_id=book_id, quantity=quantity, price=price)
+        order_detail_list.append(order_detail)
+        total_amount = total_amount + quantity * price
+
+    payment_detail = PaymentDetail(order_id=offline_order.order_id, created_at=datetime.utcnow(), amount=total_amount)
+
+    db.session.add_all(order_detail_list)
+    db.session.add(payment_detail)
+    db.session.commit()
+    return offline_order.order_id
 def count_order():
     return Order.query.count()
 

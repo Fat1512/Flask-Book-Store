@@ -14,7 +14,7 @@ def book_gerne_statistic():
 #     def index(self):
 #         return self.render('admin/home.html', stats=book_gerne_statistic())
 
-with app.app_context():
-    stats = book_gerne_statistic()
-    print(stats)
-
+# with app.app_context():
+#     stats = book_gerne_statistic()
+#     print(stats)
+#

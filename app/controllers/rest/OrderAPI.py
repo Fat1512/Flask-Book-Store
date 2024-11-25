@@ -6,7 +6,7 @@ import json
 order_api_bp = Blueprint('/api/v1/order', __name__)
 
 
-@order_api_bp.route("/")
+@order_api_bp.route("/", methods=['GET'])
 def get_order():
     status = request.args.get("status")
     payment_method = request.args.get("paymentMethod")
@@ -24,10 +24,18 @@ def get_order():
     return orders
 
 
-@order_api_bp.route("/<order_id>/update", methods=['GET', 'POST'])
-def test(order_id):
+@order_api_bp.route("/<order_id>/update", methods=['POST'])
+def update(order_id):
     update_order(order_id, request.json)
     return request.json
+
+
+@order_api_bp.route("/add", methods=['POST'], endpoint='test_add')
+def test_add():
+    order_id = create_offline_order(request.json)
+    return {
+        'order_id': order_id
+    }
 
 
 @order_api_bp.route("/<order_id>/detail", methods=['GET', 'POST'])

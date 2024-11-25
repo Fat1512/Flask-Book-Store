@@ -1,0 +1,45 @@
+from sqlalchemy.testing.config import db_url
+from app import db
+from app.model.Cart import Cart
+from app.model.CartItem import CartItem
+
+
+def find_by_user_id(user_id):
+    return Cart.query.filter(Cart.user_id == user_id).first()
+
+
+def find_by_cart_id(cart_id):
+    return Cart.query.get(cart_id)
+
+
+def update_cart(request):
+    cart = Cart.query.filter(Cart.cart_id == request.get('cartId')).first()
+    for cart_item in request.get('cartItems'):
+        for item in cart.cart_items:
+            if item.book_id == int(cart_item.get('bookId')):
+                if item.book.quantity < int(cart_item.get('quantity')):
+                    return False
+                item.quantity = int(cart_item.get('quantity'))
+    db.session.commit()
+
+
+def delete_cart_item(book_id):
+    cart = Cart.query.filter(Cart.cart_id == 2).first()
+    for item in cart.cart_items:
+        if item.book_id == book_id:
+            cart.cart_items.remove(item)
+
+    db.session.commit()
+
+
+def add_cart_item(book_id):
+    cart = Cart.query.filter(Cart.cart_id == 2).first()
+    for item in cart.cart_items:
+        if item.book_id == book_id:
+            item.quantity += 1
+            db.session.commit()
+            return
+
+    cart_item = CartItem(book_id=book_id, cart_id=cart.cart_id, quantity=1)
+    cart.cart_items.append(cart_item)
+    db.session.commit()
