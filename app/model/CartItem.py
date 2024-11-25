@@ -24,6 +24,9 @@ class CartItem(db.Model):
 
         }
 
+    def get_price(self):
+        return self.book.price * self.quantity
+
     def increase_quantity(self, quantity):
         if quantity > self.book.quantity: return False
         self.quantity += quantity

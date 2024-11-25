@@ -96,6 +96,7 @@ groupControll.forEach(el => {
     const deletButton = el.querySelector(".fa-solid.fa-trash-can")
     const checkButon = el.querySelector(".checkbox")
     const totalPrice = document.querySelector(".total-price")
+
     checkButon.addEventListener('change', () => {
             const numTotalPrice = extractCurrencyNumber(totalPrice.textContent)
             const itemPrice = extractCurrencyNumber(quantityEl.textContent) *

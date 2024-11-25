@@ -1,3 +1,4 @@
+
 <div class="bg-white">
     <nav class="navbar navbar-expand-sm container position-relative p-2">
         <a class="navbar-brand m-0 col-md-3 text-center" href="/">
@@ -55,9 +56,48 @@
                     {% endif %}
                 </div>
             </div>
-            <a href="/cart/" class="d-flex flex-column align-items-center ">
+            <a class="d-flex cart-link position-relative flex-column align-items-center ">
                 <i class="fa-solid fa-cart-shopping"></i>
                 <span>Giỏ hàng</span>
+
+                {% if cart_items %}
+                    <span class="label-total text-white">{{ cart_items|length }}</span>
+                    <div class="menu-cart-item">
+                        <div class="menu-cart-item-header">
+                            <p class="p-3 m-0">
+                                <span><i class="fa-solid fa-cart-shopping"></i></span>
+                                <span>Giỏ hàng ({{ cart_items|length }})</span>
+                            </p>
+                        </div>
+                        <div>
+                            <ul class="sub-cart list-unstyled mt-3">
+                                {% for item in cart_items %}
+                                    <li class="sub-cart-item d-flex">
+                                        <img class="sub-cart-item-image"
+                                             src="{{ item.book.images[0].image_url }}">
+                                        <div class="sub-cart-item-detail">
+                                            <p class="sub-cart-item-title text-secondary">{{ item.book.title }}</p>
+                                            <p class="font-weight-bold m-0 text-primary">{{ item.book.price|currency("VND") }}
+                                                <span>x {{ item.quantity }}</span></p>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+
+                            </ul>
+                        </div>
+                        <div class="d-flex p-3 align-items-center justify-content-between">
+                            <div class="group-price">
+                                <p class="m-0">Tổng cộng</p>
+                                <p class="text-primary">{{ total_price|currency("VND") }}</p>
+                            </div>
+                            <div>
+                                <button class="btn btn-primary">
+                                    Xem giỏ hàng
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
             </a>
             <div class="d-flex flex-column align-items-center account ">
                 <i class="fa-regular fa-user"></i>

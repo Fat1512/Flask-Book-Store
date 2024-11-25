@@ -36,3 +36,6 @@ input:focus {
 .cart-item-price {
     line-height: 35px;
 }
+.cart {
+    overflow: unset;
+}

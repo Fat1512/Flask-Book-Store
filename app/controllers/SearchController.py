@@ -5,6 +5,7 @@ from flask import Blueprint, request, render_template
 from app import app
 from app.dao.BookDAO import find_all, paginate_book, find_by_gerne, find_by_id
 from app.dao.BookGerneDAO import get_depth_gerne
+from app.dao.CartDao import find_by_cart_id
 from app.dao.SearchDAO import searchBook
 
 home_bp = Blueprint('search', __name__)
@@ -23,6 +24,10 @@ def search_main():
     page = request.args.get('page', 1, type=int)
     pagination = searchBook(keyword, minPrice, maxPrice, order, gerne_id, limit, page, )
 
+    cart = find_by_cart_id(2)
+    cart_items = cart.cart_items
+    total_price = cart.total_price()
+
     return render_template("search.html"
                            , current_gerne=book_gerne["current_gerne"]
                            , sub_gerne=book_gerne["sub_gerne"]
@@ -31,7 +36,9 @@ def search_main():
                            , maxPrice=maxPrice
                            , order=order
                            , limit=limit
-                           , pagination=pagination)
+                           , pagination=pagination
+                           , cart_items=cart_items
+                           , total_price=total_price)
 
 
 @home_bp.route('/detail')
@@ -49,5 +56,4 @@ def get_detail():
     }
     for ex in book.extended_books:
         detail_book[ex.attribute.attribute_name] = ex.value
-
     return render_template("book-detail.html", book=book, detail_book=detail_book, books=books)
