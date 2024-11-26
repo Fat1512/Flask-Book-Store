@@ -24,10 +24,6 @@ def search_main():
     page = request.args.get('page', 1, type=int)
     pagination = searchBook(keyword, minPrice, maxPrice, order, gerne_id, limit, page, )
 
-    cart = find_by_cart_id(2)
-    cart_items = cart.cart_items
-    total_price = cart.total_price()
-
     return render_template("search.html"
                            , current_gerne=book_gerne["current_gerne"]
                            , sub_gerne=book_gerne["sub_gerne"]
@@ -37,8 +33,7 @@ def search_main():
                            , order=order
                            , limit=limit
                            , pagination=pagination
-                           , cart_items=cart_items
-                           , total_price=total_price)
+                           )
 
 
 @home_bp.route('/detail')
