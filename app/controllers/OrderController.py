@@ -24,5 +24,3 @@ def filter_orders():
              page=int(page))
     return [order.to_dict() for order in orders]
 
-if __name__ == "__main__":
-    app.run(debug=True)

@@ -5,9 +5,12 @@ from enum import Enum as RoleEnum
 from datetime import datetime
 import hashlib
 
+
 class UserRole(RoleEnum):
     ADMIN = 1
     USER = 2
+    ANONYMOUS = 3
+
 
 class User(db.Model):
     __tablename__ = 'user'
@@ -20,7 +23,8 @@ class User(db.Model):
     email = Column(String(50), nullable=False, unique=True)
     phone_number = Column(String(10))
     date_of_birth = Column(Date)
-    avt_url = Column(Text, default="https://png.pngtree.com/png-vector/20191101/ourmid/pngtree-cartoon-color-simple-male-avatar-png-image_1934459.jpg")
+    avt_url = Column(Text,
+                     default="https://png.pngtree.com/png-vector/20191101/ourmid/pngtree-cartoon-color-simple-male-avatar-png-image_1934459.jpg")
     isActive = Column(Boolean, default=True)
     last_access = Column(DateTime, default=datetime.utcnow)
     user_role = Column(Enum(UserRole), default=UserRole.USER)
@@ -28,6 +32,7 @@ class User(db.Model):
 
     offline_orders = relationship("OfflineOrder", back_populates="employee")
     online_orders = relationship("OnlineOrder", back_populates="customer")
+    cart = relationship("Cart", back_populates="user")
 
     @property
     def full_name(self):

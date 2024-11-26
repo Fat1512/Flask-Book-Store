@@ -7,14 +7,19 @@
     --black-color: #000
 }
 a:hover {
-    color: inherit!important;
-    text-decoration: inherit!important;
+    color: inherit !important;
+    text-decoration: inherit !important;
 }
 a {
     color: var(--black-color);
 }
 .container {
     width: 90% !important;
+}
+.btn-primary:disabled {
+    background-color: #e0e0e0;
+    border-color: #e0e0e0;
+    cursor: not-allowed!important;
 }
 
 .text-black {

@@ -1,6 +1,7 @@
 from app.dao.OrderDAO import *
 from app.dao.SearchDAO import searchBook
 from flask import Blueprint
+from datetime import datetime
 from flask import render_template, request
 import json
 
@@ -9,7 +10,13 @@ employee_bp = Blueprint('employee', __name__)
 
 @employee_bp.route("/checkout")
 def checkout():
-    return render_template("employee_checkout.html")
+    books = searchBook(limit=8, page=1)
+    book_dto = []
+    for book in books['books']:
+        book_dto.append(book.to_dict())
+    books['books'] = book_dto
+
+    return render_template("employee_checkout.html", books=books)
 
 
 @employee_bp.route("/order")
@@ -40,11 +47,18 @@ def update_order(order_id):
     for book in books['books']:
         book_dto.append(book.to_dict())
     books['books'] = book_dto
-
-    return render_template("employee-order-update.html", order=order.to_dict(), books=books)
+    return render_template("employee-order-update.html", order=order, books=books)
 
 
 @employee_bp.route("/order/<order_id>/detail")
 def get_order_detail(order_id):
     order = find_by_id(order_id)
-    return render_template("employee-order-detail.html", order=order.to_dict())
+    today = datetime.utcnow()
+    return render_template("employee-order-detail.html", order=order, today=today)
+
+@employee_bp.route("/category")
+def get_category():
+    with open('data/category.json', encoding="utf8") as f:
+        data = json.load(f)
+        categories = data[0:4]
+    return categories

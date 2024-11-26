@@ -1,7 +1,28 @@
+const CART_API = '/api/v1/cart'
+const CURRENT_URL = new URL(window.location);
+const buttonAddCart = document.querySelector(".btn-add-cart")
+buttonAddCart.addEventListener('click',() => addCartItem(CURRENT_URL.searchParams.get("bookId")))
+const addCartItem = async function (id) {
+    try {
+        const response = await fetch(`${CART_API}/${id}`, {
+            method: 'POST', // HTTP PUT method
+            headers: {
+                'Content-Type': 'application/json' // Specify JSON content type
+            },
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const result = await response.json(); // Parse JSON response
+        alert(result.message);
+    } catch (error) {
+        alert('Failed to add cart.');
+    }
+}
+
 const buttonOpenFormComment = document.querySelector('.form-comment-open')
 const modal = document.querySelector(".modal")
 buttonOpenFormComment.addEventListener('click', () =>
-
     modal.style = "display:flex"
 )
 const buttonCloseFormComment = document.querySelectorAll('.close-form')

@@ -1,0 +1,141 @@
+.account:hover .sub-login {
+    display: flex;
+}
+
+.sub-login::after {
+    content: "";
+    width: 20%;
+    height: 30px;
+    background-color: transparent;
+    position: absolute;
+    display: block;
+    top: -28px;
+    left: 79%;
+}
+
+.icon-search {
+    position: absolute !important;
+    top: 50%;
+    left: 93%;
+    transform: translate(-50%, -50%);
+}
+
+.form-control {
+    border-radius: 10px !important;
+}
+
+.sub-login {
+    display: none;
+    position: absolute;
+    top: 50%;
+    top: 150%;
+    left: 11%;
+    background-color: var(--white-color);
+    padding: 20px;
+    z-index: 1;
+    box-shadow: 0px 0px 4px 2px rgba(0, 0, 0, 0.1);
+}
+
+.sub-notification::after {
+    content: "";
+    width: 34%;
+    height: 30px;
+    background-color: transparent;
+    position: absolute;
+    display: block;
+    top: -28px;
+    left: 64%;
+}
+
+.sub-notification {
+    position: absolute;
+    z-index: 1;
+    background-color: var(--white-color);
+    border-radius: 10px;
+    top: 150%;
+    right: 65%;
+    box-shadow: 0px 0px 4px 2px rgba(0, 0, 0, 0.1);
+    display: none;
+}
+
+.bell:hover .sub-notification {
+    display: block;
+}
+
+.sub-notification-header {
+    border-bottom: 1px solid #f2f4f5;
+    padding: 10px 20px;
+}
+
+.sub-notification-menu-icon {
+    background-image: url("https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/customer/ico_login.svg");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 100%;
+    height: 80px;
+    display: block;
+}
+
+.cart-link:hover .menu-cart-item {
+    display: block;
+}
+
+.menu-cart-item {
+    position: absolute;
+    z-index: 10;
+    background-color: var(--white-color);
+    border-radius: 10px;
+    top: 150%;
+    right: 0;
+    box-shadow: 0px 0px 4px 2px rgba(0, 0, 0, 0.1);
+    display: none;
+}
+
+.menu-cart-item::after {
+    content: "";
+    width: 34%;
+    height: 30px;
+    background-color: transparent;
+    position: absolute;
+    display: block;
+    top: -28px;
+    right: 0;
+}
+
+.sub-cart-item-image {
+    height: 68px;
+    width: 68px;
+}
+
+.sub-cart {
+    max-height: 368px;
+    overflow-y: auto;
+}
+
+.menu-cart-item-header {
+    border-bottom: 0.5px solid #777;
+}
+
+.sub-cart-item-detail {
+    width: 252px;
+}
+
+.sub-cart-item-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+
+.label-total {
+    position: absolute;
+    background: red;
+    border-radius: 50%;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: bold;
+    top: -16px;
+    left: 32px;
+}

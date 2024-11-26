@@ -1,6 +1,7 @@
 from flask import Blueprint, request
 from app import app
 from app.dao.BookDAO import find_by_id
+from app.dao.CartDao import find_by_user_id
 from app.dao.SearchDAO import searchBook
 
 book_rest_bp = Blueprint('book_rest', __name__)
@@ -28,3 +29,9 @@ def book():
     data['books'] = book_dto
 
     return data
+
+
+@book_rest_bp.route('/barcode/<barcode>', methods=['GET'])
+def get_by_barcode(barcode):
+    x =  find_by_barcode(barcode).first().to_dict()
+    return x

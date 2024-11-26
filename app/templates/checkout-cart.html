@@ -29,13 +29,23 @@
                 </div>
                 <div class="group-address-infor position-relative">
                     <label id="inperson" class="custom-label active" for="option-1">
-                        <input class="input-address" id="address" type="text" placeholder="Chọn địa chỉ cửa hàng">
-                        <span class="arrow"><svg data-v-99f06132="" width="16" height="16" viewBox="0 0 16 16"
-                                                 fill="none"
-                                                 xmlns="http://www.w3.org/2000/svg" class="icon"><path
-                                data-v-99f06132=""
-                                d="M8.00004 10.6668C7.84427 10.6671 7.69331 10.6128 7.57337 10.5135L3.57337 7.18012C3.28986 6.94448 3.25106 6.52362 3.4867 6.24012C3.72234 5.95661 4.1432 5.91781 4.4267 6.15345L8.00004 9.14012L11.5734 6.26012C11.7111 6.14827 11.8877 6.09594 12.0642 6.11471C12.2406 6.13348 12.4023 6.2218 12.5134 6.36012C12.6368 6.49869 12.6969 6.68244 12.6792 6.86716C12.6614 7.05188 12.5675 7.22086 12.42 7.33345L8.42004 10.5535C8.29665 10.6371 8.14877 10.677 8.00004 10.6668Z"
-                                fill="#717171"></path></svg></span>
+                        <div class="select-address">
+                            <input autocomplete="off" class="input-address position-relative" id="address" type="text"
+                                   placeholder="Chọn địa chỉ cửa hàng">
+                            <div class="list-address p-3 item-bg-color">
+                                <ul class="list-unstyled m-0">
+                                    <li class="address-item">97 Võ Văn Tần P. 6, Q. 3 TP. Hồ Chí Minh</li>
+                                    <li class="address-item">35-37 Hồ Hảo Hớn P. Cô Giang, Q. 1 TP. Hồ Chí Minh</li>
+                                </ul>
+                            </div>
+                            <span class="arrow"><svg data-v-99f06132="" width="16" height="16" viewBox="0 0 16 16"
+                                                     fill="none"
+                                                     xmlns="http://www.w3.org/2000/svg" class="icon"><path
+                                    data-v-99f06132=""
+                                    d="M8.00004 10.6668C7.84427 10.6671 7.69331 10.6128 7.57337 10.5135L3.57337 7.18012C3.28986 6.94448 3.25106 6.52362 3.4867 6.24012C3.72234 5.95661 4.1432 5.91781 4.4267 6.15345L8.00004 9.14012L11.5734 6.26012C11.7111 6.14827 11.8877 6.09594 12.0642 6.11471C12.2406 6.13348 12.4023 6.2218 12.5134 6.36012C12.6368 6.49869 12.6969 6.68244 12.6792 6.86716C12.6614 7.05188 12.5675 7.22086 12.42 7.33345L8.42004 10.5535C8.29665 10.6371 8.14877 10.677 8.00004 10.6668Z"
+                                    fill="#717171"></path></svg></span>
+                        </div>
+
                         <input class="input-address" id="note" type="text" placeholder="Ghi chú khác (nếu có)">
                     </label>
 
@@ -65,6 +75,21 @@
 
             </div>
 
+            <div class="item-bg-color p-3 mt-3 rounded">
+                <p class="font-weight-bold">Phương thức thanh toán</p>
+                <div class="group-address-option d-flex">
+                    <div class="col-md-6">
+                        <input checked type="radio" name="address" value="inperson">
+                        <span>Nhận tại cửa hàng</span>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="radio" name="address" value="ship">
+                        <span>Giao hàng tận nơi</span>
+                    </div>
+                </div>
+
+
+            </div>
         </div>
         <div class="checkout item-bg-color d-flex justify-content-between">
             <div class="d-flex">

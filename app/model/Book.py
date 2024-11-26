@@ -3,6 +3,7 @@ from app import db, app
 from sqlalchemy.orm import relationship
 from app.model.BookImage import ImageOfBook
 from app.model.ExtendedBook import ExtendedBook
+from app.model.Order import OrderDetail
 
 
 class Book(db.Model):
@@ -24,6 +25,7 @@ class Book(db.Model):
     order_detail = relationship("OrderDetail", back_populates="book")
 
     extended_books = db.relationship('ExtendedBook', back_populates='book', lazy=True)
+    cart_item = db.relationship('CartItem', back_populates='book', lazy=True)
 
     def to_dict(self):
         images_dict = [image.to_dict() for image in self.images]
@@ -38,9 +40,18 @@ class Book(db.Model):
             "book_gerne_id": self.book_gerne_id,
             "page_number": self.num_page,
             "weight": self.weight,
+            "barcode": self.barcode,
             "images": images_dict,
             "extended_books": extended_books_dict,
         }
 
     def __str__(self):
         pass
+
+    def increase_book(self, quantity):
+        self.quantity += quantity
+
+    def decrease_book(self, quantity):
+        if self.quantity < quantity:
+            return False
+        self.quantity -= quantity
