@@ -43,8 +43,7 @@ def find_all(**kwargs):
         orders = orders.order_by(Order.created_at.desc()) if sort_dir.__eq__("desc") else orders.order_by(
             Order.created_at.asc())
 
-    # orders = [order.to_dict() for order in orders.all()]
-    orders = [order.online_order.to_dict() if order.online_order else order.offline_order.to_dict() for order in orders.all()]
+    orders = [order.to_dict() for order in orders.all()]
 
     if 'total-amount' == sort_by:
         orders.sort(key=sort_by_total_amount, reverse=True if sort_dir.__eq__("desc") else False)
@@ -69,7 +68,7 @@ def update_order(order_id, order_list):
 
     for order_item in order_list:
         book_id = order_item['book_id']
-        quantity = order_item['quantity']
+        quantity = order_item['qty']
         price = order_item['price']
         order_detail = OrderDetail(order_id=order_id, book_id=book_id, quantity=quantity, price=price)
         db.session.add(order_detail)

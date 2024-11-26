@@ -24,8 +24,8 @@ def get_order():
     return orders
 
 
-@order_api_bp.route("/<order_id>/update", methods=['POST'])
-def update(order_id):
+@order_api_bp.route("/<order_id>/update", methods=['GET', 'POST'])
+def test(order_id):
     update_order(order_id, request.json)
     return request.json
 

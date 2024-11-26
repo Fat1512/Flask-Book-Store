@@ -19,20 +19,62 @@ listAddress.querySelectorAll(".address-item").forEach(el =>
         listAddress.style = 'display:none; opacity:0'
     })
 )
-addressArea.addEventListener("click", (e) => {
-    function handleClickOutSide(e) {
-        if (e.target === listAddress || e.target === inputAddress) {
-            return false
-        }
-        listAddress.style = 'display:none; opacity:0'
-        inputAddress.value = ''
-        return true
-    }
+document.body.addEventListener('click', e => handleClickOutSide(e))
 
-    document.body.addEventListener("click", (e) => {
-        handleClickOutSide(e) && document.body.removeEventListener('click', handleClickOutSide)
-    })
-    if (e.target === inputAddress) {
-        listAddress.style = 'display:block; opacity:1'
+function handleClickOutSide(e) {
+    if (addressArea && addressArea.contains(e.target)) {
+        return
     }
+    listAddress.style = 'display:none; opacity:0'
+    if (!document.querySelector(".address-item.active-address"))
+        inputAddress.value = ''
+
+}
+
+addressArea.addEventListener("click", (e) =>
+    listAddress.style = 'display:block; opacity:1'
+)
+const paymentArea = document.querySelector(".select-payment")
+paymentArea.addEventListener('click', () => {
+    document.querySelector('.modal').style = 'display:flex'
+})
+const closeModalButton = document.querySelector(".close-form")
+closeModalButton.addEventListener('click', () => {
+    document.querySelector('.modal').style = 'display:none'
+})
+const confirmButton = document.querySelector('.payment-confirm')
+confirmButton.addEventListener('click', () => {
+    const paymentIcon = document.querySelector('.payment-icon')
+    const paymentText = document.querySelector('.payment-text')
+    const method = document.querySelector('.payment-method-item-active')
+
+    paymentIcon.innerHTML = method.querySelector('.payment-method-item-icon img').outerHTML
+    paymentText.innerHTML = method.querySelector('.payment-method-item-text').textContent
+
+    document.querySelector('.modal').style = 'display:none'
+})
+const methodList = document.querySelectorAll('.payment-method-item')
+methodList.forEach(el => {
+    el.addEventListener('click', () => {
+        const prev = document.querySelector('.payment-method-item-active')
+        if (prev) {
+            prev.classList.remove('payment-method-item-active')
+            prev.querySelector('.payment-item-tick').style = 'display:none'
+        }
+        el.classList.add('payment-method-item-active')
+        el.querySelector('.payment-item-tick').style = 'display:block'
+    })
+})
+const addressUserList = document.querySelectorAll('.address-user')
+
+addressUserList.forEach(addressUser => {
+    addressUser.addEventListener('click', (e) => {
+        e.preventDefault()
+        let prev = document.querySelector('input[name="address-item"]:checked')
+        if (prev) {
+            prev.checked = false
+        }
+        console.log(e.target)
+        addressUser.querySelector('input[name="address-item"]').checked = true
+    })
 })

@@ -4,6 +4,7 @@ from app import db, app
 from app.model import Book
 from enum import Enum as PythonEnum
 
+
 class Address(db.Model):
     address_id = Column(Integer, primary_key=True, autoincrement=True)
     first_name = Column('firstName', String, nullable=False)
@@ -15,6 +16,7 @@ class Address(db.Model):
 
     user_id = Column(Integer, ForeignKey('user.user_id'))
     order = relationship("Order", back_populates="address")
+
     def to_dict(self):
         return {
             'address_id': self.address_id,
@@ -25,3 +27,9 @@ class Address(db.Model):
             'country': self.country,
             'address': self.address
         }
+
+    def to_string_without_user(self):
+        return self.address + ', ' + self.city + ', ' + self.country
+
+    def get_fullname(self):
+        return self.last_name + ' ' + self.first_name

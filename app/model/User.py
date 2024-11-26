@@ -4,6 +4,8 @@ from sqlalchemy.orm import relationship
 from enum import Enum as RoleEnum
 from datetime import datetime
 import hashlib
+from app.model.Cart import Cart
+
 
 
 class UserRole(RoleEnum):
