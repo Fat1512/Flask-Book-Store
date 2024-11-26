@@ -3,6 +3,7 @@ from app import db, app
 from sqlalchemy.orm import relationship
 from app.model.BookImage import ImageOfBook
 from app.model.ExtendedBook import ExtendedBook
+from app.model.Order import OrderDetail
 
 
 class Book(db.Model):

@@ -39,7 +39,7 @@ class Order(db.Model):
     address = relationship("Address", back_populates="order")
 
     order_detail = relationship("OrderDetail", backref='order', lazy=True, cascade="all")
-    online_order = relationship('OnlineOrder', backref='order', lazy=True, uselist=False)
+    online_order = relationship('OnlineOrder', backref='order', lazy=True, uselist=False, cascade="all")
     offline_order = relationship('OfflineOrder', backref='order', lazy=True, uselist=False, cascade="all")
     payment_detail = relationship('PaymentDetail', backref='order', lazy=True, uselist=False, cascade="all")
 
@@ -95,7 +95,6 @@ class OfflineOrder(Order):
 
     employee_id = Column(Integer, ForeignKey('user.user_id'))
     employee = relationship("User", back_populates="offline_orders")
-
 
     def to_dict(self):
         return {

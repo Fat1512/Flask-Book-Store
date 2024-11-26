@@ -24,21 +24,19 @@ def get_order():
     return orders
 
 
-@order_api_bp.route("/<order_id>/update", methods=['POST'])
-def update(order_id):
+@order_api_bp.route("/<order_id>/update", methods=['GET', 'POST'])
+def test(order_id):
     update_order(order_id, request.json)
     return request.json
 
 
 @order_api_bp.route("/add", methods=['POST'], endpoint='test_add')
-def test_add():
-    order_id = create_offline_order(request.json)
-    return {
-        'order_id': order_id
-    }
+def offline_order():
+    order = create_offline_order(request.json)
+    return order
 
 
 @order_api_bp.route("/<order_id>/detail", methods=['GET', 'POST'])
 def find(order_id):
     order = find_by_id(order_id)
-    return order.to_dict()
+    return order

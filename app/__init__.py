@@ -17,6 +17,7 @@ cloudinary.config(
     api_secret="GY20iNSIGW6CdrY1s1cDGwMKrqY",
     secure=True
 )
+
 app.config['SQLALCHEMY_ECHO'] = True
 app.config['PAGE_SIZE'] = 12
 app.config['ORDER'] = 'desc'

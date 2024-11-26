@@ -25,7 +25,7 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/employeeAddProducts.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/adminStatistic.css') }}">
 </head>
 
 <body>
@@ -399,7 +399,7 @@
         <div class="container-fluid">
             <div class="header-body">
                 <div class="row align-items-center py-4">
-                    <div class="col-lg-6 col-7">
+                    <div class="col-lg-6 col-7" style="max-width: 35%">
                         <!--                        <h6 class="h2 text-white d-inline-block mb-0">Icons</h6>-->
                         <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
                             <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
@@ -409,7 +409,16 @@
                             </ol>
                         </nav>
                     </div>
-                    <div class="col-lg-6 col-5 text-right">
+                    <div class="form-group">
+<!--                        <label>Chọn mục</label>-->
+                        <div class="dropdown-container">
+                            <input type="text" id="genreSearch"
+                                   class="dropdown-search product-publisher" autocomplete="off" placeholder="Chọn mục thống kê">
+                            <div class="dropdown-list" id="genreList">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-5 text-right" style="max-width: 35%">
                         <a href="#" class="btn btn-neutral" id="statistic-table-check">Bảng</a>
                         <a href="#" class="btn btn-neutral" id="statistic-chart-check">Biểu đồ</a>
                     </div>
@@ -429,171 +438,56 @@
                         <div class="row icon-examples">
                             <div class="col-12">
 
-                                <div class="table-responsive">
-                                    <table class="table align-items-center table-flush">
-                                        <thead class="thead-light">
+                                <div class="table-responsive"
+                                     style="max-height: 330px; overflow-y: auto; border: 1px solid #adb5bd; border-radius: 5px;">
+                                    <table class="table align-items-center table-flush"
+                                           style="border-collapse: collapse; width: 100%; border: 1px solid #adb5bd;">
+                                        <thead class="thead-light" style="position: sticky; top: 0; z-index: 1;">
                                         <tr>
-                                            <th scope="col" class="sort text-center" data-sort="budget">Ma the loai</th>
-                                            <th scope="col" class="sort text-center" data-sort="name">Ten the loai
+                                            <th scope="col" class="sort text-center" data-sort="budget"
+                                                style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
+                                                Ma the loai
                                             </th>
-                                            <th scope="col" class="sort text-center" data-sort="budget">So luong sach
+                                            <th scope="col" class="sort text-center" data-sort="name"
+                                                style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
+                                                Ten the loai
+                                            </th>
+                                            <th scope="col" class="sort text-center" data-sort="budget"
+                                                style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
+                                                So luong sach
                                             </th>
                                         </tr>
                                         </thead>
                                         <tbody class="list">
                                         {% for s in stats %}
                                         <tr>
-                                            <th scope="row">
+                                            <th scope="row" style="border: 1px solid #adb5bd;">
                                                 <div class="media align-items-center">
                                                     <div class="media-body text-center">
                                                         <span class="name mb-0 text-sm text-center">{{s[0]}}</span>
                                                     </div>
                                                 </div>
                                             </th>
-                                            <td class="budget text-center">
+                                            <td class="budget text-center" style="border: 1px solid #adb5bd;">
                                                 {{s[1]}}
                                             </td>
-                                            <td>
+                                            <td style="border: 1px solid #adb5bd;">
                                                         <span class="badge badge-dot mr-4 text-center w-100">
                                                         <span class="status text-center">{{s[2]}}</span>
                                                         </span>
                                             </td>
-                                            <!--                                            <td>-->
-                                            <!--                                                <div class="d-flex justify-content-center">-->
-                                            <!--                                                    <div class="d-flex justify-content-center w-100">-->
-                                            <!--                                                        <div>1220</div>-->
-                                            <!--                                                    </div>-->
-                                            <!--                                                </div>-->
-                                            <!--                                            </td>-->
-                                            <!--                                            <td>-->
-                                            <!--                                                <div class="d-flex align-items-center w-100 justify-content-center">-->
-                                            <!--                                                    <span class="completion mr-2">2000</span>-->
-                                            <!--                                                </div>-->
-                                            <!--                                            </td>-->
                                         </tr>
                                         {% endfor %}
                                         </tbody>
                                     </table>
-                                    <div class="d-flex px-5 py-4 justify-content-between ">
-                                        <div class="font-weight-bolder display-4">
-                                            Tổng tiền:
-                                        </div>
-                                        <div class="font-weight-bolder display-4">1.000.000 VNĐ</div>
-                                    </div>
+
                                 </div>
-                                <!--                                <div class="table-responsive">-->
-                                <!--                                    <table class="table align-items-center table-flush">-->
-                                <!--                                        <thead class="thead-light">-->
-                                <!--                                        <tr>-->
-                                <!--                                            <th scope="col" class="sort text-center" data-sort="name">Ten san pham-->
-                                <!--                                            </th>-->
-                                <!--                                            <th scope="col" class="sort text-center" data-sort="budget">Gia</th>-->
-                                <!--                                            <th scope="col" class="sort text-center" data-sort="status">Giam gia-->
-                                <!--                                            </th>-->
-                                <!--                                            <th scope="col" class="text-center">So luong</th>-->
-                                <!--                                            <th scope="col" class="sort text-center" data-sort="completion">Tong-->
-                                <!--                                                tien-->
-                                <!--                                            </th>-->
-                                <!--                                            <th scope="col"></th>-->
-                                <!--                                        </tr>-->
-                                <!--                                        </thead>-->
-                                <!--                                        <tbody class="list">-->
-                                <!--                                        <tr>-->
-                                <!--                                            <th scope="row">-->
-                                <!--                                                <div class="media align-items-center">-->
-                                <!--                                                    <div class="media-body text-center">-->
-                                <!--                                                        <span class="name mb-0 text-sm text-center">Chai nuoc</span>-->
-                                <!--                                                    </div>-->
-                                <!--                                                </div>-->
-                                <!--                                            </th>-->
-                                <!--                                            <td class="budget text-center">-->
-                                <!--                                                $25002 USD-->
-                                <!--                                            </td>-->
-                                <!--                                            <td>-->
-                                <!--                                                        <span class="badge badge-dot mr-4 text-center w-100">-->
-                                <!--                                                        <span class="status text-center">10%</span>-->
-                                <!--                                                        </span>-->
-                                <!--                                            </td>-->
-                                <!--                                            <td>-->
-                                <!--                                                <div class="d-flex justify-content-center">-->
-                                <!--                                                    <div class="d-flex justify-content-center w-100">-->
-                                <!--                                                        <div>1220</div>-->
-                                <!--                                                    </div>-->
-                                <!--                                                </div>-->
-                                <!--                                            </td>-->
-                                <!--                                            <td>-->
-                                <!--                                                <div class="d-flex align-items-center w-100 justify-content-center">-->
-                                <!--                                                    <span class="completion mr-2">2000</span>-->
-                                <!--                                                </div>-->
-                                <!--                                            </td>-->
-                                <!--                                        </tr>-->
-                                <!--                                        <tr>-->
-                                <!--                                            <th scope="row">-->
-                                <!--                                                <div class="media align-items-center">-->
-                                <!--                                                    <div class="media-body text-center">-->
-                                <!--                                                        <span class="name mb-0 text-sm text-center">Chai nuoc</span>-->
-                                <!--                                                    </div>-->
-                                <!--                                                </div>-->
-                                <!--                                            </th>-->
-                                <!--                                            <td class="budget text-center">-->
-                                <!--                                                $2500 USD-->
-                                <!--                                            </td>-->
-                                <!--                                            <td>-->
-                                <!--                                                      <span class="badge badge-dot mr-4 text-center w-100">-->
-                                <!--                                                        <span class="status text-center">10%</span>-->
-                                <!--                                                      </span>-->
-                                <!--                                            </td>-->
-                                <!--                                            <td>-->
-                                <!--                                                <div class="d-flex justify-content-center">-->
-                                <!--                                                    <div class="d-flex text-center justify-content-center w-100">-->
-                                <!--                                                        <div>1220</div>-->
-                                <!--                                                    </div>-->
-                                <!--                                                </div>-->
-                                <!--                                            </td>-->
-                                <!--                                            <td>-->
-                                <!--                                                <div class="d-flex align-items-center w-100 justify-content-center">-->
-                                <!--                                                    <span class="completion mr-2">2000</span>-->
-                                <!--                                                </div>-->
-                                <!--                                            </td>-->
-                                <!--                                        </tr>-->
-                                <!--                                        <tr>-->
-                                <!--                                            <th scope="row">-->
-                                <!--                                                <div class="media align-items-center">-->
-                                <!--                                                    <div class="media-body text-center">-->
-                                <!--                                                        <span class="name mb-0 text-sm text-center">Chai nuoc</span>-->
-                                <!--                                                    </div>-->
-                                <!--                                                </div>-->
-                                <!--                                            </th>-->
-                                <!--                                            <td class="budget text-center">-->
-                                <!--                                                $2500 USD-->
-                                <!--                                            </td>-->
-                                <!--                                            <td>-->
-                                <!--                                                      <span class="badge badge-dot mr-4 text-center w-100">-->
-                                <!--                                                        <span class="status text-center">10%</span>-->
-                                <!--                                                      </span>-->
-                                <!--                                            </td>-->
-                                <!--                                            <td>-->
-                                <!--                                                <div class="d-flex justify-content-center">-->
-                                <!--                                                    <div class="d-flex justify-content-center w-100">-->
-                                <!--                                                        <div>98</div>-->
-                                <!--                                                    </div>-->
-                                <!--                                                </div>-->
-                                <!--                                            </td>-->
-                                <!--                                            <td>-->
-                                <!--                                                <div class="d-flex align-items-center w-100 justify-content-center">-->
-                                <!--                                                    <span class="completion mr-2">2000</span>-->
-                                <!--                                                </div>-->
-                                <!--                                            </td>-->
-                                <!--                                        </tr>-->
-                                <!--                                        </tbody>-->
-                                <!--                                    </table>-->
-                                <!--                                    <div class="d-flex px-5 py-4 justify-content-between ">-->
-                                <!--                                        <div class="font-weight-bolder display-4">-->
-                                <!--                                            Tổng tiền:-->
-                                <!--                                        </div>-->
-                                <!--                                        <div class="font-weight-bolder display-4">1.000.000 VNĐ</div>-->
-                                <!--                                    </div>-->
-                                <!--                                </div>-->
+                                <div class="d-flex px-5 py-4 justify-content-between ">
+                                    <div class="font-weight-bolder display-4">
+                                        Tổng tiền:
+                                    </div>
+                                    <div class="font-weight-bolder display-4">1.000.000 VNĐ</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -609,7 +503,6 @@
                         <h3 class="mb-0">Thống kê dạng biểu đồ</h3>
                     </div>
                     <div class="card-body">
-                        <!--                        <h2>CT LA CUA PHUC</h2>-->
                         <canvas id="myChart"></canvas>
                     </div>
                 </div>
@@ -646,68 +539,68 @@
 
         // Dữ liệu từ stats (được truyền từ server)
         let data = [];
-        let labels = [];
+    let labels = [];
 
-        // Thêm dữ liệu từ stats vào labels và data
-        {% for s in stats %}
-        labels.push('{{ s[1] }}'); // Tên thể loại
-        data.push({{ s[2] }});     // Số lượng sách
-        {% endfor %}
+    {% for s in stats %}
+    labels.push('{{ s[1] }}'); // Tên thể loại
+    data.push({{ s[2] }});     // Số lượng sách
+    {% endfor %}
 
-        // Kiểm tra dữ liệu có hợp lệ không
-        if (labels.length === 0 || data.length === 0) {
-            alert("Không có dữ liệu để hiển thị biểu đồ!");
-            return;
-        }
+    // Kiểm tra dữ liệu có hợp lệ không
+    if (labels.length === 0 || data.length === 0) {
+        alert("Không có dữ liệu để hiển thị biểu đồ!");
+        return;
+    }
 
-        // Tạo biểu đồ mới
-        window.myChartInstance = new Chart(ctx, {
-            type: 'pie', // Loại biểu đồ
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: '# Số lượng',
-                    data: data,
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        align: 'center',
-                        labels: {
-                            padding: 20, // Khoảng cách giữa các legend và biểu đồ
-                        }
-                    }
-                },
-                layout: {
-                    padding: {
-                        top: 20,
-                        bottom: 20,
-                        left: 50, // Khoảng cách để tạo "khoảng trống" bên trái
-                        right: 50 // Khoảng cách để tạo "khoảng trống" bên phải
+    // Tạo biểu đồ mới
+    window.myChartInstance = new Chart(ctx, {
+        type: 'pie', // Loại biểu đồ
+        data: {
+            labels: labels,
+            datasets: [{
+                label: ' Số lượng',
+                data: data,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'left',  // Đặt mục lục ở bên trái
+                    align: 'top',  // Căn mục lục ở phía trên
+                    labels: {
+                        padding: 20,  // Khoảng cách giữa các mục lục
                     }
                 }
+            },
+            layout: {
+                padding: {
+                    top: 20,
+                    bottom: 20,
+                    left: 20, // Khoảng cách để tạo "khoảng trống" bên trái
+                    right: 20 // Khoảng cách để tạo "khoảng trống" bên phải
+                }
             }
-        });
+        }
+    });
     });
 </script>
 
@@ -724,7 +617,8 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"
         integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
-<script src="{{ url_for('static', filename='js/employeeAddProducts.js') }}"></script>
+<script src="{{ url_for('static', filename='js/adminStatistic.js') }}"></script>
+
 <!--<script>-->
 <!--    const statisticTableCheck = document.getElementById("statistic-table-check");-->
 <!--    const statisticChartCheck = document.getElementById("statistic-chart-check");-->

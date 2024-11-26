@@ -11,7 +11,9 @@ import math
 # sort by thoi gian dat, tong tien
 
 def find_by_id(id):
-    return Order.query.get(id)
+    order = Order.query.get(id)
+    return order.online_order.to_dict() if order.online_order else order.offline_order.to_dict()
+
 
 
 def find_all(**kwargs):
@@ -66,7 +68,7 @@ def update_order(order_id, order_list):
 
     for order_item in order_list:
         book_id = order_item['book_id']
-        quantity = order_item['quantity']
+        quantity = order_item['qty']
         price = order_item['price']
         order_detail = OrderDetail(order_id=order_id, book_id=book_id, quantity=quantity, price=price)
         db.session.add(order_detail)
@@ -100,7 +102,8 @@ def create_offline_order(order_list):
     db.session.add_all(order_detail_list)
     db.session.add(payment_detail)
     db.session.commit()
-    return offline_order.order_id
+    return offline_order.to_dict()
+
 def count_order():
     return Order.query.count()
 
