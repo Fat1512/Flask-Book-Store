@@ -1,6 +1,7 @@
 from app.dao.OrderDAO import *
 from app.dao.SearchDAO import searchBook
 from flask import Blueprint
+from datetime import datetime
 from flask import render_template, request
 import json
 
@@ -46,14 +47,14 @@ def update_order(order_id):
     for book in books['books']:
         book_dto.append(book.to_dict())
     books['books'] = book_dto
-
-    return render_template("employee-order-update.html", order=order.to_dict(), books=books)
+    return render_template("employee-order-update.html", order=order, books=books)
 
 
 @employee_bp.route("/order/<order_id>/detail")
 def get_order_detail(order_id):
     order = find_by_id(order_id)
-    return render_template("employee-order-detail.html", order=order.to_dict())
+    today = datetime.utcnow()
+    return render_template("employee-order-detail.html", order=order, today=today)
 
 @employee_bp.route("/category")
 def get_category():

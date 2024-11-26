@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css"
           integrity="sha512-9xKTRVabjVeZmc+GUW8GgSmcREDunMM+Dt/GrzchfN8tkwHizc5RP4Ok/MXFFy5rIjJjzhndFScTceq5e6GvVQ=="
           crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 
     <!-- Argon CSS -->
 
@@ -437,7 +438,7 @@
                         <div class="col-6">
                             <div class="d-flex">
                                 <h2 class="pr-3">Mã đơn: </h2>
-                                <h2 class="font-weight-400 order-id">{{ order['order_id'] }}</h2>
+                                <h2 class="font-weight-400" order-id="{{ order['order_id'] }}">{{ order['order_id'] }}</h2>
                             </div>
                             <div class="d-flex">
                                 <h2 class="pr-3">Trạng thái: </h2>
@@ -454,7 +455,7 @@
                         </div>
                         <div class="col-6">
                             <div class="d-flex">
-                                <h2 class="pr-3">Loại đơn: </h2>
+                                <h2 class="pr-3 w-600">Loại đơn: </h2>
                                 <h2 class="font-weight-400">{{ order['order_type']['name'] }}</h2>
                             </div>
 
@@ -520,17 +521,6 @@
                                     </div>
                                 {% endif %}
                             </div>
-
-                            <!-- Address -->
-                            <!-- <hr class="my-2" /> -->
-                            <!-- Description -->
-                            {% if order['note'] %}
-                                <h6 class=" display-4 text-muted mb-4">Ghi chú</h6>
-                                <div class="col-lg-12">
-                                    <div>{{ order['note'] }}
-                                    </div>
-                                </div>
-                            {% endif %}
                         </form>
                     </div>
                 </div>
@@ -585,7 +575,7 @@
                                     <td>
                                         <div class="d-flex justify-content-center">
                                             <div class="d-flex justify-content-center w-100 order-item-quantity">
-                                                 {{ orderItem['quantity'] }}
+                                                {{ orderItem['quantity'] }}
                                             </div>
                                         </div>
                                     </td>
@@ -625,124 +615,130 @@
 <div class="modal">
     <div class="overlay"></div>
     <div class="modal-body item-bg-color d-flex justify-content-center">
-        <div id="invoice" class="container mt-4">
+        <div id="invoice" class="mt-4 w-100">
             <div class="card">
                 <div class="card-header text-center">
                     <img class="image-fluid w-25"
                          src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/fahasa-logo.png" alt="">
                 </div>
                 <div class="card-header invoice-header text-center">
-                    <class
-                    ="mb-0">Mã đơn: 79686 &nbsp; | &nbsp; Ngày đặt: 12/13/2022 &nbsp; | &nbsp; Hotline: 19008386
-                    &nbsp; | &nbsp; Trạng thái: Đã hoàn thành &nbsp; | &nbsp; Loại đơn: Mua trực tiếp</p>
+                    <p class="mb-0 font-weight-bold">Mã đơn: {{ order['order_id'] }} &nbsp; | &nbsp; Ngày
+                        đặt: {{ order['created_at'] }}
+                        &nbsp; | &nbsp; Hotline: 19008386
+                        &nbsp; | &nbsp; Trạng thái: {{ order['status']['name'] }} &nbsp; | &nbsp; Loại
+                        đơn: {{ order['order_type']['name'] }}</p>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-12">
-                            <h1 class="text-center pb-3">THÔNG TIN HÓA ĐƠN</h1>
+                            <h1 class="text-center pb-3 display-3 text-black">THÔNG TIN HÓA ĐƠN</h1>
                         </div>
-
                         <div class="col-md-6">
                             <p>
-                                <strong>Tên:</strong> Phát đẹp trai số 1 OU<br>
-                                <strong>Địa chỉ:</strong> 301 Hồ Hảo Hớn, P Cô Giang, Q1<br>
-                                <strong>Thành phố:</strong> Hố chí minh <br>
-                                <strong>Nước:</strong> Việt Nam <br>
-                                <strong>Số điện thoại:</strong> +02 782 390 782 <br>
-
+                                <strong class="font-weight-600">Họ và
+                                    Tên:</strong> {{ order['address']['first_name'] }} {{ order['address']['last_name'] }}<br>
+                                <strong class="font-weight-600">Địa chỉ:</strong> {{ order['address']['address'] }} <br>
+                                <strong class="font-weight-600">Thành phố:</strong> {{ order['address']['city'] }} <br>
+                                <strong class="font-weight-600">Nước:</strong> {{ order['address']['country'] }} <br>
+                                <strong class="font-weight-600">Số điện
+                                    thoại:</strong> {{ order['address']['phone_number'] }} <br>
                             </p>
                         </div>
                         <div class="col-md-6 text-right">
                             <p>
-                                <strong>Phương thức vận chuyển:</strong> Giao hàng <br>
-                                <strong>Phương thức thanh toán:</strong> Thẻ
+                                {% if order['order_type']['id'] == 1 %}
+                                    <strong class="font-weight-600">Phương thức vận chuyển:</strong>
+                                    {{ order['order_type']['detail']['shipping_method']['name'] }} <br>
+                                {% endif %}
+                                <strong class="font-weight-600">Phương thức thanh
+                                    toán:</strong> {{ order['payment']['payment_method']['name'] }}
                             </p>
                         </div>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <thead>
-                            <tr class="text-center">
-                                <th>Barcode</th>
-                                <th>Tên sách</th>
-                                <th>Giá</th>
-                                <th>Số lượng</th>
-                                <th>Giảm giá</th>
-                                <th>Tổng tiền</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr class="text-center">
-                                <td>30566205</td>
-                                <td>3D Cannon Camera</td>
-                                <td>25.00</td>
-                                <td>1</td>
-                                <td>10.00</td>
-                                <td>23.00</td>
-                            </tr>
-                            <tr class="text-center">
-                                <td>30566206</td>
-                                <td>Green Lemon</td>
-                                <td>70.00</td>
-                                <td>1</td>
-                                <td>0.00</td>
-                                <td>70.00</td>
-                            </tr>
-                            <tr class="text-right">
-                                <td colspan="5"><strong>Tổng tiền:</strong></td>
-                                <td class="text-center">$93.00</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p>
-                                <strong>Ghi chú:</strong> Lorem ipsum dolor sit amet consectetur adipisicing elit. Quos
-                                aut provident aperiam expedita mollitia cumque rerum pariatur, reprehenderit ab eveniet
-                                molestiae hic iure doloremque cum ullam fugit. Enim, assumenda incidunt.<br>
-                            </p>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr class="text-center font-weight-700 text-black">
+                                    <th class="">Barcode</th>
+                                    <th class="">Tên sách</th>
+                                    <th class="">Giá</th>
+                                    <th class="">Giảm giá</th>
+                                    <th class="">Số lượng</th>
+                                    <th class="">Tổng tiền</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for orderItem in order['order_detail'] %}
+                                    <tr class="text-center">
+                                        <td>{{ orderItem['book']['barcode'] }}</td>
+                                        <td class="text-wrap text-left">
+                                            <span class="w-100">{{ orderItem['book']['title'] }}</span>
+                                        </td>
+                                        <td>{{ orderItem['price'] }}</td>
+                                        <td>0</td>
+                                        <td>{{ orderItem['quantity'] }}</td>
+                                        <td>{{ orderItem['price'] * orderItem['quantity'] }}</td>
+                                    </tr>
+                                {% endfor %}
+                                    <tr class="text-right">
+                                        {% if order['order_type']['id'] == 1 %}
+                                            <td colspan="5"><strong>Phí ship:</strong></td>
+                                            <td class="text-center"> {{ order['order_type']['detail']['shipping_fee'] }} </td>
+                                        {% endif %}
+                                    </tr>
+                                    <tr class="text-right">
+                                        <td colspan="5"><strong>Tổng tiền:</strong></td>
+                                        <td class="text-center">{{ order['total_amount'] }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <div class="col-md-6 text-right">
-                            <p>
-                                <strong>Phí ship:</strong> 100.00<br>
-                                <strong>Tổng tiền:</strong> 193.00<br>
-                            </p>
-                        </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-md-6">
-                            <p>
-                                <strong>Created By:</strong> Richard Joseph<br>
-                                <strong>Email:</strong> info@example.com
-                            </p>
-                        </div>
-                        <div class="col-md-6 text-right">
-                            <button id="downloadPDF" class="btn text-white btn-print btn-download-pdf">Print</button>
+                        <div class="row col-12 pt-3 justify-content-between">
+                            <div class="col-md-6">
+                                {% if order['order_type']['id'] == 1 %}
+                                    <p>
+                                        <strong>Ghi chú:</strong> {% if order['order_type']['detail']['note'] %} {{order['order_type']['detail']['note']}} {% endif %}
+                                        <br>
+                                    </p>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <p class="text-right">
+                                    {% if order['order_type']['id'] == 2 %}
+                                        <strong>Nhân viên thanh
+                                            toán:</strong> {{ order['order_type']['detail']['employee_name'] }}
+                                    {% endif %}
+                                    <br>
+                                    <strong>Ngày in hóa đơn:</strong> {{ today }}
+                                </p>
+                                <p class="text-right">
+                                    <button id="downloadPDF"
+                                            class="btn text-right text-white btn-print btn-download-pdf">Print
+                                    </button>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-        crossorigin="anonymous"></script>
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js"
-        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
-        crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"
-        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
-        crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js"
+            integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"
+            integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
-<script src="{{ url_for('static', filename='js/employeeOrderDetail.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/employeeOrderDetail.js') }}"></script>
 
 </body>
 

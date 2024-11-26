@@ -11,7 +11,9 @@ import math
 # sort by thoi gian dat, tong tien
 
 def find_by_id(id):
-    return Order.query.get(id)
+    order = Order.query.get(id)
+    return order.online_order.to_dict() if order.online_order else order.offline_order.to_dict()
+
 
 
 def find_all(**kwargs):
@@ -41,7 +43,8 @@ def find_all(**kwargs):
         orders = orders.order_by(Order.created_at.desc()) if sort_dir.__eq__("desc") else orders.order_by(
             Order.created_at.asc())
 
-    orders = [order.to_dict() for order in orders.all()]
+    # orders = [order.to_dict() for order in orders.all()]
+    orders = [order.online_order.to_dict() if order.online_order else order.offline_order.to_dict() for order in orders.all()]
 
     if 'total-amount' == sort_by:
         orders.sort(key=sort_by_total_amount, reverse=True if sort_dir.__eq__("desc") else False)
@@ -100,7 +103,8 @@ def create_offline_order(order_list):
     db.session.add_all(order_detail_list)
     db.session.add(payment_detail)
     db.session.commit()
-    return offline_order.order_id
+    return offline_order.to_dict()
+
 def count_order():
     return Order.query.count()
 
