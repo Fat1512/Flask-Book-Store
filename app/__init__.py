@@ -8,7 +8,7 @@ from app.utils.helper import format_currency_filter
 
 app = Flask(__name__)
 app.secret_key = "8923yhr9fuwnsejksnpok@$I_I@$)opfk"
-app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql+pymysql://root:090224T%40n@localhost/book_store'
+app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql+pymysql://root:123456@localhost/book_store'
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 
 cloudinary.config(
@@ -17,6 +17,7 @@ cloudinary.config(
     api_secret="GY20iNSIGW6CdrY1s1cDGwMKrqY",
     secure=True
 )
+
 app.config['SQLALCHEMY_ECHO'] = True
 app.config['PAGE_SIZE'] = 12
 app.config['ORDER'] = 'desc'

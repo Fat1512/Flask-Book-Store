@@ -409,15 +409,7 @@
                             </ol>
                         </nav>
                     </div>
-                    <div class="form-group">
-<!--                        <label>Chọn mục</label>-->
-                        <div class="dropdown-container">
-                            <input type="text" id="genreSearch"
-                                   class="dropdown-search product-publisher" autocomplete="off" placeholder="Chọn mục thống kê">
-                            <div class="dropdown-list" id="genreList">
-                            </div>
-                        </div>
-                    </div>
+
                     <div class="col-lg-6 col-5 text-right" style="max-width: 35%">
                         <a href="#" class="btn btn-neutral" id="statistic-table-check">Bảng</a>
                         <a href="#" class="btn btn-neutral" id="statistic-chart-check">Biểu đồ</a>
@@ -473,7 +465,7 @@
                                             </td>
                                             <td style="border: 1px solid #adb5bd;">
                                                         <span class="badge badge-dot mr-4 text-center w-100">
-                                                        <span class="status text-center">{{s[2]}}</span>
+                                                        <span class="status text-center">{{ s[2] if s[2] is not none else 0 }} VNĐ</span>
                                                         </span>
                                             </td>
                                         </tr>
@@ -484,9 +476,9 @@
                                 </div>
                                 <div class="d-flex px-5 py-4 justify-content-between ">
                                     <div class="font-weight-bolder display-4">
-                                        Tổng tiền:
+                                        Tổng doanh thu:
                                     </div>
-                                    <div class="font-weight-bolder display-4">1.000.000 VNĐ</div>
+                                    <div class="font-weight-bolder display-4">{{ total_revenue }}</div>
                                 </div>
                             </div>
                         </div>
@@ -539,70 +531,72 @@
 
         // Dữ liệu từ stats (được truyền từ server)
         let data = [];
-    let labels = [];
+        let labels = [];
 
-    {% for s in stats %}
-    labels.push('{{ s[1] }}'); // Tên thể loại
-    data.push({{ s[2] }});     // Số lượng sách
-    {% endfor %}
+        {% for s in stats %}
+        labels.push('{{ s[1] }}');  // Tên thể loại
+        // Kiểm tra nếu giá trị doanh thu là None và thay thế bằng 0
+        data.push({{ s[2] if s[2] is not none else 0 }}); // Doanh thu (thay None bằng 0)
+        {% endfor %}
 
-    // Kiểm tra dữ liệu có hợp lệ không
-    if (labels.length === 0 || data.length === 0) {
-        alert("Không có dữ liệu để hiển thị biểu đồ!");
-        return;
-    }
+        // Kiểm tra dữ liệu có hợp lệ không
+        if (labels.length === 0 || data.length === 0) {
+            alert("Không có dữ liệu để hiển thị biểu đồ!");
+            return;
+        }
 
-    // Tạo biểu đồ mới
-    window.myChartInstance = new Chart(ctx, {
-        type: 'pie', // Loại biểu đồ
-        data: {
-            labels: labels,
-            datasets: [{
-                label: ' Số lượng',
-                data: data,
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'left',  // Đặt mục lục ở bên trái
-                    align: 'top',  // Căn mục lục ở phía trên
-                    labels: {
-                        padding: 20,  // Khoảng cách giữa các mục lục
+        // Tạo biểu đồ mới
+        window.myChartInstance = new Chart(ctx, {
+            type: 'pie', // Loại biểu đồ
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Doanh thu',
+                    data: data,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'left',  // Đặt mục lục ở bên trái
+                        align: 'top',  // Căn mục lục ở phía trên
+                        labels: {
+                            padding: 20,  // Khoảng cách giữa các mục lục
+                        }
+                    }
+                },
+                layout: {
+                    padding: {
+                        top: 20,
+                        bottom: 20,
+                        left: 20, // Khoảng cách để tạo "khoảng trống" bên trái
+                        right: 20 // Khoảng cách để tạo "khoảng trống" bên phải
                     }
                 }
-            },
-            layout: {
-                padding: {
-                    top: 20,
-                    bottom: 20,
-                    left: 20, // Khoảng cách để tạo "khoảng trống" bên trái
-                    right: 20 // Khoảng cách để tạo "khoảng trống" bên phải
-                }
             }
-        }
-    });
+        });
     });
 </script>
+
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"

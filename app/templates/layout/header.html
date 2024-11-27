@@ -72,10 +72,10 @@
                         <div>
                             <ul class="sub-cart list-unstyled mt-3">
                                 {% for item in cart_items %}
-                                    <li class="sub-cart-item d-flex">
+                                    <li class="sub-cart-item d-flex p-3">
                                         <img class="sub-cart-item-image"
                                              src="{{ item.book.images[0].image_url }}">
-                                        <div class="sub-cart-item-detail">
+                                        <div class="sub-cart-item-detail pl-3">
                                             <p class="sub-cart-item-title text-secondary">{{ item.book.title }}</p>
                                             <p class="font-weight-bold m-0 text-primary">{{ item.book.price|currency("VND") }}
                                                 <span>x {{ item.quantity }}</span></p>

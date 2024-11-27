@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Double
 from app import db
 from app.model.BookImage import ImageOfBook
 from enum import Enum
+from babel.numbers import format_currency
 import functools
 from datetime import datetime, timezone
 
@@ -17,6 +18,7 @@ obj = {
 }
 
 print(datetime.utcnow())
+print(format_currency(120222, "VND", locale='vi_VN'))
 
 # print(Status.LE.value.__eq__('1'))
 

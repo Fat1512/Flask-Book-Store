@@ -6,20 +6,24 @@
     --second-color: #666;
     --black-color: #000
 }
+
 a:hover {
     color: inherit !important;
     text-decoration: inherit !important;
 }
+
 a {
     color: var(--black-color);
 }
+
 .container {
     width: 90% !important;
 }
+
 .btn-primary:disabled {
     background-color: #e0e0e0;
     border-color: #e0e0e0;
-    cursor: not-allowed!important;
+    cursor: not-allowed !important;
 }
 
 .text-black {
@@ -62,4 +66,15 @@ a {
 
 .text-medium {
     font-size: 25px;
+}
+
+.item-bg-color {
+    background: var(--white-color);
+}
+
+.my-bg-color {
+    background: #f0f0f0;
+}
+.cursor-pointer {
+    cursor: pointer;
 }

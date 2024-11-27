@@ -1,4 +1,5 @@
 from app import db
+from app.model.Cart import Cart
 
 
 class CartItem(db.Model):
