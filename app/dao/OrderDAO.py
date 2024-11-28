@@ -40,8 +40,8 @@ def find_all(**kwargs):
         orders = orders.filter(Order.payment_method == PaymentMethod(int(payment_method)))
 
     if 'date' == sort_by:
-        orders = orders.order_by(Order.created_at.desc()) if sort_dir.__eq__("desc") else orders.order_by(
-            Order.created_at.asc())
+        orders = orders.order_by(desc(Order.created_at)) if sort_dir.__eq__("desc") else orders.order_by(
+            asc(Order.created_at))
 
     # orders = [order.to_dict() for order in orders.all()]
     orders = [order.online_order.to_dict() if order.online_order else order.offline_order.to_dict() for order in orders.all()]

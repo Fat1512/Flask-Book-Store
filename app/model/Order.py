@@ -60,22 +60,6 @@ class Order(db.Model):
             'order_detail': [order_detail.to_dict() for order_detail in self.order_detail],
             'address': self.address.to_dict()
         }
-
-        # if self.online_order:
-        #     json['order_type'] = {
-        #         'id': 1,
-        #         'name': ORDER_TYPE_TEXT[0],
-        #         'detail': self.online_order.to_dict()
-        #     }
-        #     total_amount = total_amount + json['order_type']['detail']['shipping_fee']
-        #     # json.update(self.online_order.to_dict())
-        # else:
-        #     json['order_type'] = {
-        #         'id': 2,
-        #         'name': ORDER_TYPE_TEXT[1],
-        #         'detail': self.offline_order.to_dict()
-        #     }
-            # json.update(self.offline_order.to_dict())
         total_amount = 0
         for order_detail in [order_detail.to_dict() for order_detail in self.order_detail]:
             total_amount = total_amount + order_detail['price'] * order_detail['quantity']

@@ -5,7 +5,7 @@ from enum import Enum
 from babel.numbers import format_currency
 import functools
 from datetime import datetime, timezone
-
+import locale
 
 class Status(Enum):
     LE = 1
@@ -40,3 +40,20 @@ print(format_currency(120222, "VND", locale='vi_VN'))
 #
 # x = functools.reduce(lambda a, b: a['width'] * a['height'] + b['width'] * b['height'], obj2)
 # print(x)
+print(datetime.now())
+locale.setlocale(locale.LC_TIME, "vi_VN.UTF-8")
+datetime_str = "2024-01-19 03:14:07"
+
+# Original datetime
+dt = datetime.strptime(datetime_str, "%Y-%m-%d %H:%M:%S")
+print(dt)
+# Format components
+weekday = dt.strftime("%a")  # Short weekday in Vietnamese (e.g., Th 6)
+day = dt.day  # Day of the month
+month = dt.month  # Numeric month
+year = dt.year  # Year
+time = dt.strftime("%H:%M:%S")  # Time in 24-hour format
+
+# Combine into desired format
+formatted_date = f"{weekday}, {day}/{month}/{year} - {time}"
+print(formatted_date)

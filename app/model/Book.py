@@ -23,6 +23,8 @@ class Book(db.Model):
     barcode = Column(String)
     format = Column(String)
     book_gerne_id = Column(Integer, ForeignKey('book_gerne.book_gerne_id'))
+    book_gerne = db.relationship('BookGerne', back_populates='books', lazy=True)
+
     images = db.relationship('ImageOfBook', backref='book', lazy=True)
     order_detail = relationship("OrderDetail", back_populates="book")
 
@@ -45,7 +47,16 @@ class Book(db.Model):
             "barcode": self.barcode,
             "images": images_dict,
             "extended_books": extended_books_dict,
+            "publisher": "Kim đồng"
         }
+
+    def to_dict_manage(self):
+        json = self.to_dict()
+        json['gerne'] = {
+            'id': self.book_gerne_id,
+            'name': self.book_gerne.name
+        }
+        return json
 
     def __str__(self):
         pass

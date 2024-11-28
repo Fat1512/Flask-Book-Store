@@ -450,7 +450,7 @@
                             </div>
                             <div class="d-flex">
                                 <h2 class="pr-3">Ngày tạo: </h2>
-                                <h2 class="font-weight-400">{{ order['created_at'] }}</h2>
+                                <h2 class="font-weight-400">{{ order['created_at']|datetime() }}</h2>
                             </div>
                         </div>
                         <div class="col-6">
@@ -565,7 +565,7 @@
                                         </div>
                                     </td>
                                     <td class="budget text-center order-item-price">
-                                        {{ orderItem['price'] }} USD
+                                        {{ orderItem['price']|currency('VND') }}
                                     </td>
                                     <td>
                                     <span class="badge badge-dot mr-4 text-center w-100">
@@ -581,7 +581,7 @@
                                     </td>
                                     <td>
                                         <div class="d-flex align-items-center w-100 justify-content-center">
-                                            <span class="completion mr-2 order-item-subtotal-amount"> {{ orderItem['price'] * orderItem['quantity'] }} </span>
+                                            <span class="completion mr-2 order-item-subtotal-amount"> {{ (orderItem['price'] * orderItem['quantity'])|currency('VND') }} </span>
                                         </div>
                                     </td>
                                 </tr>
@@ -593,8 +593,7 @@
                                 <div class="font-weight-bold display-4">
                                     Phí ship
                                 </div>
-                                <div class="font-weight-bold display-4 order-shipping-fee">{{ order['order_type']['detail']['shipping_fee'] }}
-                                    VNĐ
+                                <div class="font-weight-bold display-4 order-shipping-fee">{{ order['order_type']['detail']['shipping_fee']|currency('VND') }}
                                 </div>
                             </div>
                         {% endif %}
@@ -602,8 +601,7 @@
                             <div class="font-weight-bolder display-3">
                                 Tổng tiền:
                             </div>
-                            <div class="font-weight-bolder display-3 order-total-amount">{{ order['total_amount'] }}
-                                VNĐ
+                            <div class="font-weight-bolder display-3 order-total-amount">{{ order['total_amount']|currency('VND') }}
                             </div>
                         </div>
                     </div>
@@ -673,21 +671,21 @@
                                         <td class="text-wrap text-left">
                                             <span class="w-100">{{ orderItem['book']['title'] }}</span>
                                         </td>
-                                        <td>{{ orderItem['price'] }}</td>
+                                        <td>{{ orderItem['price']|currency('VND') }}</td>
                                         <td>0</td>
                                         <td>{{ orderItem['quantity'] }}</td>
-                                        <td>{{ orderItem['price'] * orderItem['quantity'] }}</td>
+                                        <td>{{ (orderItem['price'] * orderItem['quantity'])|currency('VND') }}</td>
                                     </tr>
                                 {% endfor %}
                                     <tr class="text-right">
                                         {% if order['order_type']['id'] == 1 %}
                                             <td colspan="5"><strong>Phí ship:</strong></td>
-                                            <td class="text-center"> {{ order['order_type']['detail']['shipping_fee'] }} </td>
+                                            <td class="text-center"> {{ order['order_type']['detail']['shipping_fee']|currency('VND') }} </td>
                                         {% endif %}
                                     </tr>
                                     <tr class="text-right">
                                         <td colspan="5"><strong>Tổng tiền:</strong></td>
-                                        <td class="text-center">{{ order['total_amount'] }}</td>
+                                        <td class="text-center">{{ order['total_amount']|currency('VND') }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -695,7 +693,7 @@
                         <div class="row col-12 pt-3 justify-content-between">
                             <div class="col-md-6">
                                 {% if order['order_type']['id'] == 1 %}
-                                    <p>
+                                    <p class="text-justify">
                                         <strong>Ghi chú:</strong> {% if order['order_type']['detail']['note'] %} {{order['order_type']['detail']['note']}} {% endif %}
                                         <br>
                                     </p>
@@ -708,7 +706,7 @@
                                             toán:</strong> {{ order['order_type']['detail']['employee_name'] }}
                                     {% endif %}
                                     <br>
-                                    <strong>Ngày in hóa đơn:</strong> {{ today }}
+                                    <strong>Ngày in hóa đơn:</strong> {{ today|datetime() }}
                                 </p>
                                 <p class="text-right">
                                     <button id="downloadPDF"
@@ -738,7 +736,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
-    <script src="{{ url_for('static', filename='js/employeeOrderDetail.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/employeeOrderDetail.js') }}" type="module"></script>
 
 </body>
 

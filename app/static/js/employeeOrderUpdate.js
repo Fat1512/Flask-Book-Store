@@ -1,3 +1,14 @@
+const vndCurrencyFormat = new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+});
+
+function extractCurrencyNumber(currencyString) {
+    const numericValue = currencyString.replace(/[^\d,]/g, ''); // Keep digits and comma
+    return parseFloat(numericValue.replace(',', '.')); // Convert to float, replace comma with dot
+}
+
+
 const TIME_OUT = 50;
 const placeHolderAttribute = ["Nhap ten san pham", "Nhap barcode"]
 let fetchOption = 0;
@@ -157,7 +168,7 @@ const renderOrderItem = function (books) {
                 </div>
             </th>
             <td class="budget text-center">
-                ${book.price} VNĐ
+                ${vndCurrencyFormat.format(book.price)}
             </td>
             <td>
                 <span class="badge badge-dot mr-4 text-center w-100">
@@ -177,7 +188,7 @@ const renderOrderItem = function (books) {
             </td>
             <td>
                 <div class="d-flex align-items-center w-100 justify-content-center">
-                    <span class="completion mr-2">${+book.price * +book.quantity}</span>
+                    <span class="completion mr-2">${vndCurrencyFormat.format(+book.price * +book.quantity)}</span>
                 </div>
             </td>
             <td class="text-right remove-order-item-btn">
@@ -189,15 +200,15 @@ const renderOrderItem = function (books) {
             </td>
         </tr>`).join('');
     const totalAmount = books.reduce((acc, obj) => acc + +obj['price'] * +obj['quantity'], 0);
-    const shippingFee = +document.querySelector(".shipping-fee").textContent.trim().split(" ")[0].trim();
-    document.querySelector(".total-amount").textContent = totalAmount + shippingFee + ' VND';
+    const shippingFee = extractCurrencyNumber(document.querySelector(".shipping-fee").textContent.trim());
+    document.querySelector(".total-amount").textContent = vndCurrencyFormat.format(totalAmount + shippingFee);
     orderList.insertAdjacentHTML('beforeend', html);
 }
 
 orderContainer.querySelectorAll(".order-item").forEach(orderItem => {
     const obj = {
         'book_id': orderItem.getAttribute("id"),
-        'price': orderItem.querySelector(".order-item-price").textContent.trim().split(".")[0],
+        'price': extractCurrencyNumber(orderItem.querySelector(".order-item-price").textContent),
         'discount': orderItem.querySelector(".order-item-discount").textContent,
         'title': orderItem.querySelector(".order-item-name").textContent,
         'quantity': orderItem.querySelector(`[input-id="${orderItem.getAttribute("id")}"]`).value
