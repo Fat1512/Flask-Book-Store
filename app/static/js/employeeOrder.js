@@ -1,3 +1,28 @@
+const vndCurrencyFormat = new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+});
+
+function extractCurrencyNumber(currencyString) {
+    const numericValue = currencyString.replace(/[^\d,]/g, ''); // Keep digits and comma
+    return parseFloat(numericValue.replace(',', '.')); // Convert to float, replace comma with dot
+}
+
+const dateFormatter = new Intl.DateTimeFormat('vi-VN', {
+    weekday: 'short', // e.g., Thứ Sáu
+    year: 'numeric',
+    month: 'numeric', // e.g., Tháng 1
+    day: 'numeric',
+    // timeZoneName: 'short' // e.g., GMT
+});
+
+const timeFormatter = new Intl.DateTimeFormat('vi-VN', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    // timeZoneName: 'short' // e.g., GMT
+});
+
 const API = `/api/v1/order`;
 const url = new URL(window.location)
 
@@ -12,11 +37,11 @@ const orderParams = [
 const sortParams = [
     {
         "sortBy": "date",
-        "dir": "asc"
+        "dir": "desc"
     },
     {
         "sortBy": "date",
-        "dir": "desc"
+        "dir": "asc"
     },
     {
         "sortBy": "total-amount",
@@ -65,6 +90,7 @@ const statusType = document.querySelector(".status-type");
 const paymentMethodType = document.querySelector(".payment-method-type");
 
 //---------------------------------------------FUNCTION---------------------------------------------
+
 const deleteParams = (params) => params.forEach(param => url.searchParams.delete(param))
 const addParams = (params) => params.forEach(param => url.searchParams.set(param[0], param[1]))
 const renderOrder = function (order) {
@@ -81,7 +107,7 @@ const renderOrder = function (order) {
                 </div>
             </td>
             <td class="budget">
-                ${order['total_amount']}
+                ${vndCurrencyFormat.format(+order['total_amount'])}
             </td>
             <td>
             <span class="badge badge-dot mr-4">
@@ -91,7 +117,7 @@ const renderOrder = function (order) {
             </td>
             <td>
                 <div class="avatar-group">
-                    ${ order['created_at'] }
+                    ${ dateFormatter.format(new Date(order['created_at'])) } - ${ timeFormatter.format(new Date(order['created_at'])) }
                 </div>
             </td>
             <td>
@@ -153,6 +179,7 @@ const fetchOrder = async function(url) {
 
     const data = await res.json();
     orderList.innerHTML = '';
+    console.log(data['orders']);
     data['orders'].forEach(order => renderOrder(order));
     renderPagination(data['total_page'], data['current_page']);
 };
@@ -164,7 +191,6 @@ sortType.addEventListener("click", (e) => {
     const toggleId = +item.getAttribute("id");
     handleFilterChange(sortType, Object.entries(sortParams[toggleId - 1]), ["sortBy", "dir"], toggleId);
 });
-
 
 statusType.addEventListener("click", (e) => {
     const item = e.target.closest(".filter-type-item");
