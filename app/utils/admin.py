@@ -213,9 +213,9 @@ def total_revenue_per_gerne(kw=None, selected_month=None):
 
     return total_revenue
 
-with app.app_context():
-    stats = book_gerne_statistic()
-    print(stats)
+# with app.app_context():
+#     stats = book_gerne_statistic()
+#     print(stats)
 
 
 def get_books_by_gerne(gerne_id):
@@ -223,6 +223,6 @@ def get_books_by_gerne(gerne_id):
         .filter(Book.book_gerne_id == gerne_id).all()
 
 
-with app.app_context():
-    stats = get_books_by_gerne(10)
-    print(stats)
+# with app.app_context():
+#     stats = get_books_by_gerne(10)
+#     print(stats)

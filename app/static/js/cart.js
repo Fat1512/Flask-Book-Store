@@ -1,5 +1,5 @@
 const CART_API = '/api/v1/cart'
-
+const CHECKOUT_API = '/cart/checkout'
 const groupControll = document.querySelectorAll('.cart-item')
 const toggleAllButton = document.getElementById("toggleAll")
 const checkboxs = document.querySelectorAll('.checkbox')
@@ -8,6 +8,8 @@ const buttonPayment = document.querySelector(".btn-payment")
 let totalCheckbox = checkboxs.length
 let cnt = 0
 let toggle = false
+
+
 toggleAllButton.addEventListener("click", () => {
     if (!toggle) {
         checkboxs.forEach(el => {
@@ -25,13 +27,6 @@ toggleAllButton.addEventListener("click", () => {
         })
     toggle = !toggle
 })
-const renderCheckAll = function () {
-    toggleAllButton.checked = cnt === totalCheckbox;
-}
-const renderButtonPayment = function () {
-    buttonPayment.disabled = cnt === 0
-}
-buttonPayment.addEventListener("click", () => window.location.replace('http://127.0.0.1:5000/cart/checkout'))
 const VND = new Intl.NumberFormat('vi-VN', {
     style: 'currency',
     currency: 'VND',
@@ -42,12 +37,53 @@ function extractCurrencyNumber(currencyString) {
     return parseFloat(numericValue.replace(',', '.')); // Convert to float, replace comma with dot
 }
 
-const fetchCart = async function (id) {
-    const res = await fetch(`${CART_API}`)
-    if (!res.ok) throw Error("Failed fetch cart")
-    const data = await res.json()
-    return data
+const renderCheckAll = function () {
+    toggleAllButton.checked = cnt === totalCheckbox;
 }
+const renderButtonPayment = function () {
+    buttonPayment.disabled = cnt === 0
+}
+const moveCartItemToCheckOut = async function (data) {
+    try {
+        const response = await fetch(CHECKOUT_API, {
+            method: 'POST', // HTTP PUT method
+            headers: {
+                'Content-Type': 'application/json' // Specify JSON content type
+            },
+            body: JSON.stringify(data)
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const result = await response.json(); // Parse JSON response
+    } catch (error) {
+        alert('Failed to delete cart.');
+    }
+}
+
+async function handleOnClickPayment() {
+    let cartItemChecked = []
+    groupControll.forEach(el => {
+            if (el.querySelector('.checkbox:checked')) {
+                data = {
+                    "bookId": el.getAttribute('id'),
+                    "quantity": el.querySelector('.cart-item-quantity').textContent,
+                    'price': extractCurrencyNumber(el.querySelector('.cart-item-price ').textContent),
+                    'img': el.querySelector('.cart-item-image').getAttribute('src'),
+                    'title': el.querySelector('.cart-item-detail-title').textContent
+                }
+                cartItemChecked.push(data)
+            }
+        }
+    )
+    await moveCartItemToCheckOut(cartItemChecked)
+    window.location.replace('http://127.0.0.1:5000/cart/checkout')
+}
+
+buttonPayment.addEventListener("click", () => handleOnClickPayment()
+)
+
+
 const deleteCartItem = async function (id) {
     try {
         const response = await fetch(`${CART_API}/${id}`, {

@@ -1,56 +1,55 @@
-const genreList = document.getElementById("genreList");
-const genreSearch = document.getElementById("genreSearch");
-const newGenreContainer = document.getElementById("newGenreContainer");
-const newGenreInput = document.getElementById("newGenre");
+const gerneList = document.getElementById("gerneList");
+const gerneSearch = document.getElementById("gerneSearch");
+const newGerneContainer = document.getElementById("newGerneContainer");
+const newGerneInput = document.getElementById("newGerne");
 
 // Fetch genres from backend and populate dropdown list
-async function fetchGenres() {
+async function fetchGernes() {
     try {
-        const response = await fetch('/admin/api/genres'); // Gọi API backend
-        if (!response.ok) throw new Error('Failed to fetch genres');
+        const response = await fetch('/admin/api/gernes'); // Gọi API backend
+        if (!response.ok) throw new Error('Failed to fetch gernes');
 
-        const genres = await response.json(); // Parse JSON từ API
-        populateGenreList(genres); // Nạp dữ liệu vào dropdown
+        const gernes = await response.json(); // Parse JSON từ API
+        populateGerneList(gernes); // Nạp dữ liệu vào dropdown
     } catch (error) {
-        console.error('Error fetching genres:', error);
+        console.error('Error fetching gernes:', error);
     }
 }
 
-// Populate genre dropdown list
-function populateGenreList(genres, filter = "") {
-    genreList.innerHTML = ""; // Clear the list
-    const filteredGenres = genres.filter(genre => genre.name.toLowerCase().includes(filter.toLowerCase()));
-    filteredGenres.forEach(genre => {
+// Populate gerne dropdown list
+function populateGerneList(gernes, filter = "") {
+    gerneList.innerHTML = ""; // Clear the list
+    const filteredGernes = gernes.filter(gerne => gerne.name.toLowerCase().includes(filter.toLowerCase()));
+    filteredGernes.forEach(gerne => {
         const item = document.createElement("div");
         item.classList.add("dropdown-item");
-        item.textContent = genre.name; // Hiển thị tên thể loại
+        item.textContent = gerne.name; // Hiển thị tên thể loại
         item.addEventListener("click", () => {
-            genreSearch.value = genre.name;
-            genreList.style.display = "none";
-            newGenreContainer.style.display = "none";
+            gerneSearch.value = gerne.name;
+            gerneList.style.display = "none";
+            newGerneContainer.style.display = "none";
         });
-        genreList.appendChild(item);
+        gerneList.appendChild(item);
     });
-
 }
 
 // Show dropdown list on click
-genreSearch.addEventListener("focus", () => {
-    fetchGenres(); // Fetch và hiển thị danh sách đầy đủ
-    genreList.style.display = "block"; // Hiển thị dropdown
+gerneSearch.addEventListener("focus", () => {
+    fetchGernes(); // Fetch và hiển thị danh sách đầy đủ
+    gerneList.style.display = "block"; // Hiển thị dropdown
 });
 
 // Event listener cho tìm kiếm
-genreSearch.addEventListener("input", async () => {
-    const response = await fetch('/admin/api/genres'); // Fetch lại genres
-    const genres = await response.json();
-    populateGenreList(genres, genreSearch.value); // Filter theo input
+gerneSearch.addEventListener("input", async () => {
+    const response = await fetch('/admin/api/gernes'); // Fetch lại gernes
+    const gernes = await response.json();
+    populateGerneList(gernes, gerneSearch.value); // Filter theo input
 });
 
 // Ẩn dropdown khi click ra ngoài
 document.addEventListener("click", (event) => {
     if (!event.target.closest(".dropdown-container")) {
-        genreList.style.display = "none";
+        gerneList.style.display = "none";
     }
 });
 
@@ -58,16 +57,17 @@ document.addEventListener("click", (event) => {
 document.getElementById("bookForm").addEventListener("submit", function(event) {
     event.preventDefault();
 
-    let selectedGenre = genreSearch.value;
-    if (selectedGenre === "" && newGenreInput.value.trim() !== "") {
-        selectedGenre = newGenreInput.value.trim();
+    let selectedGerne = gerneSearch.value;
+    if (selectedGerne === "" && newGerneInput.value.trim() !== "") {
+        selectedGerne = newGerneInput.value.trim();
         // Optionally, gửi thể loại mới lên server qua API POST (nếu cần)
-        console.log("New Genre Added:", selectedGenre);
+        console.log("New Gerne Added:", selectedGerne);
     }
 
     alert("Book added successfully!");
     // Thêm logic xử lý form tại đây
 });
+
 
 
 

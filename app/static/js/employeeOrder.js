@@ -82,7 +82,7 @@ const productSearchBox = document.querySelector('.product-search-box');
 const orderTable = document.querySelector(".order-table");
 const orderList = document.querySelector(".order-list");
 const pagination = document.querySelector(".pagination");
-
+const filterLabelContainer = document.querySelector(".filter-label-container");
 //---------------------------------------------FILTER---------------------------------------------
 const orderType = document.querySelector(".order-type");
 const sortType = document.querySelector(".sort-type");
@@ -90,6 +90,8 @@ const statusType = document.querySelector(".status-type");
 const paymentMethodType = document.querySelector(".payment-method-type");
 
 //---------------------------------------------FUNCTION---------------------------------------------
+
+const currentLabel = {};
 
 const deleteParams = (params) => params.forEach(param => url.searchParams.delete(param))
 const addParams = (params) => params.forEach(param => url.searchParams.set(param[0], param[1]))
@@ -112,17 +114,17 @@ const renderOrder = function (order) {
             <td>
             <span class="badge badge-dot mr-4">
             <i class="bg-warning"></i>
-            <span class="status">${ order['status']['name'] }</span>
+            <span class="status">${order['status']['name']}</span>
             </span>
             </td>
             <td>
                 <div class="avatar-group">
-                    ${ dateFormatter.format(new Date(order['created_at'])) } - ${ timeFormatter.format(new Date(order['created_at'])) }
+                    ${dateFormatter.format(new Date(order['created_at']))} - ${timeFormatter.format(new Date(order['created_at']))}
                 </div>
             </td>
             <td>
                 <div class="avatar-group">
-                    ${ order['payment']['payment_method']['name'] }
+                    ${order['payment']['payment_method']['name']}
                 </div>
             </td>
             <td class="text-right">
@@ -135,7 +137,7 @@ const renderOrder = function (order) {
                     <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
                         ${+order['status']['id'] === 1 || +order['status']['id'] === 2 ? `
                             <a class="dropdown-item"
-                               href="/employee/order/${order['order_id']}/update">Cap nhat</a>`: ''}
+                               href="/employee/order/${order['order_id']}/update">Cap nhat</a>` : ''}
                         <a class="dropdown-item"
                            href="/employee/order/${order['order_id']}/detail">Chi
                             tiet</a>
@@ -146,7 +148,7 @@ const renderOrder = function (order) {
         </tr>`
     orderList.insertAdjacentHTML('beforeend', html);
 }
-const renderPagination = function(total_page, current_page) {
+const renderPagination = function (total_page, current_page) {
     console.log(current_page, total_page)
     const prev = `
         <li class="page-item ${current_page == 1 ? "disabled" : ""}" page=${current_page - 1}>
@@ -173,9 +175,17 @@ const renderPagination = function(total_page, current_page) {
     pagination.insertAdjacentHTML('beforeend', content)
     pagination.insertAdjacentHTML('beforeend', next)
 }
-const fetchOrder = async function(url) {
+
+const renderLabel = function () {
+    filterLabelContainer.innerHTML = '';
+    const html = Object.entries(currentLabel).map(label =>
+        `<span class="badge badge-secondary bg-red text-white cursor-pointer mr-2">${label[0]}</span>`).join('');
+
+    filterLabelContainer.insertAdjacentHTML('beforeend', html);
+}
+
+const fetchOrder = async function (url) {
     const res = await fetch(url);
-    console.log(res, url)
 
     const data = await res.json();
     orderList.innerHTML = '';
@@ -186,7 +196,7 @@ const fetchOrder = async function(url) {
 //---------------------------------------------EVENT---------------------------------------------
 sortType.addEventListener("click", (e) => {
     const item = e.target.closest(".filter-type-item");
-    if(!item) return;
+    if (!item) return;
 
     const toggleId = +item.getAttribute("id");
     handleFilterChange(sortType, Object.entries(sortParams[toggleId - 1]), ["sortBy", "dir"], toggleId);
@@ -194,32 +204,32 @@ sortType.addEventListener("click", (e) => {
 
 statusType.addEventListener("click", (e) => {
     const item = e.target.closest(".filter-type-item");
-    if(!item) return;
+    if (!item) return;
 
     const toggleId = +item.getAttribute("id");
-    handleFilterChange(statusType, Object.entries(statusParams[toggleId - 1]), ["status"], toggleId);
+    handleFilterChange(statusType, Object.entries(statusParams[toggleId - 1]), ["status", "page"], toggleId);
 });
 
 
 paymentMethodType.addEventListener("click", (e) => {
     const item = e.target.closest(".filter-type-item");
-    if(!item) return;
+    if (!item) return;
 
     const toggleId = +item.getAttribute("id");
-    handleFilterChange(paymentMethodType, Object.entries(paymentMethodParams[toggleId - 1]), ["paymentMethod"], toggleId);
+    handleFilterChange(paymentMethodType, Object.entries(paymentMethodParams[toggleId - 1]), ["paymentMethod", "page"], toggleId);
 });
 
 orderType.addEventListener("click", (e) => {
     const item = e.target.closest(".filter-type-item");
-    if(!item) return;
+    if (!item) return;
 
     const toggleId = +item.getAttribute("id");
-    handleFilterChange(orderType, Object.entries(orderParams[toggleId - 1]), ["orderType"], toggleId);
+    handleFilterChange(orderType, Object.entries(orderParams[toggleId - 1]), ["orderType", "page"], toggleId);
 });
 
 pagination.addEventListener("click", (e) => {
     const item = e.target.closest(".page-item");
-    if(!item || item.classList.contains("disabled") || item.classList.contains("active")) return;
+    if (!item || item.classList.contains("disabled") || item.classList.contains("active")) return;
 
     deleteParams(["page"])
     addParams([["page", item.getAttribute("page")]]);
@@ -228,20 +238,38 @@ pagination.addEventListener("click", (e) => {
 })
 
 
-const handleFilterChange = function(parent, setParams, deletedParams, toggleId) {
+const handleFilterChange = function (parent, setParams, deletedParams, toggleId) {
     deleteParams(deletedParams);
-
     let isToggle = false;
     parent.querySelectorAll(".filter-type-item").forEach(item => {
         const itemId = +item.getAttribute("id");
         const input = item.querySelector("input")
+        const label = item.querySelector(".dropdown-item")
         input.checked = itemId === toggleId ? !input.checked : false;
+        if (input.checked) {
+            currentLabel[label.textContent] = true;
+        } else {
+            delete currentLabel[label.textContent];
+        }
         isToggle ||= input.checked;
     })
-
-    if(isToggle)
+    if (isToggle)
         addParams(setParams);
+
     window.history.pushState({}, '', url);
     fetchOrder(`${API}${url.search}`);
+    renderLabel();
 }
 
+window.addEventListener("load", function() {
+    document.querySelectorAll(".filter-type-item").forEach(item => {
+        const input = item.querySelector("input")
+        const label = item.querySelector(".dropdown-item")
+        if (input.checked) {
+            currentLabel[label.textContent] = true;
+        } else {
+            delete currentLabel[label.textContent];
+        }
+    })
+    renderLabel();
+})

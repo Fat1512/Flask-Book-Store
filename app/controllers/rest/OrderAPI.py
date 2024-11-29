@@ -24,7 +24,7 @@ def get_order():
     return orders
 
 
-@order_api_bp.route("/<order_id>/update", methods=['POST'])
+@order_api_bp.route("/<int:order_id>/update", methods=['POST'])
 def update(order_id):
     update_order(order_id, request.json)
     return request.json
@@ -36,7 +36,27 @@ def offline_order():
     return order
 
 
+@order_api_bp.route('/onlineOrder', methods=['POST'])
+def online_order():
+    data = request.json
+    order = create_online_order(data)
+
+    for book in data['books']:
+        delete_cart_item(book['bookId'])
+
+    return jsonify({
+        "message": "SUCCESS",
+        "status": 200,
+        "orderId": order.order_id
+    })
+
+
 @order_api_bp.route("/<order_id>/detail", methods=['GET', 'POST'])
 def find(order_id):
     order = find_by_id(order_id)
     return order
+
+
+@order_api_bp.route("/test/<int:order_id>", methods=["GET"])
+def test_order(order_id):
+    calculate_total_order_amount(order_id)

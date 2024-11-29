@@ -22,5 +22,6 @@ def filter_orders():
              sortBy=sortBy,
              sortDir=sortDir,
              page=int(page))
+
     return [order.to_dict() for order in orders]
 

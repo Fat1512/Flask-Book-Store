@@ -15,7 +15,9 @@ class OrderStatus(PythonEnum):
     CHO_GIAO_HANG = 2
     DANG_GIAO_HANG = 3
     DA_HOAN_THANH = 4
-    DA_HUY = 5
+    DA_HUY = 5,
+    DANG_CHO_THANH_TOAN = 6,
+    DA_THANH_TOAN = 7
 
 
 class PaymentMethod(PythonEnum):
@@ -36,12 +38,19 @@ class Order(db.Model):
     created_at = Column(DATETIME)
 
     address_id = Column(Integer, ForeignKey('address.address_id'))
-    address = relationship("Address", back_populates="order")
+    address = relationship("Address", back_populates="order", lazy=True)
 
     order_detail = relationship("OrderDetail", backref='order', lazy=True, cascade="all")
     online_order = relationship('OnlineOrder', backref='order', lazy=True, uselist=False, cascade="all")
     offline_order = relationship('OfflineOrder', backref='order', lazy=True, uselist=False, cascade="all")
     payment_detail = relationship('PaymentDetail', backref='order', lazy=True, uselist=False, cascade="all")
+
+    def get_amount(self):
+        amount = 0
+        for od in self.order_detail:
+            amount += od.get_price()
+
+        return amount
 
     def to_dict(self):
         json = {
@@ -57,18 +66,20 @@ class Order(db.Model):
                 }
             },
             'created_at': self.created_at,
-            'order_detail': [order_detail.to_dict() for order_detail in self.order_detail],
-            'address': self.address.to_dict()
         }
-        total_amount = 0
-        for order_detail in [order_detail.to_dict() for order_detail in self.order_detail]:
-            total_amount = total_amount + order_detail['price'] * order_detail['quantity']
-        json['total_amount'] = total_amount
+        return json
 
+    def to_detail_dict(self):
+        json = self.to_dict()
+        json['order_detail'] = [order_detail.to_dict() for order_detail in self.order_detail]
+        json['address'] = self.address.to_dict()
         if self.payment_detail:
             json['payment']['payment_detail'] = self.payment_detail.to_dict()
 
         return json
+
+    def get_shipping_fee(self):
+        return 0
 
 
 class OfflineOrder(Order):
@@ -89,6 +100,13 @@ class OfflineOrder(Order):
         }
         return json
 
+    def to_detail_dict(self):
+        json = super().to_detail_dict()
+        json['order_type']['detail'] = {
+            'employee_name': self.employee.first_name + ' ' + self.employee.last_name
+        }
+        return json
+
 
 class OnlineOrder(Order):
     __tablename__ = 'online_order'
@@ -105,19 +123,25 @@ class OnlineOrder(Order):
         json = super().to_dict()
         json['order_type'] = {
             'id': 1,
-            'name': ORDER_TYPE_TEXT[0],
-            'detail': {
-                'shipping_method': {
-                    'id': self.shipping_method.value,
-                    'name': SHIPPING_METHOD_TEXT[self.shipping_method.value - 1]
-                },
-                'shipping_fee': self.shipping_fee,
-                'note': self.note,
-                'customer_id': self.customer_id
-            }
+            'name': ORDER_TYPE_TEXT[0]
         }
-        json['total_amount'] = json['total_amount'] + json['order_type']['detail']['shipping_fee']
         return json
+
+    def to_detail_dict(self):
+        json = super().to_detail_dict()
+        json['order_type']['detail'] = {
+            'shipping_method': {
+                'id': self.shipping_method.value,
+                'name': SHIPPING_METHOD_TEXT[self.shipping_method.value - 1]
+            },
+            'shipping_fee': self.shipping_fee,
+            'note': self.note,
+            'customer_id': self.customer_id
+        }
+        return json
+
+    def get_shipping_fee(self):
+        return self.shipping_fee
 
 
 class OrderCancellation(db.Model):
