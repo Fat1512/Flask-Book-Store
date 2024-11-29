@@ -17,6 +17,12 @@ def find_by_id(order_id):
     return order
 
 
+def update_order_status(order_id, status):
+    order = Order.query.get(order_id)
+    order.status = status
+    db.session.commit()
+
+
 def find_order_by_id(id):
     return Order.query.get(id)
 
@@ -111,7 +117,6 @@ def create_online_order(request):
 
 
 def create_offline_order(order_list):
-
     offline_order = OfflineOrder(status=OrderStatus.DA_HOAN_THANH,
                                  payment_method=PaymentMethod.TIEN_MAT,
                                  created_at=datetime.utcnow(),
@@ -140,10 +145,12 @@ def create_offline_order(order_list):
 
 
 def calculate_total_order_amount(order_id):
-    total_amount = db.session.query(func.sum(OrderDetail.quantity * OrderDetail.price)).filter(OrderDetail.order_id == order_id).first()[0]
+    total_amount = db.session.query(func.sum(OrderDetail.quantity * OrderDetail.price)).filter(
+        OrderDetail.order_id == order_id).first()[0]
     shipping_fee = db.session.query(OnlineOrder.shipping_fee).filter(OnlineOrder.order_id == order_id).first()
     total_amount = total_amount + shipping_fee[0] if shipping_fee is not None else total_amount
     return total_amount
+
 
 def count_order():
     return Order.query.count()
