@@ -1,1 +1,1 @@
-Sửa lại db url nha mấy intern
+update readme
