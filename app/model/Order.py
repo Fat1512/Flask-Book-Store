@@ -38,9 +38,9 @@ class Order(db.Model):
     created_at = Column(DATETIME)
 
     address_id = Column(Integer, ForeignKey('address.address_id'))
-    address = relationship("Address", back_populates="order")
+    address = relationship("Address", back_populates="order", lazy=True)
 
-    order_detail = relationship("OrderDetail", backref='order', lazy=True, cascade="all")
+    order_detail = relationship("OrderDetail", back_populates='order', lazy=True, cascade="all")
     online_order = relationship('OnlineOrder', backref='order', lazy=True, uselist=False, cascade="all")
     offline_order = relationship('OfflineOrder', backref='order', lazy=True, uselist=False, cascade="all")
     payment_detail = relationship('PaymentDetail', backref='order', lazy=True, uselist=False, cascade="all")
@@ -69,34 +69,19 @@ class Order(db.Model):
             'order_detail': [order_detail.to_dict() for order_detail in self.order_detail],
             'address': self.address.to_dict()
         }
+        return json
 
-        total_amount = 0
-        if self.online_order:
-            json['order_type'] = {
-                'id': 1,
-                'name': ORDER_TYPE_TEXT[0],
-                'detail': self.online_order.to_dict()
-            }
-            total_amount = total_amount + json['order_type']['detail']['shipping_fee']
-            # json.update(self.online_order.to_dict())
-        else:
-            json['order_type'] = {
-                'id': 2,
-                'name': ORDER_TYPE_TEXT[1],
-                'detail': self.offline_order.to_dict()
-            }
-            # json.update(self.offline_order.to_dict())
-
+    def to_detail_dict(self):
+        json = self.to_dict()
+        json['order_detail'] = [order_detail.to_dict() for order_detail in self.order_detail]
+        json['address'] = self.address.to_dict()
         if self.payment_detail:
             json['payment']['payment_detail'] = self.payment_detail.to_dict()
 
-        for order_detail in [order_detail.to_dict() for order_detail in self.order_detail]:
-            total_amount = total_amount + order_detail['price'] * order_detail['quantity']
-
-        json['total_amount'] = total_amount
-
-
         return json
+
+    def get_shipping_fee(self):
+        return 0
 
 
 class OfflineOrder(Order):
@@ -107,9 +92,22 @@ class OfflineOrder(Order):
     employee = relationship("User", back_populates="offline_orders")
 
     def to_dict(self):
-        return {
+        json = super().to_dict()
+        json['order_type'] = {
+            'id': 2,
+            'name': ORDER_TYPE_TEXT[1],
+            'detail': {
+                'employee_name': self.employee.first_name + ' ' + self.employee.last_name
+            }
+        }
+        return json
+
+    def to_detail_dict(self):
+        json = super().to_detail_dict()
+        json['order_type']['detail'] = {
             'employee_name': self.employee.first_name + ' ' + self.employee.last_name
         }
+        return json
 
 
 class OnlineOrder(Order):
@@ -124,7 +122,16 @@ class OnlineOrder(Order):
     order_cancellation = relationship('OrderCancellation', backref='online_order', lazy=True, uselist=False)
 
     def to_dict(self):
-        json = {
+        json = super().to_dict()
+        json['order_type'] = {
+            'id': 1,
+            'name': ORDER_TYPE_TEXT[0]
+        }
+        return json
+
+    def to_detail_dict(self):
+        json = super().to_detail_dict()
+        json['order_type']['detail'] = {
             'shipping_method': {
                 'id': self.shipping_method.value,
                 'name': SHIPPING_METHOD_TEXT[self.shipping_method.value - 1]
@@ -133,9 +140,11 @@ class OnlineOrder(Order):
             'note': self.note,
             'customer_id': self.customer_id
         }
-        if self.order_cancellation:
-            json['cancel'] = self.order_cancellation.to_dict()
+        json['total_amount'] = json['total_amount'] + json['order_type']['detail']['shipping_fee']
         return json
+
+    def get_shipping_fee(self):
+        return self.shipping_fee
 
 
 class OrderCancellation(db.Model):
@@ -158,6 +167,11 @@ class OrderDetail(db.Model):
     book = relationship("Book", back_populates="order_detail")
     quantity = Column(Integer)
     price = Column(Double)
+
+    order = relationship("Order", back_populates='order_detail', enable_typechecks=False, lazy=True)
+
+    def get_price(self):
+        return self.price * self.quantity
 
     def to_dict(self):
         return {

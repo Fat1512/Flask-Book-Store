@@ -8,6 +8,11 @@ from flask import Blueprint
 account_bp = Blueprint('account', __name__)
 
 
+@account_bp.route('/purchase', methods=['GET'])
+def purchase():
+    return render_template("purchase.html")
+
+
 @account_bp.route('/admin-login', methods=['GET', 'POST'])
 def admin_login():
     err_msg = ''
@@ -85,8 +90,6 @@ def logout_process():
 @login.user_loader
 def load_user(user_id):
     return UserDao.get_user_by_id(user_id)
-
-
 
 # @app.route("/add-products")
 # def add_products_process():

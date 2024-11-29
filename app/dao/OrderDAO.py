@@ -1,5 +1,5 @@
 from app.model.Order import Order, PaymentDetail, ShippingMethod
-from sqlalchemy import desc, asc, or_
+from sqlalchemy import desc, asc, func, or_
 from datetime import datetime
 from app import app, db
 from app.model.Order import OrderStatus, PaymentMethod, OnlineOrder, OfflineOrder, OrderDetail
@@ -10,9 +10,17 @@ import math
 # filter by status, PTTT
 # sort by thoi gian dat, tong tien
 
-def find_by_id(id):
-    order = Order.query.get(id)
-    return order.online_order.to_dict() if order.online_order else order.offline_order.to_dict()
+def find_by_id(order_id):
+    order = Order.query.get(order_id)
+    order = order.online_order.to_detail_dict() if order.online_order else order.offline_order.to_detail_dict()
+    order['total_amount'] = calculate_total_order_amount(order_id)
+    return order
+
+
+def update_order_status(order_id, status):
+    order = Order.query.get(order_id)
+    order.status = status
+    db.session.commit()
 
 
 def find_order_by_id(id):
@@ -46,17 +54,21 @@ def find_all(**kwargs):
         orders = orders.order_by(desc(Order.created_at)) if sort_dir.__eq__("desc") else orders.order_by(
             asc(Order.created_at))
 
-    orders = [order.to_dict() for order in orders.all()]
-
-    if 'total-amount' == sort_by:
-        orders.sort(key=sort_by_total_amount, reverse=True if sort_dir.__eq__("desc") else False)
-
     page_size = app.config['ORDER_PAGE_SIZE']
     start = (page - 1) * page_size
     end = start + page_size
-    total_page = math.ceil(len(orders) / page_size)
+    total_page = math.ceil(orders.count() / page_size)
+    orders = orders.slice(start, end)
 
-    orders = orders[start: end]
+    orders = [{
+        **(order.online_order.to_dict() if order.online_order else order.offline_order.to_dict()),
+        'total_amount': calculate_total_order_amount(order.order_id)
+    }
+        for order in orders.all()
+    ]
+
+    if 'total-amount' == sort_by:
+        orders.sort(key=sort_by_total_amount, reverse=True if sort_dir.__eq__("desc") else False)
 
     return {
         'orders': orders,
@@ -65,20 +77,13 @@ def find_all(**kwargs):
     }
 
 
-def update_order_status(order_id, status):
-    order = Order.query.get(order_id)
-    order.status = status
-
-    db.session.commit()
-
-
 def update_order(order_id, order_list):
     query = OrderDetail.query
     query.filter(OrderDetail.order_id == order_id).delete()
 
     for order_item in order_list:
         book_id = order_item['book_id']
-        quantity = order_item['qty']
+        quantity = order_item['quantity']
         price = order_item['price']
         order_detail = OrderDetail(order_id=order_id, book_id=book_id, quantity=quantity, price=price)
         db.session.add(order_detail)
@@ -87,7 +92,7 @@ def update_order(order_id, order_list):
 
 
 def create_online_order(request):
-    payment_method = PaymentMethod.TIEN_MAT if request.get('paymentMethod').__eq__('inperson') else PaymentMethod.THE
+    payment_method = PaymentMethod.THE if request.get('paymentMethod').__eq__('VNPay') else PaymentMethod.TIEN_MAT
     shipping_method = ShippingMethod.GIAO_HANG if request.get('shippingMethod').__eq__(
         'ship') else ShippingMethod.CUA_HANG
     shipping_fee = request.get('shippingFee')
@@ -131,13 +136,20 @@ def create_offline_order(order_list):
         order_detail_list.append(order_detail)
         total_amount = total_amount + quantity * price
 
-    payment_detail = PaymentDetail(order_id=offline_order.order_id, created_at=datetime.utcnow(),
-                                   amount=total_amount)
+    payment_detail = PaymentDetail(order_id=offline_order.order_id, created_at=datetime.utcnow(), amount=total_amount)
 
     db.session.add_all(order_detail_list)
     db.session.add(payment_detail)
     db.session.commit()
-    return offline_order.to_dict()
+    return offline_order.to_detail_dict()
+
+
+def calculate_total_order_amount(order_id):
+    total_amount = db.session.query(func.sum(OrderDetail.quantity * OrderDetail.price)).filter(
+        OrderDetail.order_id == order_id).first()[0]
+    shipping_fee = db.session.query(OnlineOrder.shipping_fee).filter(OnlineOrder.order_id == order_id).first()
+    total_amount = total_amount + shipping_fee[0] if shipping_fee is not None else total_amount
+    return total_amount
 
 
 def count_order():

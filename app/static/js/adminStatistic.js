@@ -27,11 +27,29 @@ function populateGerneList(gernes, filter = "") {
         item.addEventListener("click", () => {
             gerneSearch.value = gerne.name;
             gerneList.style.display = "none";
-            newGerneContainer.style.display = "none";
+
+            // Redirect to statistic page with gerne_id
+            window.location.href = `/admin/statistic-frequency?gerne_id=${gerne.id}`;
         });
         gerneList.appendChild(item);
     });
 }
+
+//function populateGerneList(gernes, filter = "") {
+//    gerneList.innerHTML = ""; // Clear the list
+//    const filteredGernes = gernes.filter(gerne => gerne.name.toLowerCase().includes(filter.toLowerCase()));
+//    filteredGernes.forEach(gerne => {
+//        const item = document.createElement("div");
+//        item.classList.add("dropdown-item");
+//        item.textContent = gerne.name; // Hiển thị tên thể loại
+//        item.addEventListener("click", () => {
+//            gerneSearch.value = gerne.name;
+//            gerneList.style.display = "none";
+//            newGerneContainer.style.display = "none";
+//        });
+//        gerneList.appendChild(item);
+//    });
+//}
 
 // Show dropdown list on click
 gerneSearch.addEventListener("focus", () => {
@@ -67,6 +85,9 @@ document.getElementById("bookForm").addEventListener("submit", function(event) {
     alert("Book added successfully!");
     // Thêm logic xử lý form tại đây
 });
+
+
+
 
 
 

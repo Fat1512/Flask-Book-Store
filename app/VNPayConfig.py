@@ -5,10 +5,13 @@ import random
 import time
 import uuid
 from datetime import timedelta, datetime
-from urllib.parse import urlencode
+from urllib.parse import urlencode, quote, quote_plus
 from flask import request, redirect, url_for
 
 from app import app
+from app.dao.OrderDAO import update_order_status, find_order_by_id
+from app.dao.PaymentDAO import create_payment
+from app.model.Order import OrderStatus, PaymentDetail
 
 
 def generate_vnp_txn_ref():
@@ -39,25 +42,37 @@ def generate_vnpay_url(order):
         'vnp_Version': '2.1.0',
         'vnp_TmnCode': app.config["VNPAY_TMN_CODE"],
         'vnp_BankCode': "NCB",
-        'vnp_Amount': math.ceil(order.get_amount() * 100),  # Amount in the smallest currency unit (e.g., cent)
+        'vnp_Amount': math.ceil(order.get_amount() * 100),  # Amount in smallest unit
         'vnp_Command': 'pay',
         'vnp_OrderInfo': f"Thanh toan don hang {order.order_id}",
         'vnp_OrderType': "Thanh toan don hang",
         'vnp_CurrCode': "VND",
         'vnp_Locale': 'vn',
-        'vnp_ReturnUrl': f"{app.config["VNPAY_RETURN_URL"]}?orderId={order.order_id}",
-        'vnp_TxnRef': generate_vnp_txn_ref(),
+        'vnp_ReturnUrl': f"{app.config['VNPAY_RETURN_URL']}?orderId={order.order_id}",
+        'vnp_TxnRef': order.order_id,
         'vnp_CreateDate': time.strftime('%Y%m%d%H%M%S', time.localtime()),
         'vnp_IpAddr': get_client_ip()
-
     }
+
+    # Add Expire Date
     vnp_expire_date = (datetime.now() + timedelta(minutes=15)).strftime("%Y%m%d%H%M%S")
     vnpay_data["vnp_ExpireDate"] = vnp_expire_date
-    print(vnpay_data['vnp_ReturnUrl'])
-    sorted_data = sorted(vnpay_data.items())
-    encoded_query = urlencode(sorted_data)
-    encoded_query += f"&vnp_SecureHash={generate_secure_hash(encoded_query)}"
+
+    # Sort and encode parameters
+    sorted_data = sorted(vnpay_data.items())  # Sort alphabetically
+    encoded_query = urlencode(sorted_data)  # URL encode the query string
+
+    # Generate secure hash
+    hash_data = hmac.new(
+        app.config['VNPAY_HASH_SECRET'].encode("utf-8"),  # Key
+        encoded_query.encode("utf-8"),  # Message
+        hashlib.sha512  # Hash function
+    ).hexdigest()
+
+    # Add secure hash to the query
+    encoded_query += f"&vnp_SecureHash={hash_data}"
     vnpay_url += '?' + encoded_query
+
     return vnpay_url
 
 
@@ -69,11 +84,60 @@ def generate_secure_hash(encoded_query):
     ).hexdigest()
 
 
-def validate_vnpay_response(response_data):
-    secure_hash = response_data.pop('vnp_SecureHash')
-    data_string = '&'.join([f"{key}={value}" for key, value in response_data.items()])
-    data_string += f"&{app.config["VNPAY_HASH_SECRET"]}"
+def process_ipn(params):
+    # Step 1: Verify the IPN signature
+    if not verify_vnpay_ipn(params):
+        return {"code": "97", "message": "Signature verification failed"}
 
-    expected_hash = hashlib.sha256(data_string.encode('utf-8')).hexdigest().upper()
+    # Step 2: Process the transaction reference (txnRef)
+    order_id = params.get("vnp_TxnRef")
+    try:
+        order_id = int(order_id)
+        order = find_order_by_id(order_id)
 
-    return secure_hash == expected_hash
+        payment_detail = PaymentDetail(order_id=order.order_id, created_at=datetime.utcnow(),
+                                       amount=order.get_amount())
+        create_payment(payment_detail)
+        update_order_status(order_id, OrderStatus.DA_THANH_TOAN)  # Simulated booking service
+        response = {
+            "code": "00",
+            "message": "Successful"
+        }
+    except Exception:
+        response = {
+            "code": "99",
+            "message": "Unknown error"
+        }
+    return response
+
+
+def verify_vnpay_ipn(params):
+    # Extract the secure hash from parameters
+    req_secure_hash = params.get("vnp_SecureHash")
+    params.pop("vnp_SecureHash", None)
+    params.pop("vnp_SecureHashType", None)
+
+    # Sort the remaining keys
+    field_names = sorted(params.keys())
+
+    # Build the hash payload
+    hash_payload = []
+    for field_name in field_names:
+        field_value = params.get(field_name)
+        if field_value:  # Ensure the value is not None or empty
+            # Append URL-encoded key-value pairs
+            hash_payload.append(f"{field_name}={quote_plus(str(field_value), safe='')}")
+
+    # Join the payload with '&'
+    hash_payload_str = "&".join(hash_payload)
+    # Compute the secure hash (Replace with your actual signing logic)
+    secure_hash = __hmacsha512(app.config['VNPAY_HASH_SECRET'], hash_payload_str)
+
+    # Compare the computed hash with the received hash
+    return secure_hash == req_secure_hash
+
+
+def __hmacsha512(key, data):
+    byteKey = key.encode('utf-8')
+    byteData = data.encode('utf-8')
+    return hmac.new(byteKey, byteData, hashlib.sha512).hexdigest()

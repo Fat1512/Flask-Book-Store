@@ -422,12 +422,19 @@
             <div class="col">
                 <div class="card">
                     <!-- Card header -->
-                    <div class="card-header border-0">
+                    <div class="card-header border-0 pb-3">
                         <h3 class="mb-0">Quản lý nhập sách</h3>
                         <div class="d-flex justify-content-end">
                             <div class="pt-2">
                             </div>
                         </div>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3 ml-3">
+                        <button type="button"
+                                class="add-book-btn text-left btn btn-primary text-black border border-0"
+                                style="width: 8rem; background-color: var(--red) !important; color:var(--white-color) !important">
+                            Thêm sách
+                        </button>
                     </div>
                     <!-- Light table -->
                     <div class="table-responsive">
@@ -491,67 +498,25 @@
                             </tr>
                             </tbody>
                         </table>
-                        <div class="d-flex px-5 pt-4 justify-content-between ">
-                            <button type="button"
-                                    class="add-book-btn w-100 btn btn-primary bg-red text-white border border-0">
-                                Thêm sách
-                            </button>
-                        </div>
-                        <div class="d-flex px-5 pb-4 justify-content-between ">
-                            <div class="font-weight-bolder display-4">
-                                Tổng tiền:
-                            </div>
-                            <div class="font-weight-bolder display-4 total-amount">{{ 0 | currency('VND') }}</div>
-                        </div>
                         <div class="d-flex py-3">
-                            <div class="w-50 px-3">
-                                <button type="button"
-                                        class="delete-all-btn w-100 btn btn-primary bg-red text-white border border-0">
-                                    Xóa hết
-                                </button>
-                            </div>
-                            <div class="w-50 px-3">
-                                <button type="button"
-                                        class="checkout-btn w-100 btn btn-primary bg-blue text-white border border-0">
-                                    Kiểm tra
-                                </button>
+                            <div class="col-9"></div>
+                            <div class="col-3">
+                                <div class="w-100 d-flex justify-content-end">
+                                    <button type="button"
+                                            class="checkout-btn w-100 btn btn-primary bg-white text-black border border-0" style="color: var(--black-color) !important">
+                                        Xóa hết
+                                    </button>
+                                    <button type="button"
+                                            class="delete-all-btn w-100 btn btn-primary border border-0" style="color: var(--white-color) !important; background-color: var(--red)">
+                                        Xuất phiếu
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Footer -->
-        <footer class="footer pt-0">
-            <div class="row align-items-center justify-content-lg-between">
-                <div class="col-lg-6">
-                    <div class="copyright text-center  text-lg-left  text-muted">
-                        &copy; 2020 <a href="https://www.creative-tim.com" class="font-weight-bold ml-1"
-                                       target="_blank">Creative
-                        Tim</a>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <ul class="nav nav-footer justify-content-center justify-content-lg-end">
-                        <li class="nav-item">
-                            <a href="https://www.creative-tim.com" class="nav-link" target="_blank">Creative Tim</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="https://www.creative-tim.com/presentation" class="nav-link" target="_blank">About
-                                Us</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="http://blog.creative-tim.com" class="nav-link" target="_blank">Blog</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="https://github.com/creativetimofficial/argon-dashboard/blob/master/LICENSE.md"
-                               class="nav-link"
-                               target="_blank">MIT License</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </footer>
     </div>
 </div>
 <div class="modal">
