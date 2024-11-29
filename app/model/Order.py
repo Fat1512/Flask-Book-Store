@@ -40,7 +40,7 @@ class Order(db.Model):
     address_id = Column(Integer, ForeignKey('address.address_id'))
     address = relationship("Address", back_populates="order")
 
-    order_detail = relationship("OrderDetail", backref='order', lazy=True, cascade="all")
+    order_detail = relationship("OrderDetail", back_populates='order', lazy=True, cascade="all")
     online_order = relationship('OnlineOrder', backref='order', lazy=True, uselist=False, cascade="all")
     offline_order = relationship('OfflineOrder', backref='order', lazy=True, uselist=False, cascade="all")
     payment_detail = relationship('PaymentDetail', backref='order', lazy=True, uselist=False, cascade="all")
@@ -94,7 +94,6 @@ class Order(db.Model):
             total_amount = total_amount + order_detail['price'] * order_detail['quantity']
 
         json['total_amount'] = total_amount
-
 
         return json
 
@@ -158,6 +157,11 @@ class OrderDetail(db.Model):
     book = relationship("Book", back_populates="order_detail")
     quantity = Column(Integer)
     price = Column(Double)
+
+    order = relationship("Order", back_populates='order_detail', enable_typechecks=False, lazy=True)
+
+    def get_price(self):
+        return self.price * self.quantity
 
     def to_dict(self):
         return {

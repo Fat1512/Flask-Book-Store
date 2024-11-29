@@ -1,0 +1,80 @@
+{% extends 'layout/base.html' %}
+{% block css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/purchase.css') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="my-bg-color pt-3 pb-3">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                    <div class="home-section py-0 rounded" id="home_category_section">
+                        <div class="d-flex justify-content-around home_category_heading">
+                            <div class="home_category_item active">Tất cả</div>
+                            <div class="home_category_item">Chờ thanh toán</div>
+                            <div class="home_category_item">Vận chuyển</div>
+                            <div class="home_category_item">Hoàn thành</div>
+                            <div class="home_category_item">Đã hủy</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 item-bg-color rounded">
+                        <ul class="list-unstyled m-0">
+                            <li>
+                                <div class="item-header p-2">
+                                    <p class="text-right m-0">Giao hàng thành công | <span>Hoàn thành</span></p>
+                                </div>
+                                <div class="item-infor d-flex align-items-center">
+                                    <div class="item-infor-image">
+                                        <img class="w-100"
+                                             src="https://cdn0.fahasa.com/media/catalog/product/c/o/combo-9786043356380-9786043128734_1.jpg">
+                                    </div>
+                                    <div class="item-infor-detail">
+                                        <p>Combo Sách Giáo Trình Chuẩn HSK 3 - Sách Bài Học Và Bài Tập (Bộ 2 Cuốn) (Tái
+                                            Bản)</p>
+                                        <p class="text-secondary"> Thể loại: SGK </p>
+                                        <p>x1</p>
+                                    </div>
+                                    <div class="item-infor-price text-center">
+                                        <span class="text-secondary text-decoration-line-through">300000</span>
+                                        <span class="text-primary">30000000</span>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="item-header p-2">
+                                    <p class="text-right m-0">Giao hàng thành công | <span>Hoàn thành</span></p>
+                                </div>
+                                <div class="item-infor d-flex align-items-center">
+                                    <div class="item-infor-image">
+                                        <img class="w-100"
+                                             src="https://cdn0.fahasa.com/media/catalog/product/c/o/combo-9786043356380-9786043128734_1.jpg">
+                                    </div>
+                                    <div class="item-infor-detail">
+                                        <p>Combo Sách Giáo Trình Chuẩn HSK 3 - Sách Bài Học Và Bài Tập (Bộ 2 Cuốn) (Tái
+                                            Bản)</p>
+                                        <p class="text-secondary"> Thể loại: SGK </p>
+                                        <p>x1</p>
+                                    </div>
+                                    <div class="item-infor-price text-center">
+                                        <span class="text-secondary text-decoration-line-through">300000</span>
+                                        <span class="text-primary">30000000</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="controll pb-2 text-right">
+                            <p>Thành tiền: <span class="text-primary">15894</span></p>
+                            <div>
+                                <button class="btn btn-primary btn-large">Mua lại</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

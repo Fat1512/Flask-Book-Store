@@ -87,7 +87,7 @@ def update_order(order_id, order_list):
 
 
 def create_online_order(request):
-    payment_method = PaymentMethod.TIEN_MAT if request.get('paymentMethod').__eq__('inperson') else PaymentMethod.THE
+    payment_method = PaymentMethod.THE if request.get('paymentMethod').__eq__('VNPay') else PaymentMethod.TIEN_MAT
     shipping_method = ShippingMethod.GIAO_HANG if request.get('shippingMethod').__eq__(
         'ship') else ShippingMethod.CUA_HANG
     shipping_fee = request.get('shippingFee')

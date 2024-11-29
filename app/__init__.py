@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from urllib.parse import quote
 import cloudinary
 from flask_login import LoginManager
-from app.utils.helper import format_currency_filter
+from app.utils.helper import format_currency_filter, format_datetime_filter
 
 app = Flask(__name__)
 app.secret_key = "8923yhr9fuwnsejksnpok@$I_I@$)opfk"
@@ -12,8 +12,8 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 
 app.config["VNPAY_URL"] = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'  # Use the sandbox URL for testing
 app.config["VNPAY_TMN_CODE"] = 'MEBTRFP0'
-app.config["VNPAY_HASH_SECRET"] = 'XGR3PAJ4STE368KZBJQ2GO2KJBS1R6HF'
-app.config["VNPAY_RETURN_URL"] = 'http://127.0.0.1:5000/api/v1/payment/return'
+app.config["VNPAY_HASH_SECRET"] = 'ILFTJ080X209IM562X1NKYTMZ70RLVJO'
+app.config["VNPAY_RETURN_URL"] = 'http://127.0.0.1:5000/cart'
 
 cloudinary.config(
     cloud_name="duk7gxwvc",

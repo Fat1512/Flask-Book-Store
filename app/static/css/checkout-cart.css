@@ -17,8 +17,9 @@
 }
 
 .address-user {
-    margin: 20px 0;
+    margin: 20px 0px;
     border-bottom: 1px solid black;
+
 }
 
 .custom-label {
@@ -183,3 +184,10 @@ input-address:focus {
     border: 1px solid #ccc;
     border-radius: 4px;
 }
+
+.address-item-tick {
+    display: block;
+    line-height: 10px;
+    margin-right: 10px;
+}
+
