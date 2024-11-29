@@ -45,7 +45,7 @@ def generate_vnpay_url(order):
         'vnp_OrderType': "Thanh toan don hang",
         'vnp_CurrCode': "VND",
         'vnp_Locale': 'vn',
-        'vnp_ReturnUrl': f"{app.config["VNPAY_RETURN_URL"]}?orderId={order.order_id}",
+        'vnp_ReturnUrl': f"{app.config['VNPAY_RETURN_URL']}?orderId={order.order_id}",
         'vnp_TxnRef': generate_vnp_txn_ref(),
         'vnp_CreateDate': time.strftime('%Y%m%d%H%M%S', time.localtime()),
         'vnp_IpAddr': get_client_ip()
@@ -72,7 +72,7 @@ def generate_secure_hash(encoded_query):
 def validate_vnpay_response(response_data):
     secure_hash = response_data.pop('vnp_SecureHash')
     data_string = '&'.join([f"{key}={value}" for key, value in response_data.items()])
-    data_string += f"&{app.config["VNPAY_HASH_SECRET"]}"
+    data_string += f"&{app.config['VNPAY_HASH_SECRET']}"
 
     expected_hash = hashlib.sha256(data_string.encode('utf-8')).hexdigest().upper()
 
