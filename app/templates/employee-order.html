@@ -480,7 +480,8 @@
                                         </div>
                                         <div class="form-check filter-type-item" id="4">
                                             <div class="form-check-label d-flex justify-content-between align-content-center">
-                                                <input type="checkbox" {% if sortBy == "date" and sortDir == "desc" %}
+                                                <input type="checkbox"
+                                                        {% if sortBy == "total-amount" and sortDir == "desc" %}
                                                        checked {% endif %} class="">
                                                 <span class="dropdown-item">Tổng tiền giảm dần</span>
                                             </div>
@@ -585,7 +586,7 @@
                                         </div>
                                     </td>
                                     <td class="budget">
-                                        {{ order['total_amount'] }}
+                                        {{ order['total_amount']|currency('VND') }}
                                     </td>
                                     <td>
                                     <span class="badge badge-dot mr-4">
@@ -595,7 +596,7 @@
                                     </td>
                                     <td>
                                         <div class="avatar-group">
-                                            {{ order['created_at'] }}
+                                            {{ order['created_at']|datetime() }}
                                         </div>
                                     </td>
                                     <td>
@@ -612,8 +613,9 @@
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
                                                 {% if order['status']['id'] == 1 or order['status']['id'] == 2 %}
-                                                <a class="dropdown-item"
-                                                   href="/employee/order/{{ order['order_id'] }}/update">Cap nhat</a>
+                                                    <a class="dropdown-item"
+                                                       href="/employee/order/{{ order['order_id'] }}/update">Cap
+                                                        nhat</a>
                                                 {% endif %}
                                                 <a class="dropdown-item"
                                                    href="/employee/order/{{ order['order_id'] }}/detail">Chi tiet</a>
@@ -701,7 +703,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"
         integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
-<script src="{{ url_for('static', filename='js/employeeOrder.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/employeeOrder.js') }}"></script>
 </body>
 
 </html>

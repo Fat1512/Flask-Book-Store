@@ -33,7 +33,7 @@
       cursor: pointer;
     }
 
-    input[type="text"], input[type="number"], input[type="date"], input[type="date"], input[type="month"],
+    input[type="text"], input[type="number"], input[type="date"], input[type="date"], input[type="month"], input[type="submit"],
     textarea,
     select {
       /*width: 100%;*/

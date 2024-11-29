@@ -1,15 +1,46 @@
+const vndCurrencyFormat = new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+});
+
+function extractCurrencyNumber(currencyString) {
+    const numericValue = currencyString.replace(/[^\d,]/g, ''); // Keep digits and comma
+    return parseFloat(numericValue.replace(',', '.')); // Convert to float, replace comma with dot
+}
+
+const dateFormatter = new Intl.DateTimeFormat('vi-VN', {
+    weekday: 'short', // e.g., Thứ Sáu
+    year: 'numeric',
+    month: 'numeric', // e.g., Tháng 1
+    day: 'numeric',
+    // timeZoneName: 'short' // e.g., GMT
+});
+
+const timeFormatter = new Intl.DateTimeFormat('vi-VN', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    // timeZoneName: 'short' // e.g., GMT
+});
+
+//============================================DOM============================================
+
 const modal = document.querySelector(".modal");
 const modalBody = document.querySelector(".modal-body");
-const qrBtn = document.querySelector(".qr-code-btn");
 const overlay = document.querySelector(".overlay")
+
 const orderContainer = document.querySelector(".order-container");
 const productContainer = document.querySelector(".product-container");
 
 const deleteAllBtn = document.querySelector(".delete-all-btn");
 const checkoutBtn = document.querySelector(".checkout-btn");
 
+const barcodeScanner = document.querySelector("#reader");
+const qrBtn = document.querySelector(".qr-code-btn");
+
 let currentOrderItemsState = {};
 
+//============================================Barcode Scanner============================================
 let html5QrcodeScanner = new Html5QrcodeScanner(
     "reader", {
         fps: 10,
@@ -20,30 +51,31 @@ let html5QrcodeScanner = new Html5QrcodeScanner(
 html5QrcodeScanner.render(onScanSuccess, onScanFailure);
 
 async function onScanSuccess(decodedText, decodedResult) {
-    // handle the scanned code as you like, for example:
-    console.log(`Code matched = ${decodedText}`, decodedResult);
-    const barcode = decodedText;
-    html5QrcodeScanner.pause(1);
 
+    html5QrcodeScanner.pause(1);
     setTimeout(() => {
         html5QrcodeScanner.resume();
         modal.classList.remove("d-flex")
         overlay.classList.remove("d-flex");
     }, 1000);
-    const data = await fetchBookByBarcode(barcode);
 
-    if (currentOrderItemsState[data['book_id']]) {
-        currentOrderItemsState[data['book_id']]['quantity'] = +currentOrderItemsState[data['book_id']]['quantity'] + 1;
-    } else {
-        currentOrderItemsState[data['book_id']] = data;
-        currentOrderItemsState[data['book_id']]['quantity'] = 1;
+    try {
+        const data = await fetchBookByBarcode(decodedText);
+        if (currentOrderItemsState[data['book_id']]) {
+            currentOrderItemsState[data['book_id']]['quantity'] = +currentOrderItemsState[data['book_id']]['quantity'] + 1;
+        } else {
+            currentOrderItemsState[data['book_id']] = data;
+            currentOrderItemsState[data['book_id']]['quantity'] = 1;
+        }
+        renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]));
+    } catch(err) {
+        renderToast(err.message, "center", "orange");
     }
-    renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]));
 }
 
-function onScanFailure(error) {
+function onScanFailure(error) {}
 
-}
+//============================================API============================================
 
 async function fetchBookByBarcode(barcode) {
     const res = await fetch(`/api/v1/book/barcode/${barcode}`, {
@@ -52,12 +84,37 @@ async function fetchBookByBarcode(barcode) {
             'Content-Type': 'application/json'
         }
     });
+    if(!res.ok) throw new Error("Barcode không tồn tại")
     return await res.json();
 }
 
-const toggleModal = function () {
-    modal.classList.toggle("d-flex");
-    overlay.classList.toggle("d-flex");
+async function postOfflineOrder() {
+     const res = await fetch(`/api/v1/order/add`, {
+        method: "POST",
+        body: JSON.stringify(Object.values(currentOrderItemsState)),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    if (!res.ok) throw new Error("Lỗi");
+    return await res.json();
+}
+
+//============================================FUNCTION============================================
+
+const openModal = function() {
+    modal.classList.add("d-flex");
+    overlay.classList.add("d-flex");
+}
+
+const closeModal = function() {
+    modal.classList.remove("d-flex");
+    overlay.classList.remove("d-flex");
+    barcodeScanner.classList.remove("d-none");
+
+    Array.from(modalBody.children).forEach(child => {
+        if(child !== barcodeScanner) modalBody.removeChild(child);
+    })
 }
 
 const resetState = function () {
@@ -65,42 +122,32 @@ const resetState = function () {
     renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]));
 }
 
-qrBtn.addEventListener("click", toggleModal);
+//============================================EVENT============================================
 
-overlay.addEventListener("click", toggleModal);
+qrBtn.addEventListener("click", openModal);
+
+overlay.addEventListener("click", closeModal);
 
 deleteAllBtn.addEventListener("click", resetState);
 
 checkoutBtn.addEventListener("click", async function () {
-    const res = await fetch(`/api/v1/order/add`, {
-        method: "POST",
-        body: JSON.stringify(Object.values(currentOrderItemsState)),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
-    if (!res.ok) throw new Error("Something went wrong");
-    const order = await res.json();
-    toggleModal();
-    resetState();
-    renderInvoice(order);
 
-    document.querySelector(".btn-download-pdf").addEventListener("click", function () {
+    if(Object.keys(currentOrderItemsState).length === 0) {
+        renderToast("Phải có ít nhất 1 sản phẩm", "center", "orange");
+        return;
+    }
+
+    try {
+        const order = await postOfflineOrder();
+        renderToast("Đã xuất hóa đơn", "right", "#6cbf6c")
+        openModal();
+        resetState();
+        barcodeScanner.classList.add("d-none");
+
+        renderInvoice(order);
+        renderToast("Đang tải xuống...", "right", "orange");
+
         const {jsPDF} = window.jspdf;
-
-        Toastify({
-            text: "Đang tải xuống...",
-            duration: 3000,
-            newWindow: true,
-            close: true,
-            gravity: "top", // `top` or `bottom`
-            position: "right", // `left`, `center` or `right`
-            stopOnFocus: true, // Prevents dismissing of toast on hover
-            style: {
-                background: "orange",
-            }
-        }).showToast();
-
         html2canvas(document.querySelector("#invoice"), {
             useCORS: true,
             allowTaint: false,
@@ -115,23 +162,13 @@ checkoutBtn.addEventListener("click", async function () {
             const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
             pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-
             pdf.save(`invoice_${document.querySelector('[order-id]').getAttribute("order-id")}.pdf`);
 
-            Toastify({
-                text: "Đã tải thành công !",
-                duration: 3000,
-                newWindow: true,
-                close: true,
-                gravity: "top", // `top` or `bottom`
-                position: "right", // `left`, `center` or `right`
-                stopOnFocus: true, // Prevents dismissing of toast on hover
-                style: {
-                    background: "#6cbf6c",
-                }
-            }).showToast();
+            renderToast("Đã tải xuống", "right")
         });
-    });
+    } catch (err) {
+        renderToast(err.message, "center", "orange");
+    }
 });
 
 productContainer.addEventListener("click", function (e) {
@@ -178,6 +215,30 @@ orderContainer.addEventListener("click", function (e) {
     isTriggered && renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]));
 });
 
+orderContainer.addEventListener("change", function (e) {
+    const input = e.target;
+    if (input.value == 0 || input.value == '') input.value = 1;
+
+    currentOrderItemsState[+input.getAttribute("input-id")]['quantity'] = +input.value;
+    renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]))
+})
+
+//============================================RENDER============================================
+const renderToast = function(text, position="center", background="#6cbf6c") {
+    Toastify({
+        text: text,
+        duration: 3000,
+        newWindow: true,
+        close: true,
+        gravity: "top", // `top` or `bottom`
+        position: position, // `left`, `center` or `right`
+        stopOnFocus: true, // Prevents dismissing of toast on hover
+        style: {
+            background: background,
+        }
+    }).showToast();
+}
+
 const renderOrderItem = function (books) {
     const orderList = orderContainer.querySelector(".order-list");
     orderList.innerHTML = '';
@@ -191,7 +252,7 @@ const renderOrderItem = function (books) {
                 </div>
             </th>
             <td class="budget text-center">
-                ${book.price} VNĐ
+                ${vndCurrencyFormat.format(book.price)}
             </td>
             <td>
                 <span class="badge badge-dot mr-4 text-center w-100">
@@ -211,7 +272,7 @@ const renderOrderItem = function (books) {
             </td>
             <td>
                 <div class="d-flex align-items-center w-100 justify-content-center">
-                    <span class="completion mr-2">${+book.price * +book.quantity}</span>
+                    <span class="completion mr-2">${vndCurrencyFormat.format(+book.price * +book.quantity)}</span>
                 </div>
             </td>
             <td class="text-right remove-order-item-btn">
@@ -222,13 +283,12 @@ const renderOrderItem = function (books) {
                 </div>
             </td>
         </tr>`).join('');
-    document.querySelector(".total-amount").textContent = books.reduce((acc, obj) => acc + +obj['price'] * +obj['quantity'], 0) + ' VND';
+    document.querySelector(".total-amount").textContent = vndCurrencyFormat.format(books.reduce((acc, obj) => acc + +obj['price'] * +obj['quantity'], 0));
     document.querySelector(".total-qty").textContent = books.reduce((acc, book) => acc + +book.quantity, 0);
     orderList.insertAdjacentHTML('beforeend', html);
 }
 
 const renderInvoice = function (order) {
-    modalBody.innerHTML = '';
     const html = `
     <div id="invoice" class="mt-4 w-100" order-id="${order['order_id']}">
         <div class="card">
@@ -238,7 +298,7 @@ const renderInvoice = function (order) {
             </div>
             <div class="card-header invoice-header text-center">
                 <p class="mb-0 font-weight-bold">Mã đơn: ${order['order_id']} &nbsp; | &nbsp; Ngày
-                    đặt: ${order['created_at']}
+                    đặt: ${dateFormatter.format(new Date(order['created_at']))}
                     &nbsp; | &nbsp; Hotline: 19008386
                     &nbsp; | &nbsp; Trạng thái: ${order['status']['name']} &nbsp; | &nbsp; Loại
                     đơn: ${order['order_type']['name']}</p>
@@ -282,19 +342,19 @@ const renderInvoice = function (order) {
                                     <td class="text-wrap text-left">
                                         <span class="w-100">${orderItem['book']['title']}</span>
                                     </td>
-                                    <td>${orderItem['price']}</td>
+                                    <td>${vndCurrencyFormat.format(orderItem['price'])}</td>
                                     <td>0</td>
                                     <td>${orderItem['quantity']}</td>
-                                    <td>${+orderItem['price'] * +orderItem['quantity']}</td>
+                                    <td>${vndCurrencyFormat.format(+orderItem['price'] * +orderItem['quantity'])}</td>
                                 </tr>`).join('')}
                             <tr class="text-right">
                             ${order['order_type']['id'] === 1 ? `
                                 <td colspan="5"><strong>Phí ship:</strong></td>
-                                <td class="text-center"> ${order['order_type']['detail']['shipping_fee']} </td>` : ''}
+                                <td class="text-center"> ${vndCurrencyFormat.format(order['order_type']['detail']['shipping_fee'])} </td>` : ''}
                             </tr>
                             <tr class="text-right">
                                 <td colspan="5"><strong>Tổng tiền:</strong></td>
-                                <td class="text-center">${order['total_amount']}</td>
+                                <td class="text-center">${vndCurrencyFormat.format(order['total_amount'])}</td>
                             </tr>
                             </tbody>
                         </table>
@@ -312,12 +372,7 @@ const renderInvoice = function (order) {
                                 ${order['order_type']['id'] === 2 ? `
                                 <strong>Nhân viên thanh toán:</strong> ${order['order_type']['detail']['employee_name']}` : ''}
                                 <br>
-                                <strong>Ngày in hóa đơn:</strong> 2
-                            </p>
-                            <p class="text-right">
-                                <button id="downloadPDF"
-                                        class="btn text-right text-white btn-print btn-download-pdf">In hóa đơn
-                                </button>
+                                <strong>Ngày in hóa đơn:</strong> ${dateFormatter.format(new Date())} - ${timeFormatter.format(new Date())}
                             </p>
                         </div>
                     </div>

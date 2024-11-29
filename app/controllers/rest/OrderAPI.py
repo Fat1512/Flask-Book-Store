@@ -1,5 +1,6 @@
+from app.dao.CartDao import delete_cart_item
 from app.dao.OrderDAO import *
-from flask import Blueprint
+from flask import Blueprint, jsonify, session
 from flask import render_template, request
 import json
 
@@ -24,8 +25,8 @@ def get_order():
     return orders
 
 
-@order_api_bp.route("/<order_id>/update", methods=['POST'])
-def update(order_id):
+@order_api_bp.route("/<order_id>/update", methods=['GET', 'POST'])
+def test(order_id):
     update_order(order_id, request.json)
     return request.json
 
@@ -34,6 +35,21 @@ def update(order_id):
 def offline_order():
     order = create_offline_order(request.json)
     return order
+
+
+@order_api_bp.route('/onlineOrder', methods=['POST'])
+def online_order():
+    data = request.json
+    order = create_online_order(data)
+
+    for book in data['books']:
+        delete_cart_item(book['bookId'])
+
+    return jsonify({
+        "message": "SUCCESS",
+        "status": 200,
+        "orderId": order.order_id
+    })
 
 
 @order_api_bp.route("/<order_id>/detail", methods=['GET', 'POST'])

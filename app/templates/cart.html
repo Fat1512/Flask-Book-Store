@@ -35,7 +35,7 @@
                                         <img class="cart-item-image"
                                              src="{{ cart_item.book.images[0].image_url }}">
                                         <div class="cart-item-detail flex-column d-flex justify-content-between">
-                                            <p>{{ cart_item.book.title }}</p>
+                                            <p class="cart-item-detail-title">{{ cart_item.book.title }}</p>
                                             <p>
                                                 <span class="font-weight-bold">{{ cart_item.book.price|currency('VND') }}</span>
                                                 <span class="text-decoration-line-through text-secondary">{{ cart_item.book.price|currency('VND') }}</span>

@@ -1,20 +1,14 @@
+
 const printInvoiceBtn = document.querySelector(".btn-invoice");
 const modal = document.querySelector(".modal");
 const overlay = document.querySelector(".overlay");
-
 
 const toggleModal = function() {
     modal.classList.toggle("d-flex");
     overlay.classList.toggle("d-flex");
 }
-
-overlay.addEventListener("click", function() {
-    toggleModal();
-});
-
-printInvoiceBtn.addEventListener("click", function() {
-    toggleModal();
-})
+overlay.addEventListener("click", toggleModal);
+printInvoiceBtn.addEventListener("click", toggleModal)
 
 modal.addEventListener("click", function(e) {
     const pdfDownloadBtn = e.target.closest(".btn-download-pdf");

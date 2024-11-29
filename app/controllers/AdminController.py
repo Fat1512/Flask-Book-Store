@@ -35,7 +35,7 @@ def add_products_process():
 
 @admin_bp.route("/statistic-revenue")
 @admin_required
-def admin_statistic():
+def admin_statistic_revenue():
     kw = request.args.get('kw')
     # from_date = request.args.get('from_date')
     # to_date = request.args.get('to_date')
@@ -44,13 +44,23 @@ def admin_statistic():
     total_revenue = total_revenue_per_gerne(kw=kw, selected_month=selected_month)
     return render_template("admin-statistic-revenue.html", stats=stats, total_revenue=total_revenue)
 
-# @admin_bp.route('/api/gernes', methods=['GET'])
-# def get_gernes():
-#     gernes = book_gerne_statistic()
-#     return jsonify([{"id": gerne[0], "name": gerne[1]} for gerne in gernes])
+@admin_bp.route("/statistic-frequency")
+@admin_required
+def admin_statistic_frequency():
+    return render_template("admin-statistic-frequency.html")
+
+@admin_bp.route("/statistic")
+@admin_required
+def admin_statistic():
+    return render_template("admin-statistic.html")
+
+@admin_bp.route('/api/gernes', methods=['GET'])
+def get_gernes():
+    gernes = book_gerne_statistic()
+    return jsonify([{"id": gerne[0], "name": gerne[1]} for gerne in gernes])
 
 
-
+#
 # @admin_bp.route('/admin/api/gerne-stats', methods=['GET'])
 # def gerne_stats():
 #     gerne_id = request.args.get('gerne_id', type=int)

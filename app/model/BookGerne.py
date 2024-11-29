@@ -8,8 +8,8 @@ class BookGerne(db.Model):
     name = db.Column(db.String)
     lft = db.Column(db.Integer)
     rgt = db.Column(db.Integer)
-
-    books = db.relationship('Book', backref='book_gerne', lazy=True)
+    # books = db.relationship('Book', backref='book_gerne', lazy=True)
+    books = db.relationship('Book', back_populates='book_gerne', lazy=True)
     attributes = db.relationship('Attribute', backref='book_gerne', lazy=True)
 
     def __init__(self, book_type_id, name, description, lft, rgt):

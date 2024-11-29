@@ -52,13 +52,13 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="/admin/statistic-revenue">
+                        <a class="nav-link" href="/admin/statistic-revenue">
                             <i class="ni ni-planet text-orange"></i>
                             <span class="nav-link-text">Thống kê doanh thu</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="map.html">
+                        <a class="nav-link active" href="map.html">
                             <i class="ni ni-pin-3 text-primary"></i>
                             <span class="nav-link-text">Thống kê tần suất</span>
                         </a>
@@ -343,19 +343,30 @@
 
                     <!-- Div 2: 59% -->
                     <div class="col-lg-6 col-7" style="flex: 0 0 59%; max-width: 59%;">
-                        <form class="col-lg-6 col-7" style="display: flex; gap: 10px; align-items: center;">
-                            <div style="flex: 1;">
-                                <input type="text" name="kw" placeholder="Nhập từ khóa"
-                                       style="box-sizing: border-box;">
+                        <form class="" style="display: flex; gap: 10px; align-items: center;">
+                            <div style="flex: 1; w" class="dropdown-container">
+                                <input type="text" id="gerneSearch"
+                                       class="dropdown-search product-publisher" autocomplete="off"
+                                       placeholder="Chọn mục thống kê" style="box-sizing: border-box; width: 90%">
+                                <div class="dropdown-list" id="gerneList" style="box-sizing: border-box; width: 90%"></div>
                             </div>
-<!--                            <div style="flex: 1;">-->
-<!--                                <input type="date" name="from_date" style="width: 100%; box-sizing: border-box;">-->
-<!--                            </div>-->
-<!--                            <div style="flex: 1;">-->
-<!--                                <input type="date" name="to_date" style="width: 100%; box-sizing: border-box;">-->
-<!--                            </div>-->
-                            <div style="flex: 1;">
-                                <input type="month" name="selected_month" style="width: 100%; box-sizing: border-box;">
+<!--                                                        <div style="flex: 1;">-->
+<!--                                                            <input type="date" name="from_date" style="width: 100%; box-sizing: border-box;">-->
+<!--                                                        </div>-->
+<!--                                                        <div style="flex: 1;">-->
+<!--                                                            <input type="date" name="to_date" style="width: 100%; box-sizing: border-box;">-->
+<!--                                                        </div>-->
+<!--                                                        <div style="flex: 1;">-->
+<!--                                                            <input type="month" name="selected_month" style="width: 100%; box-sizing: border-box;">-->
+<!--                                                        </div>-->
+
+                            <div>
+                                <input type="submit" value="Xác nhận" class="btn btn-neutral"
+                                       style="cursor: pointer;background-color: #2196F3; color: white">
+                            </div>
+                            <div>
+                                <input type="submit" value="Xác nhận" class="btn btn-neutral"
+                                       style="cursor: pointer;background-color: #2196F3; color: white">
                             </div>
                             <div>
                                 <input type="submit" value="Xác nhận" class="btn btn-neutral"
