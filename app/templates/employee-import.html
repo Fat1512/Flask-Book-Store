@@ -23,6 +23,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/employeeImport.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/employeeOrderDetail.css') }}" type="text/css">
+
 </head>
 
 <body>
@@ -527,139 +529,215 @@
 </div>
 <div class="modal d-flex">
     <div class="overlay d-flex"></div>
-{#    <div class="modal-body d-flex"></div>#}
-    <div class="modal-body item-bg-color d-flex justify-content-center flex-column align-content-center">
-        <div class="card-header border-0 py-1 d-flex justify-content-between">
-            <h3 class="mb-0">Thêm sách nhập</h3>
-            <div class="d-flex justify-content-end">
-                <div class="pt-2">
+    <div class="modal-body modal-export d-flex">
+        <div id="invoice" class="mt-4 w-100">
+            <div class="card">
+                <div class="card-header text-center">
+                    <img class="image-fluid w-25"
+                         src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/fahasa-logo.png" alt="">
                 </div>
-            </div>
-            <div class="btn-group">
-                <button class="btn btn-outline-dark dropdown-toggle
-                                                       dropdown-toggle-pagination"
-                        data-toggle="dropdown">
-                    Trạng thái
-                </button>
-                <div class="dropdown-menu status-type dropdown-menu-pagination">
-                    <div class="form-check filter-type-item cursor-pointer" id="1">
-                        <div class="form-check-label d-flex justify-content-between align-content-center">
-                            <input type="checkbox"
-                                   class="">
-                            <span class="dropdown-item">Đủ số lượng</span>
-                        </div>
-                    </div>
-                    <div class="form-check filter-type-item cursor-pointer" id="2">
-                        <div class="form-check-label d-flex justify-content-between align-content-center">
-                            <input type="checkbox"
-                                   class="">
-                            <span class="dropdown-item">Cần nhập thêm</span>
-                        </div>
-                    </div>
+                <div class="card-header invoice-header text-center">
+                    <p class="mb-0 font-weight-600">Mã phiếu: 79686 &nbsp; | &nbsp; Ngày nhập: 12/13/2022 &nbsp; |
+                        &nbsp; Hotline:
+                        19008386 &nbsp;</p>
                 </div>
-            </div>
-        </div>
-        <div class="table-responsive" style="max-height: 70vh!important;">
-            <table class="table align-items-center table-flush">
-                <thead class="thead-light">
-                <tr>
-                    <th>
-                        <input type="checkbox" class="all-check-box">
-                    </th>
-                    <th scope="col" class="sort text-large cursor-pointer table-header" data-sort="name">ID</th>
-                    <th scope="col" class="sort  cursor-pointer table-header" data-sort="name">Hình</th>
-                    <th scope="col" class="sort  cursor-pointer table-header" data-sort="budget">Tên</th>
-                    <th scope="col" class="sort  cursor-pointer table-header" data-sort="status">Barcode</th>
-                    <th scope="col" class=" cursor-pointer table-header">Thể loại</th>
-                    <th scope="col" class="sort  cursor-pointer table-header" data-sort="completion">Tồn kho</th>
-                    <th scope="col" class="sort  cursor-pointer table-header" data-sort="completion">Tác giả</th>
-                    <th scope="col" class="sort  cursor-pointer table-header">Giá</th>
-                    <th scope="col" class="sort  cursor-pointer table-header">Trạng thái</th>
-                    <th scope="col"></th>
-                </tr>
-                </thead>
-                <tbody class="list book-list">
-                {% for book in books['books'] %}
-                    <tr class="cursor-pointer book-item" id="{{ book['book_id'] }}">
-                        <th scope="row">
-                            <div class="media align-items-center">
-                                <input type="checkbox">
-                            </div>
-                        </th>
-                        <td scope="row">
-                            <div class="media align-items-center">
-                                <div class="book-item-id" id="1">{{ book['book_id'] }}</div>
-                            </div>
-                        </td>
-                        <td scope="row" class="justify-content-center">
-                            <div class="media align-items-center text-center" style="width:50px">
-                                <img src="{{ book['images'][0]['image_url'] }}"
-                                     alt="" class="h-100 img-fluid book-item-img">
-                            </div>
-                        </td>
-                        <td>
-                            <div class="media-body text-truncate" style="width:200px">
-                                <span class="name mb-0 text-xs w-100 book-item-title">{{ book['title'] }}</span>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="media-body">
-                                <span class="name mb-0 text-xs book-item-barcode">{{ book['barcode'] }}</span>
-                            </div>
-                        </td>
-                        <td class="budget book-item-gerne">
-                            {{ book['gerne']['name'] }}
-                        </td>
-                        <td>
-                                        <span class="badge badge-dot mr-4">
-                                        <i class="bg-warning"></i>
-                                        <span class="status book-item-quantity">{{ book['quantity'] }}</span>
-                                        </span>
-                        </td>
-                        <td>
-                            <div class="avatar-group book-item-author">
-                                {{ book['author'] }}
-                            </div>
-                        </td>
-                        <td>
-                            <div class="avatar-group book-item-price">
-                                {{ book['price'] }}
-                            </div>
-                        </td>
-                        <td>
-                            <div class="product-qty-status text-xs {% if book['quantity'] < config['min_restock_level'] %} product-qty-status-shortage {% endif %} text-center py-1 cursor-pointer">
-                                {% if book['quantity'] >= config['min_restock_level'] %} Đủ số
-                                    lượng {% else %} Cần nhập thêm {% endif %}
-                            </div>
-                        </td>
-                        <td class="text-right">
-                            <div class="dropdown">
-                                <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
-                                   data-toggle="dropdown"
-                                   aria-haspopup="true" aria-expanded="false">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                                    <a class="dropdown-item"
-                                       href="/employee/order/1/update">Cap nhat</a>
-                                    <a class="dropdown-item"
-                                       href="/employee/order/1/detail">Chi tiet</a>
-                                    <a class="dropdown-item" href="#">Huy</a>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <h1 class="text-center pb-3 display-3 text-black">PHIẾU NHẬP SÁCH</h1>
+                        </div>
+                        <div class="col-md-6">
+                            <p>
+                                <strong class="font-weight-600">Tên nhân viên:</strong> Lê Tấn Phát <br>
+                                <strong class="font-weight-600">Ngày giờ nhập:</strong> 16:00:00 T6, 15/12/2024
+                            </p>
+                        </div>
+                        <div class="col-md-6 text-right">
+
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr class="text-center">
+                                    <th>ID</th>
+                                    <th>Tên</th>
+                                    <th>Thể loại</th>
+                                    <th>Tác giả</th>
+                                    <th>Số lượng</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr class="text-center">
+                                    <td>30566205</td>
+                                    <td>3D Cannon Camera</td>
+                                    <td>$25.00</td>
+                                    <td>1</td>
+                                    <td>10.00</td>
+                                </tr>
+                                <tr class="text-center">
+                                    <td>30566206</td>
+                                    <td>Green Lemon</td>
+                                    <td>$70.00</td>
+                                    <td>1</td>
+                                    <td>0.00</td>
+                                </tr>
+                                <tr class="text-right">
+                                    <td colspan="4"><strong>Tổng số lượng:</strong></td>
+                                    <td class="text-center">123</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-12 pt-5">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="d-flex flex-column align-items-center" style="padding-left: 2%">
+                                        <strong class="pb-5">Người lập phiếu</strong>
+                                        <div class="pt-5">Lê Tấn Phát</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 text-right">
+                                    <button id="downloadPDF" class="btn text-white btn-print">Print</button>
                                 </div>
                             </div>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <div class="card-footer pt-2 d-flex justify-content-between">
-            <button type="button"
-                    class="add-book-btn w-100 btn btn-primary bg-blue bg-red text-white border border-0 w-25">
-                Thêm
-            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+    {#    <div class="modal-body modal-book-list item-bg-color d-flex justify-content-center flex-column align-content-center">#}
+    {#        <div class="card-header border-0 py-1 d-flex justify-content-between">#}
+    {#            <h3 class="mb-0">Thêm sách nhập</h3>#}
+    {#            <div class="d-flex justify-content-end">#}
+    {#                <div class="pt-2">#}
+    {#                </div>#}
+    {#            </div>#}
+    {#            <div class="btn-group">#}
+    {#                <button class="btn btn-outline-dark dropdown-toggle#}
+    {#                                                       dropdown-toggle-pagination"#}
+    {#                        data-toggle="dropdown">#}
+    {#                    Trạng thái#}
+    {#                </button>#}
+    {#                <div class="dropdown-menu status-type dropdown-menu-pagination">#}
+    {#                    <div class="form-check filter-type-item cursor-pointer" id="1">#}
+    {#                        <div class="form-check-label d-flex justify-content-between align-content-center">#}
+    {#                            <input type="checkbox"#}
+    {#                                   class="">#}
+    {#                            <span class="dropdown-item">Đủ số lượng</span>#}
+    {#                        </div>#}
+    {#                    </div>#}
+    {#                    <div class="form-check filter-type-item cursor-pointer" id="2">#}
+    {#                        <div class="form-check-label d-flex justify-content-between align-content-center">#}
+    {#                            <input type="checkbox"#}
+    {#                                   class="">#}
+    {#                            <span class="dropdown-item">Cần nhập thêm</span>#}
+    {#                        </div>#}
+    {#                    </div>#}
+    {#                </div>#}
+    {#            </div>#}
+    {#        </div>#}
+    {#        <div class="table-responsive" style="max-height: 70vh!important;">#}
+    {#            <table class="table align-items-center table-flush">#}
+    {#                <thead class="thead-light">#}
+    {#                <tr>#}
+    {#                    <th>#}
+    {#                        <input type="checkbox" class="all-check-box">#}
+    {#                    </th>#}
+    {#                    <th scope="col" class="sort text-large cursor-pointer table-header" data-sort="name">ID</th>#}
+    {#                    <th scope="col" class="sort  cursor-pointer table-header" data-sort="name">Hình</th>#}
+    {#                    <th scope="col" class="sort  cursor-pointer table-header" data-sort="budget">Tên</th>#}
+    {#                    <th scope="col" class="sort  cursor-pointer table-header" data-sort="status">Barcode</th>#}
+    {#                    <th scope="col" class=" cursor-pointer table-header">Thể loại</th>#}
+    {#                    <th scope="col" class="sort  cursor-pointer table-header" data-sort="completion">Tồn kho</th>#}
+    {#                    <th scope="col" class="sort  cursor-pointer table-header" data-sort="completion">Tác giả</th>#}
+    {#                    <th scope="col" class="sort  cursor-pointer table-header">Giá</th>#}
+    {#                    <th scope="col" class="sort  cursor-pointer table-header">Trạng thái</th>#}
+    {#                    <th scope="col"></th>#}
+    {#                </tr>#}
+    {#                </thead>#}
+    {#                <tbody class="list book-list">#}
+    {#                {% for book in books['books'] %}#}
+    {#                    <tr class="cursor-pointer book-item" id="{{ book['book_id'] }}">#}
+    {#                        <th scope="row">#}
+    {#                            <div class="media align-items-center">#}
+    {#                                <input type="checkbox">#}
+    {#                            </div>#}
+    {#                        </th>#}
+    {#                        <td scope="row">#}
+    {#                            <div class="media align-items-center">#}
+    {#                                <div class="book-item-id" id="1">{{ book['book_id'] }}</div>#}
+    {#                            </div>#}
+    {#                        </td>#}
+    {#                        <td scope="row" class="justify-content-center">#}
+    {#                            <div class="media align-items-center text-center" style="width:50px">#}
+    {#                                <img src="{{ book['images'][0]['image_url'] }}"#}
+    {#                                     alt="" class="h-100 img-fluid book-item-img">#}
+    {#                            </div>#}
+    {#                        </td>#}
+    {#                        <td>#}
+    {#                            <div class="media-body text-truncate" style="width:200px">#}
+    {#                                <span class="name mb-0 text-xs w-100 book-item-title">{{ book['title'] }}</span>#}
+    {#                            </div>#}
+    {#                        </td>#}
+    {#                        <td>#}
+    {#                            <div class="media-body">#}
+    {#                                <span class="name mb-0 text-xs book-item-barcode">{{ book['barcode'] }}</span>#}
+    {#                            </div>#}
+    {#                        </td>#}
+    {#                        <td class="budget book-item-gerne">#}
+    {#                            {{ book['gerne']['name'] }}#}
+    {#                        </td>#}
+    {#                        <td>#}
+    {#                                        <span class="badge badge-dot mr-4">#}
+    {#                                        <i class="bg-warning"></i>#}
+    {#                                        <span class="status book-item-quantity">{{ book['quantity'] }}</span>#}
+    {#                                        </span>#}
+    {#                        </td>#}
+    {#                        <td>#}
+    {#                            <div class="avatar-group book-item-author">#}
+    {#                                {{ book['author'] }}#}
+    {#                            </div>#}
+    {#                        </td>#}
+    {#                        <td>#}
+    {#                            <div class="avatar-group book-item-price">#}
+    {#                                {{ book['price'] }}#}
+    {#                            </div>#}
+    {#                        </td>#}
+    {#                        <td>#}
+    {#                            <div class="product-qty-status text-xs {% if book['quantity'] < config['min_restock_level'] %} product-qty-status-shortage {% endif %} text-center py-1 cursor-pointer">#}
+    {#                                {% if book['quantity'] >= config['min_restock_level'] %} Đủ số#}
+    {#                                    lượng {% else %} Cần nhập thêm {% endif %}#}
+    {#                            </div>#}
+    {#                        </td>#}
+    {#                        <td class="text-right">#}
+    {#                            <div class="dropdown">#}
+    {#                                <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"#}
+    {#                                   data-toggle="dropdown"#}
+    {#                                   aria-haspopup="true" aria-expanded="false">#}
+    {#                                    <i class="fas fa-ellipsis-v"></i>#}
+    {#                                </a>#}
+    {#                                <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">#}
+    {#                                    <a class="dropdown-item"#}
+    {#                                       href="/employee/order/1/update">Cap nhat</a>#}
+    {#                                    <a class="dropdown-item"#}
+    {#                                       href="/employee/order/1/detail">Chi tiet</a>#}
+    {#                                    <a class="dropdown-item" href="#">Huy</a>#}
+    {#                                </div>#}
+    {#                            </div>#}
+    {#                        </td>#}
+    {#                    </tr>#}
+    {#                {% endfor %}#}
+    {#                </tbody>#}
+    {#            </table>#}
+    {#        </div>#}
+    {#        <div class="card-footer pt-2 d-flex justify-content-between">#}
+    {#            <button type="button"#}
+    {#                    class="add-book-btn w-100 btn btn-primary bg-blue bg-red text-white border border-0 w-25">#}
+    {#                Thêm#}
+    {#            </button>#}
+    {#        </div>#}
+    {#    </div>#}
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"

@@ -13,6 +13,22 @@ const importContainer = document.querySelector(".import-container");
 const deleteBtn = document.querySelector(".delete-all-btn");
 const exportBtn = document.querySelector(".export-btn");
 
+const dateFormatter = new Intl.DateTimeFormat('vi-VN', {
+    weekday: 'short', // e.g., Thứ Sáu
+    year: 'numeric',
+    month: 'numeric', // e.g., Tháng 1
+    day: 'numeric',
+    // timeZoneName: 'short' // e.g., GMT
+});
+
+const timeFormatter = new Intl.DateTimeFormat('vi-VN', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    // timeZoneName: 'short' // e.g., GMT
+});
+
+
 let currentCheckedBookState = {};
 let currentItemState = {};
 
@@ -276,6 +292,79 @@ const renderBookItems = function(books) {
             </td>
         </tr>`).join("");
     bookList.insertAdjacentHTML("beforeend", html);
+}
+
+const renderImportedForm = function(form) {
+    const html = `
+    <div id="invoice" class="mt-4 w-100">
+        <div class="card">
+            <div class="card-header text-center">
+                <img class="image-fluid w-25"
+                     src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/fahasa-logo.png" alt="">
+            </div>
+            <div class="card-header invoice-header text-center">
+                <p class="mb-0 font-weight-600">Mã phiếu: ${form['form_id']} &nbsp; | &nbsp; Ngày nhập: ${dateFormatter.format(new Date(form['created_at']))} &nbsp; |
+                    &nbsp; Hotline:
+                    19008386 &nbsp;</p>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12">
+                        <h1 class="text-center pb-3 display-3 text-black">PHIẾU NHẬP SÁCH</h1>
+                    </div>
+                    <div class="col-md-6">
+                        <p>
+                            <strong class="font-weight-600">Tên nhân viên:</strong>${form['employee']['name']}<br>
+                            <strong class="font-weight-600">Ngày giờ nhập:</strong> ${timeFormatter.format(new Date(form['created_at']))} ${dateFormatter.format(new Date(form['created_at']))}
+                        </p>
+                    </div>
+                    <div class="col-md-6 text-right">
+
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr class="text-center">
+                                <th>ID</th>
+                                <th>Tên</th>
+                                <th>Thể loại</th>
+                                <th>Tác giả</th>
+                                <th>Số lượng</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            ${form['detail'].map(book => `
+                            <tr class="text-center">
+                                <td>${book['book_id']}</td>
+                                <td>${book['name']}</td>
+                                <td>${book['gerne']['name']}</td>
+                                <td>${book['author']}</td>
+                                <td>${book['quantity']}</td>
+                            </tr>`)};
+                            <tr class="text-right">
+                                <td colspan="4"><strong>Tổng số lượng:</strong></td>
+                                <td class="text-center">${form['total']}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-12 pt-5">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="d-flex flex-column align-items-center" style="padding-left: 2%">
+                                    <strong class="pb-5">Người lập phiếu</strong>
+                                    <div class="pt-5">${form['employee']['name']}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 text-right">
+                                <button id="downloadPDF" class="btn text-white btn-print">Print</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>`;
 }
 
 const fetchBook = async function() {
