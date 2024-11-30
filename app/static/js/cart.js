@@ -196,4 +196,3 @@ groupControll.forEach(el => {
         updateCart(data)
     })
 })
-

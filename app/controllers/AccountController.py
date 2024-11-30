@@ -8,6 +8,11 @@ from flask import Blueprint
 account_bp = Blueprint('account', __name__)
 
 
+@account_bp.route('/purchase', methods=['GET'])
+def purchase():
+    return render_template("purchase.html")
+
+
 @account_bp.route('/admin-login', methods=['GET', 'POST'])
 def admin_login():
     err_msg = ''

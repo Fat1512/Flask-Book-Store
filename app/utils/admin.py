@@ -211,18 +211,70 @@ def total_revenue_per_gerne(kw=None, selected_month=None):
 #
 #     return total_revenue
 
-    return total_revenue
 
-# with app.app_context():
-#     stats = book_gerne_statistic()
-#     print(stats)
-
-
-def get_books_by_gerne(gerne_id):
-    return db.session.query(Book.book_id, Book.title, Book.quantity) \
-        .filter(Book.book_gerne_id == gerne_id).all()
+with app.app_context():
+    stats = book_gerne_statistic()
+    print(stats)
 
 
-# with app.app_context():
-#     stats = get_books_by_gerne(10)
-#     print(stats)
+# def get_books_by_gerne(gerne_id=None):
+#     return db.session.query(Book.book_id, Book.title, Book.quantity) \
+#         .filter(Book.book_gerne_id == gerne_id).all()
+
+def get_books_by_gerne(gerne_id=None):
+    query = db.session.query(
+        Book.book_id,
+        Book.title,
+        BookGerne.name.label("gerne_name"),
+        Book.quantity.label("total_quantity"),
+        func.coalesce(func.sum(OrderDetail.quantity), 0).label("ordered_quantity"),
+        (Book.quantity - func.coalesce(func.sum(OrderDetail.quantity), 0)).label("remaining_quantity")
+    ).outerjoin(BookGerne, BookGerne.book_gerne_id == Book.book_gerne_id) \
+        .outerjoin(OrderDetail, OrderDetail.book_id == Book.book_id) \
+        .group_by(Book.book_id, Book.title, BookGerne.name, Book.quantity)
+
+    if gerne_id is not None:
+        query = query.filter(Book.book_gerne_id == gerne_id)
+
+    return query.all()
+
+
+with app.app_context():
+    stats = get_books_by_gerne()
+    print(stats)
+
+
+# def book_statistic_frequency():
+#     return db.session.query(
+#         Book.book_id,
+#         Book.title,
+#         BookGerne.name.label("gerne_name"),
+#         Book.quantity.label("total_quantity"),
+#         func.coalesce(func.sum(OrderDetail.quantity), 0).label("ordered_quantity"),
+#         (Book.quantity - func.coalesce(func.sum(OrderDetail.quantity), 0)).label("remaining_quantity")
+#     ) \
+#         .outerjoin(BookGerne, BookGerne.book_gerne_id == Book.book_gerne_id) \
+#         .outerjoin(OrderDetail, OrderDetail.book_id == Book.book_id) \
+#         .group_by(Book.book_id, Book.title, BookGerne.name, Book.quantity) \
+#         .all()
+
+def book_statistic_frequency(gerne_id=None):
+    query = db.session.query(
+        Book.book_id,
+        Book.title,
+        BookGerne.name.label("gerne_name"),
+        Book.quantity.label("total_quantity"),
+        func.coalesce(func.sum(OrderDetail.quantity), 0).label("ordered_quantity"),
+        (Book.quantity - func.coalesce(func.sum(OrderDetail.quantity), 0)).label("remaining_quantity")
+    ).outerjoin(BookGerne, BookGerne.book_gerne_id == Book.book_gerne_id) \
+        .outerjoin(OrderDetail, OrderDetail.book_id == Book.book_id) \
+        .group_by(Book.book_id, Book.title, BookGerne.name, Book.quantity)
+
+    if gerne_id is not None:
+        query = query.filter(Book.book_gerne_id == gerne_id)
+
+    return query.all()
+
+with app.app_context():
+    stats = book_statistic_frequency()
+    print(stats)

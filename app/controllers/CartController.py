@@ -55,4 +55,8 @@ def get_all_sessions():
     session_data = dict(session)  # Convert session to a regular dictionary
     return jsonify(session_data)
 
-    return render_template('checkout-cart.html', address_default=address_default, address_user=address_user)
+
+@cart_bp.route('/clear_session', methods=['POST', 'GET'])
+def clear_session():
+    session.clear()  # Remove all keys and their values from the session
+    return jsonify({"message": "Session destroyed.", "status": 200})

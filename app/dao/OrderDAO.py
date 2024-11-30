@@ -16,6 +16,13 @@ def find_by_id(order_id):
     order['total_amount'] = calculate_total_order_amount(order_id)
     return order
 
+
+def update_order_status(order_id, status):
+    order = Order.query.get(order_id)
+    order.status = status
+    db.session.commit()
+
+
 def find_order_by_id(id):
     return Order.query.get(id)
 
