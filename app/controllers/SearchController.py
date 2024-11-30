@@ -22,7 +22,7 @@ def search_main():
     book_gerne = get_depth_gerne(gerne_id)
 
     page = request.args.get('page', 1, type=int)
-    pagination = searchBook(keyword, minPrice, maxPrice, order, gerne_id, limit, page, )
+    pagination = searchBook(keyword, minPrice, maxPrice, order, gerne_id, limit, page)
 
     return render_template("search.html"
                            , current_gerne=book_gerne["current_gerne"]
@@ -32,8 +32,7 @@ def search_main():
                            , maxPrice=maxPrice
                            , order=order
                            , limit=limit
-                           , pagination=pagination
-                           )
+                           , pagination=pagination)
 
 
 @home_bp.route('/detail')

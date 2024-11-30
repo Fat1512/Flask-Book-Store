@@ -52,13 +52,13 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="/admin/statistic-revenue">
+                        <a class="nav-link" href="/admin/statistic-revenue">
                             <i class="ni ni-planet text-orange"></i>
                             <span class="nav-link-text">Thống kê doanh thu</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/admin/statistic-frequency">
+                        <a class="nav-link active" href="map.html">
                             <i class="ni ni-pin-3 text-primary"></i>
                             <span class="nav-link-text">Thống kê tần suất</span>
                         </a>
@@ -343,22 +343,35 @@
 
                     <!-- Div 2: 59% -->
                     <div class="col-lg-6 col-7" style="flex: 0 0 59%; max-width: 59%;">
-                        <form class="col-lg-6 col-7" style="display: flex; gap: 10px; align-items: center;">
-                            <div style="flex: 1;">
-                                <input type="text" name="kw" placeholder="Nhập từ khóa"
-                                       style="box-sizing: border-box;">
+                        <form class="" style="display: flex; gap: 10px; align-items: center;">
+                            <div class="dropdown-container">
+                                <input type="text" id="gerneSearch"
+                                       class="dropdown-search product-publisher" autocomplete="off"
+                                       placeholder="Chọn mục thống kê" style="box-sizing: border-box; width: 90%">
+                                <div class="dropdown-list" id="gerneList"
+                                     style="box-sizing: border-box; width: 90%"></div>
                             </div>
-                            <!--                            <div style="flex: 1;">-->
-                            <!--                                <input type="date" name="from_date" style="width: 100%; box-sizing: border-box;">-->
-                            <!--                            </div>-->
-                            <!--                            <div style="flex: 1;">-->
-                            <!--                                <input type="date" name="to_date" style="width: 100%; box-sizing: border-box;">-->
-                            <!--                            </div>-->
-                            <div style="flex: 1;">
-                                <input type="month" name="selected_month" style="width: 100%; box-sizing: border-box;">
+                            <!--                                                        <div style="flex: 1;">-->
+                            <!--                                                            <input type="date" name="from_date" style="width: 100%; box-sizing: border-box;">-->
+                            <!--                                                        </div>-->
+                            <!--                                                        <div style="flex: 1;">-->
+                            <!--                                                            <input type="date" name="to_date" style="width: 100%; box-sizing: border-box;">-->
+                            <!--                                                        </div>-->
+                            <!--                                                        <div style="flex: 1;">-->
+                            <!--                                                            <input type="month" name="selected_month" style="width: 100%; box-sizing: border-box;">-->
+                            <!--                                                        </div>-->
+                            <div><h3 style="color: white">Loc theo</h3></div>
+
+                            <div>
+                                <input type="submit" value="SL Ban dau" class="btn btn-neutral"
+                                       style="cursor: pointer;background-color: #2196F3; color: white">
                             </div>
                             <div>
-                                <input type="submit" value="Xác nhận" class="btn btn-neutral"
+                                <input type="submit" value="SL Ban ra" class="btn btn-neutral"
+                                       style="cursor: pointer;background-color: #2196F3; color: white">
+                            </div>
+                            <div>
+                                <input type="submit" value="SL Con lai" class="btn btn-neutral"
                                        style="cursor: pointer;background-color: #2196F3; color: white">
                             </div>
                         </form>
@@ -385,8 +398,7 @@
                             <!-- Nút Previous -->
                             <li class="page-item{% if books['current_page'] == 1 %} disabled {% endif %}">
                                 <a class="page-link"
-                                   href="?page={{ books['current_page'] - 1 }}{% if request.args.get('kw') %}&kw={{ request.args.get('kw') }}{% endif %}{% if request.args.get('selected_month') %}&selected_month={{ request.args.get('selected_month') }}{% endif %}"
-                                   tabindex="-1">
+                                   href="?page={{ books['current_page'] - 1 }}{% if request.args.get('gerne_id') %}&gerne_id={{ request.args.get('gerne_id') }}{% endif %}">
                                     <i class="fas fa-angle-left"></i>
                                     <span class="sr-only">Previous</span>
                                 </a>
@@ -396,7 +408,7 @@
                             {% for page in books['pages'] %}
                             <li class="page-item{% if page == books['current_page'] %} active {% endif %}">
                                 <a class="page-link"
-                                   href="?page={{ page }}{% if request.args.get('kw') %}&kw={{ request.args.get('kw') }}{% endif %}{% if request.args.get('selected_month') %}&selected_month={{ request.args.get('selected_month') }}{% endif %}">
+                                   href="?page={{ page }}{% if request.args.get('gerne_id') %}&gerne_id={{ request.args.get('gerne_id') }}{% endif %}">
                                     {{ page }}
                                 </a>
                             </li>
@@ -405,7 +417,7 @@
                             <!-- Nút Next -->
                             <li class="page-item{% if books['current_page'] == books['total_page'] %} disabled {% endif %}">
                                 <a class="page-link"
-                                   href="?page={{ books['current_page'] + 1 }}{% if request.args.get('kw') %}&kw={{ request.args.get('kw') }}{% endif %}{% if request.args.get('selected_month') %}&selected_month={{ request.args.get('selected_month') }}{% endif %}">
+                                   href="?page={{ books['current_page'] + 1 }}{% if request.args.get('gerne_id') %}&gerne_id={{ request.args.get('gerne_id') }}{% endif %}">
                                     <i class="fas fa-angle-right"></i>
                                     <span class="sr-only">Next</span>
                                 </a>
@@ -413,26 +425,39 @@
                         </ul>
 
                     </div>
+
                     <div class="card-body" style="padding-top: 0">
                         <div class="row icon-examples">
                             <div class="col-12">
                                 <div class="table-responsive"
-                                     style="max-height: 335px; overflow-y: auto; border: 1px solid #adb5bd; border-radius: 5px;">
+                                     style="max-height: 507px; overflow-y: auto; border: 1px solid #adb5bd; border-radius: 5px;">
                                     <table class="table align-items-center table-flush"
                                            style="border-collapse: collapse; width: 100%; border: 1px solid #adb5bd;">
                                         <thead class="thead-light" style="position: sticky; top: 0; z-index: 1;">
                                         <tr>
                                             <th scope="col" class="sort text-center" data-sort="budget"
                                                 style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
-                                                Ma the loai
+                                                Ma sach
                                             </th>
                                             <th scope="col" class="sort text-center" data-sort="name"
-                                                style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
-                                                Ten the loai
+                                                style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff; max-width: 200px; word-wrap: break-word;">
+                                                Ten sach
                                             </th>
                                             <th scope="col" class="sort text-center" data-sort="budget"
                                                 style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
-                                                Doanh thu
+                                                The loai
+                                            </th>
+                                            <th scope="col" class="sort text-center" data-sort="budget"
+                                                style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
+                                                SL ban dau
+                                            </th>
+                                            <th scope="col" class="sort text-center" data-sort="budget"
+                                                style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
+                                                SL ban ra
+                                            </th>
+                                            <th scope="col" class="sort text-center" data-sort="budget"
+                                                style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
+                                                SL con lai
                                             </th>
                                         </tr>
                                         </thead>
@@ -446,12 +471,22 @@
                                                     </div>
                                                 </div>
                                             </th>
-                                            <td class="budget text-center" style="border: 1px solid #adb5bd;">
+                                            <td class="budget text-center"
+                                                style="border: 1px solid #adb5bd;max-width: 200px; word-wrap: break-word; overflow: hidden; text-overflow: ellipsis;">
                                                 {{s[1]}}
+                                            </td>
+                                            <td class="budget text-center" style="border: 1px solid #adb5bd;">
+                                                {{s[2]}}
+                                            </td>
+                                            <td class="budget text-center" style="border: 1px solid #adb5bd;">
+                                                {{s[3]}}
+                                            </td>
+                                            <td class="budget text-center" style="border: 1px solid #adb5bd;">
+                                                {{s[4]}}
                                             </td>
                                             <td style="border: 1px solid #adb5bd;">
                                                         <span class="badge badge-dot mr-4 text-center w-100">
-                                                        <span class="status text-center">{{ s[2] if s[2] is not none else 0 }} VNĐ</span>
+                                                        <span class="status text-center">{{ s[5] }}</span>
                                                         </span>
                                             </td>
                                         </tr>
@@ -460,13 +495,14 @@
                                     </table>
 
                                 </div>
-                                <div class="d-flex px-5 py-4 justify-content-between "
-                                     style="padding-bottom: 5px !important">
-                                    <div class="font-weight-bolder display-4">
-                                        Tổng doanh thu:
-                                    </div>
-                                    <div class="font-weight-bolder display-4">{{ total_revenue }} VNĐ</div>
-                                </div>
+
+                                <!--                                <div class="d-flex px-5 py-4 justify-content-between "-->
+                                <!--                                     style="padding-bottom: 5px !important">-->
+                                <!--                                    <div class="font-weight-bolder display-4">-->
+                                <!--                                        Tổng doanh thu:-->
+                                <!--                                    </div>-->
+                                <!--                                    <div class="font-weight-bolder display-4">{{ total_revenue }} VNĐ</div>-->
+                                <!--                                </div>-->
                             </div>
                         </div>
                     </div>
@@ -523,7 +559,7 @@
         {% for s in stats %}
         labels.push('{{ s[1] }}');  // Tên thể loại
         // Kiểm tra nếu giá trị doanh thu là None và thay thế bằng 0
-        data.push({{ s[2] if s[2] is not none else 0 }}); // Doanh thu (thay None bằng 0)
+        data.push({{ s[4] }}); // Doanh thu (thay None bằng 0)
         {% endfor %}
 
         // Kiểm tra dữ liệu có hợp lệ không
@@ -538,7 +574,7 @@
             data: {
                 labels: labels,
                 datasets: [{
-                    label: ' Doanh thu',
+                    label: ' SL ban ra',
                     data: data,
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',

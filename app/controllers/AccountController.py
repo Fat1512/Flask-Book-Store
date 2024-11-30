@@ -91,6 +91,8 @@ def logout_process():
 def load_user(user_id):
     return UserDao.get_user_by_id(user_id)
 
+
+
 # @app.route("/add-products")
 # def add_products_process():
 #     return render_template("employee-add-products.html")

@@ -66,8 +66,6 @@ class Order(db.Model):
                 }
             },
             'created_at': self.created_at,
-            'order_detail': [order_detail.to_dict() for order_detail in self.order_detail],
-            'address': self.address.to_dict()
         }
         return json
 
@@ -102,12 +100,6 @@ class OfflineOrder(Order):
         }
         return json
 
-    def to_detail_dict(self):
-        json = super().to_detail_dict()
-        json['order_type']['detail'] = {
-            'employee_name': self.employee.first_name + ' ' + self.employee.last_name
-        }
-        return json
 
 
 class OnlineOrder(Order):
@@ -140,7 +132,6 @@ class OnlineOrder(Order):
             'note': self.note,
             'customer_id': self.customer_id
         }
-        json['total_amount'] = json['total_amount'] + json['order_type']['detail']['shipping_fee']
         return json
 
     def get_shipping_fee(self):

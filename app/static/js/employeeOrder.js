@@ -95,8 +95,9 @@ const currentLabel = {};
 
 const deleteParams = (params) => params.forEach(param => url.searchParams.delete(param))
 const addParams = (params) => params.forEach(param => url.searchParams.set(param[0], param[1]))
-const renderOrder = function (order) {
-    const html = `
+const renderOrder = function (orders) {
+    orderList.innerHTML = '';
+    const html = orders.map(order => `
         <tr>
             <th scope="row">
                 <div class="media align-items-center">
@@ -145,7 +146,7 @@ const renderOrder = function (order) {
                     </div>
                 </div>
             </td>
-        </tr>`
+        </tr>`).join("");
     orderList.insertAdjacentHTML('beforeend', html);
 }
 const renderPagination = function (total_page, current_page) {
@@ -175,7 +176,6 @@ const renderPagination = function (total_page, current_page) {
     pagination.insertAdjacentHTML('beforeend', content)
     pagination.insertAdjacentHTML('beforeend', next)
 }
-
 const renderLabel = function () {
     filterLabelContainer.innerHTML = '';
     const html = Object.entries(currentLabel).map(label =>
@@ -185,13 +185,13 @@ const renderLabel = function () {
 }
 
 const fetchOrder = async function (url) {
-    const res = await fetch(url);
-
-    const data = await res.json();
-    orderList.innerHTML = '';
-    console.log(data['orders']);
-    data['orders'].forEach(order => renderOrder(order));
-    renderPagination(data['total_page'], data['current_page']);
+    try {
+        const res = await fetch(url);
+        if(!res.ok) throw new Error("Cannot fetch order");
+        return await res.json();
+    } catch(err) {
+        alert(err.message);
+    }
 };
 //---------------------------------------------EVENT---------------------------------------------
 sortType.addEventListener("click", (e) => {
@@ -210,7 +210,6 @@ statusType.addEventListener("click", (e) => {
     handleFilterChange(statusType, Object.entries(statusParams[toggleId - 1]), ["status", "page"], toggleId);
 });
 
-
 paymentMethodType.addEventListener("click", (e) => {
     const item = e.target.closest(".filter-type-item");
     if (!item) return;
@@ -227,18 +226,21 @@ orderType.addEventListener("click", (e) => {
     handleFilterChange(orderType, Object.entries(orderParams[toggleId - 1]), ["orderType", "page"], toggleId);
 });
 
-pagination.addEventListener("click", (e) => {
+pagination.addEventListener("click", async function(e) {
     const item = e.target.closest(".page-item");
     if (!item || item.classList.contains("disabled") || item.classList.contains("active")) return;
 
     deleteParams(["page"])
     addParams([["page", item.getAttribute("page")]]);
     window.history.pushState({}, '', url);
-    fetchOrder(`${API}${url.search}`);
+
+    const data = await fetchOrder(`${API}${url.search}`);
+    renderOrder(data['orders'])
+    renderPagination(data['total_page'], data['current_page']);
 })
 
 
-const handleFilterChange = function (parent, setParams, deletedParams, toggleId) {
+const handleFilterChange = async function (parent, setParams, deletedParams, toggleId) {
     deleteParams(deletedParams);
     let isToggle = false;
     parent.querySelectorAll(".filter-type-item").forEach(item => {
@@ -257,7 +259,10 @@ const handleFilterChange = function (parent, setParams, deletedParams, toggleId)
         addParams(setParams);
 
     window.history.pushState({}, '', url);
-    fetchOrder(`${API}${url.search}`);
+
+    const data = await fetchOrder(`${API}${url.search}`);
+    renderOrder(data['orders'])
+    renderPagination(data['total_page'], data['current_page']);
     renderLabel();
 }
 

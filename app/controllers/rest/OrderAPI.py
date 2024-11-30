@@ -1,5 +1,6 @@
 from app.dao.CartDao import delete_cart_item
 from app.dao.OrderDAO import *
+from app.dao.FormImportDAO import *
 from flask import Blueprint, jsonify
 from flask import render_template, request
 import json
@@ -60,4 +61,5 @@ def find(order_id):
 
 @order_api_bp.route("/test/<int:order_id>", methods=["GET"])
 def test_order(order_id):
-    calculate_total_order_amount(order_id)
+    return get_form_import
+    # calculate_total_order_amount(order_id)

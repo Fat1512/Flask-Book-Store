@@ -5,6 +5,7 @@ from sqlalchemy.sql import func, or_
 from app.model.CartItem import CartItem
 from app.model.Order import Order
 from app.model.Order import OrderDetail
+from app.model.User import User
 from sqlalchemy import or_, func
 from datetime import datetime, timedelta
 
@@ -275,6 +276,23 @@ def book_statistic_frequency(gerne_id=None):
 
     return query.all()
 
+
 with app.app_context():
     stats = book_statistic_frequency()
     print(stats)
+
+def account_management(user_role=None):
+    query = db.session.query(
+        User.user_id,
+        User.first_name,
+        User.last_name,
+        User.username,
+        User.email,
+        User.password,
+        User.avt_url,
+        User.user_role).group_by(User.user_id, User.first_name, User.last_name, User.username)
+
+    if user_role is not None:
+        query = query.filter(User.user_role == user_role)
+
+    return query.all()
