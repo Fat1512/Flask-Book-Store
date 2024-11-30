@@ -1,4 +1,4 @@
-from app.model.Order import Order, PaymentDetail
+from app.model.Order import Order, PaymentDetail, ShippingMethod
 from sqlalchemy import desc, asc, func, or_
 from datetime import datetime
 from app import app, db
@@ -77,13 +77,6 @@ def find_all(**kwargs):
     }
 
 
-def update_order_status(order_id, status):
-    order = Order.query.get(order_id)
-    order.status = status
-
-    db.session.commit()
-
-
 def update_order(order_id, order_list):
     query = OrderDetail.query
     query.filter(OrderDetail.order_id == order_id).delete()
@@ -99,7 +92,7 @@ def update_order(order_id, order_list):
 
 
 def create_online_order(request):
-    payment_method = PaymentMethod.TIEN_MAT if request.get('paymentMethod').__eq__('inperson') else PaymentMethod.THE
+    payment_method = PaymentMethod.THE if request.get('paymentMethod').__eq__('VNPay') else PaymentMethod.TIEN_MAT
     shipping_method = ShippingMethod.GIAO_HANG if request.get('shippingMethod').__eq__(
         'ship') else ShippingMethod.CUA_HANG
     shipping_fee = request.get('shippingFee')
@@ -156,6 +149,7 @@ def calculate_total_order_amount(order_id):
     shipping_fee = db.session.query(OnlineOrder.shipping_fee).filter(OnlineOrder.order_id == order_id).first()
     total_amount = total_amount + shipping_fee[0] if shipping_fee is not None else total_amount
     return total_amount
+
 
 def count_order():
     return Order.query.count()

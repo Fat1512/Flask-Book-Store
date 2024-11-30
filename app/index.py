@@ -7,15 +7,14 @@ from app import app, login
 from app.dao.CartDao import find_by_cart_id
 from app.model.User import UserRole
 from flask import render_template, request, redirect, url_for
-
 from app.controllers.SearchController import home_bp
 from app.controllers.HomeController import index_bp
 from app.controllers.EmployeeController import employee_bp
 from app.controllers.OrderController import order_bp
 from app.controllers.rest.BookController import book_rest_bp
+from app.controllers.rest.ConfigAPI import config_api_bp
 from app.controllers.rest.OrderAPI import order_api_bp
 from app.controllers.rest.BookGerneController import book_gerne_rest_bp
-from app.controllers.rest.ConfigAPI import config_api_bp
 from app.controllers.AccountController import account_bp
 from app.controllers.AdminController import admin_bp
 from app.controllers.CartController import cart_bp
