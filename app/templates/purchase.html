@@ -2,7 +2,9 @@
 {% block css %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/purchase.css') }}">
 {% endblock %}
-
+{% block js %}
+    <script src="{{ url_for('static', filename='js/purchase.js') }}"></script>
+{% endblock %}
 {% block content %}
     <div class="my-bg-color pt-3 pb-3">
         <div class="container">
@@ -12,65 +14,69 @@
                     <div class="home-section py-0 rounded" id="home_category_section">
                         <div class="d-flex justify-content-around home_category_heading">
                             <div class="home_category_item active">Tất cả</div>
-                            <div class="home_category_item">Chờ thanh toán</div>
-                            <div class="home_category_item">Vận chuyển</div>
-                            <div class="home_category_item">Hoàn thành</div>
-                            <div class="home_category_item">Đã hủy</div>
+                            <div id="6" class="home_category_item">Chờ thanh toán</div>
+                            <div id="3" class="home_category_item">Vận chuyển</div>
+                            <div id="4" class="home_category_item">Hoàn thành</div>
+                            <div id="5" class="home_category_item">Đã hủy</div>
                         </div>
                     </div>
 
-                    <div class="col-md-12 item-bg-color rounded">
+                    <div class="col-md-12 order-area p-0 rounded">
                         <ul class="list-unstyled m-0">
-                            <li>
-                                <div class="item-header p-2">
-                                    <p class="text-right m-0">Giao hàng thành công | <span>Hoàn thành</span></p>
-                                </div>
-                                <div class="item-infor d-flex align-items-center">
-                                    <div class="item-infor-image">
-                                        <img class="w-100"
-                                             src="https://cdn0.fahasa.com/media/catalog/product/c/o/combo-9786043356380-9786043128734_1.jpg">
-                                    </div>
-                                    <div class="item-infor-detail">
-                                        <p>Combo Sách Giáo Trình Chuẩn HSK 3 - Sách Bài Học Và Bài Tập (Bộ 2 Cuốn) (Tái
-                                            Bản)</p>
-                                        <p class="text-secondary"> Thể loại: SGK </p>
-                                        <p>x1</p>
-                                    </div>
-                                    <div class="item-infor-price text-center">
-                                        <span class="text-secondary text-decoration-line-through">300000</span>
-                                        <span class="text-primary">30000000</span>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="item-header p-2">
-                                    <p class="text-right m-0">Giao hàng thành công | <span>Hoàn thành</span></p>
-                                </div>
-                                <div class="item-infor d-flex align-items-center">
-                                    <div class="item-infor-image">
-                                        <img class="w-100"
-                                             src="https://cdn0.fahasa.com/media/catalog/product/c/o/combo-9786043356380-9786043128734_1.jpg">
-                                    </div>
-                                    <div class="item-infor-detail">
-                                        <p>Combo Sách Giáo Trình Chuẩn HSK 3 - Sách Bài Học Và Bài Tập (Bộ 2 Cuốn) (Tái
-                                            Bản)</p>
-                                        <p class="text-secondary"> Thể loại: SGK </p>
-                                        <p>x1</p>
-                                    </div>
-                                    <div class="item-infor-price text-center">
-                                        <span class="text-secondary text-decoration-line-through">300000</span>
-                                        <span class="text-primary">30000000</span>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                        <div class="controll pb-2 text-right">
-                            <p>Thành tiền: <span class="text-primary">15894</span></p>
-                            <div>
-                                <button class="btn btn-primary btn-large">Mua lại</button>
-                            </div>
-                        </div>
+                            {% if order|length %}
+                                {% for item in order %}
+                                    <li class="item-bg-color mt-3 mb-3 p-3">
+                                        <div class="purchase-header pb-3">
+                                            <p class="text-right m-0">
+                                                {% if item.status.id == 4 %}
+                                                    <span style="color: #26aa99">Giao hàng thành công</span>
+                                                {% endif %}
+                                                <span class="separator"> | </span>
+                                                <span class="text-primary">{{ item.status.name }}</span></p>
+                                        </div>
+                                        <div class="purchase-list">
+                                            {% for od in item.order_detail %}
+                                                <div class="purchase-item">
+                                                    <div class="item-infor d-flex align-items-center">
+                                                        <div class="item-infor-image">
+                                                            <img class="w-100"
+                                                                 src="{{ od.book.images[0].image_url }}">
+                                                        </div>
+                                                        <div class="item-infor-detail">
+                                                            <p>{{ od.book.title }}</p>
+                                                            <p class="text-secondary"> Thể loại: SGK </p>
+                                                            <p>x1</p>
+                                                        </div>
+                                                        <div class="item-infor-price text-center">
+                                                            <span class="text-secondary text-decoration-line-through">{{ od.book.price|currency }}</span>
+                                                            <span class="text-primary">{{ od.book.price|currency }}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
 
+                                        </div>
+                                        <div class="purchase-controll pb-2 text-right">
+                                            <p>Thành tiền: <span
+                                                    class="text-primary">{{ item.total_amount|currency("VND") }}</span>
+                                            </p>
+                                            <div>
+                                                <button onclick="handleReBuy([{{ item.order_detail | map(attribute='book.book_id') | join(', ') }}])"
+                                                        class="btn btn-rebuy btn-primary btn-large">Mua lại
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                    </li>
+                                {% endfor %}
+                            {% else %}
+                                <li class="item-bg-color item-null mt-3 mb-3 p-3">
+                                    <div class="content-null"></div>
+                                    <div class="text">Chưa có đơn hàng</div>
+                                </li>
+                            {% endif %}
+
+                        </ul>
                     </div>
 
                 </div>

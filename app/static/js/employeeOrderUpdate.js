@@ -56,8 +56,8 @@ productSearchBox.addEventListener("keypress", async function (e) {
     // try {
     //
     //     const data = await productFetchingFunction[fetchOption]();
-    // }
-});
+    //     }
+    });
 
 dropDownBtn.addEventListener("click", function (e) {
     e.preventDefault();

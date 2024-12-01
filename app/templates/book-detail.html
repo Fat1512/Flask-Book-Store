@@ -33,8 +33,8 @@
                             <button class="btn-add-cart btn pt-2 pb-2 pr-3 pl-3 btn-primary-outline btn-large">
                                 <i class="fa-solid fa-cart-shopping"></i> Thêm vào giỏ hàng
                             </button>
-                            <button class="btn pt-2 pb-2 pr-3 pl-3 btn-primary btn-large">
-                                <a class="text-decoration-none text-white" href="#">Mua ngay</a>
+                            <button class="btn btn-buy pt-2 pb-2 pr-3 pl-3 btn-primary btn-large">
+                                Mua ngay
                             </button>
                         </div>
                     </div>
@@ -161,9 +161,54 @@
                         </button>
                     </div>
                 </div>
+                <div class="group-comment d-flex flex-column">
+                    {% for comment in comments %}
+                        <div id='{{ comment.comment_id }}' class="comment-item d-flex pt-3 pb-3">
+                            <div class="user-infor">
+                                <p class="user-infor-name">{{ comment.user.first_name }}</p>
+                                <p class="user-infor-post text-secondary">{{ comment.created_at.strftime('%d/%m/%Y') }}</p>
+                            </div>
+                            <div class="comment">
+                                <div class="rating">
+                                    {% for i in range(0,comment.star_count) %}
+                                        <i class="text-warning fa-solid fa-star"></i>
+                                    {% endfor %}
 
+                                    {% for i in range(0, 5 - comment.star_count) %}
+                                        <i class="fa-regular fa-star"></i>
+                                    {% endfor %}
+
+                                </div>
+                                <p class="parent-comment m-0">
+                                    {{ comment.content }}
+                                </p>
+                                <div class="comment-controll">
+                                    <div class="d-flex comment-controll-group-btn">
+                                        <p class="btn btn-comment-reply">Trả lời</p>
+                                        <p class="btn btn-comment-more">Xem thêm</p>
+                                    </div>
+                                    <div class="input-text position-relative">
+                                        <textarea id="review_field" cols="5" rows="3"
+                                                  class="w-100 h-100"
+                                                  placeholder="Nhập bình luận của bạn"></textarea>
+                                        <span class="icon-send">
+                                            <i class="fa-solid fa-share"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="sub-comment">
+                                    <ul class="list-unstyled">
+
+                                    </ul>
+                                </div>
+                            </div>
+
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
+    </div>
     </div>
     <div class="modal">
         <div class="overlay"></div>
@@ -188,8 +233,8 @@
             </div>
             <div class="control text-right">
                 <span class="text-secondary mr-3 cursor-pointer close-form">Hủy</span>
-                <button class="btn pt-2 pb-2 pr-3 pl-3 btn-primary btn-large">
-                    <a class="text-decoration-none text-white" href="#">Gửi nhận xét</a>
+                <button class="btn btn-modal-comment pt-2 pb-2 pr-3 pl-3 btn-primary btn-large">
+                    Gửi nhận xét
                 </button>
             </div>
         </div>

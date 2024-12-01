@@ -1,7 +1,19 @@
 const CART_API = '/api/v1/cart'
+const ACCOUNT_API = '/api/v1/account/'
 const CURRENT_URL = new URL(window.location);
 const buttonAddCart = document.querySelector(".btn-add-cart")
-buttonAddCart.addEventListener('click',() => addCartItem(CURRENT_URL.searchParams.get("bookId")))
+const buttonBuy = document.querySelector('.btn-buy')
+let starCount = 0
+
+
+buttonBuy.addEventListener('click', () => {
+    addCartItem(CURRENT_URL.searchParams.get("bookId")).then(res => {
+        if (res['status'] === 200)
+            window.location.replace("http://127.0.0.1:5000/cart")
+    })
+
+})
+buttonAddCart.addEventListener('click', () => addCartItem(CURRENT_URL.searchParams.get("bookId")))
 const addCartItem = async function (id) {
     try {
         const response = await fetch(`${CART_API}/${id}`, {
@@ -13,10 +25,27 @@ const addCartItem = async function (id) {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const result = await response.json(); // Parse JSON response
-        alert(result.message);
+        // Parse JSON response
+        return await response.json()
     } catch (error) {
         alert('Failed to add cart.');
+    }
+}
+const postComment = async function (data, url) {
+    try {
+        const response = await fetch(`${ACCOUNT_API}/${url}`, {
+            method: 'POST', // HTTP PUT method
+            headers: {
+                'Content-Type': 'application/json' // Specify JSON content type
+            },
+            body: JSON.stringify(data)
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json()
+    } catch (error) {
+        alert('Failed to post comment.');
     }
 }
 

@@ -5,7 +5,7 @@ from urllib.parse import quote
 from dotenv import dotenv_values, load_dotenv
 import cloudinary
 from flask_login import LoginManager
-from app.utils.helper import format_currency_filter, format_datetime_filter
+from app.utils.helper import format_currency_filter, format_datetime_filter, format_date_VN
 
 app = Flask(__name__)
 load_dotenv()
@@ -41,3 +41,4 @@ login = LoginManager(app)
 # Register the custom filter in Jinja2
 app.jinja_env.filters['currency'] = format_currency_filter
 app.jinja_env.filters['datetime'] = format_datetime_filter
+app.jinja_env.filters['date'] = format_date_VN()

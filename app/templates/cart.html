@@ -31,17 +31,21 @@
                                     <input type="checkbox" class="checkbox" value="{{ cart_item.book.book_id }}">
                                 </div>
                                 <div class="col-md-11 p-0 d-flex align-items-center">
-                                    <a class="d-flex group-infor">
-                                        <img class="cart-item-image"
-                                             src="{{ cart_item.book.images[0].image_url }}">
+                                    <div class="d-flex group-infor">
+                                        <a href="/search/detail?bookId={{ cart_item.book.book_id }}">
+                                            <img class=" cart-item-image"
+                                                 src="{{ cart_item.book.images[0].image_url }}">
+                                        </a>
                                         <div class="cart-item-detail flex-column d-flex justify-content-between">
-                                            <p class="cart-item-detail-title">{{ cart_item.book.title }}</p>
+                                            <a href="/search/detail?bookId={{ cart_item.book.book_id }}">
+                                                <p class="cart-item-detail-title">{{ cart_item.book.title }}</p>
+                                            </a>
                                             <p>
                                                 <span class="font-weight-bold">{{ cart_item.book.price|currency('VND') }}</span>
                                                 <span class="text-decoration-line-through text-secondary">{{ cart_item.book.price|currency('VND') }}</span>
                                             </p>
                                         </div>
-                                    </a>
+                                    </div>
                                     <div class="group-controll d-flex">
                                         <div class="controll ">
                                             <span class="cart-item-descrease cursor-pointer"

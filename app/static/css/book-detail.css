@@ -22,7 +22,7 @@ a:hover {
     color: inherit;
 }
 
-.btn-primary-outline a:hover {
+.btn-primary-outline {
     color: var(--red) !important;
 }
 
@@ -132,7 +132,7 @@ a:hover {
 }
 
 .btn:hover {
-    color: var(--red) !important;
+
 }
 
 .modal {
@@ -186,4 +186,35 @@ a:hover {
 
 input[type="radio"]:checked + .custom-label {
     display: flex;
+}
+
+.group-comment {
+    margin: 20px 0px;
+    padding: 20px 0px;
+    border-top: 0.5px solid #F2F4F5;;
+}
+
+.user-infor {
+    flex: 0.2;
+}
+
+.comment {
+    flex: 0.8;
+}
+
+.input-text {
+    display: none;
+    height: 90px;
+}
+
+.sub-comment {
+    margin-left: 20px;
+}
+
+.icon-send {
+    font-size: 30px;
+    position: absolute;
+    bottom: 5px;
+    right: 15px;
+    cursor: pointer;
 }

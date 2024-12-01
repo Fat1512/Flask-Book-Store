@@ -26,17 +26,52 @@
     border-bottom: solid red 3px;
     font-weight: 600;
 }
-.item-header {
+
+.purchase-header {
     border-bottom: 0.5px solid #F2F4F5;
+    margin-bottom: 20px;
 }
+
 .item-infor-image {
     width: 119px;
     height: 119px;
 }
+
+.purchase-item {
+    padding: 20px 0;
+    border-bottom: 0.5px solid #F2F4F5;
+}
+
+.purchase-list {
+    margin-bottom: 20px;
+}
+
 .item-infor-detail {
     padding: 0 15px;
-    flex: 0.7 ;
+    flex: 0.7;
 }
+
 .item-infor-price {
     flex: 0.3;
+}
+
+.separator {
+    color: #F2F4F5;
+}
+.item-null {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+
+}
+.content-null {
+    height: 100px;
+    width: 100px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-image: url(https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/orderlist/5fafbb923393b712b964.png);
 }
