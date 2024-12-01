@@ -1,13 +1,19 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+import os
 from urllib.parse import quote
+from dotenv import dotenv_values, load_dotenv
 import cloudinary
 from flask_login import LoginManager
 from app.utils.helper import format_currency_filter, format_datetime_filter
 
 app = Flask(__name__)
+load_dotenv()
+
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+
 app.secret_key = "8923yhr9fuwnsejksnpok@$I_I@$)opfk"
-app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql+pymysql://root:151204@localhost/book_store'
+app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql+pymysql://root:%s@localhost/book_store' % quote(DB_PASSWORD)
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 
 app.config["VNPAY_URL"] = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'  # Use the sandbox URL for testing

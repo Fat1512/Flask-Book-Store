@@ -2,3 +2,4 @@
 **/.idea
 **/*.pyc
 **/__init__.py
+**/.env
