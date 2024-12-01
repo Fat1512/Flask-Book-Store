@@ -3,7 +3,7 @@ from app import db, app
 from sqlalchemy.orm import relationship
 from app.model.BookImage import ImageOfBook
 from app.model.ExtendedBook import ExtendedBook
-from app.model.Order import OrderDetail
+
 from app.model.CartItem import CartItem
 from app.model.Cart import Cart
 from app.model.FormImportDetail import FormImportDetail

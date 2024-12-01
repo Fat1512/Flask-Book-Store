@@ -43,3 +43,18 @@ def add_cart_item(book_id):
     cart_item = CartItem(book_id=book_id, cart_id=cart.cart_id, quantity=1)
     cart.cart_items.append(cart_item)
     db.session.commit()
+
+
+def add_multiple_cart_item(books):
+    cart = Cart.query.filter(Cart.cart_id == 2).first()
+    for book in books:
+        is_present = False
+        for item in cart.cart_items:
+            if item.book_id == book:
+                item.quantity += 1
+                is_present = True
+        if not is_present:
+            cart_item = CartItem(book_id=book, cart_id=cart.cart_id, quantity=1)
+            cart.cart_items.append(cart_item)
+
+    db.session.commit()

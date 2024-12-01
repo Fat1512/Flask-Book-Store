@@ -30,9 +30,11 @@ class User(db.Model):
     last_access = Column(DateTime, default=datetime.utcnow)
     user_role = Column(Enum(UserRole), default=UserRole.USER)
     address = relationship('Address', backref='user', lazy=True)
+    order = relationship('Order', backref='user', lazy=True, foreign_keys='Order.user_id')
 
-    offline_orders = relationship("OfflineOrder", back_populates="employee", lazy=True)
-    online_orders = relationship("OnlineOrder", back_populates="customer", lazy=True)
+    offline_orders = relationship("OfflineOrder", back_populates="employee", lazy=True,
+                                  foreign_keys='OfflineOrder.employee_id')
+
     form_import = relationship("FormImport", back_populates="employee", lazy=True)
     cart = relationship("Cart", back_populates="user")
 

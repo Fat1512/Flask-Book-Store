@@ -16,10 +16,20 @@ def find_by_id(order_id):
     order['total_amount'] = calculate_total_order_amount(order_id)
     return order
 
+
 def update_order_status(order_id, status):
     order = Order.query.get(order_id)
     order.status = status
     db.session.commit()
+
+
+def find_add_by_user_id(status):
+    order = Order.query
+    order = order.filter(Order.user_id == 2)
+    if status and status != 8:
+        order = order.filter(Order.status == OrderStatus(int(status)))
+
+    return order.all()
 
 
 def find_order_by_id(id):
