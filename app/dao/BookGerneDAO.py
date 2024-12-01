@@ -1,7 +1,7 @@
 from sqlalchemy import text
 from app import db
 from app.model.BookGerne import BookGerne
-
+import json
 
 def get_depth_gerne(id):
     query = """

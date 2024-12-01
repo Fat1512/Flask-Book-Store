@@ -116,30 +116,32 @@ def create_online_order(request):
     return online_order
 
 
-def create_offline_order(order_list):
+def create_offline_order(order_list, user=None):
     offline_order = OfflineOrder(status=OrderStatus.DA_HOAN_THANH,
                                  payment_method=PaymentMethod.TIEN_MAT,
                                  created_at=datetime.utcnow(),
                                  address_id=1,
-                                 employee_id=2)
+                                 employee_id=2,
+                                 customer=user)
+    if user is not None:
+        user.order = offline_order
 
     db.session.add(offline_order)
     db.session.flush()
 
-    order_detail_list = []
     total_amount = 0
+
     for order_item in order_list:
         book_id = order_item['book_id']
         quantity = int(order_item['quantity'])
         price = int(order_item['price'])
         order_detail = OrderDetail(order_id=offline_order.order_id, book_id=book_id, quantity=quantity, price=price)
-        order_detail_list.append(order_detail)
+        offline_order.order_detail.append(order_detail)
         total_amount = total_amount + quantity * price
 
     payment_detail = PaymentDetail(order_id=offline_order.order_id, created_at=datetime.utcnow(), amount=total_amount)
+    offline_order.payment_detail = payment_detail
 
-    db.session.add_all(order_detail_list)
-    db.session.add(payment_detail)
     db.session.commit()
     return offline_order.to_detail_dict()
 

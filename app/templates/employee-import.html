@@ -23,7 +23,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/employeeImport.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/employeeOrderDetail.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/FormPrint.css') }}">
 
 </head>
 
@@ -431,7 +431,7 @@
                     </div>
                     <div class="d-flex justify-content-between mb-3 ml-3">
                         <button type="button"
-                                class="open-modal-btn text-left btn btn-primary text-black border border-0"
+                                class="open-modal-book-btn text-left btn btn-primary text-black border border-0"
                                 style="width: 8rem; background-color: var(--red) !important; color:var(--white-color) !important">
                             Thêm sách
                         </button>
@@ -527,86 +527,11 @@
         </div>
     </div>
 </div>
-<div class="modal d-flex">
-    <div class="overlay d-flex"></div>
-    {#    <div class="modal-body modal-export d-flex">#}
-    {#        <div id="invoice" class="mt-4 w-100">#}
-    {#            <div class="card">#}
-    {#                <div class="card-header text-center">#}
-    {#                    <img class="image-fluid w-25"#}
-    {#                         src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/fahasa-logo.png" alt="">#}
-    {#                </div>#}
-    {#                <div class="card-header invoice-header text-center">#}
-    {#                    <p class="mb-0 font-weight-600">Mã phiếu: 79686 &nbsp; | &nbsp; Ngày nhập: 12/13/2022 &nbsp; |#}
-    {#                        &nbsp; Hotline:#}
-    {#                        19008386 &nbsp;</p>#}
-    {#                </div>#}
-    {#                <div class="card-body">#}
-    {#                    <div class="row">#}
-    {#                        <div class="col-12">#}
-    {#                            <h1 class="text-center pb-3 display-3 text-black">PHIẾU NHẬP SÁCH</h1>#}
-    {#                        </div>#}
-    {#                        <div class="col-md-6">#}
-    {#                            <p>#}
-    {#                                <strong class="font-weight-600">Tên nhân viên:</strong> Lê Tấn Phát <br>#}
-    {#                                <strong class="font-weight-600">Ngày giờ nhập:</strong> 16:00:00 T6, 15/12/2024#}
-    {#                            </p>#}
-    {#                        </div>#}
-    {#                        <div class="col-md-6 text-right">#}
-    {##}
-    {#                        </div>#}
-    {#                        <div class="table-responsive">#}
-    {#                            <table class="table table-bordered">#}
-    {#                                <thead>#}
-    {#                                <tr class="text-center">#}
-    {#                                    <th>ID</th>#}
-    {#                                    <th>Tên</th>#}
-    {#                                    <th>Thể loại</th>#}
-    {#                                    <th>Tác giả</th>#}
-    {#                                    <th>Số lượng</th>#}
-    {#                                </tr>#}
-    {#                                </thead>#}
-    {#                                <tbody>#}
-    {#                                <tr class="text-center">#}
-    {#                                    <td>30566205</td>#}
-    {#                                    <td>3D Cannon Camera</td>#}
-    {#                                    <td>$25.00</td>#}
-    {#                                    <td>1</td>#}
-    {#                                    <td>10.00</td>#}
-    {#                                </tr>#}
-    {#                                <tr class="text-center">#}
-    {#                                    <td>30566206</td>#}
-    {#                                    <td>Green Lemon</td>#}
-    {#                                    <td>$70.00</td>#}
-    {#                                    <td>1</td>#}
-    {#                                    <td>0.00</td>#}
-    {#                                </tr>#}
-    {#                                <tr class="text-right">#}
-    {#                                    <td colspan="4"><strong>Tổng số lượng:</strong></td>#}
-    {#                                    <td class="text-center">123</td>#}
-    {#                                </tr>#}
-    {#                                </tbody>#}
-    {#                            </table>#}
-    {#                        </div>#}
-    {#                        <div class="col-12 pt-5">#}
-    {#                            <div class="row">#}
-    {#                                <div class="col-md-6">#}
-    {#                                    <div class="d-flex flex-column align-items-center" style="padding-left: 2%">#}
-    {#                                        <strong class="pb-5">Người lập phiếu</strong>#}
-    {#                                        <div class="pt-5">Lê Tấn Phát</div>#}
-    {#                                    </div>#}
-    {#                                </div>#}
-    {#                                <div class="col-md-6 text-right">#}
-    {#                                    <button id="downloadPDF" class="btn text-white btn-print">Print</button>#}
-    {#                                </div>#}
-    {#                            </div>#}
-    {#                        </div>#}
-    {#                    </div>#}
-    {#                </div>#}
-    {#            </div>#}
-    {#        </div>#}
-    {#    </div>#}
-    <div class="modal-body modal-book-list item-bg-color d-flex justify-content-center flex-column align-content-center">
+<div class="modal">
+    <div class="overlay"></div>
+    <div class="modal-body modal-export d-none">
+    </div>
+    <div class="modal-body modal-book d-none item-bg-color justify-content-center flex-column align-content-center">
         <div class="card-header border-0 py-1 d-flex justify-content-between">
             <h3 class="mb-0">Thêm sách nhập</h3>
             <div class="d-flex justify-content-end">
@@ -615,7 +540,7 @@
             </div>
             <div class="btn-group">
                 <button class="btn btn-outline-dark dropdown-toggle
-                                                           dropdown-toggle-pagination"
+                                                               dropdown-toggle-pagination"
                         data-toggle="dropdown">
                     Trạng thái
                 </button>
@@ -689,10 +614,10 @@
                             {{ book['gerne']['name'] }}
                         </td>
                         <td>
-                                            <span class="badge badge-dot mr-4">
-                                            <i class="bg-warning"></i>
-                                            <span class="status book-item-quantity">{{ book['quantity'] }}</span>
-                                            </span>
+                                                <span class="badge badge-dot mr-4">
+                                                <i class="bg-warning"></i>
+                                                <span class="status book-item-quantity">{{ book['quantity'] }}</span>
+                                                </span>
                         </td>
                         <td>
                             <div class="avatar-group book-item-author">
@@ -748,9 +673,12 @@
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js"
         integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
         crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"
         integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script src="{{ url_for('static', filename='js/employeeImport.js') }}"></script>
 </body>

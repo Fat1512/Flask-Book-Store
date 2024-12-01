@@ -8,6 +8,7 @@ function extractCurrencyNumber(currencyString) {
     return parseFloat(numericValue.replace(',', '.')); // Convert to float, replace comma with dot
 }
 
+const BOOK_API = "/api/v1/book"
 
 const TIME_OUT = 50;
 const placeHolderAttribute = ["Nhap ten san pham", "Nhap barcode"]
@@ -25,22 +26,39 @@ const productContainer = document.querySelector(".product-container");
 let initialOrderItemsState = {};
 let currentOrderItemsState = {};
 
-const fetchProductByBarcode = async function () {
-    console.log("Fetching by barcode");
-    //Logic................
+//====================================FETCH BARCODE====================================
+
+const fetchProductByBarcode = async function (barcode) {
+    try {
+        const res = await fetch(`${BOOK_API}/barcode/${barcode}`);
+        if(!res.ok) throw("sth wrong");
+        return await res.json();
+    } catch(err) {
+        throw err;
+    }
 }
-const fetchProductByName = async function () {
-    console.log("Fetching by name");
-    //Logic................
+
+const fetchProductByName = async function (name) {
+    try {
+        const res = await fetch(`${BOOK_API}/title/${barcode}`);
+        if(!res.ok) throw("sth wrong");
+        return await res.json();
+    } catch(err) {
+        throw err;
+    }
 }
+
+
 const productFetchingFunction = [fetchProductByName, fetchProductByBarcode];
 
-productSearchBox.addEventListener("input", function () {
-    clearTimeout(currentTimeOutId);
-    currentTimeOutId = setTimeout(function () {
-        productFetchingFunction[fetchOption]();
-    }, TIME_OUT);
+productSearchBox.addEventListener("keypress", async function (e) {
+    if(e.key !== "Enter") return;
+    // try {
+    //
+    //     const data = await productFetchingFunction[fetchOption]();
+    // }
 });
+
 dropDownBtn.addEventListener("click", function (e) {
     e.preventDefault();
     const target = e.target.closest('.dropdown-item');

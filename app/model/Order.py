@@ -14,8 +14,8 @@ class OrderStatus(PythonEnum):
     DANG_XU_LY = 1
     CHO_GIAO_HANG = 2
     DANG_GIAO_HANG = 3
-    DA_HOAN_THANH = 4
     DA_HUY = 5,
+    DA_HOAN_THANH = 4
     DANG_CHO_THANH_TOAN = 6,
     DA_THANH_TOAN = 7
 
@@ -42,8 +42,11 @@ class Order(db.Model):
 
     order_detail = relationship("OrderDetail", back_populates='order', lazy=True, cascade="all")
     online_order = relationship('OnlineOrder', backref='order', lazy=True, uselist=False, cascade="all")
-    offline_order = relationship('OfflineOrder', backref='order', lazy=True, uselist=False, cascade="all")
-    payment_detail = relationship('PaymentDetail', backref='order', lazy=True, uselist=False, cascade="all")
+    offline_order = relationship('OfflineOrder', back_populates='order',enable_typechecks=False, lazy=True, uselist=False, cascade="all")
+    payment_detail = relationship('PaymentDetail', back_populates='order', lazy=True, uselist=False, cascade="all")
+
+    customer_id = Column(Integer, ForeignKey('user.user_id'))
+    customer = relationship("User", back_populates="orders", foreign_keys=[customer_id])
 
     def get_amount(self):
         amount = 0
@@ -66,6 +69,7 @@ class Order(db.Model):
                 }
             },
             'created_at': self.created_at,
+            'customer_id': self.customer_id
         }
         return json
 
@@ -85,9 +89,10 @@ class Order(db.Model):
 class OfflineOrder(Order):
     __tablename__ = 'offline_order'
     order_id = Column(Integer, ForeignKey('order.order_id'), primary_key=True)
+    order = relationship('Order', back_populates='offline_order', enable_typechecks=False, lazy=True, uselist=False, cascade="all")
 
     employee_id = Column(Integer, ForeignKey('user.user_id'))
-    employee = relationship("User", back_populates="offline_orders")
+    employee = relationship("User", back_populates="offline_orders", foreign_keys=[employee_id])
 
     def to_dict(self):
         json = super().to_dict()
@@ -109,8 +114,6 @@ class OnlineOrder(Order):
     shipping_fee = Column(Double)
     note = Column(String)
 
-    customer_id = Column(Integer, ForeignKey('user.user_id'))
-    customer = relationship("User", back_populates="online_orders")
     order_cancellation = relationship('OrderCancellation', backref='online_order', lazy=True, uselist=False)
 
     def to_dict(self):
@@ -129,8 +132,7 @@ class OnlineOrder(Order):
                 'name': SHIPPING_METHOD_TEXT[self.shipping_method.value - 1]
             },
             'shipping_fee': self.shipping_fee,
-            'note': self.note,
-            'customer_id': self.customer_id
+            'note': self.note
         }
         return json
 
@@ -179,7 +181,7 @@ class PaymentDetail(db.Model):
     amount = Column(Double)
 
     order_id = Column(Integer, ForeignKey('order.order_id'), unique=True)
-
+    order = relationship("Order", back_populates="payment_detail", enable_typechecks=False, lazy=True)
     def to_dict(self):
         return {
             'amount': self.amount,

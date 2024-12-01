@@ -5,6 +5,7 @@ from enum import Enum as RoleEnum
 from datetime import datetime
 import hashlib
 from app.model.Cart import Cart
+from app.model.Account import Account
 
 
 class UserRole(RoleEnum):
@@ -31,10 +32,12 @@ class User(db.Model):
     user_role = Column(Enum(UserRole), default=UserRole.USER)
     address = relationship('Address', backref='user', lazy=True)
 
-    offline_orders = relationship("OfflineOrder", back_populates="employee", lazy=True)
-    online_orders = relationship("OnlineOrder", back_populates="customer", lazy=True)
+    offline_orders = relationship("OfflineOrder", back_populates="employee", foreign_keys="[OfflineOrder.employee_id]", lazy=True)
+    orders = relationship("Order", back_populates="customer", enable_typechecks=False, foreign_keys="[Order.customer_id]", lazy=True)
+
     form_import = relationship("FormImport", back_populates="employee", lazy=True)
     cart = relationship("Cart", back_populates="user")
+    account = relationship("Account", back_populates="user")
 
     @property
     def full_name(self):
@@ -55,10 +58,12 @@ class User(db.Model):
     def get_id(self):
         return str(self.user_id)
 
+
 # if __name__ == '__main__':
 #     with app.app_context():
 #         db.create_all()
-#         u = User(first_name="Quan Tri", last_name="Vien", username="admin", password=str(hashlib.md5('admin'.encode('utf-8')).hexdigest()),email="admin@gmail.com",
-#                  user_role=UserRole.ADMIN)
-#         db.session.add(u)
+#         for i in range(0, 52):
+#             u = User(first_name="Tùng", last_name="Sơn", username="admin" + str(i),
+#                      password=str(hashlib.md5('admin'.encode('utf-8')).hexdigest()),phone_number="12", email="admin@gmail.com", user_role=UserRole.USER)
+#             db.session.add(u)
 #         db.session.commit()

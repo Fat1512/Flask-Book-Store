@@ -4,8 +4,8 @@ import hashlib
 from app import db
 import cloudinary.uploader
 from app.model.User import UserRole
-
-from sqlalchemy import or_
+import json
+from sqlalchemy import or_, select
 
 
 def auth_user(username, password, role=UserRole.USER):
@@ -28,7 +28,7 @@ def auth_user(username, password, role=UserRole.USER):
 #                              User.password.__eq__(password),
 #                              User.user_role.__eq__(role)).first()
 
-def add_user(first_name, last_name, username, password, email, avt_url, sex=None, phone_number=None, date_of_birth=None,
+def add_user(first_name, last_name, username, password, email, avt_url=None, sex=None, phone_number=None, date_of_birth=None,
              isActive=None, last_access=None):
     password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
     u = User(first_name=first_name, last_name=last_name, username=username, password=password, email=email,
@@ -44,6 +44,60 @@ def add_user(first_name, last_name, username, password, email, avt_url, sex=None
     db.session.add(u)
     db.session.commit()
 
+def find_by_customer_id_phone_number(user_id, phone_number):
+    query = User.query
+    query = query.filter(User.user_id == user_id, User.phone_number == phone_number)
+    return query.first()
 
+def find_by_phone_number(phone_number):
+    query = User.query
+    query = query.filter(User.phone_number == phone_number)
+    return query.first()
+
+def find_customer_phone_number(phone_number):
+    obj = [{
+        'id': item[0],
+        'name': item[1],
+        'phone_number': item[2]
+    }
+        for item in db.session.execute(select(User.user_id, User.first_name, User.phone_number).where(User.phone_number.contains(phone_number)))
+    ]
+
+    return obj
 def get_user_by_id(user_id):
     return User.query.get(user_id)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -16,6 +16,6 @@ class FormImportDetail(db.Model):
 
     def to_dict(self):
         return {
-            'book_detail': self.book.to_dict(),
+            'book_detail': self.book.to_dict_manage(),
             'quantity': self.quantity
         }

@@ -23,7 +23,8 @@ const timeFormatter = new Intl.DateTimeFormat('vi-VN', {
     // timeZoneName: 'short' // e.g., GMT
 });
 
-const API = `/api/v1/order`;
+const ORDER_API = `/api/v1/order`;
+
 const url = new URL(window.location)
 
 const orderParams = [
@@ -101,7 +102,7 @@ const renderOrder = function (orders) {
         <tr>
             <th scope="row">
                 <div class="media align-items-center">
-                    <div id="${order['order_id']}">${order['order_id']}</div>
+                    <div order-id="${order['order_id']}" id="${order['order_id']}">${order['order_id']}</div>
                 </div>
             </th>
             <td>
@@ -139,6 +140,8 @@ const renderOrder = function (orders) {
                         ${+order['status']['id'] === 1 || +order['status']['id'] === 2 ? `
                             <a class="dropdown-item"
                                href="/employee/order/${order['order_id']}/update">Cap nhat</a>` : ''}
+                        ${+order['status']['id'] === 1 ? `
+                        <a class="dropdown-item" value="confirm" order-id="${order['order_id']}" href="">Xac nhan</a>` : ''} 
                         <a class="dropdown-item"
                            href="/employee/order/${order['order_id']}/detail">Chi
                             tiet</a>
@@ -184,16 +187,42 @@ const renderLabel = function () {
     filterLabelContainer.insertAdjacentHTML('beforeend', html);
 }
 
-const fetchOrder = async function (url) {
+const fetchOrder = async function (param) {
     try {
-        const res = await fetch(url);
-        if(!res.ok) throw new Error("Cannot fetch order");
+        const res = await fetch(`${ORDER_API}${param}`);
+        if (!res.ok) throw new Error("Cannot fetch order");
         return await res.json();
-    } catch(err) {
+    } catch (err) {
         alert(err.message);
     }
 };
+
+const modifyOrderStatus = async function (orderId) {
+    try {
+        try {
+            const res = await fetch(`${ORDER_API}/${orderId}/confirm`);
+            if (!res.ok) throw new Error("update order status");
+            return await res.json();
+        } catch (err) {
+            alert(err.message);
+        }
+    } catch(err) {
+        alert(err.message);
+    }
+}
+
 //---------------------------------------------EVENT---------------------------------------------
+
+orderList.addEventListener("click", async function (e) {
+    const target = e.target.closest(".dropdown-item");
+    if (!target) return;
+    const isConfirmed = e.target.getAttribute("value");
+    if (isConfirmed !== "confirm") return;
+    const orderId = e.target.getAttribute("order-id");
+    await modifyOrderStatus(orderId);
+
+});
+
 sortType.addEventListener("click", (e) => {
     const item = e.target.closest(".filter-type-item");
     if (!item) return;
@@ -226,7 +255,7 @@ orderType.addEventListener("click", (e) => {
     handleFilterChange(orderType, Object.entries(orderParams[toggleId - 1]), ["orderType", "page"], toggleId);
 });
 
-pagination.addEventListener("click", async function(e) {
+pagination.addEventListener("click", async function (e) {
     const item = e.target.closest(".page-item");
     if (!item || item.classList.contains("disabled") || item.classList.contains("active")) return;
 
@@ -234,7 +263,7 @@ pagination.addEventListener("click", async function(e) {
     addParams([["page", item.getAttribute("page")]]);
     window.history.pushState({}, '', url);
 
-    const data = await fetchOrder(`${API}${url.search}`);
+    const data = await fetchOrder(url.search);
     renderOrder(data['orders'])
     renderPagination(data['total_page'], data['current_page']);
 })
@@ -260,13 +289,13 @@ const handleFilterChange = async function (parent, setParams, deletedParams, tog
 
     window.history.pushState({}, '', url);
 
-    const data = await fetchOrder(`${API}${url.search}`);
+    const data = await fetchOrder(url.search);
     renderOrder(data['orders'])
     renderPagination(data['total_page'], data['current_page']);
     renderLabel();
 }
 
-window.addEventListener("load", function() {
+window.addEventListener("load", function () {
     document.querySelectorAll(".filter-type-item").forEach(item => {
         const input = item.querySelector("input")
         const label = item.querySelector(".dropdown-item")

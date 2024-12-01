@@ -583,7 +583,7 @@
                                 <tr>
                                     <th scope="row">
                                         <div class="media align-items-center">
-                                            <div id="{{ order['order_id'] }}">{{ order['order_id'] }}</div>
+                                            <div order-id="{{ order['order_id'] }}" id="{{ order['order_id'] }}">{{ order['order_id'] }}</div>
                                         </div>
                                     </th>
                                     <td>
@@ -618,13 +618,17 @@
                                                 <i class="fas fa-ellipsis-v"></i>
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                                                {% if order['status']['id'] == 1 or order['status']['id'] == 2 %}
+                                                {% if order['payment']['payment_method']['id'] == 2 and (order['status']['id'] == 1 or order['status']['id'] == 2) %}
                                                     <a class="dropdown-item"
                                                        href="/employee/order/{{ order['order_id'] }}/update">Cap
                                                         nhat</a>
                                                 {% endif %}
                                                 <a class="dropdown-item"
                                                    href="/employee/order/{{ order['order_id'] }}/detail">Chi tiet</a>
+                                                {% if order['status']['id'] == 1 %}
+                                                <a class="dropdown-item" value="confirm" order-id="{{ order['order_id'] }}"
+                                                   href="#">Xác nhận</a>
+                                                {% endif %}
                                                 <a class="dropdown-item" href="#">Huy</a>
                                             </div>
                                         </div>

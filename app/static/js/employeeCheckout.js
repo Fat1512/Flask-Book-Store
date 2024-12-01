@@ -38,7 +38,19 @@ const checkoutBtn = document.querySelector(".checkout-btn");
 const barcodeScanner = document.querySelector("#reader");
 const qrBtn = document.querySelector(".qr-code-btn");
 
+const searchPhoneNumBtn = document.querySelector(".search-phone-number-btn");
+const addPhoneNumBtn = document.querySelector(".add-phone-number-btn");
+
+const inputGroupSearchPhoneNumber = document.querySelector(".input-group-search-phone-number");
+const inputGroupAddPhoneNumber = document.querySelector(".input-group-add-phone-number");
+
+const phoneNumberDropDown = document.querySelector(".phone-number-dropdown");
+const customerNameContainer = document.querySelector(".customer-name-container");
+
 let currentOrderItemsState = {};
+let currentAddressesState= {};
+let currentCustomerInfoState = {};
+let currentPhoneNumberSearchTimeoutID;
 
 //============================================Barcode Scanner============================================
 let html5QrcodeScanner = new Html5QrcodeScanner(
@@ -77,6 +89,21 @@ function onScanFailure(error) {}
 
 //============================================API============================================
 
+async function fetchPhoneNumber(phoneNumber) {
+    try {
+        const res = await fetch(`/api/v1/user/phone_number/${phoneNumber}`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!res.ok) throw new Error("Không có số điện thoại tương ứng");
+        return await res.json();
+    } catch(err) {
+        throw err;
+    }
+}
+
 async function fetchBookByBarcode(barcode) {
     const res = await fetch(`/api/v1/book/barcode/${barcode}`, {
         method: "GET",
@@ -89,9 +116,15 @@ async function fetchBookByBarcode(barcode) {
 }
 
 async function postOfflineOrder() {
-     const res = await fetch(`/api/v1/order/add`, {
+
+    const data = {
+        'customerInfo': currentCustomerInfoState,
+        'orderList': Object.values(currentOrderItemsState)
+    };
+    console.log(data);
+    const res = await fetch(`/api/v1/order/add`, {
         method: "POST",
-        body: JSON.stringify(Object.values(currentOrderItemsState)),
+        body: JSON.stringify(data),
         headers: {
             'Content-Type': 'application/json'
         }
@@ -130,13 +163,83 @@ overlay.addEventListener("click", closeModal);
 
 deleteAllBtn.addEventListener("click", resetState);
 
+phoneNumberDropDown.addEventListener("mousedown", function(e) {
+    const target = e.target.closest("li");
+    if(!target) return;
+    const id = +target.getAttribute("id");
+    renderCustomerName(currentAddressesState[id]);
+
+    //retain the selected id
+    currentCustomerInfoState = currentAddressesState[id];
+});
+
+customerNameContainer.addEventListener("click", function(e) {
+    const deleteCustomerBtn = e.target.closest(".btn");
+    if(!deleteCustomerBtn) return;
+    resetCustomerInfoState();
+});
+
+
+const resetCustomerInfoState = function() {
+    customerNameContainer.innerHTML = '';
+    currentCustomerInfoState = {};
+    inputGroupAddPhoneNumber.querySelector("input").value = '';
+    inputGroupSearchPhoneNumber.querySelector("input").value = '';
+}
+
+searchPhoneNumBtn.addEventListener("click", function() {
+    inputGroupSearchPhoneNumber.classList.add("d-flex");
+    inputGroupSearchPhoneNumber.classList.remove("d-none");
+    inputGroupAddPhoneNumber.classList.remove("d-flex");
+    inputGroupAddPhoneNumber.classList.add("d-none");
+    resetCustomerInfoState();
+})
+
+addPhoneNumBtn.addEventListener("click", function() {
+    inputGroupSearchPhoneNumber.classList.add("d-none");
+    inputGroupSearchPhoneNumber.classList.remove("d-flex");
+    inputGroupAddPhoneNumber.classList.remove("d-none");
+    inputGroupAddPhoneNumber.classList.add("d-flex");
+    resetCustomerInfoState();
+})
+
+
+inputGroupSearchPhoneNumber.addEventListener("focusout", function(e) {
+    phoneNumberDropDown.classList.add("d-none");
+})
+
+inputGroupSearchPhoneNumber.addEventListener("focusin", function(e) {
+    phoneNumberDropDown.classList.remove("d-none");
+})
+
+inputGroupAddPhoneNumber.addEventListener("input", (e) => {
+    currentCustomerInfoState = {
+        'id': null,
+        'phone_number': e.target.value
+    }
+})
+
+inputGroupSearchPhoneNumber.addEventListener("input", async function(e) {
+    clearTimeout(currentPhoneNumberSearchTimeoutID)
+    currentPhoneNumberSearchTimeoutID = setTimeout(async function() {
+        try {
+            const data = await fetchPhoneNumber(e.target.value);
+            console.log(data)
+            renderPhoneNumberList(data);
+        } catch(err) {
+            console.log(err.message);
+        }
+
+    }, 100);
+})
+
+
 checkoutBtn.addEventListener("click", async function () {
 
     if(Object.keys(currentOrderItemsState).length === 0) {
         renderToast("Phải có ít nhất 1 sản phẩm", "center", "orange");
         return;
     }
-
     try {
         const order = await postOfflineOrder();
         renderToast("Đã xuất hóa đơn", "right", "#6cbf6c")
@@ -382,3 +485,23 @@ const renderInvoice = function (order) {
     </div>`;
     modalBody.insertAdjacentHTML("beforeend", html);
 }
+
+const renderPhoneNumberList = function(info) {
+    const html = info.map(infoItem => {
+        currentAddressesState[infoItem['id']] = infoItem;
+        return `<li id="${infoItem['id']}">${infoItem['phone_number']}</li>`;
+    }).join("");
+    phoneNumberDropDown.innerHTML = '';
+    phoneNumberDropDown.insertAdjacentHTML("beforeend", html);
+}
+
+const renderCustomerName = function(currentAddress) {
+    const html = `
+        <span id="${currentAddress['id']}" class="customer-name">Tên khách hàng: ${currentAddress['name']}, Số điện thoại: ${currentAddress['phone_number']}</span>
+        <a class="btn btn-sm btn-icon-only text-light cursor-pointer" role="button">
+            <i class="fa fa-window-close" aria-hidden="true"></i>
+        </a>`;
+    customerNameContainer.innerHTML = '';
+    customerNameContainer.insertAdjacentHTML("beforeend", html);
+}
+
