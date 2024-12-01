@@ -129,7 +129,6 @@ qrBtn.addEventListener("click", openModal);
 overlay.addEventListener("click", closeModal);
 
 deleteAllBtn.addEventListener("click", resetState);
-
 checkoutBtn.addEventListener("click", async function () {
 
     if(Object.keys(currentOrderItemsState).length === 0) {
