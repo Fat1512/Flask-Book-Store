@@ -48,6 +48,8 @@ def get_detail():
         "Số trang": book.num_page,
         "Hình thức": book.format,
     }
+    comments = book.comments
     for ex in book.extended_books:
         detail_book[ex.attribute.attribute_name] = ex.value
-    return render_template("book-detail.html", book=book, detail_book=detail_book, books=books)
+    return render_template("book-detail.html", book=book, detail_book=detail_book,
+                           books=books, comments=comments)

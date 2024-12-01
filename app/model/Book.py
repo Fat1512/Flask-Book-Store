@@ -3,7 +3,7 @@ from app import db, app
 from sqlalchemy.orm import relationship
 from app.model.BookImage import ImageOfBook
 from app.model.ExtendedBook import ExtendedBook
-from app.model.Order import OrderDetail
+
 from app.model.CartItem import CartItem
 from app.model.Cart import Cart
 from app.model.FormImportDetail import FormImportDetail
@@ -23,9 +23,11 @@ class Book(db.Model):
     weight = Column(Double)
     barcode = Column(String)
     format = Column(String)
+    publisher_id = Column(Integer, ForeignKey('publisher.publisher_id'), nullable=False)
     book_gerne_id = Column(Integer, ForeignKey('book_gerne.book_gerne_id'))
-    book_gerne = db.relationship('BookGerne', back_populates='books', lazy=True)
 
+    book_gerne = db.relationship('BookGerne', back_populates='books', lazy=True)
+    publisher_info = db.relationship('Publisher', back_populates='publisher_books_relation', foreign_keys=[publisher_id], lazy=True)
     images = db.relationship('ImageOfBook', backref='book', lazy=True)
     order_detail = relationship("OrderDetail", back_populates="book", lazy=True)
     form_import_detail = relationship("FormImportDetail", back_populates="book", lazy=True)

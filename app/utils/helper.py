@@ -3,7 +3,8 @@ import locale
 from datetime import datetime
 
 ORDER_TYPE_TEXT = ["Đặt online", "Mua trực tiếp"]
-ORDER_STATUS_TEXT = ["Đang xử lý", "Chờ giao hàng", "Đang giao hàng", "Đã hoàn thành", "Đã hủy"]
+ORDER_STATUS_TEXT = ["Đang xử lý", "Chờ giao hàng", "Đang giao hàng", "Đã hoàn thành", "Đã hủy", "Đang chờ thanh toán",
+                     "Đã thanh toán"]
 PAYMENT_METHOD_TEXT = ["Thẻ", "Tiền mặt"]
 SHIPPING_METHOD_TEXT = ["Giao hàng", "Tại cửa hàng"]
 
@@ -11,6 +12,10 @@ SHIPPING_METHOD_TEXT = ["Giao hàng", "Tại cửa hàng"]
 def format_currency_filter(price, currency='VND'):
     # Format the value using Babel's format_currency
     return format_currency(price, currency, locale='vi_VN')
+
+
+def format_date_VN(dt=datetime.now()):
+    return dt.strftime('%d.%m.%Y')
 
 
 def format_datetime_filter(dt):

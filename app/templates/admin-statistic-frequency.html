@@ -46,9 +46,9 @@
                 <!-- Nav items -->
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="dashboard.html">
+                        <a class="nav-link" href="/admin/book-manager">
                             <i class="ni ni-tv-2 text-primary"></i>
-                            <span class="nav-link-text">Dashboard</span>
+                            <span class="nav-link-text">Quản lý sách</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -58,15 +58,15 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="map.html">
+                        <a class="nav-link active" href="/admin/statistic-frequency">
                             <i class="ni ni-pin-3 text-primary"></i>
                             <span class="nav-link-text">Thống kê tần suất</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="profile.html">
+                        <a class="nav-link" href="/admin/account-manager">
                             <i class="ni ni-single-02 text-yellow"></i>
-                            <span class="nav-link-text">Profile</span>
+                            <span class="nav-link-text">Quản lí tài khoản</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -335,7 +335,7 @@
                             <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
                                 <li class="breadcrumb-item"><a href="/admin/statistic-revenue"><i
                                         class="fas fa-home"></i></a></li>
-                                <li class="breadcrumb-item"><a href="/admin/statistic-revenue">Thống kê doanh thu</a>
+                                <li class="breadcrumb-item"><a href="/admin/statistic-revenue">Thống kê tần suất</a>
                                 </li>
                             </ol>
                         </nav>
@@ -556,7 +556,7 @@
         let data = [];
         let labels = [];
 
-        {% for s in stats %}
+        {% for s in full_stats %}
         labels.push('{{ s[1] }}');  // Tên thể loại
         // Kiểm tra nếu giá trị doanh thu là None và thay thế bằng 0
         data.push({{ s[4] }}); // Doanh thu (thay None bằng 0)

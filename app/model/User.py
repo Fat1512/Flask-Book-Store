@@ -18,8 +18,6 @@ class User(db.Model):
     user_id = Column(Integer, primary_key=True, autoincrement=True)
     first_name = Column(String(20), nullable=False)
     last_name = Column(String(50), nullable=False)
-    username = Column(String(120), nullable=False, unique=True)
-    password = Column(String(120), nullable=False)
     sex = Column(Boolean, nullable=False)
     email = Column(String(50), nullable=False, unique=True)
     phone_number = Column(String(10))
@@ -30,9 +28,12 @@ class User(db.Model):
     last_access = Column(DateTime, default=datetime.utcnow)
     user_role = Column(Enum(UserRole), default=UserRole.USER)
     address = relationship('Address', backref='user', lazy=True)
+    order = relationship('Order', backref='user', lazy=True, foreign_keys='Order.user_id')
 
-    offline_orders = relationship("OfflineOrder", back_populates="employee", lazy=True)
-    online_orders = relationship("OnlineOrder", back_populates="customer", lazy=True)
+    account = relationship('Account', back_populates='user', uselist=False)
+    offline_orders = relationship("OfflineOrder", back_populates="employee", lazy=True,
+                                  foreign_keys='OfflineOrder.employee_id')
+    # online_orders = relationship("OnlineOrder", back_populates="customer", lazy=True)
     form_import = relationship("FormImport", back_populates="employee", lazy=True)
     cart = relationship("Cart", back_populates="user")
 

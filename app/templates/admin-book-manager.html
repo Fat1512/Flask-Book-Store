@@ -46,13 +46,13 @@
                 <!-- Nav items -->
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="/admin/book-manager">
+                        <a class="nav-link active" href="/admin/book-manager">
                             <i class="ni ni-tv-2 text-primary"></i>
                             <span class="nav-link-text">Quản lý sách</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="/admin/statistic-revenue">
+                        <a class="nav-link" href="/admin/statistic-revenue">
                             <i class="ni ni-planet text-orange"></i>
                             <span class="nav-link-text">Thống kê doanh thu</span>
                         </a>
@@ -335,7 +335,7 @@
                             <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
                                 <li class="breadcrumb-item"><a href="/admin/statistic-revenue"><i
                                         class="fas fa-home"></i></a></li>
-                                <li class="breadcrumb-item"><a href="/admin/statistic-revenue">Thống kê doanh thu</a>
+                                <li class="breadcrumb-item"><a href="/admin/statistic-revenue">Quản lý sách</a>
                                 </li>
                             </ol>
                         </nav>
@@ -343,32 +343,45 @@
 
                     <!-- Div 2: 59% -->
                     <div class="col-lg-6 col-7" style="flex: 0 0 59%; max-width: 59%;">
-                        <form class="col-lg-6 col-7" style="display: flex; gap: 10px; align-items: center;">
-                            <div style="flex: 1;">
-                                <input type="text" name="kw" placeholder="Nhập từ khóa"
-                                       style="box-sizing: border-box;">
+                        <form class="" style="display: flex; gap: 10px; align-items: center;">
+                            <div class="dropdown-container">
+                                <input type="text" id="gerneSearch"
+                                       class="dropdown-search product-publisher" autocomplete="off"
+                                       placeholder="Chọn mục thống kê" style="box-sizing: border-box; width: 90%">
+                                <div class="dropdown-list" id="gerneList"
+                                     style="box-sizing: border-box; width: 90%"></div>
                             </div>
-                            <!--                            <div style="flex: 1;">-->
-                            <!--                                <input type="date" name="from_date" style="width: 100%; box-sizing: border-box;">-->
-                            <!--                            </div>-->
-                            <!--                            <div style="flex: 1;">-->
-                            <!--                                <input type="date" name="to_date" style="width: 100%; box-sizing: border-box;">-->
-                            <!--                            </div>-->
-                            <div style="flex: 1;">
-                                <input type="month" name="selected_month" style="width: 100%; box-sizing: border-box;">
+                            <!--                                                        <div style="flex: 1;">-->
+                            <!--                                                            <input type="date" name="from_date" style="width: 100%; box-sizing: border-box;">-->
+                            <!--                                                        </div>-->
+                            <!--                                                        <div style="flex: 1;">-->
+                            <!--                                                            <input type="date" name="to_date" style="width: 100%; box-sizing: border-box;">-->
+                            <!--                                                        </div>-->
+                            <!--                                                        <div style="flex: 1;">-->
+                            <!--                                                            <input type="month" name="selected_month" style="width: 100%; box-sizing: border-box;">-->
+                            <!--                                                        </div>-->
+
+
+                            <div>
+                                <input type="submit" value="SL Ban dau" class="btn btn-neutral"
+                                       style="cursor: pointer;background-color: #2196F3; color: white">
                             </div>
                             <div>
-                                <input type="submit" value="Xác nhận" class="btn btn-neutral"
+                                <input type="submit" value="SL Ban ra" class="btn btn-neutral"
+                                       style="cursor: pointer;background-color: #2196F3; color: white">
+                            </div>
+                            <div>
+                                <input type="submit" value="SL Con lai" class="btn btn-neutral"
                                        style="cursor: pointer;background-color: #2196F3; color: white">
                             </div>
                         </form>
                     </div>
 
                     <!-- Div 3: 18% -->
-                    <div class="col-lg-6 col-5 text-right" style="flex: 0 0 18%; max-width: 18%;">
-                        <a href="#" class="btn btn-neutral" id="statistic-table-check">Bảng</a>
-                        <a href="#" class="btn btn-neutral" id="statistic-chart-check">Biểu đồ</a>
-                    </div>
+                    <!--                    <div class="col-lg-6 col-5 text-right" style="flex: 0 0 18%; max-width: 18%;">-->
+                    <!--                        <a href="#" class="btn btn-neutral" id="statistic-table-check">Bảng</a>-->
+                    <!--                        <a href="#" class="btn btn-neutral" id="statistic-chart-check">Biểu đồ</a>-->
+                    <!--                    </div>-->
                 </div>
 
             </div>
@@ -380,13 +393,12 @@
             <div class=" col ">
                 <div class="card" style="margin-bottom: 0">
                     <div class="card-header bg-transparent" style="display: flex; justify-content: space-between">
-                        <h3 class="mb-0">Thống kê dạng bảng</h3>
+                        <h3 class="mb-0">Danh sách sách</h3>
                         <ul class="pagination" style="margin: 0; display: flex; justify-content: center;">
                             <!-- Nút Previous -->
                             <li class="page-item{% if books['current_page'] == 1 %} disabled {% endif %}">
                                 <a class="page-link"
-                                   href="?page={{ books['current_page'] - 1 }}{% if request.args.get('kw') %}&kw={{ request.args.get('kw') }}{% endif %}{% if request.args.get('selected_month') %}&selected_month={{ request.args.get('selected_month') }}{% endif %}"
-                                   tabindex="-1">
+                                   href="?page={{ books['current_page'] - 1 }}{% if request.args.get('gerne_id') %}&gerne_id={{ request.args.get('gerne_id') }}{% endif %}">
                                     <i class="fas fa-angle-left"></i>
                                     <span class="sr-only">Previous</span>
                                 </a>
@@ -396,7 +408,7 @@
                             {% for page in books['pages'] %}
                             <li class="page-item{% if page == books['current_page'] %} active {% endif %}">
                                 <a class="page-link"
-                                   href="?page={{ page }}{% if request.args.get('kw') %}&kw={{ request.args.get('kw') }}{% endif %}{% if request.args.get('selected_month') %}&selected_month={{ request.args.get('selected_month') }}{% endif %}">
+                                   href="?page={{ page }}{% if request.args.get('gerne_id') %}&gerne_id={{ request.args.get('gerne_id') }}{% endif %}">
                                     {{ page }}
                                 </a>
                             </li>
@@ -405,7 +417,7 @@
                             <!-- Nút Next -->
                             <li class="page-item{% if books['current_page'] == books['total_page'] %} disabled {% endif %}">
                                 <a class="page-link"
-                                   href="?page={{ books['current_page'] + 1 }}{% if request.args.get('kw') %}&kw={{ request.args.get('kw') }}{% endif %}{% if request.args.get('selected_month') %}&selected_month={{ request.args.get('selected_month') }}{% endif %}">
+                                   href="?page={{ books['current_page'] + 1 }}{% if request.args.get('gerne_id') %}&gerne_id={{ request.args.get('gerne_id') }}{% endif %}">
                                     <i class="fas fa-angle-right"></i>
                                     <span class="sr-only">Next</span>
                                 </a>
@@ -413,76 +425,138 @@
                         </ul>
 
                     </div>
+
                     <div class="card-body" style="padding-top: 0">
                         <div class="row icon-examples">
                             <div class="col-12">
                                 <div class="table-responsive"
-                                     style="max-height: 335px; overflow-y: auto; border: 1px solid #adb5bd; border-radius: 5px;">
+                                     style="max-height: 507px; overflow-y: auto; border: 1px solid #adb5bd; border-radius: 5px;">
                                     <table class="table align-items-center table-flush"
                                            style="border-collapse: collapse; width: 100%; border: 1px solid #adb5bd;">
                                         <thead class="thead-light" style="position: sticky; top: 0; z-index: 1;">
                                         <tr>
                                             <th scope="col" class="sort text-center" data-sort="budget"
                                                 style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
-                                                Ma the loai
-                                            </th>
-                                            <th scope="col" class="sort text-center" data-sort="name"
-                                                style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
-                                                Ten the loai
+                                                Cap nhat
                                             </th>
                                             <th scope="col" class="sort text-center" data-sort="budget"
                                                 style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
-                                                Doanh thu
+                                                Ma sach
+                                            </th>
+                                            <th scope="col" class="sort text-center" data-sort="name"
+                                                style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff; max-width: 200px; word-wrap: break-word;">
+                                                Ten sach
+                                            </th>
+                                            <th scope="col" class="sort text-center" data-sort="budget"
+                                                style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
+                                                The loai
+                                            </th>
+                                            <th scope="col" class="sort text-center" data-sort="budget"
+                                                style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
+                                                Tac gia
+                                            </th>
+                                            <th scope="col" class="sort text-center" data-sort="budget"
+                                                style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
+                                                NXB
+                                            </th>
+                                            <th scope="col" class="sort text-center" data-sort="budget"
+                                                style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
+                                                Gia
+                                            </th>
+                                            <th scope="col" class="sort text-center" data-sort="budget"
+                                                style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
+                                                Barcode
+                                            </th>
+                                            <th scope="col" class="sort text-center" data-sort="budget"
+                                                style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
+                                                So trang
+                                            </th>
+                                            <th scope="col" class="sort text-center" data-sort="budget"
+                                                style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
+                                                Trong luong (gr)
+                                            </th>
+                                            <th scope="col" class="sort text-center" data-sort="budget"
+                                                style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
+                                                Hinh thuc
+                                            </th>
+                                            <th scope="col" class="sort text-center" data-sort="budget"
+                                                style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
+                                                Kich thuoc bao bi
                                             </th>
                                         </tr>
                                         </thead>
                                         <tbody class="list">
                                         {% for s in stats %}
-                                        <tr>
+                                        <tr data-id="{{ s[0] }}"> <!-- Lưu book_id vào data-id của thẻ <tr> -->
+                                            <td style="border: 1px solid #adb5bd; padding: 0;">
+                                                <div class="dropdown col-5 dropdown-btn align-content-center text-right">
+                                                    <button type="button"
+                                                            class="btn btn-primary dropdown-toggle dropdown-btn-change justify-content-end"
+                                                            data-toggle="dropdown"
+                                                            style="background-color: white;color: #c92127;border: 2px solid;margin-left: 12px;">
+                                                    </button>
+                                                    <div class="dropdown-menu">
+                                                        <a class="dropdown-item edit-btn"
+                                                           href="javascript:void(0);">Sửa</a>
+                                                        <a class="dropdown-item delete-btn" href="javascript:void(0);">Xóa</a>
+                                                    </div>
+                                                </div>
+                                            </td>
                                             <th scope="row" style="border: 1px solid #adb5bd;">
                                                 <div class="media align-items-center">
                                                     <div class="media-body text-center">
-                                                        <span class="name mb-0 text-sm text-center">{{s[0]}}</span>
+                                                        <span class="name mb-0 text-sm text-center">{{ s[0] }}</span>
                                                     </div>
                                                 </div>
                                             </th>
-                                            <td class="budget text-center" style="border: 1px solid #adb5bd;">
+                                            <td class="budget text-center"
+                                                style="border: 1px solid #adb5bd; max-width: 200px; word-wrap: break-word; overflow: hidden; text-overflow: ellipsis;"
+                                                data-field="title">
                                                 {{s[1]}}
                                             </td>
-                                            <td style="border: 1px solid #adb5bd;">
-                                                        <span class="badge badge-dot mr-4 text-center w-100">
-                                                        <span class="status text-center">{{ s[2] if s[2] is not none else 0 }} VNĐ</span>
-                                                        </span>
+                                            <td class="budget text-center" style="border: 1px solid #adb5bd;"
+                                                data-field="genre">
+                                                {{s[2]}}
+                                            </td>
+                                            <td class="budget text-center" style="border: 1px solid #adb5bd;"
+                                                data-field="author">
+                                                {{s[3]}}
+                                            </td>
+                                            <td class="budget text-center" style="border: 1px solid #adb5bd;"
+                                                data-field="publisher">
+                                                {{s[4]}}
+                                            </td>
+                                            <td class="budget text-center" style="border: 1px solid #adb5bd;"
+                                                data-field="price">
+                                                {{s[5]}}
+                                            </td>
+                                            <td class="budget text-center" style="border: 1px solid #adb5bd;"
+                                                data-field="barcode">
+                                                {{s[6]}}
+                                            </td>
+                                            <td class="budget text-center" style="border: 1px solid #adb5bd;"
+                                                data-field="num_page">
+                                                {{s[7]}}
+                                            </td>
+                                            <td class="budget text-center" style="border: 1px solid #adb5bd;"
+                                                data-field="weight">
+                                                {{s[8]}}
+                                            </td>
+                                            <td class="budget text-center" style="border: 1px solid #adb5bd;"
+                                                data-field="format">
+                                                {{s[9]}}
+                                            </td>
+                                            <td class="budget text-center" style="border: 1px solid #adb5bd;"
+                                                data-field="dimension">
+                                                {{s[10]}}
                                             </td>
                                         </tr>
                                         {% endfor %}
                                         </tbody>
                                     </table>
-
-                                </div>
-                                <div class="d-flex px-5 py-4 justify-content-between "
-                                     style="padding-bottom: 5px !important">
-                                    <div class="font-weight-bolder display-4">
-                                        Tổng doanh thu:
-                                    </div>
-                                    <div class="font-weight-bolder display-4">{{ total_revenue }} VNĐ</div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="container-fluid mt--6" style="display: none;" id="statistic-chart">
-        <div class="row justify-content-center">
-            <div class=" col ">
-                <div class="card">
-                    <div class="card-header bg-transparent">
-                        <h3 class="mb-0">Thống kê dạng biểu đồ</h3>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="myChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -492,98 +566,131 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
-    // Lấy các phần tử cần thiết từ DOM
-    const statisticTableCheck = document.getElementById("statistic-table-check");
-    const statisticChartCheck = document.getElementById("statistic-chart-check");
-    const statisticTable = document.getElementById("statistic-table");
-    const statisticChart = document.getElementById("statistic-chart");
-    const ctx = document.getElementById('myChart'); // Canvas của biểu đồ
+    document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.edit-btn').forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
 
-    // Hiển thị bảng và ẩn biểu đồ khi chọn "Xem bảng"
-    statisticTableCheck.addEventListener("click", () => {
-        statisticTable.style.display = "block";
-        statisticChart.style.display = "none";
-    });
+            // Lấy dòng tr và id sách
+            const row = this.closest('tr');
+            const bookId = row.getAttribute('data-id');
 
-    // Hiển thị biểu đồ và ẩn bảng khi chọn "Xem biểu đồ"
-    statisticChartCheck.addEventListener("click", () => {
-        statisticTable.style.display = "none";
-        statisticChart.style.display = "block";
-
-        // Kiểm tra và xóa biểu đồ cũ nếu tồn tại
-        if (window.myChartInstance) {
-            window.myChartInstance.destroy();
-        }
-
-        // Dữ liệu từ full_stats (được truyền từ server cho biểu đồ)
-        let data = [];
-        let labels = [];
-
-        {% for s in full_stats %}
-        labels.push('{{ s[1] }}');  // Tên thể loại
-        // Kiểm tra nếu giá trị doanh thu là None và thay thế bằng 0
-        data.push({{ s[2] if s[2] is not none else 0 }}); // Doanh thu (thay None bằng 0)
-        {% endfor %}
-
-        // Kiểm tra dữ liệu có hợp lệ không
-        if (labels.length === 0 || data.length === 0) {
-            alert("Không có dữ liệu để hiển thị biểu đồ!");
-            return;
-        }
-
-        // Tạo biểu đồ mới
-        window.myChartInstance = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: ' Doanh thu',
-                    data: data,
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'left',  // Đặt mục lục ở bên trái
-                        align: 'top',  // Căn mục lục ở phía trên
-                        labels: {
-                            padding: 20,  // Khoảng cách giữa các mục lục
-                        }
-                    }
-                },
-                layout: {
-                    padding: {
-                        top: 20,
-                        bottom: 20,
-                        left: 20, // Khoảng cách để tạo "khoảng trống" bên trái
-                        right: 20 // Khoảng cách để tạo "khoảng trống" bên phải
-                    }
+            // Chuyển các ô dữ liệu thành input
+            row.querySelectorAll('.budget').forEach(cell => {
+                const cellContent = cell.textContent.trim();
+                const field = cell.dataset.field; // Lấy tên trường từ data-field
+                if (field) {
+                    cell.innerHTML = `<input type="text" value="${cellContent}" class="edit-input" data-field="${field}">`;
                 }
-            }
+            });
+
+            // Ẩn dropdown list khi chỉnh sửa
+            row.querySelectorAll('.dropdown-btn').forEach(dropdown => {
+                dropdown.style.display = 'none'; // Ẩn dropdown
+            });
+
+            // Thêm nút "Cập nhật"
+            const updateButton = document.createElement('button');
+            updateButton.style.marginLeft = '15px';
+            updateButton.style.padding = '12px';
+            updateButton.textContent = 'Cập nhật';
+            updateButton.className = 'update-btn btn btn-success btn-sm';
+            row.querySelector('td:first-child').appendChild(updateButton);
+
+            // Ẩn nút "Sửa"
+            this.style.display = 'none';
+
+            // Xử lý khi bấm "Cập nhật"
+            updateButton.addEventListener('click', function() {
+                const updatedData = {};
+
+                // Thu thập dữ liệu từ các ô input
+                row.querySelectorAll('.edit-input').forEach(input => {
+                    const field = input.dataset.field;
+                    updatedData[field] = input.value;
+                });
+
+                console.log('Updated data being sent:', updatedData);
+
+                // Gửi yêu cầu POST để cập nhật
+                fetch(`/admin/update-book/${bookId}`, {  // Đổi URL này
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(updatedData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Cập nhật giao diện với dữ liệu trả về
+                        const updatedFields = data.updated;
+                        for (const [field, value] of Object.entries(updatedFields)) {
+                            const cell = row.querySelector(`[data-field="${field}"]`);
+                            if (cell) {
+                                cell.innerHTML = value; // Cập nhật lại nội dung cell
+                            }
+                        }
+
+                        // Xóa nút "Cập nhật" và hiển thị lại nút "Sửa"
+                        updateButton.remove();
+                        row.querySelector('.edit-btn').style.display = 'inline-block';
+
+                        // Hiển thị lại nút dropdown list
+                        row.querySelectorAll('.dropdown-btn').forEach(dropdown => {
+                            dropdown.style.display = 'inline-block'; // Hiển thị lại dropdown
+                        });
+                    } else {
+                        alert('Cập nhật thất bại: ' + (data.message || 'Lỗi không xác định'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating book:', error);
+                    alert('Đã xảy ra lỗi trong quá trình cập nhật.');
+                });
+            });
         });
     });
-</script>
 
+    document.querySelectorAll('.delete-btn').forEach(button => {
+    button.addEventListener('click', function(event) {
+        event.preventDefault();
+
+        // Lấy dòng tr và id sách
+        const row = this.closest('tr');
+        const bookId = row.getAttribute('data-id');
+
+        // Hiển thị thông báo xác nhận trước khi xóa
+        if (confirm('Bạn có chắc chắn muốn xóa sách này không?')) {
+            // Gửi yêu cầu POST để xóa sách
+            fetch(`/admin/delete-book/${bookId}`, {  // Đảm bảo URL đúng
+                method: 'POST',
+            })
+            .then(response => response.json())  // Đảm bảo rằng response là JSON
+            .then(data => {
+                if (data.success) {
+                    // Xóa dòng tr khỏi bảng nếu thành công
+                    row.remove();
+                    alert('Sách đã được xóa thành công!');
+                } else {
+                    // Thông báo lỗi nếu xóa thất bại
+                    alert('Xóa thất bại: ' + (data.message || 'Lỗi không xác định'));
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting book:', error);
+                alert('Đã xảy ra lỗi trong quá trình xóa.');
+            });
+        }
+    });
+});
+
+});
+
+
+</script>
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
@@ -598,25 +705,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"
         integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
-<script src="{{ url_for('static', filename='js/adminStatistic.js') }}"></script>
-
-<!--<script>-->
-<!--    const statisticTableCheck = document.getElementById("statistic-table-check");-->
-<!--    const statisticChartCheck = document.getElementById("statistic-chart-check");-->
-<!--    const statisticTable = document.getElementById("statistic-table");-->
-<!--    const statisticChart = document.getElementById("statistic-chart");-->
-<!--    statisticTableCheck.addEventListener("click", (event) => {-->
-<!--        statisticTable.style.display = "block";-->
-<!--        statisticChart.style.display = "none";-->
-<!--    });-->
-
-
-<!--    statisticChartCheck.addEventListener("click", (event) => {-->
-<!--        statisticTable.style.display = "none";-->
-<!--        statisticChart.style.display = "block";-->
-<!--    });-->
-<!--});-->
-<!--</script>-->
+<script src="{{ url_for('static', filename='js/adminBookManager.js') }}"></script>
 
 </body>
 </html>
