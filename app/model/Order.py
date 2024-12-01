@@ -102,12 +102,6 @@ class OfflineOrder(Order):
         }
         return json
 
-    def to_detail_dict(self):
-        json = super().to_detail_dict()
-        json['order_type']['detail'] = {
-            'employee_name': self.employee.first_name + ' ' + self.employee.last_name
-        }
-        return json
 
 
 class OnlineOrder(Order):

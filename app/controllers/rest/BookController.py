@@ -30,6 +30,25 @@ def book():
 
     return data
 
+@book_rest_bp.route('/manage', methods=['GET'])
+def get_manage_book():
+    keyword = request.args.get('keyword')
+    min_price = request.args.get('minPrice', type=float, default=None)
+    max_price = request.args.get('maxPrice', type=float)
+    order = request.args.get('order')
+    limit = request.args.get('limit', type=int, default=app.config['PAGE_SIZE'])
+    quantity_status = request.args.get("quantityStatus", type=int)
+    gerne_id = request.args.get('gerneId', type=int)
+    page = request.args.get('page', 1, type=int)
+
+    data = searchBook(keyword, min_price, max_price, order, gerne_id, limit, page, quantity_status)
+    book_dto = []
+
+    for book in data['books']:
+        book_dto.append(book.to_dict_manage())
+    data['books'] = book_dto
+
+    return data
 
 @book_rest_bp.route('/barcode/<barcode>', methods=['GET'])
 def get_by_barcode(barcode):

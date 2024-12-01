@@ -12,6 +12,7 @@ from app.controllers.HomeController import index_bp
 from app.controllers.EmployeeController import employee_bp
 from app.controllers.OrderController import order_bp
 from app.controllers.rest.BookController import book_rest_bp
+from app.controllers.rest.ConfigAPI import config_api_bp
 from app.controllers.rest.OrderAPI import order_api_bp
 from app.controllers.rest.BookGerneController import book_gerne_rest_bp
 from app.controllers.AccountController import account_bp
@@ -23,6 +24,7 @@ app.register_blueprint(home_bp, url_prefix='/search')
 app.register_blueprint(employee_bp, url_prefix='/employee')
 app.register_blueprint(order_bp, url_prefix='/order')
 
+app.register_blueprint(config_api_bp, url_prefix='/api/v1/config')
 app.register_blueprint(book_gerne_rest_bp, url_prefix='/api/v1/bookGerne')
 app.register_blueprint(book_rest_bp, url_prefix='/api/v1/book')
 app.register_blueprint(order_api_bp, url_prefix='/api/v1/order')
@@ -40,7 +42,7 @@ app.register_blueprint(cart_bp, url_prefix='/cart')
 #     cart = find_by_cart_id(2)
 #     cart_items = cart.cart_items
 #     total_price = cart.total_price()
-# 
+#
 #     return {
 #         "cart_items": cart_items,
 #         "total_price": total_price

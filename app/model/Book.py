@@ -6,6 +6,7 @@ from app.model.ExtendedBook import ExtendedBook
 from app.model.Order import OrderDetail
 from app.model.CartItem import CartItem
 from app.model.Cart import Cart
+from app.model.FormImportDetail import FormImportDetail
 
 
 class Book(db.Model):
@@ -26,11 +27,11 @@ class Book(db.Model):
     book_gerne = db.relationship('BookGerne', back_populates='books', lazy=True)
 
     images = db.relationship('ImageOfBook', backref='book', lazy=True)
-    order_detail = relationship("OrderDetail", back_populates="book")
+    order_detail = relationship("OrderDetail", back_populates="book", lazy=True)
+    form_import_detail = relationship("FormImportDetail", back_populates="book", lazy=True)
 
     extended_books = db.relationship('ExtendedBook', back_populates='book', lazy=True)
     cart_item = db.relationship('CartItem', back_populates='book', lazy=True)
-
     def to_dict(self):
         images_dict = [image.to_dict() for image in self.images]
         extended_books_dict = [ex.to_dict() for ex in self.extended_books]

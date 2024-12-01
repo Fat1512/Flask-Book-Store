@@ -17,7 +17,7 @@ def checkout():
         book_dto.append(book.to_dict())
     books['books'] = book_dto
 
-    return render_template("employee_checkout.html", books=books)
+    return render_template("employee-checkout.html", books=books)
 
 
 @employee_bp.route("book/import")

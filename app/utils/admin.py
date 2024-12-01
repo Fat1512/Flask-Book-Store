@@ -5,6 +5,7 @@ from sqlalchemy.sql import func, or_
 from app.model.CartItem import CartItem
 from app.model.Order import Order
 from app.model.Order import OrderDetail
+from app.model.User import User
 from sqlalchemy import or_, func
 from datetime import datetime, timedelta
 
@@ -211,18 +212,88 @@ def total_revenue_per_gerne(kw=None, selected_month=None):
 #
 #     return total_revenue
 
-    return total_revenue
 
+with app.app_context():
+    stats = book_gerne_statistic()
+    print(stats)
+
+
+# def get_books_by_gerne(gerne_id=None):
+#     return db.session.query(Book.book_id, Book.title, Book.quantity) \
+#         .filter(Book.book_gerne_id == gerne_id).all()
+
+def get_books_by_gerne(gerne_id=None):
+    query = db.session.query(
+        Book.book_id,
+        Book.title,
+        BookGerne.name.label("gerne_name"),
+        Book.quantity.label("total_quantity"),
+        func.coalesce(func.sum(OrderDetail.quantity), 0).label("ordered_quantity"),
+        (Book.quantity - func.coalesce(func.sum(OrderDetail.quantity), 0)).label("remaining_quantity")
+    ).outerjoin(BookGerne, BookGerne.book_gerne_id == Book.book_gerne_id) \
+        .outerjoin(OrderDetail, OrderDetail.book_id == Book.book_id) \
+        .group_by(Book.book_id, Book.title, BookGerne.name, Book.quantity)
+
+    if gerne_id is not None:
+        query = query.filter(Book.book_gerne_id == gerne_id)
+
+    return query.all()
+
+
+with app.app_context():
+    stats = get_books_by_gerne()
+    print(stats)
+
+
+# def book_statistic_frequency():
+#     return db.session.query(
+#         Book.book_id,
+#         Book.title,
+#         BookGerne.name.label("gerne_name"),
+#         Book.quantity.label("total_quantity"),
+#         func.coalesce(func.sum(OrderDetail.quantity), 0).label("ordered_quantity"),
+#         (Book.quantity - func.coalesce(func.sum(OrderDetail.quantity), 0)).label("remaining_quantity")
+#     ) \
+#         .outerjoin(BookGerne, BookGerne.book_gerne_id == Book.book_gerne_id) \
+#         .outerjoin(OrderDetail, OrderDetail.book_id == Book.book_id) \
+#         .group_by(Book.book_id, Book.title, BookGerne.name, Book.quantity) \
+#         .all()
+
+def book_statistic_frequency(gerne_id=None):
+    query = db.session.query(
+        Book.book_id,
+        Book.title,
+        BookGerne.name.label("gerne_name"),
+        Book.quantity.label("total_quantity"),
+        func.coalesce(func.sum(OrderDetail.quantity), 0).label("ordered_quantity"),
+        (Book.quantity - func.coalesce(func.sum(OrderDetail.quantity), 0)).label("remaining_quantity")
+    ).outerjoin(BookGerne, BookGerne.book_gerne_id == Book.book_gerne_id) \
+        .outerjoin(OrderDetail, OrderDetail.book_id == Book.book_id) \
+        .group_by(Book.book_id, Book.title, BookGerne.name, Book.quantity)
+
+    if gerne_id is not None:
+        query = query.filter(Book.book_gerne_id == gerne_id)
+
+    return query.all()
+
+
+#
 # with app.app_context():
-#     stats = book_gerne_statistic()
+#     stats = book_statistic_frequency()
 #     print(stats)
 
+def account_management(user_role=None):
+    query = db.session.query(
+        User.user_id,
+        User.first_name,
+        User.last_name,
+        User.username,
+        User.email,
+        User.password,
+        User.avt_url,
+        User.user_role).group_by(User.user_id, User.first_name, User.last_name, User.username)
 
-def get_books_by_gerne(gerne_id):
-    return db.session.query(Book.book_id, Book.title, Book.quantity) \
-        .filter(Book.book_gerne_id == gerne_id).all()
+    if user_role is not None:
+        query = query.filter(User.user_role == user_role)
 
-
-# with app.app_context():
-#     stats = get_books_by_gerne(10)
-#     print(stats)
+    return query.all()

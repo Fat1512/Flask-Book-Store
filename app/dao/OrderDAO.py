@@ -16,7 +16,6 @@ def find_by_id(order_id):
     order['total_amount'] = calculate_total_order_amount(order_id)
     return order
 
-
 def update_order_status(order_id, status):
     order = Order.query.get(order_id)
     order.status = status
@@ -125,7 +124,6 @@ def create_offline_order(order_list):
 
     db.session.add(offline_order)
     db.session.flush()
-
     order_detail_list = []
     total_amount = 0
     for order_item in order_list:

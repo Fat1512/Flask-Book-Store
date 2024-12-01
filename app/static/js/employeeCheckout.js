@@ -372,7 +372,7 @@ const renderInvoice = function (order) {
                                 ${order['order_type']['id'] === 2 ? `
                                 <strong>Nhân viên thanh toán:</strong> ${order['order_type']['detail']['employee_name']}` : ''}
                                 <br>
-                                <strong>Ngày in hóa đơn:</strong> ${dateFormatter.format(new Date())} - ${timeFormatter.format(new Date())} 
+                                <strong>Ngày in hóa đơn:</strong> ${dateFormatter.format(new Date())} - ${timeFormatter.format(new Date())}
                             </p>
                         </div>
                     </div>

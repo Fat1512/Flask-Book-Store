@@ -1,4 +1,4 @@
-venv
-.idea
-*.pyc
-__init__.py
+**/venv
+**/.idea
+**/*.pyc
+**/.env
