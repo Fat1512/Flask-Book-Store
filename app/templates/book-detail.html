@@ -106,12 +106,12 @@
                 <div class="my-carousel d-flex justify-content-between">
                     {% for b in books %}
                         <a class="text-decoration-none text-black" href="/search/detail?bookId={{ b.book_id }}"
-                           style="width: 244px;">
+                           style="width: 244px">
                             <img class="card-img-top"
                                  src="{{ b.images[0].image_url }}"
                                  alt="Card image">
                             <div class="card-body p-0">
-                                <p class="card-text">{{ b.title }}</p>
+                                <p style="; min-height: 48px" class="card-text">{{ b.title }}</p>
                                 <p class="text-primary font-weight-bold mb-1">{{ b.price|currency('VND') }} <span
                                         class="discount">-10%</span></p>
                                 <p class="text-secondary text-decoration-line-through mb-1">{{ b.price|currency('VND') }}</p>
@@ -135,22 +135,36 @@
                 <div class="rating-infor d-flex align-items-center">
                     <div class="overview text-center d-flex align-items-center">
                         <div>
-                            <p class="mb-2 text-large"><span class="font-weight-bold">0</span>/5</p>
-                            <span><i class="fa-regular fa-star"></i></span>
-                            <span><i class="fa-regular fa-star"></i></span>
-                            <span><i class="fa-regular fa-star"></i></span>
-                            <span><i class="fa-regular fa-star"></i></span>
-                            <span><i class="fa-regular fa-star"></i></span>
-                            <p class="text-warning">(0 đánh giá)</p>
+                            <p class="mb-2 text-large"><span class="font-weight-bold">{{ "%.0f" % avg_rating }}</span>/5
+                            </p>
+                            {% for i in range(0,avg_rating|int) %}
+                                <i class="text-warning fa-solid fa-star"></i>
+                            {% endfor %}
+
+                            {% for i in range(0, 5 - avg_rating|int) %}
+                                <i class="fa-regular fa-star"></i>
+                            {% endfor %}
+
+                            <p length='{{ comments|length }}' class="text-warning total-comment">({{ comments|length }} đánh giá)</p>
                         </div>
-                        <div class="star-percent ml-3">
+                        <div class="star-percent position-relative ml-3">
                             {% for i in range(5,0,-1) %}
                                 <div class="d-flex align-items-center">
                                     <p class="p-0 m-0">{{ i }} sao</p>
                                     <div class="review-rating">
                                         <div style="width: 0%;"></div>
                                     </div>
-                                    <p class="p-0 m-0">0%</p>
+                                    {% if comments|length %}
+                                        <div class="review-star"
+                                             style="width: calc(200px * {{ avg_star[i-1] / comments | length }});">
+                                            <div style="width: 0%;"></div>
+                                        </div>
+                                    {% endif %}
+                                    <p class="p-0 m-0 review-star-percent">
+                                        {% if comments|length %}{{ "%.0f" % ((avg_star[i-1] / comments | length)*100) }}
+                                        {% else %}0
+                                        {% endif %}
+                                        %</p>
                                 </div>
                             {% endfor %}
                         </div>
@@ -163,9 +177,9 @@
                 </div>
                 <div class="group-comment d-flex flex-column">
                     {% for comment in comments %}
-                        <div id='{{ comment.comment_id }}' class="comment-item d-flex pt-3 pb-3">
+                        <div class="comment-item d-flex pt-3 pb-3">
                             <div class="user-infor">
-                                <p class="user-infor-name">{{ comment.user.first_name }}</p>
+                                <p class="user-infor-name">{{ comment.user.full_name }}</p>
                                 <p class="user-infor-post text-secondary">{{ comment.created_at.strftime('%d/%m/%Y') }}</p>
                             </div>
                             <div class="comment">
@@ -182,27 +196,7 @@
                                 <p class="parent-comment m-0">
                                     {{ comment.content }}
                                 </p>
-                                <div class="comment-controll">
-                                    <div class="d-flex comment-controll-group-btn">
-                                        <p class="btn btn-comment-reply">Trả lời</p>
-                                        <p class="btn btn-comment-more">Xem thêm</p>
-                                    </div>
-                                    <div class="input-text position-relative">
-                                        <textarea id="review_field" cols="5" rows="3"
-                                                  class="w-100 h-100"
-                                                  placeholder="Nhập bình luận của bạn"></textarea>
-                                        <span class="icon-send">
-                                            <i class="fa-solid fa-share"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="sub-comment">
-                                    <ul class="list-unstyled">
-
-                                    </ul>
-                                </div>
                             </div>
-
                         </div>
                     {% endfor %}
                 </div>

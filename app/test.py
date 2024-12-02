@@ -57,3 +57,48 @@ time = dt.strftime("%H:%M:%S")  # Time in 24-hour format
 # Combine into desired format
 formatted_date = f"{weekday}, {day}/{month}/{year} - {time}"
 print(formatted_date)
+
+"""
+    Already existed in database
+    case 1: {
+        id: 12,
+        phone_number: 12
+    }
+
+    Newly created 
+    case 2: {
+        id: null,
+        phone_number: 12
+    }
+
+    Null value allowed
+    case 3: {}   
+"""
+
+obj = {
+    "1": 12,
+    "b": ''
+}
+
+# if obj["1"] is not None and obj["b"] is not None:
+#     print("ok")
+
+# customer_id_ok = customer_info['id'] is not None or bool(customer_info)
+# customer_phone_ok = (customer_info['phone_number'] is not None or customer_info['phone_number'] == 0) or bool(customer_info
+#
+# if customer_id_ok and customer_phone_ok
+#
+# if not customer_id_ok and not customer_phone_ok
+#
+# if customer_phone_ok
+#
+# return null
+#
+#
+# if customer_info['id'] is not None and customer_info['phone_number'] is not None and customer_info['phone_number'] != 0:
+#
+# if bool(customer_info) or  (customer_info['id'] is None and (customer_info['phone_number'] is None or customer_info['phone_number'] == 0)):
+#
+# if customer_info['phone_number'] is None or customer_info['phone_number'] == 0: return loi
+#
+# => Xu ly so dien thoai

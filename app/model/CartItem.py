@@ -1,7 +1,6 @@
 from app import db
 from app.model.Cart import Cart
 
-
 class CartItem(db.Model):
     __tablename__ = 'cart_item'
     cart_id = db.Column(db.Integer, db.ForeignKey('cart.cart_id'), primary_key=True)
@@ -22,7 +21,6 @@ class CartItem(db.Model):
                 "poster": self.book.images[0].image_url
             },
             "quantity": self.quantity,
-
         }
 
     def get_price(self):

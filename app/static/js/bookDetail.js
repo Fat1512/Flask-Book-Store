@@ -57,24 +57,126 @@ buttonOpenFormComment.addEventListener('click', () =>
     modal.style = "display:flex"
 )
 buttonModalComment.addEventListener('click', () => {
-    data = {
-        "comment": commentForm.value,
-        'bookId': parseInt(CURRENT_URL.searchParams.get('bookId')),
-        "starCount": starCount
-    }
-    postComment(data, 'comment').then(res => {
-        if (res['status'] === 200) {
-            alert("ok")
+    try {
+        if (commentForm.value.trim() === '') throw new Error("Vui lòng nhập bình luận của bạn")
+        if (starCount === 0) throw new Error("Vui lòng chọn đánh giá sao")
+        data = {
+            "comment": commentForm.value,
+            'bookId': parseInt(CURRENT_URL.searchParams.get('bookId')),
+            "starCount": starCount + 1
         }
-    })
+        postComment(data, 'comment').then(res => {
+            if (res['status'] === 200) {
+                renderComment(res['data'])
+                handleCloseFormComment()
+            }
+        })
+    } catch (error) {
+        Toastify({
+            text: error.message,
+            duration: 3000,
+            newWindow: true,
+            close: true,
+            gravity: "top", // `top` or `bottom`
+            position: "center", // `left`, `center` or `right`
+            stopOnFocus: true, // Prevents dismissing of toast on hover
+            style: {
+                background: "var(--red)",
+            }
+        }).showToast();
+    } finally {
+        Toastify({
+            text: 'Đánh giá của bạn đã được ghi nhận',
+            duration: 3000,
+            newWindow: true,
+            close: true,
+            gravity: "top", // `top` or `bottom`
+            position: "center", // `left`, `center` or `right`
+            stopOnFocus: true, // Prevents dismissing of toast on hover
+            style: {
+                background: "#6cbf6c",
+            }
+        }).showToast();
+    }
+
 })
+const groupComment = document.querySelector('.group-comment')
+const renderComment = function (data) {
+
+    const groupOverview = document.querySelector('.overview')
+    const starPercentList = groupOverview.querySelector('.star-percent').children
+    let startArr = []
+    const totalComment = parseInt(groupOverview.querySelector('.total-comment').getAttribute('length'))
+    for (let i = 0; i < starPercentList.length; i++) {
+        startArr[starPercentList.length - i - 1] = (Math.round((starPercentList[i].querySelector('.review-star-percent')
+            .textContent.trim().split(' ')[0]) / 100 * totalComment))
+    }
+    startArr[data.star_count - 1] += 1
+
+    const avg = Math.floor(startArr.reduce(
+        (acc, currentValue, currentIndex) => acc + (currentValue * (currentIndex + 1)), 0) / (totalComment + 1))
+    console.log(data, startArr, totalComment, Math.round(avg))
+    const ratingLine = []
+    for (let i = startArr.length - 1; i >= 0; i--) {
+        ratingLine[i] = `
+            <div class="d-flex align-items-center">
+                    <p class="p-0 m-0">${i + 1} sao</p>
+                    <div class="review-rating">
+                        <div style="width: 0%;"></div>
+                    </div>           
+                        <div class="review-star"
+                             style="width: calc(200px * ${startArr[i] / (totalComment + 1)});">
+                            <div style="width: 0%;"></div>
+                        </div>
+               
+                    <p class="p-0 m-0"> 
+                            ${Math.round(startArr[i] / (totalComment + 1) * 100)}
+                        %</p>
+                </div>
+    `
+    }
+    const overview = `
+        <div>
+            <p class="mb-2 text-large"><span class="font-weight-bold">${avg}</span>/5
+            </p>
+                ${'<i class="text-warning fa-solid fa-star"></i>'.repeat(avg)}
+                ${'<i class="text-warning fa-regular fa-star"></i>'.repeat(5 - avg)}
+            <p class="text-warning">(${totalComment + 1} đánh giá)</p>
+        </div>
+        <div class="star-percent position-relative ml-3">
+            ${ratingLine.reverse().join('')}
+        </div>
+    `
+    const html = `
+     <div class="comment-item d-flex pt-3 pb-3">
+        <div class="user-infor">
+            <p class="user-infor-name">${data.user_name}</p>
+            <p class="user-infor-post text-secondary">${new Date(data.created_at).toLocaleDateString('en-GB')}</p>
+        </div>
+        <div class="comment">
+            <div class="rating">
+                   ${'<i class="text-warning fa-solid fa-star"></i>'.repeat(data.star_count)}
+                   ${'<i class="text-warning fa-regular fa-star"></i>'.repeat((5 - data.star_count))}
+            </div>
+            <p class="parent-comment m-0">
+                ${data.content}
+            </p>
+        </div>
+     </div>
+    `
+    groupComment.insertAdjacentHTML('beforebegin', html)
+    groupOverview.innerHTML = overview
+}
 const buttonCloseFormComment = document.querySelectorAll('.close-form')
+
+function handleCloseFormComment() {
+    modal.style = "display:none"
+    commentForm.value = ''
+    renderStar(-1)
+}
+
 buttonCloseFormComment.forEach(
-    el => el.addEventListener('click', () => {
-        modal.style = "display:none"
-        commentForm.value = ''
-        renderStar(-1)
-    }))
+    el => el.addEventListener('click', () => handleCloseFormComment()))
 
 const ratingForm = document.querySelector(".rating-form")
 const starElements = ratingForm.querySelectorAll(".fa-regular.fa-star")
@@ -106,33 +208,3 @@ const renderStar = function (index) {
     }
     ratingForm.innerHTML = html.join('')
 }
-const groupComment = document.querySelector('.group-comment')
-const commentList = document.querySelectorAll('.comment-item')
-commentList.forEach(el => {
-    const buttonReply = el.querySelector('.btn-comment-reply')
-    const buttonShowMore = el.querySelector('.btn-comment-more')
-    const groupButton = el.querySelector('.comment-controll-group-btn')
-    const buttonSend = el.querySelector('.icon-send')
-    const subComment = el.querySelector(".sub-comment")
-    toggle = false
-    buttonReply.addEventListener('click', () => {
-        if (!toggle)
-            el.querySelector('.input-text').style = 'display:block'
-        else {
-            el.querySelector('.input-text').style = 'display:none'
-            el.querySelector("#review_field").value = ''
-        }
-        toggle = !toggle
-    })
-    buttonSend.addEventListener('click', () => {
-        data = {
-            "parentId": parseInt(el.id),
-            'comment': el.querySelector("#review_field").value
-        }
-        postComment(data, "reply").then(res => {
-            if (res['status'] === 200) {
-
-            }
-        })
-    })
-})

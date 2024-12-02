@@ -14,13 +14,17 @@ def find_by_cart_id(cart_id):
 
 def update_cart(request):
     cart = Cart.query.filter(Cart.cart_id == request.get('cartId')).first()
+    respone = None
     for cart_item in request.get('cartItems'):
         for item in cart.cart_items:
             if item.book_id == int(cart_item.get('bookId')):
                 if item.book.quantity < int(cart_item.get('quantity')):
-                    return False
+                    return None
                 item.quantity = int(cart_item.get('quantity'))
+                respone = item
+
     db.session.commit()
+    return respone
 
 
 def delete_cart_item(book_id):
@@ -28,8 +32,9 @@ def delete_cart_item(book_id):
     for item in cart.cart_items:
         if item.book_id == book_id:
             cart.cart_items.remove(item)
-
     db.session.commit()
+
+    return cart
 
 
 def add_cart_item(book_id):

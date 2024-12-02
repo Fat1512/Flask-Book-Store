@@ -1,3 +1,4 @@
+from datetime import datetime
 from email.policy import default
 from re import findall
 
@@ -49,7 +50,22 @@ def get_detail():
         "Hình thức": book.format,
     }
     comments = book.comments
+    comments = sorted(comments, key=lambda x: x.created_at, reverse=True)
+
     for ex in book.extended_books:
         detail_book[ex.attribute.attribute_name] = ex.value
-    return render_template("book-detail.html", book=book, detail_book=detail_book,
-                           books=books, comments=comments)
+
+    avg_star = [0, 0, 0, 0, 0]
+    avg_rating = 0
+    if len(comments):
+        for comment in comments:
+            avg_rating += comment.star_count
+            avg_star[comment.star_count - 1] += 1
+        avg_rating = avg_rating / len(comments)
+
+    return render_template("book-detail.html", book=book
+                           , detail_book=detail_book
+                           , books=books
+                           , comments=comments
+                           , avg_rating=avg_rating
+                           , avg_star=avg_star)

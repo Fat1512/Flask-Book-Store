@@ -1,17 +1,13 @@
-const bookList = document.querySelector(".book-list");
-const modal = document.querySelector(".modal");
-const modalBody = document.querySelector(".modal-body");
-const overlay = document.querySelector(".overlay");
 
-const openModalBtn = document.querySelector(".open-modal-btn");
-const allCheckBox = document.querySelector(".all-check-box");
-const statusType = document.querySelector(".status-type");
-const addBookBtn = document.querySelector(".add-book-btn");
-const importList = document.querySelector(".import-list");
-const importContainer = document.querySelector(".import-container");
+let currentCheckedBookState = {};
+let currentItemState = {};
 
-const deleteBtn = document.querySelector(".delete-all-btn");
-const exportBtn = document.querySelector(".export-btn");
+const url = new URL(window.location);
+const BOOK_MANAGE_API = "/api/v1/book/manage"
+const CONFIG_API = "/api/v1/config"
+const BOOK_API = "/api/v1/book"
+let config;
+
 
 const dateFormatter = new Intl.DateTimeFormat('vi-VN', {
     weekday: 'short', // e.g., Thứ Sáu
@@ -28,23 +24,93 @@ const timeFormatter = new Intl.DateTimeFormat('vi-VN', {
     // timeZoneName: 'short' // e.g., GMT
 });
 
+const modal = document.querySelector(".modal");
+const modalExport = document.querySelector(".modal-export");
+const modalBook = document.querySelector(".modal-book");
+const overlay = document.querySelector(".overlay");
 
-let currentCheckedBookState = {};
-let currentItemState = {};
+const openModalBookBtn = document.querySelector(".open-modal-book-btn");
+const addBookBtn = document.querySelector(".add-book-btn");
+const deleteBtn = document.querySelector(".delete-all-btn");
+const exportBtn = document.querySelector(".export-btn");
 
-const url = new URL(window.location);
-const BOOK_API = "/api/v1/book/manage"
-const CONFIG_API = "/api/v1/config"
-let config;
+const allCheckBox = document.querySelector(".all-check-box");
+const statusType = document.querySelector(".status-type");
+const importList = document.querySelector(".import-list");
+const importContainer = document.querySelector(".import-container");
+const bookList = document.querySelector(".book-list");
 
+const searchDropdownMenu = document.querySelector(".search-dropdown-menu");
+const searchInput = document.querySelector(".search-input");
+//===============================================================API===============================================================
+
+const fetchBook = async function(params) {
+    try {
+        const res = await fetch(`${BOOK_MANAGE_API}${params}`)
+        if(!res.ok) throw new Error("Cannot fetch books");
+        return await res.json();
+    } catch(err) {
+        throw err;
+    }
+}
+
+const fetchBookById = async function(id) {
+    try {
+        const res = await fetch(`${BOOK_API}/${id}/manage`)
+        if(!res.ok) throw new Error("Cannot fetch book");
+        return await res.json();
+    } catch(err) {
+        throw err;
+    }
+}
+
+const postFormImport = async function() {
+    try {
+        const res = await fetch(`${BOOK_API}/import`, {
+            method: "POST",
+            body: JSON.stringify(Object.values(currentItemState)),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if(!res.ok) throw new Error("Can't create import form");
+        return await res.json();
+    } catch(err) {
+        throw err;
+    }
+}
+
+//===============================================================FUNCTION===============================================================
 const openModal = function () {
     modal.classList.add("d-flex");
     overlay.classList.add("d-flex");
+    modal.classList.remove("d-none");
+    overlay.classList.remove("d-none");
 }
 
 const closeModal = function () {
     modal.classList.remove("d-flex");
     overlay.classList.remove("d-flex");
+    modal.classList.add("d-none");
+    overlay.classList.add("d-none");
+
+    modalBook.classList.add("d-none");
+    modalBook.classList.remove("d-flex");
+
+    modalExport.classList.add("d-none");
+    modalExport.classList.remove("d-flex");
+}
+
+const openBookModal = function() {
+    openModal();
+    modalBook.classList.add("d-flex");
+    modalBook.classList.remove("d-none");
+}
+
+const openExportModal = function() {
+    openModal();
+    modalExport.classList.add("d-flex");
+    modalExport.classList.remove("d-none");
 }
 
 const removeAllCheckedBox = function() {
@@ -53,11 +119,115 @@ const removeAllCheckedBox = function() {
     allCheckBox.checked = false;
 }
 
+const extractBookItemData = function (bookItem) {
+    const bookId = +bookItem.querySelector(".book-item-id").textContent.trim();
+    const title = bookItem.querySelector(".book-item-title").textContent.trim();
+    const gerne = bookItem.querySelector(".book-item-gerne").textContent.trim();
+    const author = bookItem.querySelector(".book-item-author").textContent.trim();
+    const img = bookItem.querySelector(".book-item-img").getAttribute("src");
+    const stockQuantity = +bookItem.querySelector(".book-item-quantity").textContent.trim();
+
+    return {
+        bookId,
+        img,
+        title,
+        stockQuantity,
+        gerne,
+        author,
+    };
+};
+
+const renewBookList = async function() {
+    const data = await fetchBook(url.search);
+    renderBookItems(data['books']);
+    url.searchParams.delete("quantityStatus");
+}
+//===============================================================EVENT===============================================================
+
+
+let currentSelectedSearchType;
+searchDropdownMenu.addEventListener("click", function(e) {
+    searchInput.placeholder = e.target.textContent;
+    const id = +e.target.getAttribute("id");
+    currentSelectedSearchType = id;
+})
+
+searchInput.addEventListener("keypress", async function(e) {
+    if(e.key !== "Enter") return;
+
+    try {
+        let data;
+        if(currentSelectedSearchType === 1) { //Fetch by title
+            data = await fetchBook(`?keyword=${searchInput.value}`);
+        }
+        else { //Fetch by id
+            if (searchInput.value.trim() === '' || searchInput.value.trim() === null) {
+                data = await fetchBook(`?keyword=${searchInput.value}`);
+            }
+            else data = {'books': [await fetchBookById(+searchInput.value)]};
+        }
+        renderBookItems(data['books']);
+    } catch(err) {
+        throw(err.message);
+    }
+})
+
+window.addEventListener("load", async function() {
+    try {
+        const res = await fetch(`${CONFIG_API}`);
+        if(!res.ok) throw new Error("cannot fetch config");
+        config = await res.json();
+    } catch(err) {
+        alert(err.message);
+    }
+})
+
+exportBtn.addEventListener("click", async function() {
+    if(Object.keys(currentItemState).length === 0) {
+        // renderToast("Phải có ít nhất 1 sản phẩm", "center", "orange");
+        return;
+    }
+    try {
+        const formImport = await postFormImport();
+        openExportModal();
+        renderImportedForm(formImport);
+        resetState();
+        const {jsPDF} = window.jspdf;
+        html2canvas(document.querySelector("#invoice"), {
+            useCORS: true,
+            allowTaint: false,
+            scale: 2 // Improves image quality
+        }).then(canvas => {
+            const imgData = canvas.toDataURL("image/png");
+            const pdf = new jsPDF("p", "mm", "a4");
+            // Add image to PDF
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+            pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+
+            pdf.save(`form_import_${document.querySelector('[form-import-id]').getAttribute("form-import-id")}.pdf`);
+        });
+
+    } catch(err) {
+        alert(err.message);
+    } finally {
+        await renewBookList();
+    }
+});
+
+deleteBtn.addEventListener("click", () => {
+    currentItemState = {};
+    renderImportedItems();
+});
+
 overlay.addEventListener("click", () => {
     closeModal();
     removeAllCheckedBox();
 });
-openModalBtn.addEventListener("click", openModal);
+
+openModalBookBtn.addEventListener("click", openBookModal);
 
 bookList.addEventListener("click", function (e) {
     const bookItem = e.target.closest(".book-item");
@@ -96,10 +266,10 @@ addBookBtn.addEventListener("click", function() {
             currentItemState[item[0]]['quantity'] += 1;
         } else {
             currentItemState[item[0]] = item[1];
+            currentItemState[item[0]]['stockQuantity'] = item[1]['stockQuantity'];
             currentItemState[item[0]]['quantity'] = config['min_restock_qty'];
         }
     });
-
     renderImportedItems();
     removeAllCheckedBox();
     closeModal();
@@ -125,7 +295,7 @@ statusType.addEventListener("click", async function(e)  {
     if(isToggle)
         url.searchParams.set("quantityStatus", toggleId);
     try {
-        const data = await fetchBook();
+        const data = await fetchBook(url.search);
         renderBookItems(data['books']);
     } catch (err) {
         alert(err.message);
@@ -151,7 +321,7 @@ importContainer.addEventListener("click", function(e) {
     }
     if (decrementBtn) {
         const input = decrementBtn.nextElementSibling;
-        currentItemState[+id]['quantity'] = input.value > 1 ? +input.value - 1 : input.value;
+        currentItemState[+id]['quantity'] = input.value > config['min_restock_qty'] ? +input.value - 1 : +input.value;
         isTriggered ||= true;
     }
     isTriggered && renderImportedItems();
@@ -164,20 +334,11 @@ importContainer.addEventListener("change", function(e) {
     renderImportedItems()
 })
 
-const extractBookItemData = function (bookItem) {
-    const bookId = +bookItem.querySelector(".book-item-id").textContent.trim();
-    const title = bookItem.querySelector(".book-item-title").textContent.trim();
-    const gerne = bookItem.querySelector(".book-item-gerne").textContent.trim();
-    const author = bookItem.querySelector(".book-item-author").textContent.trim();
-    const img = bookItem.querySelector(".book-item-img").getAttribute("src");
-    return {
-        bookId,
-        img,
-        title,
-        gerne,
-        author,
-    };
-};
+
+const resetState = function () {
+    currentItemState = {};
+    renderImportedItems();
+}
 
 const renderImportedItems = function() {
     importList.innerHTML = '';
@@ -223,6 +384,11 @@ const renderImportedItems = function() {
                                class="text-center" value="${item[1]['quantity']}">
                         <span class="cursor-pointer increment-qty-btn">+</span>
                     </div>
+                </div>
+            </td>
+            <td>
+                <div class="product-qty-status text-xs ${item[1]['stockQuantity'] < config['min_restock_level'] ? 'product-qty-status-shortage' : '' } text-center py-1 cursor-pointer">
+                        ${item[1]['stockQuantity'] < config['min_restock_level'] ? 'Cần nhập thêm' : 'Đủ số lượng' }
                 </div>
             </td>
             <td class="text-right remove-import-item-btn">
@@ -296,14 +462,14 @@ const renderBookItems = function(books) {
 
 const renderImportedForm = function(form) {
     const html = `
-    <div id="invoice" class="mt-4 w-100">
+    <div id="invoice" class="mt-4 w-100" form-import-id="${form['form_import_id']}">
         <div class="card">
             <div class="card-header text-center">
                 <img class="image-fluid w-25"
                      src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/fahasa-logo.png" alt="">
             </div>
             <div class="card-header invoice-header text-center">
-                <p class="mb-0 font-weight-600">Mã phiếu: ${form['form_id']} &nbsp; | &nbsp; Ngày nhập: ${dateFormatter.format(new Date(form['created_at']))} &nbsp; |
+                <p class="mb-0 font-weight-600">Mã phiếu: ${form['form_import_id']} &nbsp; | &nbsp; Ngày nhập: ${dateFormatter.format(new Date(form['created_at']))} &nbsp; |
                     &nbsp; Hotline:
                     19008386 &nbsp;</p>
             </div>
@@ -318,9 +484,7 @@ const renderImportedForm = function(form) {
                             <strong class="font-weight-600">Ngày giờ nhập:</strong> ${timeFormatter.format(new Date(form['created_at']))} ${dateFormatter.format(new Date(form['created_at']))}
                         </p>
                     </div>
-                    <div class="col-md-6 text-right">
-
-                    </div>
+                    <div class="col-md-6 text-right"></div>
                     <div class="table-responsive">
                         <table class="table table-bordered">
                             <thead>
@@ -335,15 +499,15 @@ const renderImportedForm = function(form) {
                             <tbody>
                             ${form['detail'].map(book => `
                             <tr class="text-center">
-                                <td>${book['book_id']}</td>
-                                <td>${book['name']}</td>
-                                <td>${book['gerne']['name']}</td>
-                                <td>${book['author']}</td>
+                                <td>${book['book_detail']['book_id']}</td>
+                                <td class="wrap-text text-left">${book['book_detail']['title']}</td>
+                                <td>${book['book_detail']['gerne']['name']}</td>
+                                <td>${book['book_detail']['author']}</td>
                                 <td>${book['quantity']}</td>
-                            </tr>`)};
+                            </tr>`).join('')}
                             <tr class="text-right">
                                 <td colspan="4"><strong>Tổng số lượng:</strong></td>
-                                <td class="text-center">${form['total']}</td>
+                                <td class="text-center">${form['total_quantity']}</td>
                             </tr>
                             </tbody>
                         </table>
@@ -356,32 +520,12 @@ const renderImportedForm = function(form) {
                                     <div class="pt-5">${form['employee']['name']}</div>
                                 </div>
                             </div>
-                            <div class="col-md-6 text-right">
-                                <button id="downloadPDF" class="btn text-white btn-print">Print</button>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>`;
+    modalExport.innerHTML = '';
+    modalExport.insertAdjacentHTML("beforeend", html);
 }
-
-const fetchBook = async function() {
-    try {
-        const res = await fetch(`${BOOK_API}${url.search}`)
-        if(!res.ok) throw new Error("Cannot fetch books");
-        return await res.json();
-    } catch(err) {
-        throw err;
-    }
-}
-window.addEventListener("load", async function() {
-    try {
-        const res = await fetch(`${CONFIG_API}`);
-        if(!res.ok) throw new Error("cannot fetch config");
-        config = await res.json();
-    } catch(err) {
-        alert(err.message);
-    }
-})

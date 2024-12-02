@@ -90,8 +90,10 @@
     right: 0;
     box-shadow: 0px 0px 4px 2px rgba(0, 0, 0, 0.1);
     display: none;
+    min-width: 280px;
 }
 
+.
 .menu-cart-item::after {
     content: "";
     width: 34%;
@@ -111,6 +113,15 @@
 .sub-cart {
     max-height: 368px;
     overflow-y: auto;
+}
+
+.cart-item-null {
+    background: url(https://cdn0.fahasa.com/skin//frontend/ma_vanese/fahasa/images/checkout_cart/ico_emptycart.svg) no-repeat center center;
+    -webkit-background-size: contain;
+    -moz-background-size: contain;
+    -o-background-size: contain;
+    background-size: contain;
+    height: 80px;
 }
 
 .menu-cart-item-header {

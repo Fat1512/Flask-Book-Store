@@ -1,6 +1,5 @@
 import app.controllers.AccountController
 from app.controllers.CartController import cart_bp
-from app.controllers.rest.AccountAPI import account_rest_bp
 from app.controllers.rest.CartAPI import cart_rest_bp
 from app.controllers.rest.PaymentAPI import payment_rest_bp
 from app.dao import UserDao
@@ -31,7 +30,6 @@ app.register_blueprint(book_rest_bp, url_prefix='/api/v1/book')
 app.register_blueprint(order_api_bp, url_prefix='/api/v1/order')
 app.register_blueprint(cart_rest_bp, url_prefix='/api/v1/cart')
 app.register_blueprint(payment_rest_bp, url_prefix='/api/v1/payment')
-app.register_blueprint(account_rest_bp,url_prefix='/api/v1/account')
 
 app.register_blueprint(index_bp, url_prefix='/')
 app.register_blueprint(account_bp, url_prefix='/account')
@@ -39,7 +37,7 @@ app.register_blueprint(admin_bp, url_prefix='/admin')
 app.register_blueprint(cart_bp, url_prefix='/cart')
 
 
-@app.context_processor
+# @app.context_processor
 def cart_context():
     cart = find_by_cart_id(2)
     cart_items = cart.cart_items

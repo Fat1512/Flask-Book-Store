@@ -134,6 +134,7 @@ def create_offline_order(order_list):
 
     db.session.add(offline_order)
     db.session.flush()
+
     order_detail_list = []
     total_amount = 0
     for order_item in order_list:
@@ -153,8 +154,7 @@ def create_offline_order(order_list):
 
 
 def calculate_total_order_amount(order_id):
-    total_amount = db.session.query(func.sum(OrderDetail.quantity * OrderDetail.price)).filter(
-        OrderDetail.order_id == order_id).first()[0]
+    total_amount = db.session.query(func.sum(OrderDetail.quantity * OrderDetail.price)).filter(OrderDetail.order_id == order_id).first()[0]
     shipping_fee = db.session.query(OnlineOrder.shipping_fee).filter(OnlineOrder.order_id == order_id).first()
     total_amount = total_amount + shipping_fee[0] if shipping_fee is not None else total_amount
     return total_amount

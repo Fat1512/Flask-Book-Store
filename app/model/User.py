@@ -5,6 +5,7 @@ from enum import Enum as RoleEnum
 from datetime import datetime
 import hashlib
 from app.model.Cart import Cart
+from app.model.Account import Account
 
 
 class UserRole(RoleEnum):
@@ -18,8 +19,6 @@ class User(db.Model):
     user_id = Column(Integer, primary_key=True, autoincrement=True)
     first_name = Column(String(20), nullable=False)
     last_name = Column(String(50), nullable=False)
-    username = Column(String(120), nullable=False, unique=True)
-    password = Column(String(120), nullable=False)
     sex = Column(Boolean, nullable=False)
     email = Column(String(50), nullable=False, unique=True)
     phone_number = Column(String(10))
@@ -30,11 +29,12 @@ class User(db.Model):
     last_access = Column(DateTime, default=datetime.utcnow)
     user_role = Column(Enum(UserRole), default=UserRole.USER)
     address = relationship('Address', backref='user', lazy=True)
-    order = relationship('Order', backref='user', lazy=True, foreign_keys='Order.user_id')
+    # order = relationship('Order', backref='user', lazy=True, foreign_keys='Order.user_id')
 
-    offline_orders = relationship("OfflineOrder", back_populates="employee", lazy=True,
-                                  foreign_keys='OfflineOrder.employee_id')
-
+    offline_orders = relationship("OfflineOrder", back_populates="employee", foreign_keys="[OfflineOrder.employee_id]", lazy=True)
+    orders = relationship("Order", back_populates="customer", enable_typechecks=False, foreign_keys="[Order.customer_id]", lazy=True)
+    account = relationship('Account', back_populates='user', uselist=False)
+    # online_orders = relationship("OnlineOrder", back_populates="customer", lazy=True)
     form_import = relationship("FormImport", back_populates="employee", lazy=True)
     cart = relationship("Cart", back_populates="user")
 

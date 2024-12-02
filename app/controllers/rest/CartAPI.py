@@ -20,19 +20,22 @@ def get_cart():
 @cart_rest_bp.route('/', methods=['PUT'])
 def update_cart():
     request_data = request.json
-    update(request_data)
+    cart_item = update(request_data)
     return jsonify({
         "status": 200,
-        "message": "Update cart successfully"
+        "message": "Update cart successfully",
+        'data': cart_item.to_dict()
     })
 
 
 @cart_rest_bp.route('/<int:bookId>', methods=['DELETE'])
 def delete_cart(bookId):
-    delete_cart_item(bookId)
+    cart = delete_cart_item(bookId)
+    print('test', cart)
     return jsonify({
         "status": 200,
-        "message": "Delete cart item successfully"
+        "message": "Delete cart item successfully",
+        'currentItem': len(cart.cart_items) if len(cart.cart_items) else 0
     })
 
 

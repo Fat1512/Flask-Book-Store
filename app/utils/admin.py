@@ -1,13 +1,13 @@
 from app import db, app
 from app.model.BookGerne import BookGerne
 from app.model.Book import Book
-from sqlalchemy.sql import func, or_
-from app.model.CartItem import CartItem
 from app.model.Order import Order
 from app.model.Order import OrderDetail
 from app.model.User import User
+from app.model.Account import Account
+from app.model.Publisher import Publisher
 from sqlalchemy import or_, func
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 
 def book_gerne_statistic(kw=None, selected_month=None):
@@ -51,7 +51,9 @@ def book_gerne_statistic(kw=None, selected_month=None):
     return g.all()
 
 
-from datetime import datetime, date, timedelta
+# with app.app_context():
+#     stats = book_gerne_statistic()
+#     print(stats)
 
 
 def total_revenue_per_gerne(kw=None, selected_month=None):
@@ -213,9 +215,9 @@ def total_revenue_per_gerne(kw=None, selected_month=None):
 #     return total_revenue
 
 
-with app.app_context():
-    stats = book_gerne_statistic()
-    print(stats)
+# with app.app_context():
+#     stats = book_gerne_statistic()
+#     print(stats)
 
 
 # def get_books_by_gerne(gerne_id=None):
@@ -240,9 +242,9 @@ def get_books_by_gerne(gerne_id=None):
     return query.all()
 
 
-with app.app_context():
-    stats = get_books_by_gerne()
-    print(stats)
+# with app.app_context():
+#     stats = get_books_by_gerne()
+#     print(stats)
 
 
 # def book_statistic_frequency():
@@ -282,18 +284,51 @@ def book_statistic_frequency(gerne_id=None):
 #     stats = book_statistic_frequency()
 #     print(stats)
 
+
 def account_management(user_role=None):
-    query = db.session.query(
+    query = (db.session.query(
         User.user_id,
         User.first_name,
         User.last_name,
-        User.username,
+        Account.username,
         User.email,
-        User.password,
-        User.avt_url,
-        User.user_role).group_by(User.user_id, User.first_name, User.last_name, User.username)
+        User.user_role).join(Account, Account.user_id == User.user_id).group_by(User.user_id, User.first_name,
+                                                                                User.last_name))
 
     if user_role is not None:
         query = query.filter(User.user_role == user_role)
 
     return query.all()
+
+
+# with app.app_context():
+#     stats = account_management()
+#     print(stats)
+
+
+def book_management(gerne_id=None):
+    query = db.session.query(
+        Book.book_id,
+        Book.title,
+        BookGerne.name.label("gerne_name"),
+        Book.author,
+        Publisher.publisher_name.label("publisher_name"),
+        Book.price,
+        Book.barcode,
+        Book.num_page,
+        Book.weight,
+        Book.format,
+        Book.dimension,
+    ).outerjoin(BookGerne, BookGerne.book_gerne_id == Book.book_gerne_id) \
+        .outerjoin(Publisher, Publisher.publisher_id == Book.publisher_id) \
+        .group_by(Book.book_id, Book.title, BookGerne.name)
+
+    if gerne_id is not None:
+        query = query.filter(Book.book_gerne_id == gerne_id)
+
+    return query.all()
+
+
+# with app.app_context():
+#     stats = book_management()
+#     print(stats)

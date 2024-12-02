@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 
-from app.dao.CommentDAO import create_comment, reply_comment
+from app.dao.CommentDAO import create_comment
 from app.dao.OrderDAO import find_add_by_user_id
 
 account_rest_bp = Blueprint('account_rest', __name__)
@@ -19,22 +19,13 @@ def get_purchase():
     })
 
 
-@account_rest_bp.route('/reply', methods=['POST'])
-def reply():
-    data = request.get_json()
-    reply_comment(data)
-    return jsonify({
-        "msg": "success",
-        "status": 200,
-    })
-
-
 @account_rest_bp.route('/comment', methods=['POST'])
 def post_comment():
     data = request.json
 
-    create_comment(data)
+    comment = create_comment(data)
     return jsonify({
         "msg": "success",
         "status": 200,
+        'data': comment.to_dict()
     })

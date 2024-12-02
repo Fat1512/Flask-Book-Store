@@ -14,15 +14,24 @@ class FormImport(db.Model):
     employee = db.relationship("User", back_populates="form_import", lazy=True)
 
     def to_dict(self):
-        return {
+        json = {
             'form_import_id': self.form_import_id,
             'created_at': self.created_at,
             'employee': {
-                'id': self.employee.id,
-                'name': self.employee.full_name()
+                'id': self.employee.user_id,
+                'name': self.employee.full_name
             },
-            'detail': [detail.to_dict() for detail in self.form_import_detail]
+            'detail': []
         }
+        total_quantity = 0
+        for detail in self.form_import_detail:
+            total_quantity = total_quantity + detail.to_dict()['quantity']
+            json['detail'].append(detail.to_dict())
+        json['total_quantity'] = total_quantity
+        return json
+
+
+
 
 # {
 #     'form_id': 12,
@@ -31,7 +40,7 @@ class FormImport(db.Model):
 #         'id': 12,
 #         'name': 12
 #     },
-#     'detail': [
+#     'book_detail': [
 #         {
 #             'book_id': 12,
 #             'quantity': 12
