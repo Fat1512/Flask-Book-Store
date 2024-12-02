@@ -10,7 +10,7 @@ from app.model.BookGerne import BookGerne
 def searchBook(keyword=None, min_price=None, max_price=None,
                order=None, gerne_id=None, limit=None, page=None, quantity_status=None):
     query = Book.query
-    if (keyword):
+    if keyword:
         query = query.filter(Book.title.contains(keyword))
     if max_price:
         query = query.filter(Book.price.between(min_price, max_price))

@@ -1,11 +1,20 @@
 from app.model.FormImport import FormImport
 from app.model.FormImportDetail import FormImportDetail
 from app import app, db
+from app.dao.BookDAO import increase_book_quantity
 from datetime import datetime
 
 
-def get_form_import():
-    return FormImport.query.all()
+def get_form_imports():
+
+
+    FormImport.query.all()
+    return {}
+    # return {
+    #     'form_imports': form_imports,
+    #     'total_page': total_page,
+    #     'current_page': page
+    # }
 
 
 def create_form_import(form_import_items):
@@ -18,6 +27,7 @@ def create_form_import(form_import_items):
         quantity = form_import_item['quantity']
         form_import_detail = FormImportDetail(book_id=book_id, form_import_id=form_import.form_import_id,
                                               quantity=quantity)
+        increase_book_quantity(book_id, quantity)
         form_import.form_import_detail.append(form_import_detail)
 
     db.session.commit()

@@ -42,7 +42,6 @@ def offline_order():
     customer_phone_ok = bool(customer_info) and customer_info['phone_number'] is not None and customer_info[
         'phone_number'] != "" and customer_info['phone_number'] != 0
 
-
     if customer_id_ok and customer_phone_ok:
         user = find_by_customer_id_phone_number(int(customer_info['id']), str(customer_info['phone_number']))
     elif not customer_id_ok and not customer_phone_ok:
@@ -75,13 +74,13 @@ def online_order():
     })
 
 
-
 @order_api_bp.route("/<order_id>/confirm", methods=['GET'])
 def confirm_order(order_id):
     update_order_status(order_id, OrderStatus.CHO_GIAO_HANG)
     return {
         "ok": "ok"
     }
+
 
 @order_api_bp.route("/<order_id>/detail", methods=['GET', 'POST'])
 def find(order_id):
@@ -91,5 +90,5 @@ def find(order_id):
 
 @order_api_bp.route("/test/<int:order_id>", methods=["GET"])
 def test_order(order_id):
-    return get_form_import
+    return get_form_imports()
     # calculate_total_order_amount(order_id)

@@ -7,8 +7,10 @@ from app.model import Book, User, Address
 from enum import Enum as PythonEnum
 
 
-# TYPE = 1 => OnlineOrder
-# TYPE = 2 => OfflineOrder
+# TYPE = 1 => DAT_SHIP_VE_NHA
+# TYPE = 2 => DAT_DEN_LAY
+# TYPE = 3 => MUA_TAI_CHO
+
 
 class OrderStatus(PythonEnum):
     DANG_XU_LY = 1

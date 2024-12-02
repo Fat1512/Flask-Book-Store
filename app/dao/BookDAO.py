@@ -1,5 +1,5 @@
 from app.model.Book import Book
-from app import app
+from app import app, db
 from app.model.BookGerne import BookGerne
 from app.model.Book import Book
 import math
@@ -7,6 +7,12 @@ import math
 
 def find_by_id(id):
     return Book.query.get(id)
+
+
+def increase_book_quantity(id, quantity):
+    book = Book.query.get(id)
+    book.quantity = book.quantity + quantity
+    db.session.commit()
 
 
 def find_by_barcode(barcode):
@@ -21,6 +27,7 @@ def find_by_gerne(gerne_id):
     query = query.join(BookGerne)
     query = query.filter(BookGerne.lft.between(gerne.lft, gerne.rgt))
     return query.all()
+
 
 def find_all(page=1):
     return Book.query.all()
@@ -44,6 +51,7 @@ def paginate_book(page=1,limit=app.config['PAGE_SIZE']):
 
 def find_by_barcode(barcode):
     return Book.query.filter(Book.barcode.__eq__(barcode))
+
 
 
 def countBook():

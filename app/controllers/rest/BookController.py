@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 from app import app
-from app.dao.FormImportDAO import get_form_import, create_form_import
+from app.dao.FormImportDAO import get_form_imports, create_form_import
 from app.dao.BookDAO import find_by_id, find_by_barcode
 from app.dao.CartDao import find_by_user_id
 from app.dao.SearchDAO import searchBook
@@ -11,6 +11,7 @@ book_rest_bp = Blueprint('book_rest', __name__)
 @book_rest_bp.route('/test')
 def get_books():
     return find_by_id(54).to_dict()
+
 
 
 @book_rest_bp.route('/', methods=['GET'])
@@ -32,7 +33,7 @@ def book():
     return data
 
 @book_rest_bp.route('/manage', methods=['GET'])
-def get_manage_book():
+def get_manage_books():
     keyword = request.args.get('keyword')
     min_price = request.args.get('minPrice', type=float, default=None)
     max_price = request.args.get('maxPrice', type=float)
@@ -52,6 +53,13 @@ def get_manage_book():
     return data
 
 
+@book_rest_bp.route('/<book_id>/manage', methods=['GET'])
+def get_manage_book(book_id):
+    book = find_by_id(book_id)
+    if book is None:
+        return {}
+    return book.to_dict_manage()
+
 @book_rest_bp.route('/barcode/<barcode>', methods=['GET'])
 def get_by_barcode(barcode):
     barcode = find_by_barcode(barcode).first().to_dict()
@@ -62,7 +70,7 @@ def get_by_barcode(barcode):
 
 @book_rest_bp.route('/test/import', methods=['GET'])
 def test_import():
-    return [formImport.to_dict() for formImport in get_form_import()]
+    return [formImport.to_dict() for formImport in get_form_imports()]
 
 
 @book_rest_bp.route('/import', methods=['POST'])

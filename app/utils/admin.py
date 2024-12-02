@@ -51,9 +51,9 @@ def book_gerne_statistic(kw=None, selected_month=None):
     return g.all()
 
 
-with app.app_context():
-    stats = book_gerne_statistic()
-    print(stats)
+# with app.app_context():
+#     stats = book_gerne_statistic()
+#     print(stats)
 
 
 def total_revenue_per_gerne(kw=None, selected_month=None):
@@ -301,9 +301,9 @@ def account_management(user_role=None):
     return query.all()
 
 
-with app.app_context():
-    stats = account_management()
-    print(stats)
+# with app.app_context():
+#     stats = account_management()
+#     print(stats)
 
 
 def book_management(gerne_id=None):
@@ -329,6 +329,6 @@ def book_management(gerne_id=None):
     return query.all()
 
 
-with app.app_context():
-    stats = book_management()
-    print(stats)
+# with app.app_context():
+#     stats = book_management()
+#     print(stats)

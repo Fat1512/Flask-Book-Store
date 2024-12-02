@@ -448,6 +448,7 @@
                                 <th scope="col" class="sort text-center table-header" data-sort="budget">Thể loại</th>
                                 <th scope="col" class="sort text-center table-header" data-sort="status">Tác giả</th>
                                 <th scope="col" class="text-center table-header">So luong</th>
+                                <th scope="col" class="text-center table-header">Trạng thái</th>
                                 <th scope="col"></th>
                             </tr>
                             </thead>
@@ -468,7 +469,8 @@
                             {#                                </td>#}
                             {#                                <td scope="row">#}
                             {#                                    <div class="media align-items-center">#}
-                            {#                                        <div class="media-body text-left text-truncate book-item" style="width:100px!important;">#}
+                            {#                                        <div class="media-body text-left text-truncate book-item"#}
+                            {#                                             style="width:100px!important;">#}
                             {#                                            <span class="order-item-name mb-0 text-sm text-center w-100">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus nisi provident voluptatum. Animi architecto consequuntur deleniti ducimus eum ex facere fugit ipsam odit quae quaerat, rem tempore, tenetur unde voluptatibus?</span>#}
                             {#                                        </div>#}
                             {#                                    </div>#}
@@ -492,6 +494,12 @@
                             {#                                                   class="text-center" value="0">#}
                             {#                                            <span class="cursor-pointer increment-qty-btn">+</span>#}
                             {#                                        </div>#}
+                            {#                                    </div>#}
+                            {#                                </td>#}
+                            {#                                <td>#}
+                            {#                                    <div class="product-qty-status text-xs  product-qty-status-shortage  text-center py-1 cursor-pointer">#}
+                            {#                                        Đủ số#}
+                            {#                                        lượng#}
                             {#                                    </div>#}
                             {#                                </td>#}
                             {#                                <td class="text-right remove-order-item-btn">#}
@@ -535,7 +543,25 @@
         <div class="card-header border-0 py-1 d-flex justify-content-between">
             <h3 class="mb-0">Thêm sách nhập</h3>
             <div class="d-flex justify-content-end">
-                <div class="pt-2">
+                <div class="form-group mb-0 w-100 d-flex
+">
+                    <div class="input-group input-group-alternative input-group-merge w-65 ml-r">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        </div>
+                        <input class="form-control search-input" placeholder="Nhập mã sản phẩm" type="text">
+                    </div>
+                    <div class="dropdown dropdown-btn align-content-center text-right">
+                        <button type="button"
+                                class="btn btn-primary dropdown-toggle dropdown-btn-change justify-content-end"
+                                data-toggle="dropdown">
+                            Tìm theo
+                        </button>
+                        <div class="dropdown-menu search-dropdown-menu">
+                            <div class="dropdown-item" id="0" href="">Mã sản phẩm</div>
+                            <div class="dropdown-item" id="1" href="">Tên sản phẩm</div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="btn-group">
@@ -614,10 +640,10 @@
                             {{ book['gerne']['name'] }}
                         </td>
                         <td>
-                                                <span class="badge badge-dot mr-4">
-                                                <i class="bg-warning"></i>
-                                                <span class="status book-item-quantity">{{ book['quantity'] }}</span>
-                                                </span>
+                            <span class="badge badge-dot mr-4">
+                            <i class="bg-warning"></i>
+                            <span class="status book-item-quantity">{{ book['quantity'] }}</span>
+                            </span>
                         </td>
                         <td>
                             <div class="avatar-group book-item-author">

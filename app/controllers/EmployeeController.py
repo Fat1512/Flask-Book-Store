@@ -1,5 +1,6 @@
 from app.dao.OrderDAO import *
 from app.dao.SearchDAO import searchBook
+from app.dao.FormImportDAO import get_form_imports
 from app.dao.ConfigDAO import get_config
 from flask import Blueprint
 from datetime import datetime
@@ -20,7 +21,7 @@ def checkout():
     return render_template("employee-checkout.html", books=books)
 
 
-@employee_bp.route("book/import")
+@employee_bp.route("/import")
 def import_book():
     books = searchBook(limit=15, page=1)
     book_dto = []
@@ -29,6 +30,15 @@ def import_book():
     books['books'] = book_dto
     config = get_config()
     return render_template("employee-import.html", books=books, config=config)
+
+
+@employee_bp.route("/import/history")
+def import_book_history():
+
+    form_imports = get_form_imports()
+
+
+    return render_template("employee-import-history.html", form_imports=form_imports)
 
 
 @employee_bp.route("/order")

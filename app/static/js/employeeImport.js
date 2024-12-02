@@ -3,9 +3,9 @@ let currentCheckedBookState = {};
 let currentItemState = {};
 
 const url = new URL(window.location);
-const BOOK_API = "/api/v1/book/manage"
+const BOOK_MANAGE_API = "/api/v1/book/manage"
 const CONFIG_API = "/api/v1/config"
-const FORM_IMPORT_API = "/api/v1/book"
+const BOOK_API = "/api/v1/book"
 let config;
 
 
@@ -40,13 +40,24 @@ const importList = document.querySelector(".import-list");
 const importContainer = document.querySelector(".import-container");
 const bookList = document.querySelector(".book-list");
 
-
+const searchDropdownMenu = document.querySelector(".search-dropdown-menu");
+const searchInput = document.querySelector(".search-input");
 //===============================================================API===============================================================
 
-const fetchBook = async function() {
+const fetchBook = async function(params) {
     try {
-        const res = await fetch(`${BOOK_API}${url.search}`)
+        const res = await fetch(`${BOOK_MANAGE_API}${params}`)
         if(!res.ok) throw new Error("Cannot fetch books");
+        return await res.json();
+    } catch(err) {
+        throw err;
+    }
+}
+
+const fetchBookById = async function(id) {
+    try {
+        const res = await fetch(`${BOOK_API}/${id}/manage`)
+        if(!res.ok) throw new Error("Cannot fetch book");
         return await res.json();
     } catch(err) {
         throw err;
@@ -55,7 +66,7 @@ const fetchBook = async function() {
 
 const postFormImport = async function() {
     try {
-        const res = await fetch(`${FORM_IMPORT_API}/import`, {
+        const res = await fetch(`${BOOK_API}/import`, {
             method: "POST",
             body: JSON.stringify(Object.values(currentItemState)),
             headers: {
@@ -114,21 +125,52 @@ const extractBookItemData = function (bookItem) {
     const gerne = bookItem.querySelector(".book-item-gerne").textContent.trim();
     const author = bookItem.querySelector(".book-item-author").textContent.trim();
     const img = bookItem.querySelector(".book-item-img").getAttribute("src");
+    const stockQuantity = +bookItem.querySelector(".book-item-quantity").textContent.trim();
+
     return {
         bookId,
         img,
         title,
+        stockQuantity,
         gerne,
         author,
     };
 };
 
-const resetState = function () {
-    currentItemState = {};
-    renderImportedItems();
+const renewBookList = async function() {
+    const data = await fetchBook(url.search);
+    renderBookItems(data['books']);
+    url.searchParams.delete("quantityStatus");
 }
-
 //===============================================================EVENT===============================================================
+
+
+let currentSelectedSearchType;
+searchDropdownMenu.addEventListener("click", function(e) {
+    searchInput.placeholder = e.target.textContent;
+    const id = +e.target.getAttribute("id");
+    currentSelectedSearchType = id;
+})
+
+searchInput.addEventListener("keypress", async function(e) {
+    if(e.key !== "Enter") return;
+
+    try {
+        let data;
+        if(currentSelectedSearchType === 1) { //Fetch by title
+            data = await fetchBook(`?keyword=${searchInput.value}`);
+        }
+        else { //Fetch by id
+            if (searchInput.value.trim() === '' || searchInput.value.trim() === null) {
+                data = await fetchBook(`?keyword=${searchInput.value}`);
+            }
+            else data = {'books': [await fetchBookById(+searchInput.value)]};
+        }
+        renderBookItems(data['books']);
+    } catch(err) {
+        throw(err.message);
+    }
+})
 
 window.addEventListener("load", async function() {
     try {
@@ -166,11 +208,12 @@ exportBtn.addEventListener("click", async function() {
             pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
 
             pdf.save(`form_import_${document.querySelector('[form-import-id]').getAttribute("form-import-id")}.pdf`);
-
         });
 
     } catch(err) {
         alert(err.message);
+    } finally {
+        await renewBookList();
     }
 });
 
@@ -223,6 +266,7 @@ addBookBtn.addEventListener("click", function() {
             currentItemState[item[0]]['quantity'] += 1;
         } else {
             currentItemState[item[0]] = item[1];
+            currentItemState[item[0]]['stockQuantity'] = item[1]['stockQuantity'];
             currentItemState[item[0]]['quantity'] = config['min_restock_qty'];
         }
     });
@@ -251,7 +295,7 @@ statusType.addEventListener("click", async function(e)  {
     if(isToggle)
         url.searchParams.set("quantityStatus", toggleId);
     try {
-        const data = await fetchBook();
+        const data = await fetchBook(url.search);
         renderBookItems(data['books']);
     } catch (err) {
         alert(err.message);
@@ -289,6 +333,12 @@ importContainer.addEventListener("change", function(e) {
     currentItemState[+input.getAttribute("input-id")]['quantity'] = +input.value;
     renderImportedItems()
 })
+
+
+const resetState = function () {
+    currentItemState = {};
+    renderImportedItems();
+}
 
 const renderImportedItems = function() {
     importList.innerHTML = '';
@@ -334,6 +384,11 @@ const renderImportedItems = function() {
                                class="text-center" value="${item[1]['quantity']}">
                         <span class="cursor-pointer increment-qty-btn">+</span>
                     </div>
+                </div>
+            </td>
+            <td>
+                <div class="product-qty-status text-xs ${item[1]['stockQuantity'] < config['min_restock_level'] ? 'product-qty-status-shortage' : '' } text-center py-1 cursor-pointer">
+                        ${item[1]['stockQuantity'] < config['min_restock_level'] ? 'Cần nhập thêm' : 'Đủ số lượng' }
                 </div>
             </td>
             <td class="text-right remove-import-item-btn">

@@ -82,9 +82,6 @@ obj = {
 
 # if obj["1"] is not None and obj["b"] is not None:
 #     print("ok")
-x = 0
-if x is None:
-    print("ok")
 
 # customer_id_ok = customer_info['id'] is not None or bool(customer_info)
 # customer_phone_ok = (customer_info['phone_number'] is not None or customer_info['phone_number'] == 0) or bool(customer_info

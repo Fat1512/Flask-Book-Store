@@ -97,6 +97,7 @@ const currentLabel = {};
 const deleteParams = (params) => params.forEach(param => url.searchParams.delete(param))
 const addParams = (params) => params.forEach(param => url.searchParams.set(param[0], param[1]))
 const renderOrder = function (orders) {
+    console.log(orders);
     orderList.innerHTML = '';
     const html = orders.map(order => `
         <tr>
@@ -137,11 +138,13 @@ const renderOrder = function (orders) {
                         <i class="fas fa-ellipsis-v"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                        ${+order['status']['id'] === 1 || +order['status']['id'] === 2 ? `
+                        ${ +order['order_type']['id'] === 1 && +order['payment']['payment_method']['id'] === 2 && (+order['status']['id'] === 1 || +order['status']['id'] === 2) ? `
                             <a class="dropdown-item"
                                href="/employee/order/${order['order_id']}/update">Cap nhat</a>` : ''}
-                        ${+order['status']['id'] === 1 ? `
+                        ${ +order['order_type']['id'] === 1 && +order['payment']['payment_method']['id'] === 2 && +order['status']['id'] === 1 ? `
                         <a class="dropdown-item" value="confirm" order-id="${order['order_id']}" href="">Xac nhan</a>` : ''} 
+                        
+                        
                         <a class="dropdown-item"
                            href="/employee/order/${order['order_id']}/detail">Chi
                             tiet</a>
