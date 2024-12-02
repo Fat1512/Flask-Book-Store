@@ -50,7 +50,8 @@ def offline_order():
     elif customer_phone_ok:
         user = find_by_phone_number(str(customer_info['phone_number']))
         if user is None:
-            user = add_user("Default", "Default", "Default2", "Default", "Default", sex=True, phone_number=str(customer_info['phone_number']), isActive=True)
+            user = add_offline_user("Default", "Default", "Default2", avt_url=None, sex=True,
+                                    phone_number=str(customer_info['phone_number']), isActive=True)
     else:
         return False
 

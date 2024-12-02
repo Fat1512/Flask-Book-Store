@@ -1,5 +1,6 @@
 from app.dao import UserDao
 from app import login
+from app.dao.OrderDAO import find_all, find_add_by_user_id
 from app.model.User import UserRole
 from flask import render_template, request, redirect, url_for
 from flask_login import login_user, logout_user
@@ -10,7 +11,10 @@ account_bp = Blueprint('account', __name__)
 
 @account_bp.route('/purchase', methods=['GET'])
 def purchase():
-    return render_template("purchase.html")
+    status = request.args.get('status', type=int)
+    order = find_add_by_user_id(status)
+    order_to_dict = [order.to_dict() for order in order]
+    return render_template("purchase.html", order=order_to_dict)
 
 
 @account_bp.route('/admin-login', methods=['GET', 'POST'])
@@ -90,8 +94,6 @@ def logout_process():
 @login.user_loader
 def load_user(user_id):
     return UserDao.get_user_by_id(user_id)
-
-
 
 # @app.route("/add-products")
 # def add_products_process():

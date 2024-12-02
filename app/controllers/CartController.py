@@ -10,6 +10,7 @@ cart_bp = Blueprint('cart', __name__)
 def cart():
     cart = find_by_user_id(2)
 
+
     return render_template("cart.html", cart=cart)
 
 

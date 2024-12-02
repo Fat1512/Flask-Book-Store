@@ -23,6 +23,15 @@ def update_order_status(order_id, status):
     db.session.commit()
 
 
+def find_add_by_user_id(status):
+    order = Order.query
+    order = order.filter(Order.user_id == 2)
+    if status and status != 8:
+        order = order.filter(Order.status == OrderStatus(int(status)))
+
+    return order.all()
+
+
 def find_order_by_id(id):
     return Order.query.get(id)
 
@@ -124,11 +133,10 @@ def create_offline_order(order_list, user=None):
                                  employee_id=2,
                                  customer=user)
     if user is not None:
-        user.order = offline_order
+        user.orders.append(offline_order)
 
     db.session.add(offline_order)
     db.session.flush()
-
     total_amount = 0
 
     for order_item in order_list:
@@ -147,7 +155,8 @@ def create_offline_order(order_list, user=None):
 
 
 def calculate_total_order_amount(order_id):
-    total_amount = db.session.query(func.sum(OrderDetail.quantity * OrderDetail.price)).filter(OrderDetail.order_id == order_id).first()[0]
+    total_amount = db.session.query(func.sum(OrderDetail.quantity * OrderDetail.price)).filter(
+        OrderDetail.order_id == order_id).first()[0]
     shipping_fee = db.session.query(OnlineOrder.shipping_fee).filter(OnlineOrder.order_id == order_id).first()
     total_amount = total_amount + shipping_fee[0] if shipping_fee is not None else total_amount
     return total_amount
