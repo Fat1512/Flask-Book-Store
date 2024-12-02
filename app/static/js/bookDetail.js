@@ -115,6 +115,7 @@ commentList.forEach(el => {
     const buttonSend = el.querySelector('.icon-send')
     const subComment = el.querySelector(".sub-comment")
     toggle = false
+
     buttonReply.addEventListener('click', () => {
         if (!toggle)
             el.querySelector('.input-text').style = 'display:block'
