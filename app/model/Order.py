@@ -7,19 +7,21 @@ from app.model import Book, User, Address
 from enum import Enum as PythonEnum
 
 
-# TYPE = 1 => DAT_SHIP_VE_NHA
-# TYPE = 2 => DAT_DEN_LAY
-# TYPE = 3 => MUA_TAI_CHO
-
+# TYPE = 1 => Online
+# TYPE = 2 => Offline
 
 class OrderStatus(PythonEnum):
     DANG_XU_LY = 1
     CHO_GIAO_HANG = 2
     DANG_GIAO_HANG = 3
+
     DA_HOAN_THANH = 4
     DA_HUY = 5
+
     DANG_CHO_THANH_TOAN = 6
     DA_THANH_TOAN = 7
+
+    DANG_CHO_NHAN = 8
 
 
 class PaymentMethod(PythonEnum):
@@ -46,7 +48,8 @@ class Order(db.Model):
 
     order_detail = relationship("OrderDetail", back_populates='order', lazy=True, cascade="all")
     online_order = relationship('OnlineOrder', backref='order', lazy=True, uselist=False, cascade="all")
-    offline_order = relationship('OfflineOrder', back_populates='order',enable_typechecks=False, lazy=True, uselist=False, cascade="all")
+    offline_order = relationship('OfflineOrder', back_populates='order', enable_typechecks=False, lazy=True,
+                                 uselist=False, cascade="all")
     payment_detail = relationship('PaymentDetail', back_populates='order', lazy=True, uselist=False, cascade="all")
 
     customer_id = Column(Integer, ForeignKey('user.user_id'))
@@ -72,18 +75,16 @@ class Order(db.Model):
                     'name': PAYMENT_METHOD_TEXT[self.payment_method.value - 1]
                 }
             },
+            'address': self.address.to_dict(),
             'created_at': self.created_at,
             'customer_id': self.customer_id,
-            'order_detail': [order_detail.to_dict() for order_detail in self.order_detail],
             'total_amount': self.get_amount(),
-            'address': self.address.to_dict()
         }
         return json
 
     def to_detail_dict(self):
         json = self.to_dict()
         json['order_detail'] = [order_detail.to_dict() for order_detail in self.order_detail]
-        json['address'] = self.address.to_dict()
         if self.payment_detail:
             json['payment']['payment_detail'] = self.payment_detail.to_dict()
 
@@ -96,7 +97,8 @@ class Order(db.Model):
 class OfflineOrder(Order):
     __tablename__ = 'offline_order'
     order_id = Column(Integer, ForeignKey('order.order_id'), primary_key=True)
-    order = relationship('Order', back_populates='offline_order', enable_typechecks=False, lazy=True, uselist=False, cascade="all")
+    order = relationship('Order', back_populates='offline_order', enable_typechecks=False, lazy=True, uselist=False,
+                         cascade="all")
 
     employee_id = Column(Integer, ForeignKey('user.user_id'))
     employee = relationship("User", back_populates="offline_orders", foreign_keys=[employee_id])
@@ -126,22 +128,18 @@ class OnlineOrder(Order):
         json = super().to_dict()
         json['order_type'] = {
             'id': 1,
-            'name': ORDER_TYPE_TEXT[0]
+            'name': ORDER_TYPE_TEXT[0],
+            'detail': {
+                'shipping_method': {
+                    'id': self.shipping_method.value,
+                    'name': SHIPPING_METHOD_TEXT[self.shipping_method.value - 1]
+                },
+                'shipping_fee': self.shipping_fee,
+                'note': self.note
+            }
         }
         return json
 
-    def to_detail_dict(self):
-        json = super().to_detail_dict()
-        json['order_type']['detail'] = {
-            'shipping_method': {
-                'id': self.shipping_method.value,
-                'name': SHIPPING_METHOD_TEXT[self.shipping_method.value - 1]
-            },
-            'shipping_fee': self.shipping_fee,
-            'note': self.note
-        }
-        json['total_amount'] = json['total_amount'] + json['order_type']['detail']['shipping_fee']
-        return json
 
     def get_shipping_fee(self):
         return self.shipping_fee
@@ -189,6 +187,7 @@ class PaymentDetail(db.Model):
 
     order_id = Column(Integer, ForeignKey('order.order_id'), unique=True)
     order = relationship("Order", back_populates="payment_detail", enable_typechecks=False, lazy=True)
+
     def to_dict(self):
         return {
             'amount': self.amount,
