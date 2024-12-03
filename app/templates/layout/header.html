@@ -1,4 +1,3 @@
-
 <div class="bg-white">
     <nav class="navbar navbar-expand-sm container position-relative p-2">
         <a class="navbar-brand m-0 col-md-3 text-center" href="/">
@@ -60,31 +59,31 @@
                 <i class="fa-solid fa-cart-shopping"></i>
                 <span>Giỏ hàng</span>
 
-                {% if cart_items %}
+                {% if cart_items |length %}
                     <span class="label-total text-white">{{ cart_items|length }}</span>
-                    <div class="menu-cart-item">
-                        <div class="menu-cart-item-header">
-                            <p class="p-3 m-0">
-                                <span><i class="fa-solid fa-cart-shopping"></i></span>
-                                <span>Giỏ hàng ({{ cart_items|length }})</span>
-                            </p>
-                        </div>
-                        <div>
-                            <ul class="sub-cart list-unstyled mt-3">
-                                {% for item in cart_items %}
-                                    <li class="sub-cart-item d-flex p-3">
-                                        <img class="sub-cart-item-image"
-                                             src="{{ item.book.images[0].image_url }}">
-                                        <div class="sub-cart-item-detail pl-3">
-                                            <p class="sub-cart-item-title text-secondary">{{ item.book.title }}</p>
-                                            <p class="font-weight-bold m-0 text-primary">{{ item.book.price|currency("VND") }}
-                                                <span>x {{ item.quantity }}</span></p>
-                                        </div>
-                                    </li>
-                                {% endfor %}
+                {% endif %}
+                <div class="menu-cart-item">
+                    <div class="menu-cart-item-header">
+                        <p class="p-3 m-0">
+                            <span><i class="fa-solid fa-cart-shopping"></i></span>
+                            <span>Giỏ hàng ({{ cart_items|length }})</span>
+                        </p>
+                    </div>
+                    {% if cart_items |length %}
+                        <ul class="sub-cart list-unstyled mt-3">
+                            {% for item in cart_items %}
+                                <li id="{{ item.book_id }}" class="sub-cart-item d-flex p-3">
+                                    <img class="sub-cart-item-image"
+                                         src="{{ item.book.images[0].image_url }}">
+                                    <div class="sub-cart-item-detail pl-3">
+                                        <p class="sub-cart-item-title text-secondary">{{ item.book.title }}</p>
+                                        <p class="font-weight-bold m-0 text-primary">{{ item.book.price|currency("VND") }}
+                                            <span>x {{ item.quantity }}</span></p>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
 
-                            </ul>
-                        </div>
                         <div class="d-flex p-3 align-items-center justify-content-between">
                             <div class="group-price">
                                 <p class="m-0">Tổng cộng</p>
@@ -96,8 +95,15 @@
                                 </button>
                             </div>
                         </div>
-                    </div>
-                {% endif %}
+                    {% else %}
+                        <div class="text-center mt-5 mb-5">
+                            <div class="cart-item-null"></div>
+                            <p>Chưa có sản phẩm nào</p>
+                        </div>
+
+                    {% endif %}
+                </div>
+
             </a>
             <div class="d-flex flex-column align-items-center account ">
                 <i class="fa-regular fa-user"></i>

@@ -25,6 +25,7 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/employeeOrder.css') }}">
 </head>
 
 <body>
@@ -433,23 +434,32 @@
                             {#                                <span class="badge badge-primary">Primary</span>#}
                             {#                                <span class="badge badge-primary">Primary</span>#}
                         </div>
+                        <div class="py-4">
+                            <ul class="nav nav-tabs justify-content-start order-tab" id="myTab" role="tablist">
+                                <li class="nav-item all-order">
+                                    <a class="nav-link active" id="children-tab" data-toggle="tab" href="#children"
+                                       role="tab" aria-controls="children" aria-selected="true">Tất cả</a>
+                                </li>
+                                <li class="nav-item  update-order-info">
+                                    <a class="nav-link" id="textbook-tab" data-toggle="tab" href="#textbook" role="tab"
+                                       aria-controls="textbook" aria-selected="false">Cập nhật thông tin đơn</a>
+                                </li>
+                                <li class="nav-item  update-order-status">
+                                    <a class="nav-link" id="literature-tab" data-toggle="tab" href="#literature"
+                                       role="tab" aria-controls="literature" aria-selected="false">Cập nhật trạng
+                                        thái</a>
+                                </li>
+                                <li class="nav-item  cancel-order">
+                                    <a class="nav-link" id="psychology-tab" data-toggle="tab" href="#psychology"
+                                       role="tab" aria-controls="psychology" aria-selected="false">Hủy đơn</a>
+                                </li>
+                            </ul>
+                        </div>
                         <div class="d-flex justify-content-between flex-column p-4 mt-4"
                              style="background-color: #f5f9fc">
                             <div class="row">
-                                <div class="col-6 d-flex">
-                                    <div class="form-group w-100 d-flex pr-3">
-                                        <label for="email">Bắt đầu</label>
-                                        <input type="date" class="form-control input-start-date"
-                                               placeholder="Enter email" id="email">
-                                    </div>
-                                    <div class="form-group w-100 d-flex">
-                                        <label for="email">Kết thúc</label>
-                                        <input type="date" class="form-control input-end-date" placeholder="Enter email"
-                                               id="email">
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="form-group mb-0 w-100 d-flex">
+                                <div class="col-4">
+                                    <div class="form-group mb-0 w-100 d-flex order-id-search-container">
                                         <div class="input-group input-group-alternative input-group-merge w-65 ml-r">
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text"><i class="fas fa-search"></i></span>
@@ -469,10 +479,30 @@
                                         {#                                        </div>#}
                                     </div>
                                 </div>
+                                <div class="col-6">
+                                    <div class="d-flex date-search-container">
+                                        <div class="form-group w-100 d-flex pr-3">
+                                            <label for="email">Bắt đầu</label>
+                                            <input type="date" class="form-control input-start-date"
+                                                   placeholder="Enter email" id="email">
+                                        </div>
+                                        <div class="form-group w-100 d-flex">
+                                            <label for="email">Kết thúc</label>
+                                            <input type="date" class="form-control input-end-date"
+                                                   placeholder="Enter email"
+                                                   id="email">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-1">
+                                    <div class="btn border border-1">Xóa hết</div>
+                                </div>
+                                <div class="col-1">
+                                    <div class="btn btn-primary">Lọc</div>
+                                </div>
                             </div>
-                            <div class="pt-2 row gap-3">
+                            <div class="pt-2 row gap-3 filter-container">
                                 <div class="col-2">
-
                                     <div style="" class="pr-2 w-100 btn-group">
                                         <button class="btn btn-outline-dark dropdown-toggle
                                                        dropdown-toggle-pagination"
@@ -562,7 +592,6 @@
                                     </div>
                                 </div>
                                 <div class="col-2">
-
                                     <div style="" class="pr-2 btn-group w-100">
                                         <button class="btn btn-outline-dark dropdown-toggle
                                                        dropdown-toggle-pagination"
@@ -587,8 +616,6 @@
                                         </div>
                                     </div>
                                 </div>
-
-
                                 <div class="col-2">
                                     <div style="" class="pr-2 w-100 btn-group">
                                         <button type="button" class="btn btn-outline-dark dropdown-toggle
@@ -616,13 +643,6 @@
                                         </div>
                                     </div>
                                 </div>
-
-                                <div class="col-1">
-                                    <div class="btn border border-1">Xóa hết</div>
-                                </div>
-                                <div class="col-1">
-                                    <div class="btn btn-primary">Lọc</div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -642,7 +662,7 @@
                             </thead>
                             <tbody class="list order-list">
                             {% for order in orders['orders'] %}
-                                <tr>
+                                <tr class="order-id" id="{{ order['order_id'] }}">
                                     <th scope="row">
                                         <div class="media align-items-center">
                                             <div order-id="{{ order['order_id'] }}"
@@ -681,21 +701,7 @@
                                                 <i class="fas fa-ellipsis-v"></i>
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                                                {% if order['order_type']['id'] == 1 and order['payment']['payment_method']['id'] == 2 and (order['status']['id'] == 1 or order['status']['id'] == 2) %}
-                                                    <a class="dropdown-item"
-                                                       href="/employee/order/{{ order['order_id'] }}/update">Cap
-                                                        nhat</a>
-                                                {% endif %}
-
-                                                {% if order['order_type']['id'] == 1 and order['payment']['payment_method']['id'] == 2 and order['status']['id'] == 1 %}
-                                                    <a class="dropdown-item" value="confirm"
-                                                       order-id="{{ order['order_id'] }}"
-                                                       href="#">Xác nhận</a>
-                                                {% endif %}
-
-                                                <a class="dropdown-item"
-                                                   href="/employee/order/{{ order['order_id'] }}/detail">Chi tiet</a>
-                                                <a class="dropdown-item" href="#">Huy</a>
+                                                <a class="dropdown-item" tab="0">Chi tiet</a>
                                             </div>
                                         </div>
                                     </td>
@@ -765,6 +771,96 @@
                 </div>
             </div>
         </footer>
+    </div>
+</div>
+<div class="modal ">
+    <div class="overlay "></div>
+    <div class="modal-body  modal-update-order-item-status item-bg-color">
+        <div class="d-flex flex-column w-100">
+
+{#            <div class="card p-5">#}
+{#                <div class="d-flex justify-content-between">#}
+{#                    <a class="fa fa-arrow-left display-4 cursor-pointer product-detail-back-btn"#}
+{#                       href="/employee/order"#}
+{#                       aria-hidden="true"></a>#}
+{#                    <button class="btn primary-btn btn-invoice bg-red text-white"#}
+{#                            style="justify-items: flex-end !important;">#}
+{#                        Hiển thị in hóa đơn#}
+{#                    </button>#}
+{#                </div>#}
+{#                <div class="card-header pl-0 bg-transparent border-0">#}
+{#                    <h3 class="mb-0 display-4">Thông tin đơn</h3>#}
+{#                </div>#}
+{#                <div class="row justify-content-between">#}
+{#                    <div class="col-6">#}
+{#                        <div class="d-flex">#}
+{#                            <h2 class="pr-3">Mã đơn: </h2>#}
+{#                            <h2 class="font-weight-400" order-id="">#}
+{#                        </div>#}
+{#                        <div class="d-flex">#}
+{#                            <h2 class="pr-3">Trạng thái: </h2>#}
+{#                            <h2 class="font-weight-400 "></h2>#}
+{#                        </div>#}
+{#                        <div class="d-flex">#}
+{#                            <h2 class="pr-3">Phương thức thanh toán: </h2>#}
+{#                            <h2 class="font-weight-400"> }}</h2>#}
+{#                        </div>#}
+{#                        <div class="d-flex">#}
+{#                            <h2 class="pr-3">Ngày tạo: </h2>#}
+{#                            <h2 class="font-weight-400"></h2>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <div class="col-6">#}
+{#                        <div class="d-flex">#}
+{#                            <h2 class="pr-3 w-600">Loại đơn: </h2>#}
+{#                            <h2 class="font-weight-400"></h2>#}
+{#                        </div>#}
+{##}
+{#                            <div class="d-flex">#}
+{#                                <h2 class="pr-3">Phương thức vận chuyển: </h2>#}
+{#                                <h2 class="font-weight-400">name'] }}</h2>#}
+{#                            </div>#}
+{#                            <div class="d-flex">#}
+{#                                <h2 class="pr-3">Nhân viên thanh toán: </h2>#}
+{#                                <h2 class="font-weight-400"> }}</h2>#}
+{#                            </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+
+            <div>order id: #79686</div>
+            <div>Trạng thái</div>
+            <ul>
+                <li class="d-flex align-content-center cursor-pointer">
+                    <div class="pr-3">
+                        <div class="">
+                            <input id="1" type="checkbox">
+                        </div>
+                    </div>
+                    <div scope="row">
+                        <div class="">
+                            <div for="1" class="book-item-id" id="1">Trang thai 1</div>
+                        </div>
+                    </div>
+                </li>
+                <li class="d-flex align-content-center cursor-pointer">
+                    <div class="pr-3">
+                        <div class="">
+                            <input type="checkbox">
+                        </div>
+                    </div>
+                    <div scope="row">
+                        <div class="">
+                            <div class="book-item-id" id="1">Trang thai 2</div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <div class="text-right">
+                <div class="btn btn-primary">Xác nhận</div>
+            </div>
+        </div>
+
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"

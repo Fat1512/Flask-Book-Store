@@ -21,7 +21,6 @@ class CartItem(db.Model):
                 "poster": self.book.images[0].image_url
             },
             "quantity": self.quantity,
-
         }
 
     def get_price(self):

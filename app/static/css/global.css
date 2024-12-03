@@ -110,3 +110,9 @@ a {
     animation: growth linear 0.2s;
     flex: 0.5;
 }
+.h-100vh {
+    height: 100vh;
+}
+.h-50vh{
+    height: 50vh;
+}

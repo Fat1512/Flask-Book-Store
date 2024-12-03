@@ -27,6 +27,36 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/adminStatistic.css') }}">
+    <style>
+    .modal {
+        display: none; /* Modal mặc định ẩn */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Nền mờ */
+        justify-content: center;
+        align-items: center;
+        z-index: 1000000000; /* Đảm bảo modal nằm trên các phần tử khác */
+    }
+
+    .modal-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 5px;
+        width: 400px;
+        position: relative;
+    }
+
+    .close-modal {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 30px;
+        cursor: pointer;
+    }
+</style>
 </head>
 
 <body>
@@ -64,7 +94,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="/admin/statistic-frequency">
+                        <a class="nav-link" href="/admin/statistic-frequency">
                             <i class="ni ni-pin-3 text-primary"></i>
                             <span class="nav-link-text">Thống kê tần suất</span>
                         </a>
@@ -76,7 +106,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/admin/bookgerne-manager">
+                        <a class="nav-link active" href="/admin/bookgerne-manager">
                             <i class="ni ni-bullet-list-67 text-default"></i>
                             <span class="nav-link-text">Quản lí thể loại</span>
                         </a>
@@ -102,9 +132,7 @@
                 </ul>
             </div>
         </div>
-    </div>
 </nav>
-
 <!-- Main content -->
 <div class="main-content" id="panel">
     <!-- Topnav -->
@@ -343,7 +371,7 @@
                             <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
                                 <li class="breadcrumb-item"><a href="/admin/statistic-revenue"><i
                                         class="fas fa-home"></i></a></li>
-                                <li class="breadcrumb-item"><a href="/admin/statistic-revenue">Thống kê tần suất</a>
+                                <li class="breadcrumb-item"><a href="/admin/statistic-revenue">Quản lí thể loại</a>
                                 </li>
                             </ol>
                         </nav>
@@ -352,13 +380,13 @@
                     <!-- Div 2: 59% -->
                     <div class="col-lg-6 col-7" style="flex: 0 0 59%; max-width: 59%;">
                         <form class="" style="display: flex; gap: 10px; align-items: center;">
-                            <div class="dropdown-container">
-                                <input type="text" id="gerneSearch"
-                                       class="dropdown-search product-publisher" autocomplete="off"
-                                       placeholder="Chọn mục thống kê" style="box-sizing: border-box; width: 90%">
-                                <div class="dropdown-list" id="gerneList"
-                                     style="box-sizing: border-box; width: 90%"></div>
-                            </div>
+                            <!--                            <div class="dropdown-container">-->
+                            <!--                                <input type="text" id="gerneSearch"-->
+                            <!--                                       class="dropdown-search product-publisher" autocomplete="off"-->
+                            <!--                                       placeholder="Chọn mục thống kê" style="box-sizing: border-box; width: 90%">-->
+                            <!--                                <div class="dropdown-list" id="gerneList"-->
+                            <!--                                     style="box-sizing: border-box; width: 90%"></div>-->
+                            <!--                            </div>-->
                             <!--                                                        <div style="flex: 1;">-->
                             <!--                                                            <input type="date" name="from_date" style="width: 100%; box-sizing: border-box;">-->
                             <!--                                                        </div>-->
@@ -368,28 +396,38 @@
                             <!--                                                        <div style="flex: 1;">-->
                             <!--                                                            <input type="month" name="selected_month" style="width: 100%; box-sizing: border-box;">-->
                             <!--                                                        </div>-->
-                            <div><h3 style="color: white">Loc theo</h3></div>
 
+                            <div style="">
+                                <input type="text" name="kw" placeholder="Nhập từ khóa"
+                                       style="box-sizing: border-box;">
+                            </div>
                             <div>
-                                <input type="submit" value="SL Ban dau" class="btn btn-neutral"
+                                <input type="submit" value="Xác nhận" class="btn btn-neutral"
                                        style="cursor: pointer;background-color: #2196F3; color: white">
                             </div>
                             <div>
-                                <input type="submit" value="SL Ban ra" class="btn btn-neutral"
-                                       style="cursor: pointer;background-color: #2196F3; color: white">
+                                <!-- Nút để hiển thị form thêm thể loại mới -->
+                                <input type="button" value="Thêm Thể Loại Mới" class="btn btn-neutral"
+                                       style="cursor: pointer; background-color: #2196F3; color: white"
+                                       id="addBookGerneButton">
                             </div>
-                            <div>
-                                <input type="submit" value="SL Con lai" class="btn btn-neutral"
-                                       style="cursor: pointer;background-color: #2196F3; color: white">
-                            </div>
+
+                            <!--                            <div>-->
+                            <!--                                <input type="submit" value="SL Ban ra" class="btn btn-neutral"-->
+                            <!--                                       style="cursor: pointer;background-color: #2196F3; color: white">-->
+                            <!--                            </div>-->
+                            <!--                            <div>-->
+                            <!--                                <input type="submit" value="SL Con lai" class="btn btn-neutral"-->
+                            <!--                                       style="cursor: pointer;background-color: #2196F3; color: white">-->
+                            <!--                            </div>-->
                         </form>
                     </div>
 
                     <!-- Div 3: 18% -->
-                    <div class="col-lg-6 col-5 text-right" style="flex: 0 0 18%; max-width: 18%;">
-                        <a href="#" class="btn btn-neutral" id="statistic-table-check">Bảng</a>
-                        <a href="#" class="btn btn-neutral" id="statistic-chart-check">Biểu đồ</a>
-                    </div>
+                    <!--                    <div class="col-lg-6 col-5 text-right" style="flex: 0 0 18%; max-width: 18%;">-->
+                    <!--                        <a href="#" class="btn btn-neutral" id="statistic-table-check">Bảng</a>-->
+                    <!--                        <a href="#" class="btn btn-neutral" id="statistic-chart-check">Biểu đồ</a>-->
+                    <!--                    </div>-->
                 </div>
 
             </div>
@@ -401,7 +439,7 @@
             <div class=" col ">
                 <div class="card" style="margin-bottom: 0">
                     <div class="card-header bg-transparent" style="display: flex; justify-content: space-between">
-                        <h3 class="mb-0">Thống kê dạng bảng</h3>
+                        <h3 class="mb-0">Danh sách thể loại</h3>
                         <ul class="pagination" style="margin: 0; display: flex; justify-content: center;">
                             <!-- Nút Previous -->
                             <li class="page-item{% if books['current_page'] == 1 %} disabled {% endif %}">
@@ -445,88 +483,70 @@
                                         <tr>
                                             <th scope="col" class="sort text-center" data-sort="budget"
                                                 style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
-                                                Ma sach
+                                                Cap nhat
+                                            </th>
+                                            <th scope="col" class="sort text-center" data-sort="budget"
+                                                style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
+                                                Ma the loai
                                             </th>
                                             <th scope="col" class="sort text-center" data-sort="name"
                                                 style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff; max-width: 200px; word-wrap: break-word;">
-                                                Ten sach
+                                                Ten the loai
                                             </th>
                                             <th scope="col" class="sort text-center" data-sort="budget"
                                                 style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
-                                                The loai
+                                                lft
                                             </th>
                                             <th scope="col" class="sort text-center" data-sort="budget"
                                                 style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
-                                                SL ban dau
-                                            </th>
-                                            <th scope="col" class="sort text-center" data-sort="budget"
-                                                style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
-                                                SL ban ra
-                                            </th>
-                                            <th scope="col" class="sort text-center" data-sort="budget"
-                                                style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
-                                                SL con lai
+                                                rgt
                                             </th>
                                         </tr>
                                         </thead>
                                         <tbody class="list">
                                         {% for s in stats %}
-                                        <tr>
+                                        <tr data-id="{{ s[0] }}"> <!-- Lưu book_id vào data-id của thẻ <tr> -->
+                                            <td style="border: 1px solid #adb5bd; padding: 0;">
+                                                <div class="dropdown col-5 dropdown-btn align-content-center text-right">
+                                                    <button type="button"
+                                                            class="btn btn-primary dropdown-toggle dropdown-btn-change justify-content-end"
+                                                            data-toggle="dropdown"
+                                                            style="background-color: white;color: #c92127;border: 2px solid;margin-left: 12px;">
+                                                    </button>
+                                                    <div class="dropdown-menu">
+                                                        <a class="dropdown-item edit-btn"
+                                                           href="javascript:void(0);">Sửa</a>
+                                                        <a class="dropdown-item delete-btn" href="javascript:void(0);">Xóa</a>
+                                                    </div>
+                                                </div>
+                                            </td>
                                             <th scope="row" style="border: 1px solid #adb5bd;">
                                                 <div class="media align-items-center">
                                                     <div class="media-body text-center">
-                                                        <span class="name mb-0 text-sm text-center">{{s[0]}}</span>
+                                                        <span class="name mb-0 text-sm text-center">{{ s[0] }}</span>
                                                     </div>
                                                 </div>
                                             </th>
                                             <td class="budget text-center"
-                                                style="border: 1px solid #adb5bd;max-width: 200px; word-wrap: break-word; overflow: hidden; text-overflow: ellipsis;">
+                                                style="border: 1px solid #adb5bd; max-width: 200px; word-wrap: break-word; overflow: hidden; text-overflow: ellipsis;"
+                                                data-field="name">
                                                 {{s[1]}}
                                             </td>
-                                            <td class="budget text-center" style="border: 1px solid #adb5bd;">
+                                            <td class="budget text-center" style="border: 1px solid #adb5bd;"
+                                                data-field="lft">
                                                 {{s[2]}}
                                             </td>
-                                            <td class="budget text-center" style="border: 1px solid #adb5bd;">
+                                            <td class="budget text-center" style="border: 1px solid #adb5bd;"
+                                                data-field="rgt">
                                                 {{s[3]}}
-                                            </td>
-                                            <td class="budget text-center" style="border: 1px solid #adb5bd;">
-                                                {{s[4]}}
-                                            </td>
-                                            <td style="border: 1px solid #adb5bd;">
-                                                        <span class="badge badge-dot mr-4 text-center w-100">
-                                                        <span class="status text-center">{{ s[5] }}</span>
-                                                        </span>
                                             </td>
                                         </tr>
                                         {% endfor %}
                                         </tbody>
                                     </table>
-
                                 </div>
-
-                                <!--                                <div class="d-flex px-5 py-4 justify-content-between "-->
-                                <!--                                     style="padding-bottom: 5px !important">-->
-                                <!--                                    <div class="font-weight-bolder display-4">-->
-                                <!--                                        Tổng doanh thu:-->
-                                <!--                                    </div>-->
-                                <!--                                    <div class="font-weight-bolder display-4">{{ total_revenue }} VNĐ</div>-->
-                                <!--                                </div>-->
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="container-fluid mt--6" style="display: none;" id="statistic-chart">
-        <div class="row justify-content-center">
-            <div class=" col ">
-                <div class="card">
-                    <div class="card-header bg-transparent">
-                        <h3 class="mb-0">Thống kê dạng biểu đồ</h3>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="myChart" height="380" width="800"></canvas>
                     </div>
                 </div>
             </div>
@@ -536,120 +556,183 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
-    // Lấy các phần tử cần thiết từ DOM
-    const statisticTableCheck = document.getElementById("statistic-table-check");
-    const statisticChartCheck = document.getElementById("statistic-chart-check");
-    const statisticTable = document.getElementById("statistic-table");
-    const statisticChart = document.getElementById("statistic-chart");
-    const ctx = document.getElementById('myChart'); // Canvas của biểu đồ
+    // Đảm bảo script chỉ chạy sau khi DOM đã được tải
+    document.addEventListener('DOMContentLoaded', function() {
 
-    // Hiển thị bảng và ẩn biểu đồ khi chọn "Xem bảng"
-    statisticTableCheck.addEventListener("click", () => {
-        statisticTable.style.display = "block";
-        statisticChart.style.display = "none";
-    });
+        // Hiển thị modal khi bấm nút "Thêm Thể Loại Mới"
+        document.getElementById('addBookGerneButton').addEventListener('click', function() {
+            document.getElementById('addBookGerneModal').style.display = 'flex';
+        });
 
-    // Hiển thị biểu đồ và ẩn bảng khi chọn "Xem biểu đồ"
-    statisticChartCheck.addEventListener("click", () => {
-        statisticTable.style.display = "none";
-        statisticChart.style.display = "block";
-
-        // Kiểm tra và xóa biểu đồ cũ nếu tồn tại
-        if (window.myChartInstance) {
-            window.myChartInstance.destroy();
+        // Đóng modal khi nhấn vào nút đóng (X)
+        var closeModalButton = document.getElementById('close-modal');
+        if (closeModalButton) {
+            closeModalButton.addEventListener('click', function() {
+                document.getElementById('addBookGerneModal').style.display = 'none';
+            });
         }
 
-        // Dữ liệu từ stats (được truyền từ server)
-        let data = [];
-        let labels = [];
+        // Xử lý gửi form khi người dùng nhấn "Xác Nhận"
+        document.getElementById('addBookGerneForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Ngăn không cho form reload trang
 
-        {% for s in full_stats %}
-        labels.push('{{ s[1] }}');  // Tên thể loại
-        // Kiểm tra nếu giá trị doanh thu là None và thay thế bằng 0
-        data.push({{ s[4] }}); // Doanh thu (thay None bằng 0)
-        {% endfor %}
+            const name = document.getElementById('name').value;
+            const lft = parseInt(document.getElementById('lft').value);
+            const rgt = parseInt(document.getElementById('rgt').value);
 
-        // Kiểm tra dữ liệu có hợp lệ không
-        if (labels.length === 0 || data.length === 0) {
-            alert("Không có dữ liệu để hiển thị biểu đồ!");
-            return;
-        }
+            const payload = { name, lft, rgt };
 
-        // Tạo biểu đồ mới
-        window.myChartInstance = new Chart(ctx, {
-    type: 'pie',
-    data: {
-        labels: labels,
-        datasets: [{
-            label: 'Doanh thu',
-            data: data,
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.8)',
-                'rgba(54, 162, 235, 0.8)',
-                'rgba(255, 206, 86, 0.8)',
-                'rgba(75, 192, 192, 0.8)',
-                'rgba(153, 102, 255, 0.8)',
-                'rgba(255, 159, 64, 0.8)'
-            ],
-            borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)'
-            ],
-            borderWidth: 2, // Độ rộng viền tăng lên để làm nổi bật các phần
-            hoverOffset: 10 // Tạo hiệu ứng "phóng to" khi hover
-        }]
+            fetch('/admin/add-bookgerne', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
     },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'left',  // Đặt mục lục ở trên
-                align: 'center',  // Căn giữa mục lục
-                labels: {
-                    padding: 20,  // Khoảng cách giữa các mục lục
-                    font: {
-                        size: 14,  // Kích thước chữ mục lục lớn hơn
-                        weight: 'bold', // In đậm mục lục
-                        family: "'Poppins', sans-serif" // Chọn font chữ đẹp, hiện đại
-                    },
-                    color: '#333'  // Màu chữ của mục lục
-                }
-            },
-            tooltip: {
-                callbacks: {
-                    label: function(tooltipItem) {
-                        // Định dạng tooltip để hiển thị giá trị và đơn vị
-                        return `${tooltipItem.label}: ${tooltipItem.raw.toLocaleString()} VNĐ`;
-                    }
-                },
-                backgroundColor: 'rgba(0, 0, 0, 0.7)', // Nền tooltip tối để dễ nhìn
-                titleFont: { size: 16, weight: 'bold' },
-                bodyFont: { size: 14 },
-                borderWidth: 1,
-                borderColor: '#fff'
-            }
-        },
-        layout: {
-            padding: {
-                top: 40,    // Tăng khoảng cách trên để tạo không gian
-                bottom: 40, // Tăng khoảng cách dưới
-                left: 30,   // Khoảng cách trái
-                right: 30   // Khoảng cách phải
-            }
-        },
-        animation: {
-            duration: 1000, // Thời gian animation để biểu đồ thêm mượt mà
-            easing: 'easeOutBounce' // Hiệu ứng bounce khi biểu đồ load
-        }
+    body: JSON.stringify(payload),
+})
+.then(response => response.json())
+.then(data => {
+    console.log(data); // In ra dữ liệu để kiểm tra
+    if (data.success) {
+        alert('Thêm thành công: ' + data.message);
+        location.reload(); // Reload lại trang để cập nhật bảng
+    } else {
+        alert('Thêm thất bại: ' + data.message);
     }
+})
+.catch(error => {
+    console.error('Lỗi khi thêm thể loại:', error);
+    alert('Đã xảy ra lỗi trong quá trình thêm.');
 });
+        });
     });
+
+
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.edit-btn').forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+
+            // Lấy dòng tr và id sách
+            const row = this.closest('tr');
+            const bookId = row.getAttribute('data-id');
+
+            // Chuyển các ô dữ liệu thành input
+            row.querySelectorAll('.budget').forEach(cell => {
+                const cellContent = cell.textContent.trim();
+                const field = cell.dataset.field; // Lấy tên trường từ data-field
+                if (field) {
+                    cell.innerHTML = `<input type="text" value="${cellContent}" class="edit-input" data-field="${field}">`;
+                }
+            });
+
+            // Ẩn dropdown list khi chỉnh sửa
+            row.querySelectorAll('.dropdown-btn').forEach(dropdown => {
+                dropdown.style.display = 'none'; // Ẩn dropdown
+            });
+
+            // Thêm nút "Cập nhật"
+            const updateButton = document.createElement('button');
+            updateButton.style.marginLeft = '15px';
+            updateButton.style.padding = '12px';
+            updateButton.textContent = 'Cập nhật';
+            updateButton.className = 'update-btn btn btn-success btn-sm';
+            row.querySelector('td:first-child').appendChild(updateButton);
+
+            // Ẩn nút "Sửa"
+            this.style.display = 'none';
+
+            // Xử lý khi bấm "Cập nhật"
+            updateButton.addEventListener('click', function() {
+                const updatedData = {};
+
+                // Thu thập dữ liệu từ các ô input
+                row.querySelectorAll('.edit-input').forEach(input => {
+                    const field = input.dataset.field;
+                    updatedData[field] = input.value;
+                });
+
+                console.log('Updated data being sent:', updatedData);
+
+                // Gửi yêu cầu POST để cập nhật
+                fetch(`/admin/update-bookgerne/${bookId}`, {  // Đổi URL này
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(updatedData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Cập nhật giao diện với dữ liệu trả về
+                        const updatedFields = data.updated;
+                        for (const [field, value] of Object.entries(updatedFields)) {
+                            const cell = row.querySelector(`[data-field="${field}"]`);
+                            if (cell) {
+                                cell.innerHTML = value; // Cập nhật lại nội dung cell
+                            }
+                        }
+
+                        // Xóa nút "Cập nhật" và hiển thị lại nút "Sửa"
+                        updateButton.remove();
+                        row.querySelector('.edit-btn').style.display = 'inline-block';
+
+                        // Hiển thị lại nút dropdown list
+                        row.querySelectorAll('.dropdown-btn').forEach(dropdown => {
+                            dropdown.style.display = 'inline-block'; // Hiển thị lại dropdown
+                        });
+                    } else {
+                        alert('Cập nhật thất bại: ' + (data.message || 'Lỗi không xác định'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating book:', error);
+                    alert('Đã xảy ra lỗi trong quá trình cập nhật.');
+                });
+            });
+        });
+    });
+
+    document.querySelectorAll('.delete-btn').forEach(button => {
+    button.addEventListener('click', function(event) {
+        event.preventDefault();
+
+        // Lấy dòng tr và id sách
+        const row = this.closest('tr');
+        const bookId = row.getAttribute('data-id');
+
+        // Hiển thị thông báo xác nhận trước khi xóa
+        if (confirm('Bạn có chắc chắn muốn xóa sách này không?')) {
+            // Gửi yêu cầu POST để xóa sách
+            fetch(`/admin/delete-bookgerne/${bookId}`, {  // Đảm bảo URL đúng
+                method: 'POST',
+            })
+            .then(response => response.json())  // Đảm bảo rằng response là JSON
+            .then(data => {
+                if (data.success) {
+                    // Xóa dòng tr khỏi bảng nếu thành công
+                    row.remove();
+                    alert('Thể loại đã được xóa thành công!');
+                } else {
+                    // Thông báo lỗi nếu xóa thất bại
+                    alert('Xóa thất bại: ' + (data.message || 'Lỗi không xác định'));
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting book:', error);
+                alert('Đã xảy ra lỗi trong quá trình xóa.');
+            });
+        }
+    });
+});
+
+});
+
+
 </script>
 
 
@@ -665,25 +748,38 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"
         integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
+<script src="{{ url_for('static', filename='js/adminBookManager.js') }}"></script>
 <script src="{{ url_for('static', filename='js/adminStatistic.js') }}"></script>
 
-<!--<script>-->
-<!--    const statisticTableCheck = document.getElementById("statistic-table-check");-->
-<!--    const statisticChartCheck = document.getElementById("statistic-chart-check");-->
-<!--    const statisticTable = document.getElementById("statistic-table");-->
-<!--    const statisticChart = document.getElementById("statistic-chart");-->
-<!--    statisticTableCheck.addEventListener("click", (event) => {-->
-<!--        statisticTable.style.display = "block";-->
-<!--        statisticChart.style.display = "none";-->
-<!--    });-->
+<div id="addBookGerneModal" class="modal" style="display: none;">
+    <div class="modal-content" style="width: 400px; margin: auto; background-color: white; padding: 20px; border-radius: 8px; position: relative;">
+        <!-- Nút đóng modal -->
+        <span id="close-modal" style="position: absolute; top: 10px; right: 15px; cursor: pointer;">&times;</span>
+        <h4 style="text-align: center; color: #333;">Thêm Thể Loại Mới</h4>
+        <form id="addBookGerneForm">
+            <div style="margin-bottom: 15px;">
+                <label for="name">Tên Thể Loại:</label>
+                <input type="text" id="name" name="name" required
+                       style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ddd;">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label for="lft">Lft:</label>
+                <input type="number" id="lft" name="lft" required
+                       style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ddd;">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label for="rgt">Rgt:</label>
+                <input type="number" id="rgt" name="rgt" required
+                       style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ddd;">
+            </div>
+            <button type="submit"
+                    style="width: 100%; padding: 10px; background-color: #2196F3; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                Xác Nhận
+            </button>
+        </form>
+    </div>
+</div>
 
-
-<!--    statisticChartCheck.addEventListener("click", (event) => {-->
-<!--        statisticTable.style.display = "none";-->
-<!--        statisticChart.style.display = "block";-->
-<!--    });-->
-<!--});-->
-<!--</script>-->
 
 </body>
 </html>

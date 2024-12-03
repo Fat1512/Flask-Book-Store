@@ -125,38 +125,36 @@ def create_online_order(request):
     return online_order
 
 
-def create_offline_order(order_list, user=None):
+def create_offline_order(order_list):
     offline_order = OfflineOrder(status=OrderStatus.DA_HOAN_THANH,
                                  payment_method=PaymentMethod.TIEN_MAT,
                                  created_at=datetime.utcnow(),
                                  address_id=1,
-                                 employee_id=2,
-                                 customer=user)
-    if user is not None:
-        user.orders.append(offline_order)
+                                 employee_id=2)
 
     db.session.add(offline_order)
     db.session.flush()
-    total_amount = 0
 
+    order_detail_list = []
+    total_amount = 0
     for order_item in order_list:
         book_id = order_item['book_id']
         quantity = int(order_item['quantity'])
         price = int(order_item['price'])
         order_detail = OrderDetail(order_id=offline_order.order_id, book_id=book_id, quantity=quantity, price=price)
-        offline_order.order_detail.append(order_detail)
+        order_detail_list.append(order_detail)
         total_amount = total_amount + quantity * price
 
     payment_detail = PaymentDetail(order_id=offline_order.order_id, created_at=datetime.utcnow(), amount=total_amount)
-    offline_order.payment_detail = payment_detail
 
+    db.session.add_all(order_detail_list)
+    db.session.add(payment_detail)
     db.session.commit()
     return offline_order.to_detail_dict()
 
 
 def calculate_total_order_amount(order_id):
-    total_amount = db.session.query(func.sum(OrderDetail.quantity * OrderDetail.price)).filter(
-        OrderDetail.order_id == order_id).first()[0]
+    total_amount = db.session.query(func.sum(OrderDetail.quantity * OrderDetail.price)).filter(OrderDetail.order_id == order_id).first()[0]
     shipping_fee = db.session.query(OnlineOrder.shipping_fee).filter(OnlineOrder.order_id == order_id).first()
     total_amount = total_amount + shipping_fee[0] if shipping_fee is not None else total_amount
     return total_amount

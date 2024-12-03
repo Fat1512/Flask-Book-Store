@@ -37,6 +37,22 @@ function extractCurrencyNumber(currencyString) {
     return parseFloat(numericValue.replace(',', '.')); // Convert to float, replace comma with dot
 }
 
+const showToast = function (message, isError) {
+    const color = isError ? 'var(--red)' : "#6cbf6c"
+    Toastify({
+        text: message,
+        duration: 3000,
+        newWindow: true,
+        close: true,
+        gravity: "top", // `top` or `bottom`
+        position: "center", // `left`, `center` or `right`
+        stopOnFocus: true, // Prevents dismissing of toast on hover
+        style: {
+            background: color,
+        }
+    }).showToast()
+}
+
 const renderCheckAll = function () {
     toggleAllButton.checked = cnt === totalCheckbox;
 }
@@ -55,9 +71,10 @@ const moveCartItemToCheckOut = async function (data) {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const result = await response.json(); // Parse JSON response
+         // Parse JSON response
+        return await response.json()
     } catch (error) {
-        alert('Failed to delete cart.');
+        showToast(error.message, true)
     }
 }
 
@@ -65,7 +82,7 @@ async function handleOnClickPayment() {
     let cartItemChecked = []
     groupControll.forEach(el => {
             if (el.querySelector('.checkbox:checked')) {
-                data = {
+                const data = {
                     "bookId": el.getAttribute('id'),
                     "quantity": el.querySelector('.cart-item-quantity').textContent,
                     'price': extractCurrencyNumber(el.querySelector('.cart-item-price ').textContent),
@@ -80,10 +97,7 @@ async function handleOnClickPayment() {
     window.location.replace('http://127.0.0.1:5000/cart/checkout')
 }
 
-buttonPayment.addEventListener("click", () => handleOnClickPayment()
-)
-
-
+buttonPayment.addEventListener("click", () => handleOnClickPayment())
 const deleteCartItem = async function (id) {
     try {
         const response = await fetch(`${CART_API}/${id}`, {
@@ -95,10 +109,10 @@ const deleteCartItem = async function (id) {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const result = await response.json(); // Parse JSON response
-        alert(result.message);
+
+        return await response.json(); // Parse JSON response
     } catch (error) {
-        alert('Failed to delete cart.');
+        showToast(error.message, true)
     }
 }
 const updateCart = async function (data) {
@@ -114,13 +128,10 @@ const updateCart = async function (data) {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-
-        const result = await response.json(); // Parse JSON response
-        console.log('Cart updated:', result);
-        alert(result.message);
+        // Parse JSON response
+        return await response.json()
     } catch (error) {
-        console.error('Error updating cart:', error);
-        alert('Failed to update cart.');
+        showToast(error.message, true)
     }
 
 }
@@ -150,49 +161,96 @@ groupControll.forEach(el => {
     )
 
     deletButton.addEventListener('click', () => {
-        deleteCartItem(el.getAttribute("id"))
-        el.remove()
+        deleteCartItem(el.id).then(r => {
+            if (r['status'] === 200) {
+                el.remove()
+                renderTotalCartItem(r['currentItem'], el.id)
+                showToast("Xóa sản phẩm thành công", false)
+            }
+        })
+
     })
     buttonIncrease.addEventListener('click', () => {
-        quantityEl.innerHTML = parseInt(quantityEl.textContent) + 1
-        totalprice.innerHTML = VND.format(parseInt(quantityEl.textContent) *
-            parseInt(buttonIncrease.getAttribute('value')))
-
-        if (checkButon.checked) {
-            const numTotalPrice = extractCurrencyNumber(totalPrice.textContent)
-            const itemPrice = parseInt(buttonIncrease.getAttribute('value'))
-            totalPrice.innerHTML = VND.format(numTotalPrice + itemPrice)
-        }
-        data = {
+        const data = {
             "cartId": 2,
             "cartItems": [
                 {
-                    "bookId": el.getAttribute("id"),
-                    "quantity": quantityEl.innerHTML
+                    "bookId": el.id,
+                    "quantity": parseInt(quantityEl.textContent) + 1
                 }
             ]
         }
-        updateCart(data)
+        updateCart(data).then(res => {
+                if (res['status'] === 200) {
+                    console.log(res)
+                    quantityEl.innerHTML = res['data'].quantity
+                    totalprice.innerHTML = VND.format(res['data'].quantity * res['data'].book.price)
+                    if (checkButon.checked) {
+                        const numTotalPrice = extractCurrencyNumber(totalPrice.textContent)
+                        const itemPrice = parseInt(buttonIncrease.getAttribute('value'))
+                        totalPrice.innerHTML = VND.format(numTotalPrice + itemPrice)
+                    }
+                    showToast("Tăng sản phẩm thành công", false)
+                }
+            }
+        )
     })
     buttonDescrease.addEventListener('click', () => {
         if (quantityEl.textContent === "1") return
-        quantityEl.innerHTML = parseInt(quantityEl.textContent) - 1
-        totalprice.innerHTML = VND.format(parseInt(quantityEl.textContent) *
-            parseInt(buttonDescrease.getAttribute('value')))
-        if (checkButon) {
-            const numTotalPrice = extractCurrencyNumber(totalPrice.textContent)
-            const itemPrice = parseInt(buttonIncrease.getAttribute('value'))
-            totalPrice.innerHTML = VND.format(numTotalPrice - itemPrice)
-        }
-        data = {
+        const data = {
             "cartId": 2,
             "cartItems": [
                 {
-                    "bookId": el.getAttribute("id"),
-                    "quantity": quantityEl.innerHTML
+                    "bookId": el.id,
+                    "quantity": parseInt(quantityEl.textContent) - 1
                 }
             ]
         }
-        updateCart(data)
+        updateCart(data).then(res => {
+                if (res['status'] === 200) {
+                    quantityEl.innerHTML = res['data'].quantity
+                    totalprice.innerHTML = VND.format(res['data'].quantity * res['data'].book.price)
+                    if (checkButon.checked) {
+                        const numTotalPrice = extractCurrencyNumber(totalPrice.textContent)
+                        const itemPrice = parseInt(buttonIncrease.getAttribute('value'))
+                        totalPrice.innerHTML = VND.format(numTotalPrice + itemPrice)
+                    }
+                    showToast("Giảm sản phẩm thành công", false)
+                }
+            }
+        )
     })
 })
+const renderTotalCartItem = function (quantity, deleteItemId) {
+    const cartHeader = document.querySelector('.cart-header-total')
+    const totalCheckBox = document.querySelector('.cart-total')
+    const labelTotal = document.querySelector('.label-total')
+    const subCartList = document.querySelector('.sub-cart').children
+    const rowBody = document.querySelector('.row-body')
+
+    cartHeader.innerHTML = `${quantity} sản phẩm`
+    totalCheckBox.innerHTML = `Chọn tất cả ${quantity}`
+    if (quantity !== 0) {
+        labelTotal.innerHTML = quantity
+        for (let i = 0; i < subCartList.length; i++) {
+            if (subCartList[i].id === deleteItemId) {
+                subCartList[i].remove()
+                return
+            }
+        }
+    } else {
+        labelTotal.style = 'display:none'
+        document.querySelector('.sub-cart').innerHTML
+        rowBody.querySelector('.content').remove()
+        rowBody.insertAdjacentHTML('beforeend', `
+             <div class="h-50vh col-md-12 item-bg-color rounded d-flex flex-column align-items-center justify-content-center">
+                <img src="https://cdn0.fahasa.com/skin//frontend/ma_vanese/fahasa/images/checkout_cart/ico_emptycart.svg"
+                     class="center">
+                <p>Chưa có sản phẩm nào</p>
+                <button class="btn btn-large btn-primary">
+                    <a href="/search/" class="text-white">Mua sắm ngay</a>
+                </button>
+            </div>
+`)
+    }
+}

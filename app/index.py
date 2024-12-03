@@ -1,6 +1,5 @@
 import app.controllers.AccountController
 from app.controllers.CartController import cart_bp
-from app.controllers.rest.AccountAPI import account_rest_bp
 from app.controllers.rest.CartAPI import cart_rest_bp
 from app.controllers.rest.PaymentAPI import payment_rest_bp
 from app.dao import UserDao
@@ -15,7 +14,6 @@ from app.controllers.OrderController import order_bp
 from app.controllers.rest.BookController import book_rest_bp
 from app.controllers.rest.ConfigAPI import config_api_bp
 from app.controllers.rest.OrderAPI import order_api_bp
-from app.controllers.rest.UserAPI import user_api_bp
 from app.controllers.rest.BookGerneController import book_gerne_rest_bp
 from app.controllers.AccountController import account_bp
 from app.controllers.AdminController import admin_bp
@@ -30,10 +28,8 @@ app.register_blueprint(config_api_bp, url_prefix='/api/v1/config')
 app.register_blueprint(book_gerne_rest_bp, url_prefix='/api/v1/bookGerne')
 app.register_blueprint(book_rest_bp, url_prefix='/api/v1/book')
 app.register_blueprint(order_api_bp, url_prefix='/api/v1/order')
-app.register_blueprint(user_api_bp, url_prefix='/api/v1/user')
 app.register_blueprint(cart_rest_bp, url_prefix='/api/v1/cart')
 app.register_blueprint(payment_rest_bp, url_prefix='/api/v1/payment')
-app.register_blueprint(account_rest_bp,url_prefix='/api/v1/account')
 
 app.register_blueprint(index_bp, url_prefix='/')
 app.register_blueprint(account_bp, url_prefix='/account')

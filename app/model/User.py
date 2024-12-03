@@ -57,12 +57,10 @@ class User(db.Model):
     def get_id(self):
         return str(self.user_id)
 
-
 # if __name__ == '__main__':
 #     with app.app_context():
 #         db.create_all()
-#         for i in range(0, 52):
-#             u = User(first_name="Tùng", last_name="Sơn", username="admin" + str(i),
-#                      password=str(hashlib.md5('admin'.encode('utf-8')).hexdigest()),phone_number="12", email="admin@gmail.com", user_role=UserRole.USER)
-#             db.session.add(u)
+#         u = User(first_name="Quan Tri", last_name="Vien", username="admin", password=str(hashlib.md5('admin'.encode('utf-8')).hexdigest()),email="admin@gmail.com",
+#                  user_role=UserRole.ADMIN)
+#         db.session.add(u)
 #         db.session.commit()

@@ -1,6 +1,7 @@
 from app.dao.CartDao import delete_cart_item
 from app.dao.OrderDAO import *
 from app.dao.UserDao import *
+from app.dao.PaymentDAO import create_payment
 from app.dao.FormImportDAO import *
 from flask import Blueprint, jsonify
 from flask import render_template, request
@@ -11,7 +12,9 @@ order_api_bp = Blueprint('/api/v1/order', __name__)
 
 @order_api_bp.route("/", methods=['GET'])
 def get_order():
-    status = request.args.get("status")
+    status = None
+    if request.args.get("status"):
+        status = request.args.get("status").split(',')
     payment_method = request.args.get("paymentMethod")
     sort_by = request.args.get("sortBy")
     sort_dir = request.args.get("dir")
@@ -81,7 +84,21 @@ def confirm_order(order_id):
         "ok": "ok"
     }
 
+@order_api_bp.route("/<order_id>/status", methods=['POST'])
+def update_status(order_id):
+    status = request.json.get("id")
+    status_enum = OrderStatus(int(status))
 
+    update_order_status(order_id, status_enum)
+
+    if OrderStatus.DA_HOAN_THANH == status_enum:
+        order = find_by_id(order_id)
+        total_amount = calculate_total_order_amount(order_id)
+        payment_detail = PaymentDetail(order_id=order.order_id, created_at=datetime.utcnow(), amount=total_amount)
+        create_payment(payment_detail)
+    return {
+        "messi": "ronaldo"
+    }
 @order_api_bp.route("/<order_id>/detail", methods=['GET', 'POST'])
 def find(order_id):
     order = find_by_id(order_id)
