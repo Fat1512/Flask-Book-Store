@@ -1,4 +1,6 @@
-from app.model.Order import Order, PaymentDetail, ShippingMethod
+from app.exception.NotFoundError import NotFoundError
+from app.model.Book import Book
+from app.model.Order import Order, PaymentDetail, ShippingMethod, OrderCancellation
 from sqlalchemy import desc, asc, func, or_
 from datetime import datetime
 from app import app, db
@@ -25,11 +27,26 @@ def update_order_status(order_id, status):
 
 def find_add_by_user_id(status):
     order = Order.query
-    order = order.filter(Order.user_id == 2)
+    order = order.filter(Order.customer_id == 2)
     if status and status != 8:
         order = order.filter(Order.status == OrderStatus(int(status)))
-
+    order = order.order_by(desc(Order.created_at))
     return order.all()
+
+
+def create_order_cancellation(data):
+    order = Order.query.get(data['orderId'])
+    if order is None: raise NotFoundError("Không tìm thấy đơn hàng của bạn", 404)
+
+    for order_detail in order.order_detail:
+        order_detail.book.increase_book(quantity=order_detail.quantity)
+
+    order_cancellation = OrderCancellation(order_id=order.order_id, reason=data['reason'])
+    order.status = OrderStatus.DA_HUY
+    db.session.add(order_cancellation)
+    db.session.commit()
+
+    return order_cancellation
 
 
 def find_order_by_id(id):
@@ -107,7 +124,7 @@ def create_online_order(request):
     shipping_fee = request.get('shippingFee')
     online_order = OnlineOrder(status=OrderStatus.DANG_XU_LY,
                                payment_method=payment_method,
-                               created_at=datetime.utcnow(),
+                               created_at=datetime.now(),
                                address_id=request['addressId'],
                                shipping_method=shipping_method,
                                shipping_fee=shipping_fee,
@@ -118,6 +135,10 @@ def create_online_order(request):
 
     # order_detail_list = []
     for book in request['books']:
+        book_db = Book.query.get(book['bookId'])
+        if book_db is None: raise NotFoundError('Không tìm thấy sách')
+
+        book_db.decrease_book(quantity=book['quantity'])
         order_detail = OrderDetail(book_id=book['bookId'], quantity=book['quantity'], price=book['finalPrice'])
         online_order.order_detail.append(order_detail)
 
@@ -154,7 +175,8 @@ def create_offline_order(order_list):
 
 
 def calculate_total_order_amount(order_id):
-    total_amount = db.session.query(func.sum(OrderDetail.quantity * OrderDetail.price)).filter(OrderDetail.order_id == order_id).first()[0]
+    total_amount = db.session.query(func.sum(OrderDetail.quantity * OrderDetail.price)).filter(
+        OrderDetail.order_id == order_id).first()[0]
     shipping_fee = db.session.query(OnlineOrder.shipping_fee).filter(OnlineOrder.order_id == order_id).first()
     total_amount = total_amount + shipping_fee[0] if shipping_fee is not None else total_amount
     return total_amount

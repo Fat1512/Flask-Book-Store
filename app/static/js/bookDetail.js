@@ -4,7 +4,31 @@ const CURRENT_URL = new URL(window.location);
 const buttonAddCart = document.querySelector(".btn-add-cart")
 const buttonBuy = document.querySelector('.btn-buy')
 let starCount = 0
+const VND = new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+});
 
+function extractCurrencyNumber(currencyString) {
+    const numericValue = currencyString.replace(/[^\d,]/g, ''); // Keep digits and comma
+    return parseFloat(numericValue.replace(',', '.')); // Convert to float, replace comma with dot
+}
+
+const showToast = function (message, isError) {
+    const color = isError ? 'var(--red)' : "#6cbf6c"
+    Toastify({
+        text: message,
+        duration: 3000,
+        newWindow: true,
+        close: true,
+        gravity: "top", // `top` or `bottom`
+        position: "center", // `left`, `center` or `right`
+        stopOnFocus: true, // Prevents dismissing of toast on hover
+        style: {
+            background: color,
+        }
+    }).showToast()
+}
 
 buttonBuy.addEventListener('click', () => {
     addCartItem(CURRENT_URL.searchParams.get("bookId")).then(res => {
@@ -13,7 +37,13 @@ buttonBuy.addEventListener('click', () => {
     })
 
 })
-buttonAddCart.addEventListener('click', () => addCartItem(CURRENT_URL.searchParams.get("bookId")))
+buttonAddCart.addEventListener('click', () =>
+    addCartItem(CURRENT_URL.searchParams.get("bookId")).then(res => {
+        if (res['status'] === 200) {
+            renderTotalCartItem(res['data'])
+            showToast("Thêm sản phẩm vào giỏ hàng thành công", false)
+        }
+    }))
 const addCartItem = async function (id) {
     try {
         const response = await fetch(`${CART_API}/${id}`, {
@@ -28,7 +58,7 @@ const addCartItem = async function (id) {
         // Parse JSON response
         return await response.json()
     } catch (error) {
-        alert('Failed to add cart.');
+        showToast(error.message, true)
     }
 }
 const postComment = async function (data, url) {
@@ -45,7 +75,7 @@ const postComment = async function (data, url) {
         }
         return await response.json()
     } catch (error) {
-        alert('Failed to post comment.');
+        showToast(error.message, true)
     }
 }
 
@@ -66,43 +96,20 @@ buttonModalComment.addEventListener('click', () => {
             "starCount": starCount + 1
         }
         postComment(data, 'comment').then(res => {
+            console.log(res)
             if (res['status'] === 200) {
                 renderComment(res['data'])
                 handleCloseFormComment()
+                showToast('Đánh giá của bạn đã được ghi nhận', false)
             }
         })
     } catch (error) {
-        Toastify({
-            text: error.message,
-            duration: 3000,
-            newWindow: true,
-            close: true,
-            gravity: "top", // `top` or `bottom`
-            position: "center", // `left`, `center` or `right`
-            stopOnFocus: true, // Prevents dismissing of toast on hover
-            style: {
-                background: "var(--red)",
-            }
-        }).showToast();
-    } finally {
-        Toastify({
-            text: 'Đánh giá của bạn đã được ghi nhận',
-            duration: 3000,
-            newWindow: true,
-            close: true,
-            gravity: "top", // `top` or `bottom`
-            position: "center", // `left`, `center` or `right`
-            stopOnFocus: true, // Prevents dismissing of toast on hover
-            style: {
-                background: "#6cbf6c",
-            }
-        }).showToast();
+        showToast(error.message, true)
     }
 
 })
 const groupComment = document.querySelector('.group-comment')
 const renderComment = function (data) {
-
     const groupOverview = document.querySelector('.overview')
     const starPercentList = groupOverview.querySelector('.star-percent').children
     let startArr = []
@@ -164,7 +171,7 @@ const renderComment = function (data) {
         </div>
      </div>
     `
-    groupComment.insertAdjacentHTML('beforebegin', html)
+    groupComment.insertAdjacentHTML('afterbegin', html)
     groupOverview.innerHTML = overview
 }
 const buttonCloseFormComment = document.querySelectorAll('.close-form')
@@ -207,4 +214,66 @@ const renderStar = function (index) {
 
     }
     ratingForm.innerHTML = html.join('')
+}
+const renderTotalCartItem = function (data) {
+    const labelTotal = document.querySelector('.label-total')
+    const subCartList = document.querySelector('.sub-cart')
+    if (subCartList) {
+        const childrent = subCartList.children
+        let isPresent = true
+        for (let i = 0; i < childrent.length; i++) {
+            if (parseInt(childrent[i].id) === data.cartItem.book.bookId) {
+                childrent[i].querySelector('.quantity').innerHTML = data.cartItem.quantity
+                isPresent = false;
+                break
+            }
+        }
+        if (isPresent) {
+            document.querySelector('.sub-cart').insertAdjacentHTML('afterbegin', `
+                <li id="${data.cartItem.book.bookId}" class="sub-cart-item d-flex p-3">
+                        <img class="sub-cart-item-image"
+                             src=${data.cartItem.book.poster}>
+                        <div class="sub-cart-item-detail pl-3">
+                            <p class="sub-cart-item-title text-secondary">${data.cartItem.book.title}</p>
+                            <p class="font-weight-bold m-0 text-primary">${VND.format(data.cartItem.book.price)}
+                                <span class="quantity">x ${data.cartItem.quantity}</span></p>
+                        </div>
+                </li>
+             
+            `)
+            document.querySelector('.sub-total-price').innerHTML = VND.format(data.totalPrice)
+            document.querySelector('.sub-total').innerHTML = data.current_cart
+            labelTotal.innerHTML = data.current_cart
+        }
+    } else {
+        document.querySelector('.cart-link').insertAdjacentHTML('afterbegin', `
+            <span class="label-total text-white">${data.current_cart}</span>
+        `)
+        document.querySelector('.sub-total').innerHTML = data.current_cart
+        document.querySelector('.menu-cart-item').lastElementChild.remove()
+        document.querySelector('.menu-cart-item').insertAdjacentHTML('beforeend', `
+          <ul class="sub-cart list-unstyled mt-3">
+              <li id="${data.cartItem.book.book_id}" class="sub-cart-item d-flex p-3">
+                <img class="sub-cart-item-image"
+                     src=${data.cartItem.book.poster}>
+                <div class="sub-cart-item-detail pl-3">
+                    <p class="sub-cart-item-title text-secondary">${data.cartItem.book.title}</p>
+                    <p class="font-weight-bold m-0 text-primary">${VND.format(data.cartItem.book.price)}
+                        <span class="quantity">x ${data.cartItem.quantity}</span></p>
+                </div>
+             </li>
+             </ul>
+              <div class="d-flex p-3 align-items-center justify-content-between">
+                    <div class="group-price">
+                        <p class="m-0">Tổng cộng</p>
+                        <p class="text-primary">${VND.format(data.totalPrice)}</p>
+                    </div>
+                    <div>
+                        <button class="btn btn-primary">
+                            Xem giỏ hàng
+                        </button>
+                    </div>
+                </div>
+         `)
+    }
 }

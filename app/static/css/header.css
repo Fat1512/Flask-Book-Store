@@ -93,7 +93,6 @@
     min-width: 280px;
 }
 
-.
 .menu-cart-item::after {
     content: "";
     width: 34%;
@@ -149,4 +148,5 @@
     font-weight: bold;
     top: -16px;
     left: 32px;
+
 }

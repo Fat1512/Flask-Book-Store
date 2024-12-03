@@ -77,12 +77,24 @@ def online_order():
     })
 
 
+@order_api_bp.route('/orderCancellation', methods=['POST'])
+def cancel_order():
+    data = request.json
+    order_cancellation = create_order_cancellation(data)
+    return jsonify({
+        'message': 'SUCCESS',
+        'status': 200,
+        'data': order_cancellation.to_dict()
+    })
+
+
 @order_api_bp.route("/<order_id>/confirm", methods=['GET'])
 def confirm_order(order_id):
     update_order_status(order_id, OrderStatus.CHO_GIAO_HANG)
     return {
         "ok": "ok"
     }
+
 
 @order_api_bp.route("/<order_id>/status", methods=['POST'])
 def update_status(order_id):
@@ -99,6 +111,8 @@ def update_status(order_id):
     return {
         "messi": "ronaldo"
     }
+
+
 @order_api_bp.route("/<order_id>/detail", methods=['GET', 'POST'])
 def find(order_id):
     order = find_by_id(order_id)

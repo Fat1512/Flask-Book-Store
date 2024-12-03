@@ -43,11 +43,12 @@ def add_cart_item(book_id):
         if item.book_id == book_id:
             item.quantity += 1
             db.session.commit()
-            return
+            return item
 
     cart_item = CartItem(book_id=book_id, cart_id=cart.cart_id, quantity=1)
     cart.cart_items.append(cart_item)
     db.session.commit()
+    return cart_item
 
 
 def add_multiple_cart_item(books):

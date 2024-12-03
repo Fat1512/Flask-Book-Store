@@ -66,7 +66,7 @@
                     <div class="menu-cart-item-header">
                         <p class="p-3 m-0">
                             <span><i class="fa-solid fa-cart-shopping"></i></span>
-                            <span>Giỏ hàng ({{ cart_items|length }})</span>
+                            <span>Giỏ hàng <span class="sub-total">({{ cart_items|length }})</span></span>
                         </p>
                     </div>
                     {% if cart_items |length %}
@@ -78,7 +78,7 @@
                                     <div class="sub-cart-item-detail pl-3">
                                         <p class="sub-cart-item-title text-secondary">{{ item.book.title }}</p>
                                         <p class="font-weight-bold m-0 text-primary">{{ item.book.price|currency("VND") }}
-                                            <span>x {{ item.quantity }}</span></p>
+                                            <span class="quantity">x {{ item.quantity }}</span></p>
                                     </div>
                                 </li>
                             {% endfor %}
@@ -87,7 +87,7 @@
                         <div class="d-flex p-3 align-items-center justify-content-between">
                             <div class="group-price">
                                 <p class="m-0">Tổng cộng</p>
-                                <p class="text-primary">{{ total_price|currency("VND") }}</p>
+                                <p class="text-primary sub-total-price">{{ total_price|currency("VND") }}</p>
                             </div>
                             <div>
                                 <button class="btn btn-primary">
