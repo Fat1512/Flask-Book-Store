@@ -6,8 +6,10 @@ from app.model.Order import OrderDetail
 from app.model.User import User
 from app.model.Account import Account
 from app.model.Publisher import Publisher
-from sqlalchemy import or_, func
+from sqlalchemy import or_, func, case
 from datetime import datetime, timedelta, date
+from sqlalchemy.sql import extract
+from flask_login import current_user
 
 
 def book_gerne_statistic(kw=None, selected_month=None):
@@ -49,6 +51,48 @@ def book_gerne_statistic(kw=None, selected_month=None):
     g = g.group_by(BookGerne.book_gerne_id, BookGerne.name).order_by(BookGerne.book_gerne_id)
 
     return g.all()
+
+
+from sqlalchemy.sql import func, extract
+from datetime import datetime
+
+
+def stats_revenue_by_month(year=None):
+    """
+    Thống kê doanh thu theo tháng của năm. Bao gồm cả các tháng không có doanh thu.
+
+    :param year: Năm cần thống kê doanh thu (mặc định là None, sẽ lấy năm hiện tại).
+    :return: Danh sách tuple gồm (tháng, tổng doanh thu), sắp xếp từ tháng 1 đến 12.
+    """
+    if year is None:
+        year = datetime.now().year
+
+    # Truy vấn doanh thu thực tế từ cơ sở dữ liệu
+    result = db.session.query(
+        extract('month', Order.created_at).label('month'),
+        func.coalesce(func.sum(Book.price * OrderDetail.quantity), 0).label('total_revenue')
+    ).join(
+        OrderDetail, OrderDetail.order_id == Order.order_id, isouter=True
+    ).join(
+        Book, Book.book_id == OrderDetail.book_id, isouter=True
+    ).filter(
+        Order.status == 'completed'
+    ).filter(
+        extract('year', Order.created_at) == year
+    ).group_by(
+        extract('month', Order.created_at)
+    ).all()
+
+    # Chuyển kết quả thành dictionary để dễ tra cứu
+    revenue_by_month = {int(month): revenue for month, revenue in result}
+
+    # Tạo danh sách đầy đủ từ tháng 1 đến 12
+    full_result = [
+        (month, revenue_by_month.get(month, 0))  # Nếu không có dữ liệu cho tháng, trả về 0
+        for month in range(1, 13)
+    ]
+
+    return full_result
 
 
 # with app.app_context():
@@ -332,3 +376,42 @@ def book_management(gerne_id=None):
 # with app.app_context():
 #     stats = book_management()
 #     print(stats)
+
+
+def bookgerne_management(kw=None):
+    query = db.session.query(
+        BookGerne.book_gerne_id,
+        BookGerne.name,
+        BookGerne.lft,
+        BookGerne.rgt
+    ).group_by(BookGerne.book_gerne_id, BookGerne.name)
+
+    if kw:
+        query = query.filter(BookGerne.name.contains(kw))
+
+    return query.all()
+
+
+def profile():
+    query = db.session.query(
+        Account.username,
+        # func.concat(User.first_name, ' ', User.last_name).label('full_name'),
+        User.first_name,
+        User.last_name,
+        User.email,
+        User.phone_number,
+        User.avt_url,
+        case(
+            (User.sex == 1, True), else_=False
+        ).label('is_male'),
+        case(
+            (User.sex == 0, True), else_=False
+        ).label('is_female'),
+        extract('day', User.date_of_birth).label('day'),  # Tách ngày
+        extract('month', User.date_of_birth).label('month'),  # Tách tháng
+        extract('year', User.date_of_birth).label('year')  # Tách năm
+
+    ).join(Account, Account.user_id == User.user_id
+    ).filter(User.user_id == current_user.user_id)  # Lọc theo user_id của current_user
+
+    return query.first()  # Trả về một hàng kết quả

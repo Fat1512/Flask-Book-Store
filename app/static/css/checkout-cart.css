@@ -177,6 +177,7 @@ input-address:focus {
     flex: 0.2;
 }
 
+
 .form-address > input, select {
     width: 100%;
     padding: 8px;

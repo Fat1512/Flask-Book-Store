@@ -27,6 +27,24 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/employeeAddProducts.css') }}">
+    <style>
+        .profile-picture {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid #ddd;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
 </head>
 
 <body>
@@ -46,7 +64,7 @@
                 <!-- Nav items -->
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link active" href="/admin/">
+                        <a class="nav-link" href="/admin/">
                             <i class="ni ni-chart-pie-35 text-primary"></i>
                             <span class="nav-link-text">Trang chủ</span>
                         </a>
@@ -82,11 +100,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/admin/profile">
+                        <a class="nav-link active" href="/admin/profile">
                             <i class="ni ni-key-25 text-info"></i>
                             <span class="nav-link-text">Hồ sơ</span>
                         </a>
                     </li>
+
                     <li class="nav-item">
                         <a class="nav-link" href="register.html">
                             <i class="ni ni-circle-08 text-pink"></i>
@@ -100,53 +119,53 @@
                         </a>
                     </li>
                 </ul>
-<!--                &lt;!&ndash; Divider &ndash;&gt;-->
-<!--                <hr class="my-3">-->
-<!--                &lt;!&ndash; Heading &ndash;&gt;-->
-<!--                <h6 class="navbar-heading p-0 text-muted">-->
-<!--                    <span class="docs-normal">Documentation</span>-->
-<!--                </h6>-->
-<!--                &lt;!&ndash; Navigation &ndash;&gt;-->
-<!--                <ul class="navbar-nav mb-md-3">-->
-<!--                    <li class="nav-item">-->
-<!--                        <a class="nav-link"-->
-<!--                           href="https://demos.creative-tim.com/argon-dashboard/docs/getting-started/overview.html"-->
-<!--                           target="_blank">-->
-<!--                            <i class="ni ni-spaceship"></i>-->
-<!--                            <span class="nav-link-text">Getting started</span>-->
-<!--                        </a>-->
-<!--                    </li>-->
-<!--                    <li class="nav-item">-->
-<!--                        <a class="nav-link"-->
-<!--                           href="https://demos.creative-tim.com/argon-dashboard/docs/foundation/colors.html"-->
-<!--                           target="_blank">-->
-<!--                            <i class="ni ni-palette"></i>-->
-<!--                            <span class="nav-link-text">Foundation</span>-->
-<!--                        </a>-->
-<!--                    </li>-->
-<!--                    <li class="nav-item">-->
-<!--                        <a class="nav-link"-->
-<!--                           href="https://demos.creative-tim.com/argon-dashboard/docs/components/alerts.html"-->
-<!--                           target="_blank">-->
-<!--                            <i class="ni ni-ui-04"></i>-->
-<!--                            <span class="nav-link-text">Components</span>-->
-<!--                        </a>-->
-<!--                    </li>-->
-<!--                    <li class="nav-item">-->
-<!--                        <a class="nav-link"-->
-<!--                           href="https://demos.creative-tim.com/argon-dashboard/docs/plugins/charts.html"-->
-<!--                           target="_blank">-->
-<!--                            <i class="ni ni-chart-pie-35"></i>-->
-<!--                            <span class="nav-link-text">Plugins</span>-->
-<!--                        </a>-->
-<!--                    </li>-->
-<!--                    <li class="nav-item">-->
-<!--                        <a class="nav-link active-pro" href="upgrade.html">-->
-<!--                            <i class="ni ni-send text-dark"></i>-->
-<!--                            <span class="nav-link-text">Upgrade to PRO</span>-->
-<!--                        </a>-->
-<!--                    </li>-->
-<!--                </ul>-->
+                <!--                &lt;!&ndash; Divider &ndash;&gt;-->
+                <!--                <hr class="my-3">-->
+                <!--                &lt;!&ndash; Heading &ndash;&gt;-->
+                <!--                <h6 class="navbar-heading p-0 text-muted">-->
+                <!--                    <span class="docs-normal">Documentation</span>-->
+                <!--                </h6>-->
+                <!--                &lt;!&ndash; Navigation &ndash;&gt;-->
+                <!--                <ul class="navbar-nav mb-md-3">-->
+                <!--                    <li class="nav-item">-->
+                <!--                        <a class="nav-link"-->
+                <!--                           href="https://demos.creative-tim.com/argon-dashboard/docs/getting-started/overview.html"-->
+                <!--                           target="_blank">-->
+                <!--                            <i class="ni ni-spaceship"></i>-->
+                <!--                            <span class="nav-link-text">Getting started</span>-->
+                <!--                        </a>-->
+                <!--                    </li>-->
+                <!--                    <li class="nav-item">-->
+                <!--                        <a class="nav-link"-->
+                <!--                           href="https://demos.creative-tim.com/argon-dashboard/docs/foundation/colors.html"-->
+                <!--                           target="_blank">-->
+                <!--                            <i class="ni ni-palette"></i>-->
+                <!--                            <span class="nav-link-text">Foundation</span>-->
+                <!--                        </a>-->
+                <!--                    </li>-->
+                <!--                    <li class="nav-item">-->
+                <!--                        <a class="nav-link"-->
+                <!--                           href="https://demos.creative-tim.com/argon-dashboard/docs/components/alerts.html"-->
+                <!--                           target="_blank">-->
+                <!--                            <i class="ni ni-ui-04"></i>-->
+                <!--                            <span class="nav-link-text">Components</span>-->
+                <!--                        </a>-->
+                <!--                    </li>-->
+                <!--                    <li class="nav-item">-->
+                <!--                        <a class="nav-link"-->
+                <!--                           href="https://demos.creative-tim.com/argon-dashboard/docs/plugins/charts.html"-->
+                <!--                           target="_blank">-->
+                <!--                            <i class="ni ni-chart-pie-35"></i>-->
+                <!--                            <span class="nav-link-text">Plugins</span>-->
+                <!--                        </a>-->
+                <!--                    </li>-->
+                <!--                    <li class="nav-item">-->
+                <!--                        <a class="nav-link active-pro" href="upgrade.html">-->
+                <!--                            <i class="ni ni-send text-dark"></i>-->
+                <!--                            <span class="nav-link-text">Upgrade to PRO</span>-->
+                <!--                        </a>-->
+                <!--                    </li>-->
+                <!--                </ul>-->
             </div>
         </div>
     </div>
@@ -158,20 +177,20 @@
         <div class="container-fluid">
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <!-- Search form -->
-<!--                <form class="navbar-search navbar-search-light form-inline mr-sm-3" id="navbar-search-main">-->
-<!--                    <div class="form-group mb-0">-->
-<!--                        <div class="input-group input-group-alternative input-group-merge">-->
-<!--                            <div class="input-group-prepend">-->
-<!--                                <span class="input-group-text"><i class="fas fa-search"></i></span>-->
-<!--                            </div>-->
-<!--                            <input class="form-control" placeholder="Search" type="text">-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                    <button type="button" class="close" data-action="search-close" data-target="#navbar-search-main"-->
-<!--                            aria-label="Close">-->
-<!--                        <span aria-hidden="true">×</span>-->
-<!--                    </button>-->
-<!--                </form>-->
+                <!--                <form class="navbar-search navbar-search-light form-inline mr-sm-3" id="navbar-search-main">-->
+                <!--                    <div class="form-group mb-0">-->
+                <!--                        <div class="input-group input-group-alternative input-group-merge">-->
+                <!--                            <div class="input-group-prepend">-->
+                <!--                                <span class="input-group-text"><i class="fas fa-search"></i></span>-->
+                <!--                            </div>-->
+                <!--                            <input class="form-control" placeholder="Search" type="text">-->
+                <!--                        </div>-->
+                <!--                    </div>-->
+                <!--                    <button type="button" class="close" data-action="search-close" data-target="#navbar-search-main"-->
+                <!--                            aria-label="Close">-->
+                <!--                        <span aria-hidden="true">×</span>-->
+                <!--                    </button>-->
+                <!--                </form>-->
                 <!-- Navbar links -->
                 <ul class="navbar-nav align-items-center  ml-md-auto ">
                     <li class="nav-item d-xl-none">
@@ -404,15 +423,15 @@
                         <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
                             <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
                                 <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
-                                <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                                <li class="breadcrumb-item"><a href="#">Hồ sơ</a></li>
                                 <!--                                <li class="breadcrumb-item active" aria-current="page">Icons</li>-->
                             </ol>
                         </nav>
                     </div>
-<!--                    <div class="col-lg-6 col-5 text-right">-->
-<!--                        <a href="#" class="btn btn-neutral" id="statistic-table-check">Bảng</a>-->
-<!--                        <a href="#" class="btn btn-neutral" id="statistic-chart-check">Biểu đồ</a>-->
-<!--                    </div>-->
+                    <!--                    <div class="col-lg-6 col-5 text-right">-->
+                    <!--                        <a href="#" class="btn btn-neutral" id="statistic-table-check">Bảng</a>-->
+                    <!--                        <a href="#" class="btn btn-neutral" id="statistic-chart-check">Biểu đồ</a>-->
+                    <!--                    </div>-->
                 </div>
             </div>
         </div>
@@ -421,14 +440,142 @@
     <div class="container-fluid mt--6" id="statistic-table" style="display: block;">
         <div class="row justify-content-center">
             <div class=" col ">
-                <div class="card">
+                <div class="card" style="margin-bottom: 0">
                     <div class="card-header bg-transparent">
-                        <h3 class="mb-0">Chào em nha</h3>
+                        <h3 class="mb-0">Thông tin hồ sơ</h3>
                     </div>
                     <div class="card-body">
                         <div class="row icon-examples">
-                            <div class="col-12">
+                            <div class="col-12 d-flex">
+                                <!-- Left Side: Form to Edit Information -->
+                                <div class="col-6">
+                                    <div class="profile-form">
+                                        <form>
+                                            <!-- Username Field -->
+                                            <div class="form-group">
+                                                <label for="username">Tên đăng nhập</label>
+                                                <div style="margin-left:18px; width:75%;">
+                                                    <input type="text" id="username" class="form-control"
+                                                           value="{{ profile[0] }}" disabled>
+                                                    <!-- Chỉ lấy 1 profile -->
+                                                </div>
+                                            </div>
 
+                                            <!-- Name Field -->
+                                            <div class="form-group">
+                                                <label for="first_name">Họ</label>
+                                                <div style="margin-left:17px; width:40%;">
+                                                    <input type="text" id="first_name" class="form-control"
+                                                           value="{{ profile[1] }}">
+                                                </div>
+                                                <label for="last_name" style="margin-left: 25px;">Tên</label>
+                                                <div style="margin-left:17px; width:40%;">
+                                                    <input type="text" id="last_name" class="form-control"
+                                                           value="{{ profile[2] }}">
+                                                </div>
+                                            </div>
+
+                                            <!-- Email Field -->
+                                            <div class="form-group">
+                                                <label for="email">Email</label>
+                                                <div style="margin:0 17px; width:75%;">
+                                                    <input type="email" id="email" class="form-control"
+                                                           value="{{ profile[3] }}" disabled>
+                                                </div>
+                                                <div>
+                                                    <button type="submit" class="btn btn-primary edit-btn-email">Sửa
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Phone Field -->
+                                            <div class="form-group">
+                                                <label for="phone">Số điện thoại</label>
+                                                <div style="margin:0 17px; width:62%;">
+                                                    <input type="text" id="phone" class="form-control"
+                                                           value="{{ profile[4] }}" disabled>
+                                                </div>
+                                                <div>
+                                                    <button type="" class="btn btn-primary edit-btn-phone">Sửa</button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Gender Selection -->
+                                            <div class="form-group">
+                                                <label>Giới tính</label><br>
+                                                <div style="display:flex;margin:0 40px;">
+                                                    <input type="radio" id="male" name="gender" value="Nam"
+                                                           {% if profile.is_male %}checked{% endif %}>
+                                                    <label for="male">Nam</label>
+                                                </div>
+                                                <div style="display:flex;margin:0 40px;">
+                                                    <input type="radio" id="female" name="gender" value="Nữ"
+                                                           {% if profile.is_female %}checked{% endif %}>
+                                                    <label for="female">Nữ</label>
+                                                </div>
+
+                                            </div>
+
+                                            <!-- Date of Birth Fields -->
+                                            <div class="form-group">
+                                                <label for="dob">Ngày sinh</label><br>
+                                                <div style="display:flex; margin:0 36px;">
+                                                    <!-- Select for Day -->
+                                                    <select id="day" class="form-control d-inline"
+                                                            style="width: 120px; max-height: 100px; overflow-y: auto;">
+                                                        <option value="" disabled>Ngày</option>
+                                                        {% for i in range(1, 32) %}
+                                                        <option value="{{ i }}" {% if i== profile.day %}selected{% endif
+                                                                %}>{{ i }}
+                                                        </option>
+                                                        {% endfor %}
+                                                    </select>
+
+                                                    <!-- Select for Month -->
+                                                    <select id="month" class="form-control d-inline"
+                                                            style="width: 120px; max-height: 100px; overflow-y: auto;">
+                                                        <option value="" disabled>Tháng</option>
+                                                        {% for i in range(1, 13) %}
+                                                        <option value="{{ i }}" {% if i== profile.month %}selected{%
+                                                                endif %}>{{ i }}
+                                                        </option>
+                                                        {% endfor %}
+                                                    </select>
+
+                                                    <!-- Select for Year -->
+                                                    <select id="year" class="form-control d-inline"
+                                                            style="width: 120px; max-height: 100px; overflow-y: auto;">
+                                                        <option value="" disabled>Năm</option>
+                                                        {% for i in range(1900, current_year + 1) %}
+                                                        <option value="{{ i }}" {% if i== profile.year %}selected{%
+                                                                endif %}>{{ i }}
+                                                        </option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <!-- Save Button -->
+                                            <div class="form-group">
+                                                <button type="button" class="btn btn-primary btn-save">Lưu</button>
+                                            </div>
+                                        </form>
+
+                                    </div>
+                                </div>
+
+                                <!-- Right Side: Profile Picture and Edit -->
+                                <div class="col-6 text-center">
+                                    <div class="profile-picture">
+                                        <img src="{{ profile[5] }}" alt="Profile Picture"
+                                             class="img-fluid profile-image rounded-circle" id="profileImage">
+
+                                    </div>
+                                    <div class="image-upload" style="margin-top: 30px">
+                                        <input type="file" id="fileUpload" accept="image/*"
+                                               onchange="previewImage(event)">
+                                    </div>
+                                </div>
 
                             </div>
                         </div>
@@ -437,20 +584,6 @@
             </div>
         </div>
     </div>
-<!--    <div class="container-fluid mt&#45;&#45;6" style="display: none;" id="statistic-chart">-->
-<!--        <div class="row justify-content-center">-->
-<!--            <div class=" col ">-->
-<!--                <div class="card">-->
-<!--                    <div class="card-header bg-transparent">-->
-<!--                        <h3 class="mb-0">Thống kê dạng biểu đồ</h3>-->
-<!--                    </div>-->
-<!--                    <div class="card-body">-->
-<!--                        <h2>CT LA CUA PHUC</h2>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
@@ -467,20 +600,141 @@
         crossorigin="anonymous"></script>
 <script src="{{ url_for('static', filename='js/employeeAddProducts.js') }}"></script>
 <script>
-    const statisticTableCheck = document.getElementById("statistic-table-check");
-    const statisticChartCheck = document.getElementById("statistic-chart-check");
-    const statisticTable = document.getElementById("statistic-table");
-    const statisticChart = document.getElementById("statistic-chart");
-    statisticTableCheck.addEventListener("click", (event) => {
-        statisticTable.style.display = "block";
-        statisticChart.style.display = "none";
+    function previewImage(event) {
+    const file = event.target.files[0];  // Lấy tệp ảnh người dùng chọn
+    const reader = new FileReader();     // Tạo một đối tượng FileReader để đọc tệp ảnh
+
+    reader.onload = function() {
+        const imageElement = document.getElementById('profileImage');  // Lấy thẻ img
+        imageElement.src = reader.result;  // Đặt src của thẻ img thành ảnh đã tải lên
+    }
+
+    if (file) {
+        reader.readAsDataURL(file);  // Đọc tệp ảnh dưới dạng URL
+    }
+}
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    // Lắng nghe sự kiện click cho nút "Sửa"
+    document.querySelector('.edit-btn-phone').addEventListener('click', function() {
+        const phoneInput = document.getElementById('phone'); // Trường số điện thoại
+        const currentValue = phoneInput.value;
+
+        // Nếu ô input đang ở trạng thái disabled, kích hoạt nó
+        if (phoneInput.disabled) {
+            phoneInput.disabled = false;  // Bỏ disable
+            phoneInput.focus();  // Đưa con trỏ vào ô input để người dùng có thể chỉnh sửa
+
+            // Chuyển nút "Sửa" thành "Lưu"
+            this.textContent = 'Xác nhận';
+            this.classList.remove('btn-primary');
+            this.classList.add('btn-success');  // Thay đổi màu nút
+
+        } else {
+            // Nếu ô input đang ở trạng thái chỉnh sửa, lưu giá trị mới và cập nhật lại giao diện
+            const newValue = phoneInput.value;
+
+            // Cập nhật giá trị của ô input (trong trường hợp này chỉ cần in ra console)
+            console.log('Số điện thoại mới:', newValue);
+
+            // Sau khi lưu, tắt chỉnh sửa và giữ giá trị mới trong ô input
+            phoneInput.disabled = true;  // Vô hiệu hóa ô input sau khi lưu
+            this.textContent = 'Sửa';  // Đổi lại thành "Sửa"
+            this.classList.remove('btn-success');
+            this.classList.add('btn-primary');  // Đổi màu nút trở lại
+        }
     });
 
+    document.querySelector('.edit-btn-email').addEventListener('click', function() {
+        const emailInput = document.getElementById('email'); // Trường số điện thoại
+        const currentValue = emailInput.value;
 
-    statisticChartCheck.addEventListener("click", (event) => {
-        statisticTable.style.display = "none";
-        statisticChart.style.display = "block";
+        // Nếu ô input đang ở trạng thái disabled, kích hoạt nó
+        if (emailInput.disabled) {
+            emailInput.disabled = false;  // Bỏ disable
+            emailInput.focus();  // Đưa con trỏ vào ô input để người dùng có thể chỉnh sửa
+
+            // Chuyển nút "Sửa" thành "Lưu"
+            this.textContent = 'Xác nhận';
+            this.classList.remove('btn-primary');
+            this.classList.add('btn-success');  // Thay đổi màu nút
+
+        } else {
+            // Nếu ô input đang ở trạng thái chỉnh sửa, lưu giá trị mới và cập nhật lại giao diện
+            const newValue = emailInput.value;
+
+            // Cập nhật giá trị của ô input (trong trường hợp này chỉ cần in ra console)
+            console.log('Số điện thoại mới:', newValue);
+
+            // Sau khi lưu, tắt chỉnh sửa và giữ giá trị mới trong ô input
+            emailInput.disabled = true;  // Vô hiệu hóa ô input sau khi lưu
+            this.textContent = 'Sửa';  // Đổi lại thành "Sửa"
+            this.classList.remove('btn-success');
+            this.classList.add('btn-primary');  // Đổi màu nút trở lại
+        }
     });
+});
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const saveButton = document.querySelector('.btn-save'); // Nút "Lưu"
+
+    saveButton.addEventListener('click', function() {
+        // Tạo đối tượng lưu trữ dữ liệu người dùng
+        const updatedData = {};
+
+        // Thu thập dữ liệu từ các ô input (như số điện thoại, email, ...)
+        // Giả sử các trường như số điện thoại có ID là "phone", và các trường khác cũng có ID tương tự
+        updatedData.first_name = document.querySelector('#first_name').value;
+        updatedData.last_name = document.querySelector('#last_name').value;
+        updatedData.email = document.querySelector('#email').value;
+        updatedData.phone_number = document.querySelector('#phone').value;
+        const gender = document.querySelector('input[name="gender"]:checked').value;
+        if (gender === "Nam") {
+            updatedData.sex = 1;  // Nam
+        } else if (gender === "Nữ") {
+            updatedData.sex = 0;  // Nữ
+        } else {
+            updatedData.sex = null; // Nếu "Khác" hoặc không chọn thì set là null
+        }
+        updatedData.date_of_birth = `${document.querySelector('#year').value}-${document.querySelector('#month').value}-${document.querySelector('#day').value}`;
+
+        // Lấy giá trị ảnh đại diện nếu có thay đổi
+        const avatarInput = document.querySelector('#fileUpload');
+        if (avatarInput && avatarInput.files.length > 0) {
+            updatedData.avt_url = URL.createObjectURL(avatarInput.files[0]);
+        } else {
+            updatedData.avt_url = document.querySelector('#profileImage').src; // Giữ ảnh đại diện cũ nếu không thay đổi
+        }
+
+        // Gửi yêu cầu POST tới server để cập nhật thông tin
+        fetch('/admin/update-profile', {  // Thay '/admin/update-profile' bằng URL thực tế
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Cập nhật giao diện với dữ liệu mới sau khi sửa
+                alert('Cập nhật thành công!');
+                // Có thể cập nhật lại nội dung các trường hiển thị nếu cần
+                document.querySelector('#profileImage').src = updatedData.avt_url;
+            } else {
+                alert('Cập nhật thất bại: ' + (data.message || 'Lỗi không xác định'));
+            }
+        })
+        .catch(error => {
+            console.error('Error updating profile:', error);
+            alert('Đã xảy ra lỗi trong quá trình cập nhật.');
+        });
+    });
+});
+
 </script>
 </body>
 </html>

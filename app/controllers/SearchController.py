@@ -49,6 +49,7 @@ def get_detail():
         "Số trang": book.num_page,
         "Hình thức": book.format,
     }
+
     comments = book.comments
     comments = sorted(comments, key=lambda x: x.created_at, reverse=True)
 

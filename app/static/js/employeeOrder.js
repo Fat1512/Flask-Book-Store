@@ -197,7 +197,7 @@ const renderOrder = function (orders, tab = 0) {
                            aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-ellipsis-v"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">                      
+                        <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
                             <a class="dropdown-item" tab="${tab}">${tab === 0 ? "Chi tiết" : tab === 1 || tab === 2 ? "Cập nhật" : "Huỷ"}</a>
                         </div>
                     </div>
@@ -243,7 +243,7 @@ const renderStatusUpdateForm = function (order, statusArray) {
     const html = `
     <div class="card p-5 order-modal" id="${order['order_id']}">
         <div class="d-flex justify-content-between">
-          
+
         </div>
         <div class="card-header pl-0 bg-transparent border-0">
             <h3 class="mb-0 display-4">Thông tin đơn</h3>

@@ -1,3 +1,5 @@
+import datetime
+
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, Enum, DATETIME, Double
 from app import db, app
@@ -69,6 +71,7 @@ class Order(db.Model):
                     'name': PAYMENT_METHOD_TEXT[self.payment_method.value - 1]
                 }
             },
+            'order_detail': [od.to_dict() for od in self.order_detail],
             'address': self.address.to_dict(),
             'created_at': self.created_at,
             'customer_id': self.customer_id,
@@ -110,7 +113,6 @@ class OfflineOrder(Order):
         return json
 
 
-
 class OnlineOrder(Order):
     __tablename__ = 'online_order'
     order_id = Column(Integer, ForeignKey('order.order_id'), primary_key=True)
@@ -118,8 +120,9 @@ class OnlineOrder(Order):
     shipping_fee = Column(Double)
     note = Column(String)
 
+
     customer_id = Column(Integer, ForeignKey('user.user_id'))
-    customer = relationship("User", back_populates="online_orders")
+    customer = relationship("User", back_populates="online_orders", foreign_keys=[customer_id])
     order_cancellation = relationship('OrderCancellation', backref='online_order', lazy=True, uselist=False)
 
     def to_dict(self):
@@ -145,13 +148,17 @@ class OnlineOrder(Order):
 class OrderCancellation(db.Model):
     __tablename__ = 'order_cancellation'
     order_id = Column(Integer, ForeignKey('online_order.order_id'), primary_key=True)
-    created_at = Column(DATETIME)
+    created_at = Column(DATETIME, default=datetime.now())
     reason = Column(String)
+
+    order = db.relationship('OnlineOrder', backref='order_cancellation', uselist=False)
 
     def to_dict(self):
         return {
+            'order_id': self.order_id,
             'reason': self.reason,
-            'created_at': self.created_at
+            'created_at': self.created_at,
+            'order_detail': [od.to_dict() for od in self.order.order_detail],
         }
 
 

@@ -5,7 +5,7 @@ from flask_login import current_user
 from flask import Blueprint
 from app.utils.admin import book_gerne_statistic
 from flask import jsonify
-from app.utils.admin import total_revenue_per_gerne, book_statistic_frequency, account_management, book_management
+from app.utils.admin import total_revenue_per_gerne, book_statistic_frequency, account_management, book_management, stats_revenue_by_month, bookgerne_management, profile
 from datetime import datetime
 import math
 from app import app, db
@@ -76,15 +76,18 @@ def admin_book_manager():
 def admin_statistic_revenue():
     kw = request.args.get('kw')
     selected_month = request.args.get('selected_month')
+    year = request.args.get('year', datetime.now().year)
 
     stats = book_gerne_statistic(kw=kw, selected_month=selected_month)
+    stats_month = stats_revenue_by_month(year=year)
 
-    page = int(request.args.get('page', 1))  # Lấy số trang hiện tại từ URL, mặc định là 1
-    page_size = app.config['STATISTIC_REVEN_PAGE_SIZE']  # Kích thước mỗi trang
-    total = len(stats)  # Tổng số bản ghi
+    page = int(request.args.get('page', 1))
+    page_size = app.config['STATISTIC_REVEN_PAGE_SIZE']
+    total = len(stats)
     start_idx = (page - 1) * page_size
     end_idx = start_idx + page_size
-    paginated_stats = stats[start_idx:end_idx]  # Lấy dữ liệu theo trang
+    paginated_stats = stats[start_idx:end_idx]
+
 
     total_revenue = total_revenue_per_gerne(kw=kw, selected_month=selected_month)
 
@@ -92,6 +95,8 @@ def admin_statistic_revenue():
         "admin-statistic-revenue.html",
         stats=paginated_stats,
         full_stats=stats,
+        stats_month=stats_month,
+        full_stats_month=stats_month,
         total_revenue=total_revenue,
         books={
             'current_page': page,
@@ -99,7 +104,6 @@ def admin_statistic_revenue():
             'pages': range(1, math.ceil(total / page_size) + 1)
         }
     )
-
 
 
 @admin_bp.route("/statistic-frequency")
@@ -138,9 +142,6 @@ def admin_account_manager():
     user_role = request.args.get('user_role', type=int)
     stats = account_management(user_role)
 
-    # Kiểm tra có dữ liệu không
-    print(stats)
-
     page = int(request.args.get('page', 1))
     page_size = app.config['STATISTIC_FRE_PAGE_SIZE']
     total = len(stats)
@@ -158,6 +159,37 @@ def admin_account_manager():
             'pages': range(1, math.ceil(total / page_size) + 1),
         }
     )
+
+
+@admin_bp.route("/bookgerne-manager")
+@admin_required
+def admin_bookgerne_manager():
+    kw = request.args.get('kw')
+    stats = bookgerne_management(kw=kw)
+
+    page = int(request.args.get('page', 1))
+    page_size = app.config['BOOK_PAGE_SIZE']
+    total = len(stats)
+
+    start_idx = (page - 1) * page_size
+    end_idx = start_idx + page_size
+    paginated_stats = stats[start_idx:end_idx]
+    return render_template("admin-bookgerne-manager.html",
+        kw=kw,
+        stats=paginated_stats,
+        books={
+            'current_page': page,
+            'total_page': math.ceil(total / page_size),
+            'pages': range(1, math.ceil(total / page_size) + 1),
+        })
+
+
+@admin_bp.route("/profile")
+@admin_required
+def admin_profile():
+    profile_data = profile()
+    current_year = datetime.now().year
+    return render_template("admin-profile.html", profile=profile_data, current_year=current_year)
 
 
 @admin_bp.route("/statistic")
@@ -253,3 +285,107 @@ def delete_book(book_id):
         return jsonify({"success": False, "message": str(e)}), 500
 
 
+@admin_bp.route('/add-bookgerne', methods=['POST'])
+@admin_required
+def add_bookgerne():
+    try:
+        data = request.get_json()  # Lấy dữ liệu JSON
+        print(f"Received data: {data}")
+
+        name = data.get('name')
+        lft = data.get('lft')
+        rgt = data.get('rgt')
+
+        if not name or lft is None or rgt is None:
+            return jsonify({'success': False, 'message': 'Thiếu dữ liệu'}), 400
+
+        # Tạo mới thể loại và thêm vào cơ sở dữ liệu
+        new_bookgerne = BookGerne(name=name, lft=lft, rgt=rgt)
+        db.session.add(new_bookgerne)
+        db.session.commit()
+
+        return jsonify({'success': True, 'message': 'Thể loại mới đã được thêm'})
+
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f"Lỗi khi thêm thể loại: {str(e)}")
+        print(f"Lỗi khi thêm thể loại: {str(e)}")  # Debug lỗi
+        return jsonify({'success': False, 'message': 'Lỗi server', 'error': str(e)}), 500
+
+
+
+@admin_bp.route('/update-bookgerne/<int:book_gerne_id>', methods=['POST'])
+@admin_required
+def update_bookgerne(book_gerne_id):
+    try:
+        updated_data = request.get_json()
+
+        bookgerne = BookGerne.query.get(book_gerne_id)
+        if not bookgerne:
+            return jsonify({'success': False, 'message': 'Book genre not found'}), 404
+
+        bookgerne.name = updated_data.get('name', bookgerne.name)
+        bookgerne.lft = updated_data.get('lft', bookgerne.lft)
+        bookgerne.rgt = updated_data.get('rgt', bookgerne.rgt)
+
+        db.session.commit()
+
+        return jsonify({'success': True, 'updated': {
+            'book_gerne_id': book_gerne_id,
+            'name': bookgerne.name,
+            'lft': bookgerne.lft,
+            'rgt': bookgerne.rgt
+        }})
+
+    except Exception as e:
+        app.logger.error(f"Error updating book genre with ID {book_gerne_id}: {str(e)}")
+        return jsonify({'success': False, 'message': 'Internal Server Error'}), 500
+
+
+@admin_bp.route('/delete-bookgerne/<int:book_gerne_id>', methods=['POST'])
+@admin_required
+def delete_bookgerne(book_gerne_id):
+    try:
+        bookgerne = BookGerne.query.get(book_gerne_id)
+        if not bookgerne:
+            return jsonify({"success": False, "message": "Book genre not found"}), 404
+
+        db.session.delete(bookgerne)
+        db.session.commit()
+
+        return jsonify({"success": True})
+
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f"Error deleting book genre: {str(e)}")
+        return jsonify({"success": False, "message": "Internal server error", "error": str(e)}), 500
+
+
+@admin_bp.route('/update-profile', methods=['POST'])
+@admin_required
+def update_profile():
+    data = request.get_json()
+
+    try:
+        # Lấy thông tin người dùng từ current_user
+        user = User.query.filter_by(user_id=current_user.user_id).first()
+
+        if not user:
+            return jsonify({"success": False, "message": "User not found"}), 404
+
+        # Cập nhật thông tin người dùng từ dữ liệu client gửi lên
+        user.first_name = data.get('first_name', user.first_name)
+        user.last_name = data.get('last_name', user.last_name)
+        user.email = data.get('email', user.email)
+        user.phone_number = data.get('phone_number', user.phone_number)
+        user.sex = data.get('sex', user.sex)
+        user.date_of_birth = data.get('date_of_birth', user.date_of_birth)
+        user.avt_url = data.get('avt_url', user.avt_url)
+
+        # Lưu các thay đổi vào cơ sở dữ liệu
+        db.session.commit()
+
+        return jsonify({"success": True, "updated": data}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"success": False, "message": str(e)}), 500

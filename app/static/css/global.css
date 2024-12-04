@@ -16,6 +16,7 @@ a {
     color: var(--black-color);
 }
 
+
 .container {
     width: 90% !important;
 }
@@ -58,6 +59,7 @@ a {
 .btn-primary:hover {
     background-color: var(--red);
     border-color: var(--red);
+    color: var(--white-color) !important;
 }
 
 .text-large {
@@ -75,9 +77,11 @@ a {
 .my-bg-color {
     background: #f0f0f0;
 }
+
 .cursor-pointer {
     cursor: pointer;
 }
+
 .modal {
     position: fixed;
     top: 0;
@@ -110,9 +114,11 @@ a {
     animation: growth linear 0.2s;
     flex: 0.5;
 }
+
 .h-100vh {
     height: 100vh;
 }
-.h-50vh{
+
+.h-50vh {
     height: 50vh;
 }

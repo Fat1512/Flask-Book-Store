@@ -6,6 +6,7 @@ class Comment(db.Model):
     content = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=db.func.now())
     star_count = db.Column(db.Integer)
+
     book_id = db.Column(db.Integer, db.ForeignKey('book.book_id'))
     book = db.relationship('Book', backref='comments', lazy=True)
 

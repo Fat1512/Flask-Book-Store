@@ -10,7 +10,7 @@ let cnt = 0
 let toggle = false
 
 
-toggleAllButton.addEventListener("click", () => {
+toggleAllButton && toggleAllButton.addEventListener("click", () => {
     if (!toggle) {
         checkboxs.forEach(el => {
             if (!el.checked) {
@@ -71,7 +71,7 @@ const moveCartItemToCheckOut = async function (data) {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-         // Parse JSON response
+        // Parse JSON response
         return await response.json()
     } catch (error) {
         showToast(error.message, true)
@@ -97,7 +97,7 @@ async function handleOnClickPayment() {
     window.location.replace('http://127.0.0.1:5000/cart/checkout')
 }
 
-buttonPayment.addEventListener("click", () => handleOnClickPayment())
+buttonPayment && buttonPayment.addEventListener("click", () => handleOnClickPayment())
 const deleteCartItem = async function (id) {
     try {
         const response = await fetch(`${CART_API}/${id}`, {
@@ -234,23 +234,35 @@ const renderTotalCartItem = function (quantity, deleteItemId) {
         labelTotal.innerHTML = quantity
         for (let i = 0; i < subCartList.length; i++) {
             if (subCartList[i].id === deleteItemId) {
+                console.log('ok')
                 subCartList[i].remove()
                 return
             }
         }
     } else {
+        console.log('ok')
         labelTotal.style = 'display:none'
-        document.querySelector('.sub-cart').innerHTML
+        document.querySelector('.sub-cart').remove()
         rowBody.querySelector('.content').remove()
         rowBody.insertAdjacentHTML('beforeend', `
              <div class="h-50vh col-md-12 item-bg-color rounded d-flex flex-column align-items-center justify-content-center">
                 <img src="https://cdn0.fahasa.com/skin//frontend/ma_vanese/fahasa/images/checkout_cart/ico_emptycart.svg"
                      class="center">
                 <p>Chưa có sản phẩm nào</p>
-                <button class="btn btn-large btn-primary">
-                    <a href="/search/" class="text-white">Mua sắm ngay</a>
-                </button>
+                <a href="/search/" class="btn btn-large btn-primary text-white">Mua sắm ngay</a>
             </div>
-`)
+        `)
+        document.querySelector('.menu-cart-item').innerHTML = `
+             <div class="menu-cart-item-header">
+                <p class="p-3 m-0">
+                    <span><i class="fa-solid fa-cart-shopping"></i></span>
+                    <span>Giỏ hàng <span class="sub-total">(0)</span></span>
+                </p>
+            </div>
+            <div class="text-center mt-5 mb-5">
+                <div class="cart-item-null"></div>
+                <p>Chưa có sản phẩm nào</p>
+            </div>
+        `
     }
 }

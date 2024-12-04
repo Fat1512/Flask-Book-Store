@@ -41,11 +41,16 @@ def delete_cart(bookId):
 
 @cart_rest_bp.route('/<int:bookId>', methods=['POST'])
 def add_cart_items(bookId):
-    add(bookId)
-
+    cart_item = add(bookId)
     return jsonify({
         "status": 200,
-        "message": "Add cart item successfully"
+        "message": "Add cart item successfully",
+        "data": {
+            "cartItem": cart_item.to_dict(),
+            'current_cart': len(cart_item.cart.cart_items),
+            'totalPrice': cart_item.cart.total_price()
+        },
+
     })
 
 
