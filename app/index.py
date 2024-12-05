@@ -52,6 +52,7 @@ def handle_custom_error(e):
     })
 
 
+
 @app.context_processor
 def cart_context():
     cart = find_by_cart_id(2)
@@ -62,5 +63,8 @@ def cart_context():
         "cart_items": cart_items,
         "total_price": total_price
     }
+
+
+
 if __name__ == "__main__":
     app.run(debug=True)
