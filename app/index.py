@@ -61,14 +61,6 @@ def handle_custom_error(e):
 #     return {
 #         "cart_items": cart_items,
 #         "total_price": total_price
-#     }junmjnjsdbgnjk
-#Tan
-
-    return {
-        "cart_items": cart_items,
-        "total_price": total_price
-    }
-#Phat
-
+#     }
 if __name__ == "__main__":
     app.run(debug=True)
