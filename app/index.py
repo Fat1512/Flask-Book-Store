@@ -52,6 +52,7 @@ def handle_custom_error(e):
     })
 
 
+
 @app.context_processor
 def cart_context():
     cart = find_by_cart_id(2)
