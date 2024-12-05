@@ -16,17 +16,22 @@ def get_order():
     if request.args.get("status"):
         status = request.args.get("status").split(',')
     payment_method = request.args.get("paymentMethod")
+    order_id = request.args.get("orderId")
     sort_by = request.args.get("sortBy")
     sort_dir = request.args.get("dir")
     order_type = request.args.get("orderType")
     page = request.args.get("page", 1)
-
-    orders = find_all(status=status,
+    start_date = request.args.get("startDate")
+    end_date = request.args.get("endDate")
+    orders = find_all(order_id=order_id,
+                      status=status,
                       payment_method=payment_method,
                       sort_by=sort_by,
                       sort_dir=sort_dir,
                       order_type=order_type,
-                      page=int(page))
+                      page=int(page),
+                      start_date=start_date,
+                      end_date=end_date)
     return orders
 
 
@@ -110,6 +115,10 @@ def update_status(order_id):
     return {
         "messi": "ronaldo"
     }
+
+
+
+
 @order_api_bp.route("/<order_id>/detail", methods=['GET', 'POST'])
 def find(order_id):
     order = find_by_id(order_id)

@@ -112,12 +112,26 @@ def get_by_barcode(barcode):
     return barcode
 
 
-@book_rest_bp.route('/test/import', methods=['GET'])
-def test_import():
-    return [formImport.to_dict() for formImport in get_form_imports()]
-
-
+# -------------------------------import book-------------------------------
 @book_rest_bp.route('/import', methods=['POST'])
 def create_import():
     data = request.json
     return create_form_import(data)
+
+
+@book_rest_bp.route('/import', methods=['GET'])
+def test_import():
+    import_id = request.args.get('importId')
+    page = request.args.get('page', 1, type=int)
+    start_date = request.args.get('startDate', 1, type=int)
+    end_date = request.args.get('endDate', 1, type=int)
+    form_imports = get_form_imports(import_id=import_id,page=page,start_date=start_date,end_date=end_date)
+    return [formImport.to_dict() for formImport in form_imports]
+
+
+@book_rest_bp.route('/import/test', methods=['GET'])
+def testt_import():
+    start_date = request.args.get('startDate')
+    end_date = request.args.get('endDate')
+    form_imports = get_form_imports(start_date=start_date,end_date=end_date)
+    return form_imports

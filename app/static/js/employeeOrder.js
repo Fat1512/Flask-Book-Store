@@ -25,7 +25,7 @@ const timeFormatter = new Intl.DateTimeFormat('vi-VN', {
 
 const ORDER_API = `/api/v1/order`;
 
-const url = new URL(window.location)
+const url = new URL(window.location);
 
 const orderParams = [
     {
@@ -34,7 +34,7 @@ const orderParams = [
     {
         "orderType": 2 //Mua truc tiep
     }
-]
+];
 const sortParams = [
     {
         "sortBy": "date",
@@ -52,7 +52,7 @@ const sortParams = [
         "sortBy": "total-amount",
         "dir": "desc"
     }
-]
+];
 const statusParams = [
     {
         "status": 1 //Dang xu ly
@@ -69,7 +69,7 @@ const statusParams = [
     {
         "status": 5 //Da huy
     }
-]
+];
 const paymentMethodParams = [
     {
         "paymentMethod": 1 //The
@@ -77,7 +77,7 @@ const paymentMethodParams = [
     {
         "paymentMethod": 2 //Tien mat
     }
-]
+];
 
 //shipping method = 1: ship ve nha
 const shippingStatus = {
@@ -93,6 +93,24 @@ const shippingStatus = {
         "7": "Đã hoàn thành"
     }
 };
+
+const initialTabState = [
+    {},
+    {
+        "orderType": 1,
+        "paymentMethod": 2,
+        "status": "1,2,8"
+    }, {
+        "orderType": 1,
+        "paymentMethod": 2,
+        "status": "1,2,3,8"
+    },
+    {
+        "orderType": 1,
+        "paymentMethod": 2,
+        "status": "1,2,8"
+    }
+]
 //shipping method = 2: cua hang
 
 /**
@@ -110,6 +128,7 @@ const shippingStatus = {
  * @type {Element}
  */
 
+
 //---------------------------------------------CONTAINER---------------------------------------------
 const productSearchBox = document.querySelector('.product-search-box');
 const orderTable = document.querySelector(".order-table");
@@ -125,35 +144,53 @@ const paymentMethodType = document.querySelector(".payment-method-type");
 //=======================================
 const orderTab = document.querySelector(".order-tab");
 const dateSearchContainer = document.querySelector(".date-search-container");
-const filterContainer = document.querySelector(".filter-container");
+const filterDropListContainer = document.querySelector(".filter-droplist-container");
 const modal = document.querySelector(".modal");
-const modalBody = document.querySelector(".modal-update-order-item-status");
+const modalUpdateOrderStatusBody = document.querySelector(".modal-update-order-status");
+const modalCancelOrder = document.querySelector(".modal-cancel-order");
 const overlay = document.querySelector(".overlay");
 
+const btnDeleteAll = document.querySelector(".btn-delete-all");
+const btnSearch = document.querySelector(".btn-search");
 //---------------------------------------------FUNCTION---------------------------------------------
 
+const inputStartDate = document.querySelector(".input-start-date");
+const inputEndDate = document.querySelector(".input-end-date");
+const inputSearch = document.querySelector(".input-search");
+
 let currentLabel = {};
-let currentUpdateOrderStatus = {};
+let currentSearchParam = {};
+let currentOrderItemsState = {};
+let currentTab = 0;
+
 const resetAllState = function () {
     currentLabel = {};
+    currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
+    inputStartDate.value = '';
+    inputEndDate.value = '';
+    inputSearch.value = '';
+
     renderLabel()
     document.querySelectorAll("input:checked").forEach(input => input.checked = false);
+
     url.search = "";
     window.history.pushState({}, '', url);
 }
 
 const hideFilter = function () {
-    filterContainer.classList.add("hide");
+    filterDropListContainer.classList.add("hide");
     dateSearchContainer.classList.add("hide");
 }
-
 const unhideFilter = function () {
-    filterContainer.classList.remove("hide");
+    filterDropListContainer.classList.remove("hide");
     dateSearchContainer.classList.remove("hide");
-}
+};
+const deleteCurrentParams = (params) => params.forEach(param => delete currentSearchParam[param]);
+const addCurrentParams = (params) => params.forEach(param => currentSearchParam[param[0]] = param[1]);
 
-const deleteParams = (params) => params.forEach(param => url.searchParams.delete(param))
-const addParams = (params) => params.forEach(param => url.searchParams.set(param[0], param[1]))
+const deleteUrlParams = (params) => params.forEach(param => url.searchParams.delete(param));
+const addUrlParams = (params) => params.forEach(param => url.searchParams.set(param[0], param[1]));
+
 const renderOrder = function (orders, tab = 0) {
     orderList.innerHTML = '';
     currentOrderItemsState = {};
@@ -241,7 +278,7 @@ const renderLabel = function () {
 }
 const renderStatusUpdateForm = function (order, statusArray) {
     const html = `
-    <div class="card p-5 order-modal" id="${order['order_id']}">
+    <div class="card p-5 order-update-modal" id="${order['order_id']}">
         <div class="d-flex justify-content-between">
           
         </div>
@@ -343,12 +380,36 @@ const renderStatusUpdateForm = function (order, statusArray) {
             <div class="btn btn-primary btn-confirm-change-status">Xác nhận</div>
         </div>
     </div>`;
-    modalBody.innerHTML = '';
-    modalBody.insertAdjacentHTML("beforeend", html);
+    modalUpdateOrderStatusBody.innerHTML = '';
+    modalUpdateOrderStatusBody.insertAdjacentHTML("beforeend", html);
 }
+const renderCancelForm = function (order) {
+    const html = `
+        <div class="w-100 d-flex justify-content-center align-content-center flex-column order-cancel-modal" id="${order['order_id']}">
+            <h1 class="modal-title d-flex justify-content-center pt-4" id="modalLabel">
+                <i class="fas fa-exclamation-circle text-warning display-1"></i>
+            </h1>
+            <h2 class="text-center">Bạn có chắc chắn hủy không ?</h2>
 
-const fetchOrder = async function (param) {
+            <div class="d-flex pt-4">
+                <button type="button"
+                        class="cancel-back-btn w-50 btn btn-primary bg-white text-black border border-0"
+                        style="color: var(--black-color) !important">
+                    Trở lại
+                </button>
+                <button type="button"
+                        class="cancel-btn w-50 btn btn-primary border border-0"
+                        style="color: var(--white-color) !important; background-color: var(--red)">
+                    Hủy
+                </button>
+            </div>
+        </div>`;
+    modalCancelOrder.innerHTML = '';
+    modalCancelOrder.insertAdjacentHTML("beforeend", html);
+}
+const fetchOrder = async function () {
     try {
+        const param = '?' + Object.entries(currentSearchParam).map(pr => pr[0] + '=' + pr[1]).join("&");
         const res = await fetch(`${ORDER_API}${param}`);
         if (!res.ok) throw new Error("Cannot fetch order");
         return await res.json();
@@ -375,31 +436,104 @@ const modifyOrderStatus = async function (orderId, orderStatusId) {
 const openModal = function () {
     overlay.classList.add("d-flex");
     modal.classList.add("d-flex");
-    modalBody.classList.add("d-flex");
 }
 
 const closeModal = function () {
     overlay.classList.remove("d-flex");
     modal.classList.remove("d-flex");
-    modalBody.classList.remove("d-flex");
+    modalUpdateOrderStatusBody.classList.add("d-none");
+    modalCancelOrder.classList.add("d-none");
 }
+
+const openUpdateOrderStatusModal = function () {
+    openModal();
+    modalUpdateOrderStatusBody.classList.remove("d-none");
+}
+
+const openCancelOrderModal = function () {
+    openModal();
+    modalCancelOrder.classList.remove("d-none");
+}
+
 
 //---------------------------------------------EVENT---------------------------------------------
 
-let currentOrderItemsState = {};
+inputStartDate.addEventListener("change", async function(e) {
+    const value = inputStartDate.value;
+    if(!value) {
+        deleteCurrentParams(["startDate"])
+        deleteUrlParams(["startDate"]);
+    } else {
+        addCurrentParams([["startDate", value]]);
+        addUrlParams([["startDate", value]]);
+    }
 
-modalBody.addEventListener("click", function (e) {
+    const data = await fetchOrder();
+
+    renderOrder(data['orders']);
+    renderPagination(data['total_page'], data['current_page']);
+});
+
+inputEndDate.addEventListener("change", async function(e) {
+    const value = inputEndDate.value;
+    if(!value) {
+        deleteCurrentParams(["endDate"])
+        deleteUrlParams(["endDate"]);
+    } else {
+        addCurrentParams([["endDate", value]]);
+        addUrlParams([["endDate", value]]);
+    }
+
+    const data = await fetchOrder();
+
+    renderOrder(data['orders']);
+    renderPagination(data['total_page'], data['current_page']);
+});
+
+btnDeleteAll.addEventListener("click", async function () {
+    resetAllState();
+    const data = await fetchOrder();
+    renderOrder(data['orders']);
+    renderPagination(data['total_page'], data['current_page']);
+});
+
+btnSearch.addEventListener("click", async function () {
+    const orderId = inputSearch.value;
+    if (orderId.trim() === '') return;
+
+    resetAllState();
+    currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
+
+    currentSearchParam['orderId'] = orderId;
+    const data = await fetchOrder();
+    renderOrder(data['orders'], currentTab);
+    renderPagination(data['total_page'], data['current_page']);
+})
+
+modalUpdateOrderStatusBody.addEventListener("click", function (e) {
     const input = e.target.closest("input");
     const confirmBtn = e.target.closest(".btn-confirm-change-status");
     if (input) {
         const currentState = input.checked;
-        modalBody.querySelectorAll("input").forEach(inp => inp.checked = false);
+        modalUpdateOrderStatusBody.querySelectorAll("input").forEach(inp => inp.checked = false);
         input.checked = currentState;
     }
-    if(confirmBtn) {
-        const orderId = modalBody.querySelector(".order-modal").getAttribute("id");
-        const selectedStatusId = modalBody.querySelector("input:checked").getAttribute("id");
+    if (confirmBtn) {
+        const orderId = modalUpdateOrderStatusBody.querySelector(".order-update-modal").getAttribute("id");
+        const selectedStatusId = modalUpdateOrderStatusBody.querySelector("input:checked").getAttribute("id");
         modifyOrderStatus(orderId, selectedStatusId);
+    }
+});
+
+modalCancelOrder.addEventListener("click", function (e) {
+    const cancelBtn = e.target.closest(".cancel-back-btn");
+    const backCancelBtn = e.target.closest(".cancel-back-btn");
+    if (cancelBtn) {
+        const orderId = modalCancelOrder.querySelector(".order-cancel-modal").getAttribute("id");
+        modifyOrderStatus(orderId, 5);
+    }
+    if (backCancelBtn) {
+        closeModal();
     }
 });
 
@@ -410,44 +544,59 @@ orderTab.addEventListener("click", async function (e) {
     const cancelOrder = e.target.closest(".cancel-order");
 
     let data;
-    let tab = 0;
-
     if (allOrder) {
-        data = await fetchOrder('');
+        currentTab = 0;
+        currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
+        data = await fetchOrder();
         unhideFilter();
-        tab = 0;
     }
     if (updateOrderInfo) {
-        data = await fetchOrder('?orderType=1&paymentMethod=2&status=1,2,8');
+        currentTab = 1;
+        currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
+        data = await fetchOrder();
         hideFilter()
-        tab = 1;
     }
     if (updateOrderStatus) {
-        data = await fetchOrder('?orderType=1&paymentMethod=2&status=1,2,3,8');
+        currentTab = 2;
+        currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
+        data = await fetchOrder();
         hideFilter()
-        tab = 2;
     }
     if (cancelOrder) {
-        data = await fetchOrder('?orderType=1&paymentMethod=2&status=1,2,8');
+        currentTab = 3;
+        currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
+        data = await fetchOrder();
         hideFilter()
-        tab = 3;
     }
-    renderOrder(data['orders'], tab);
+    renderOrder(data['orders'], currentTab);
     renderPagination(data['total_page'], data['current_page']);
     resetAllState()
 });
-
+/**
+ * tab = 0: view order detail
+ * tab = 1: update order info
+ * tab = 2: update order status
+ * tab = 4: cancel order
+ */
+// const shippingStatus = {
+//     "1": {//shipping id
+//         "1": "Đang xử lý", //order status id
+//         "2": "Chờ giao hàng",
+//         "3": "Đang giao hàng",
+//         "7": "Đã hoàn thành"
+//     },
+//     "2": {
+//         "1": "Đang xử lý",
+//         "8": "Đang chờ nhận",
+//         "7": "Đã hoàn thành"
+//     }
+// };
 orderList.addEventListener("click", async function (e) {
     const target = e.target.closest(".dropdown-item");
     if (!target) return;
     const tab = +target.getAttribute("tab");
     const orderId = e.target.closest(".order-id").getAttribute("id");
-    /**
-     * tab = 0: view order detail
-     * tab = 1: update order info
-     * tab = 2: update order status
-     * tab = 4: cancel order
-     */
+
     switch (tab) {
         case 0: {
             window.open(`/employee/order/${orderId}/detail`, "_blank");
@@ -457,19 +606,6 @@ orderList.addEventListener("click", async function (e) {
             window.open(`/employee/order/${orderId}/update`, "_blank");
             break;
         }
-        // const shippingStatus = {
-        //     "1": {//shipping id
-        //         "1": "Đang xử lý", //order status id
-        //         "2": "Chờ giao hàng",
-        //         "3": "Đang giao hàng",
-        //         "7": "Đã hoàn thành"
-        //     },
-        //     "2": {
-        //         "1": "Đang xử lý",
-        //         "8": "Đang chờ nhận",
-        //         "7": "Đã hoàn thành"
-        //     }
-        // };
         case 2: {
             const order = currentOrderItemsState[orderId];
 
@@ -478,22 +614,22 @@ orderList.addEventListener("click", async function (e) {
 
             const idx = Object.keys(shippingStatus[shippingMethodId]).indexOf(`${statusId}`);
             const statusArray = Object.entries(shippingStatus[shippingMethodId]).slice(idx + 1);
-            renderStatusUpdateForm(order, statusArray);
 
-            openModal()
-            // window.open(`/employee/order/${orderId}/detail`, "_blank");
+            renderStatusUpdateForm(order, statusArray);
+            openUpdateOrderStatusModal();
             break;
         }
         case 3: {
-            // window.open(`/employee/order/${orderId}/detail`, "_blank");
+            const order = currentOrderItemsState[orderId];
+
+            renderCancelForm(order);
+            openCancelOrderModal();
             break;
         }
     }
-    console.log(target)
 });
 
 overlay.addEventListener("click", closeModal)
-
 sortType.addEventListener("click", (e) => {
     const item = e.target.closest(".filter-type-item");
     if (!item) return;
@@ -530,18 +666,23 @@ pagination.addEventListener("click", async function (e) {
     const item = e.target.closest(".page-item");
     if (!item || item.classList.contains("disabled") || item.classList.contains("active")) return;
 
-    deleteParams(["page"])
-    addParams([["page", item.getAttribute("page")]]);
+    deleteUrlParams(["page"]);
+    deleteCurrentParams(["page"]);
+
+    addUrlParams([["page", item.getAttribute("page")]]);
+    addCurrentParams([["page", item.getAttribute("page")]]);
+
     window.history.pushState({}, '', url);
 
-    const data = await fetchOrder(url.search);
+    const data = await fetchOrder();
     renderOrder(data['orders'])
     renderPagination(data['total_page'], data['current_page']);
 })
 
-
 const handleFilterChange = async function (parent, setParams, deletedParams, toggleId) {
-    deleteParams(deletedParams);
+    deleteUrlParams(deletedParams);
+    deleteCurrentParams(deletedParams);
+
     let isToggle = false;
     parent.querySelectorAll(".filter-type-item").forEach(item => {
         const itemId = +item.getAttribute("id");
@@ -555,16 +696,19 @@ const handleFilterChange = async function (parent, setParams, deletedParams, tog
         }
         isToggle ||= input.checked;
     })
-    if (isToggle)
-        addParams(setParams);
+
+    if (isToggle) {
+        addCurrentParams(setParams)
+        addUrlParams(setParams);
+    }
 
     window.history.pushState({}, '', url);
 
-    const data = await fetchOrder(url.search);
+    const data = await fetchOrder();
     renderOrder(data['orders'])
     renderPagination(data['total_page'], data['current_page']);
     renderLabel();
-}
+};
 
 window.addEventListener("load", function () {
     document.querySelectorAll(".filter-type-item").forEach(item => {
@@ -577,4 +721,5 @@ window.addEventListener("load", function () {
         }
     })
     renderLabel();
+
 })

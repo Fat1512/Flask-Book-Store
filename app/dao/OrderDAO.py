@@ -55,6 +55,7 @@ def find_order_by_id(id):
 
 def find_all(**kwargs):
     orders = Order.query
+    order_id = kwargs.get("order_id")
     status = kwargs.get('status')
     payment_method = kwargs.get('payment_method')
     sort_by = kwargs.get('sort_by')
@@ -62,6 +63,12 @@ def find_all(**kwargs):
     order_type = kwargs.get("order_type")
 
     page = kwargs.get("page")
+
+    start_date = kwargs.get("start_date")
+    end_date = kwargs.get("end_date")
+
+    if order_id:
+        orders = orders.filter(Order.order_id == int(order_id))
 
     if order_type == "1":
         orders = orders.join(OnlineOrder)
@@ -75,6 +82,14 @@ def find_all(**kwargs):
 
     if payment_method:
         orders = orders.filter(Order.payment_method == PaymentMethod(int(payment_method)))
+
+    if start_date:
+        start_date = datetime.strptime(start_date, "%Y-%m-%d")
+        orders = orders.filter(Order.created_at >= start_date)
+
+    if end_date:
+        end_date = datetime.strptime(end_date, "%Y-%m-%d")
+        orders = orders.filter(Order.created_at <= end_date)
 
     if 'date' == sort_by:
         orders = orders.order_by(desc(Order.created_at)) if sort_dir.__eq__("desc") else orders.order_by(
