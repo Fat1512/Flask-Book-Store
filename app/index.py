@@ -13,6 +13,7 @@ from app.controllers.HomeController import index_bp
 from app.controllers.EmployeeController import employee_bp
 from app.controllers.OrderController import order_bp
 from app.controllers.rest.BookController import book_rest_bp
+from app.controllers.rest.AccountAPI import account_rest_bp
 from app.controllers.rest.ConfigAPI import config_api_bp
 from app.controllers.rest.OrderAPI import order_api_bp
 from app.controllers.rest.BookGerneController import book_gerne_rest_bp
@@ -49,16 +50,16 @@ def handle_custom_error(e):
     })
 
 
-@app.context_processor
-def cart_context():
-    cart = find_by_cart_id(2)
-    cart_items = cart.cart_items
-    total_price = cart.total_price()
-
-    return {
-        "cart_items": cart_items,
-        "total_price": total_price
-    }
+# @app.context_processor
+# def cart_context():
+#     cart = find_by_cart_id(2)
+#     cart_items = cart.cart_items
+#     total_price = cart.total_price()
+#
+#     return {
+#         "cart_items": cart_items,
+#         "total_price": total_price
+#     }
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 from app.exception.NotFoundError import NotFoundError
 from app.model.Book import Book
 from app.model.Order import Order, PaymentDetail, ShippingMethod, OrderCancellation
-from sqlalchemy import desc, asc, func, or_
+from sqlalchemy import desc, asc, func
 from datetime import datetime
 from app import app, db
 from app.model.Order import OrderStatus, PaymentMethod, OnlineOrder, OfflineOrder, OrderDetail
@@ -78,7 +78,8 @@ def find_all(**kwargs):
         orders = orders.filter(Order.order_id == OfflineOrder.order_id)
 
     if status:
-        orders = orders.filter(Order.status == OrderStatus(int(status)))
+        status_array = [OrderStatus(int(status_elm)) for status_elm in status]
+        orders = orders.filter(Order.status.in_(status_array))
 
     if payment_method:
         orders = orders.filter(Order.payment_method == PaymentMethod(int(payment_method)))

@@ -568,6 +568,7 @@ orderTab.addEventListener("click", async function (e) {
         data = await fetchOrder();
         hideFilter()
     }
+    console.log(data);
     renderOrder(data['orders'], currentTab);
     renderPagination(data['total_page'], data['current_page']);
     resetAllState()

@@ -22,7 +22,7 @@ class OrderStatus(PythonEnum):
     DA_HUY = 5
     DANG_CHO_THANH_TOAN = 6
     DA_THANH_TOAN = 7
-
+    DANG_CHO_NHAN = 8
 
 class PaymentMethod(PythonEnum):
     THE = 1
@@ -121,8 +121,6 @@ class OnlineOrder(Order):
     shipping_method = Column(Enum(ShippingMethod))
     shipping_fee = Column(Double)
     note = Column(String)
-
-    order_cancellation = relationship('OrderCancellation', backref='online_order', lazy=True, uselist=False)
 
     def to_dict(self):
         json = super().to_dict()
