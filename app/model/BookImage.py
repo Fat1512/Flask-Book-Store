@@ -15,3 +15,8 @@ class BookImage(db.Model):
             'image_url': self.image_url,
             "image_id": self.image_id,
         }
+
+    def to_dto(self):
+        return {
+            'image_url': self.image_url,
+        }

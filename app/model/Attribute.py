@@ -1,7 +1,6 @@
 from sqlalchemy import Integer, ForeignKey
 
 from app import db
-from app.model.ExtendedBook import ExtendedBook
 
 
 class Attribute(db.Model):
@@ -16,4 +15,10 @@ class Attribute(db.Model):
             'attribute_id': self.attribute_id,
             'attribute_name': self.attribute_name,
             'book_gerne_id': self.book_gerne_id,
+        }
+
+    def to_dto(self):
+        return {
+            'attribute_id': self.attribute_id,
+            'attribute_name': self.attribute_name
         }

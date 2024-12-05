@@ -135,10 +135,12 @@ def update_order(order_id, order_list):
 
 def create_online_order(request):
     payment_method = PaymentMethod.THE if request.get('paymentMethod').__eq__('VNPay') else PaymentMethod.TIEN_MAT
+    status = OrderStatus.DANG_CHO_THANH_TOAN if request.get('paymentMethod').__eq__('VNPay') else OrderStatus.DANG_XU_LY
     shipping_method = ShippingMethod.GIAO_HANG if request.get('shippingMethod').__eq__(
         'ship') else ShippingMethod.CUA_HANG
+
     shipping_fee = request.get('shippingFee')
-    online_order = OnlineOrder(status=OrderStatus.DANG_XU_LY,
+    online_order = OnlineOrder(status=status,
                                payment_method=payment_method,
                                created_at=datetime.now(),
                                address_id=request['addressId'],
@@ -148,7 +150,6 @@ def create_online_order(request):
                                )
     db.session.add(online_order)
     db.session.flush()
-
     # order_detail_list = []
     for book in request['books']:
         book_db = Book.query.get(book['bookId'])
@@ -191,7 +192,8 @@ def create_offline_order(order_list):
 
 
 def calculate_total_order_amount(order_id):
-    total_amount = db.session.query(func.sum(OrderDetail.quantity * OrderDetail.price)).filter(OrderDetail.order_id == order_id).first()[0]
+    total_amount = db.session.query(func.sum(OrderDetail.quantity * OrderDetail.price)).filter(
+        OrderDetail.order_id == order_id).first()[0]
     shipping_fee = db.session.query(OnlineOrder.shipping_fee).filter(OnlineOrder.order_id == order_id).first()
     total_amount = total_amount + shipping_fee[0] if shipping_fee is not None else total_amount
     return total_amount

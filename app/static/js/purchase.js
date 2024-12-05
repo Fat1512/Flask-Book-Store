@@ -1,7 +1,9 @@
 const ACCOUNT_API = '/api/v1/account'
 const CART_API = '/api/v1/cart'
 const ORDER_API = '/api/v1/order'
+const PAYMENT_API = '/api/v1/payment'
 const orderArea = document.querySelector(".order-area")
+
 
 const VND = new Intl.NumberFormat('vi-VN', {
     style: 'currency',
@@ -27,6 +29,27 @@ const showToast = function (message, isError) {
             background: color,
         }
     }).showToast()
+}
+const payment = async function (params) {
+    try {
+        const resPayment = await fetch(`${PAYMENT_API}/?orderId=${params}`, {
+            method: 'POST', // HTTP PUT method
+            headers: {
+                'Content-Type': 'application/json' // Specify JSON content type
+            },
+        });
+        if (!resPayment.ok) {
+            throw new Error(`HTTP error! status: ${resPayment.status}`);
+        }
+        const result = await resPayment.json(); // Parse JSON response
+        if (!resPayment.ok) {
+            throw new Error(`HTTP error! status: ${resPayment.status}`);
+        }
+        window.location.replace(result['vnpay_url'])
+
+    } catch (error) {
+        showToast(error.message, true)
+    }
 }
 const cancelOrder = async function (data) {
     try {
@@ -126,6 +149,13 @@ const renderOderArea = function (orders) {
             } else if (order.status.name === "Đã thanh toán" || order.status.name === "Đang giao hàng") {
                 buttonHtml = `
                   <button disabled
+                            class="btn btn-primary btn-large">
+                        Mua lại
+                    </button>
+                `
+            } else if (order.status.name === "Đang chờ thanh toán") {
+                buttonHtml = `
+                  <button onClick="handleRePayment(${order.order_id})"
                             class="btn btn-primary btn-large">
                         Mua lại
                     </button>
@@ -379,4 +409,8 @@ async function handleCancellationOrder(reasonArea, orderId) {
     } catch (error) {
         showToast(error.message, true)
     }
+}
+
+async function handleRePayment(orderId) {
+    await payment(orderId)
 }

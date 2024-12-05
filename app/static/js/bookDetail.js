@@ -33,7 +33,7 @@ const showToast = function (message, isError) {
 buttonBuy.addEventListener('click', () => {
     addCartItem(CURRENT_URL.searchParams.get("bookId")).then(res => {
         if (res['status'] === 200)
-            window.location.replace("http://127.0.0.1:5000/cart")
+            window.location.href = "http://127.0.0.1:5000/cart"
     })
 
 })

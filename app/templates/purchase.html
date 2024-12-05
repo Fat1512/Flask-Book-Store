@@ -4,6 +4,15 @@
 {% endblock %}
 {% block js %}
     <script src="{{ url_for('static', filename='js/purchase.js') }}"></script>
+    <script>
+        var is_success = {{ is_success|tojson }}
+        if (is_success) {
+            if (is_success === "00")
+                showToast("Thanh toán thành công", false)
+            else
+                showToast("Thanh toán thất bại", true)
+        }
+    </script>
 {% endblock %}
 {% block content %}
     <div class="my-bg-color pt-3 pb-3">
@@ -70,6 +79,11 @@
                                                     <button onclick="handleReBuy([{{ item.order_detail | map(attribute='book.book_id') | join(', ') }}])"
                                                             class="btn btn-rebuy btn-primary btn-large">Mua lại
                                                     </button>
+                                                {% elif item.status.name == 'Đang chờ thanh toán' %}
+                                                    <span class="text-primary">Vui lòng thanh toán trong vòng 48 giờ</span>
+                                                    <button onclick="handleRePayment([{{ item.order_id }}])"
+                                                            class="btn btn-repayment btn-primary btn-large">Mua lại
+                                                    </button>
                                                 {% else %}
                                                     <button
                                                             class="btn btn-cancellation btn-primary btn-large">Yêu cầu
@@ -105,7 +119,8 @@
                                                                                       stroke-linejoin="round"></path>
                                                                             </svg>
                                                                         </div>
-                                                                        <p class="m-0 reason-item-text font-weight-bold">Tui muốn mua sản phẩm khác</p>
+                                                                        <p class="m-0 reason-item-text font-weight-bold">
+                                                                            Tui muốn mua sản phẩm khác</p>
                                                                     </li>
                                                                     <li class="reason-item d-flex align-items-center">
                                                                         <div class="reason-item-tick">
@@ -125,7 +140,8 @@
                                                                                       stroke-linejoin="round"></path>
                                                                             </svg>
                                                                         </div>
-                                                                        <p class="m-0 reason-item-text font-weight-bold">Muốn thay đổi địa chỉ</p>
+                                                                        <p class="m-0 reason-item-text font-weight-bold">
+                                                                            Muốn thay đổi địa chỉ</p>
 
                                                                     </li>
                                                                     <li class="reason-item d-flex align-items-center">
@@ -146,7 +162,8 @@
                                                                                       stroke-linejoin="round"></path>
                                                                             </svg>
                                                                         </div>
-                                                                        <p class="m-0 reason-item-text font-weight-bold">Muốn thay sản phẩm đơn hàng</p>
+                                                                        <p class="m-0 reason-item-text font-weight-bold">
+                                                                            Muốn thay sản phẩm đơn hàng</p>
                                                                     </li>
                                                                     <li id='other'
                                                                         class="reason-item d-flex align-items-center">
@@ -167,7 +184,8 @@
                                                                                       stroke-linejoin="round"></path>
                                                                             </svg>
                                                                         </div>
-                                                                        <p class="m-0 reason-item-text font-weight-bold">Khác</p>
+                                                                        <p class="m-0 reason-item-text font-weight-bold">
+                                                                            Khác</p>
                                                                         <div class="flex-fill">
                                                                             <input class="input-field"
                                                                                    placeholder="Nhập lý do">
@@ -197,7 +215,6 @@
                                     <div class="text">Chưa có đơn hàng</div>
                                 </li>
                             {% endif %}
-
                         </ul>
                     </div>
 
@@ -293,4 +310,5 @@
             </div>
         </div>
     </div>
+
 {% endblock %}

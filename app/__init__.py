@@ -1,3 +1,4 @@
+from elasticsearch import Elasticsearch
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import os
@@ -19,7 +20,12 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 app.config["VNPAY_URL"] = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'  # Use the sandbox URL for testing
 app.config["VNPAY_TMN_CODE"] = 'MEBTRFP0'
 app.config["VNPAY_HASH_SECRET"] = 'ILFTJ080X209IM562X1NKYTMZ70RLVJO'
-app.config["VNPAY_RETURN_URL"] = 'http://127.0.0.1:5000/cart'
+app.config["VNPAY_RETURN_URL"] = 'http://127.0.0.1:5000/account/purchase'
+
+es = Elasticsearch(
+    hosts=[{'host': 'localhost', 'port': 9200, 'scheme': 'http'}],
+    http_auth=('docker-cluster', '090224T@n')
+)
 
 cloudinary.config(
     cloud_name="duk7gxwvc",

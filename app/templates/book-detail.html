@@ -11,7 +11,10 @@
                 <div class="col-md-5 rounded banner">
                     <div class="item-bg-color rounded p-3">
                         <div class="poster d-flex justify-content-center">
-                            <img src="{{ book.images[0].image_url }}">
+                            <img src="{% if book.images|length %}
+                                 	{{ book.images[0].image_url }}
+                                 	{% else %} ''
+                                 {% endif %} ">
                         </div>
                         <div class="images">
                             <ul class="list-unstyled list-image d-flex justify-content-start pb-3">
@@ -108,7 +111,10 @@
                         <a class="text-decoration-none text-black" href="/search/detail?bookId={{ b.book_id }}"
                            style="width: 244px">
                             <img class="card-img-top"
-                                 src="{{ b.images[0].image_url }}"
+                                 src="{% if b.images|length %}
+                                 	{{ b.images[0].image_url }}
+                                 	{% else %} ''
+                                 {% endif %} "
                                  alt="Card image">
                             <div class="card-body p-0">
                                 <p style="; min-height: 48px" class="card-text">{{ b.title }}</p>

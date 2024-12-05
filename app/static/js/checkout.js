@@ -42,7 +42,7 @@ const payment = async function (params) {
         if (!resPayment.ok) {
             throw new Error(`HTTP error! status: ${resPayment.status}`);
         }
-        window.location.replace(result['vnpay_url'])
+        window.location.href =result['vnpay_url']
 
     } catch (error) {
         showToast(error.message, true)

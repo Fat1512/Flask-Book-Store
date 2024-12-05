@@ -11,10 +11,17 @@ account_bp = Blueprint('account', __name__)
 
 @account_bp.route('/purchase', methods=['GET'])
 def purchase():
-    status = request.args.get('status', type=int)
+    payment_status = request.args.get('vnp_ResponseCode', default=None)
+
+    if payment_status:
+        return redirect(f'http://127.0.0.1:5000/account/purchase?payment={payment_status}')
+
+    status = request.args.get('type', type=int)
     order = find_add_by_user_id(status)
     order_to_dict = [order.to_dict() for order in order]
-    return render_template("purchase.html", order=order_to_dict)
+    is_success = request.args.get('payment', default=None)
+
+    return render_template("purchase.html", is_success=is_success, order=order_to_dict)
 
 
 @account_bp.route('/admin-login', methods=['GET', 'POST'])

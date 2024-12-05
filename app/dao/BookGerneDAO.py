@@ -6,9 +6,7 @@ import json
 
 def find_all_extend_attribute(gerne_id):
     book_gerne = BookGerne.query.get(gerne_id)
-
     return book_gerne.attributes
-
 
 def get_depth_gerne(id):
     query = """

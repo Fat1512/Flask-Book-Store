@@ -1,5 +1,8 @@
+from elasticsearch import Elasticsearch
+
 import app.controllers.AccountController
 from app.controllers.CartController import cart_bp
+from app.controllers.rest.AccountAPI import account_rest_bp
 from app.controllers.rest.CartAPI import cart_rest_bp
 from app.controllers.rest.PaymentAPI import payment_rest_bp
 from app.dao import UserDao
@@ -38,7 +41,6 @@ app.register_blueprint(index_bp, url_prefix='/')
 app.register_blueprint(account_bp, url_prefix='/account')
 app.register_blueprint(admin_bp, url_prefix='/admin')
 app.register_blueprint(cart_bp, url_prefix='/cart')
-
 
 
 
