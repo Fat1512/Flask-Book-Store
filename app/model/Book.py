@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Double, DATETIME
 from app import db, app
 from sqlalchemy.orm import relationship
-from app.model.BookImage import ImageOfBook
+from app.model.BookImage import BookImage
 from app.model.ExtendedBook import ExtendedBook
 from app.model.Comment import Comment
 
@@ -15,7 +15,7 @@ class Book(db.Model):
     book_id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String)
     author = Column(String)
-    quantity = Column(Integer)
+    quantity = Column(Integer,default=0)
     price = Column(Double)
     description = Column(String)
     release_date = Column(DATETIME)
@@ -29,7 +29,7 @@ class Book(db.Model):
 
     book_gerne = db.relationship('BookGerne', back_populates='books', lazy=True)
     publisher_info = db.relationship('Publisher', back_populates='publisher_books_relation', foreign_keys=[publisher_id], lazy=True)
-    images = db.relationship('ImageOfBook', backref='book', lazy=True)
+    images = db.relationship('BookImage', backref='book', lazy=True)
     order_detail = relationship("OrderDetail", back_populates="book", lazy=True)
     form_import_detail = relationship("FormImportDetail", back_populates="book", lazy=True)
 

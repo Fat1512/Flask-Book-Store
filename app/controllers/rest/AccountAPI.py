@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 
-from app.dao.CommentDAO import create_comment
+from app.dao.CommentDAO import create_comment, reply_comment
 from app.dao.OrderDAO import find_add_by_user_id
 
 account_rest_bp = Blueprint('account_rest', __name__)

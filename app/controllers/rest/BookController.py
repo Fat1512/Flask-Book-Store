@@ -1,7 +1,9 @@
-from flask import Blueprint, request
+import json
+
+from flask import Blueprint, request, jsonify
 from app import app
 from app.dao.FormImportDAO import get_form_imports, create_form_import
-from app.dao.BookDAO import find_by_id, find_by_barcode
+from app.dao.BookDAO import find_by_id, find_by_barcode, create_book
 from app.dao.CartDao import find_by_user_id
 from app.dao.SearchDAO import searchBook
 
@@ -12,6 +14,46 @@ book_rest_bp = Blueprint('book_rest', __name__)
 def get_books():
     return find_by_id(54).to_dict()
 
+
+@book_rest_bp.route('/', methods=['POST'])
+def create_books():
+    title = request.form.get('title')
+    book_gerne_id = request.form.get('book_gerne_id')
+    author = request.form.get('author')
+    price = request.form.get('price')
+    num_page = request.form.get('num_page')
+    description = request.form.get('description')
+    format = request.form.get('format')
+    weight = request.form.get('weight')
+    dimension = request.form.get('dimension')
+
+    # Handle book_images (file upload)
+    book_images = request.files.getlist('book_images[]')
+
+    # Handle extend_attributes (JSON string)
+    extend_attributes = json.loads(request.form.get('extend_attributes'))
+
+    data = {
+        "title": title,
+        "book_gerne_id": int(book_gerne_id),
+        "author": author,
+        "price": float(price),
+        "num_page": int(num_page),
+        "description": description,
+        "format": format,
+        "weight": float(weight),
+        "dimension": dimension,
+        "book_images": book_images,
+        "extend_attributes": extend_attributes
+    }
+
+    create_book(data)
+
+    return jsonify({
+        'message': 'success',
+        'status': 200
+
+    })
 
 
 @book_rest_bp.route('/', methods=['GET'])
@@ -31,6 +73,7 @@ def book():
     data['books'] = book_dto
 
     return data
+
 
 @book_rest_bp.route('/manage', methods=['GET'])
 def get_manage_books():
@@ -59,6 +102,7 @@ def get_manage_book(book_id):
     if book is None:
         return {}
     return book.to_dict_manage()
+
 
 @book_rest_bp.route('/barcode/<barcode>', methods=['GET'])
 def get_by_barcode(barcode):

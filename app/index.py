@@ -1,6 +1,5 @@
 import app.controllers.AccountController
 from app.controllers.CartController import cart_bp
-from app.controllers.rest.AccountAPI import account_rest_bp
 from app.controllers.rest.CartAPI import cart_rest_bp
 from app.controllers.rest.PaymentAPI import payment_rest_bp
 from app.dao import UserDao
