@@ -52,23 +52,18 @@ def handle_custom_error(e):
     })
 
 
-# @app.context_processor
-# def cart_context():
-#     cart = find_by_cart_id(2)
-#     cart_items = cart.cart_items
-#     total_price = cart.total_price()
-#
-#     return {
-#         "cart_items": cart_items,
-#         "total_price": total_price
-#     }junmjnjsdbgnjk
-#Tan
+@app.context_processor
+def cart_context():
+    cart = find_by_cart_id(2)
+    cart_items = cart.cart_items
+    total_price = cart.total_price()
 
     return {
         "cart_items": cart_items,
         "total_price": total_price
     }
-#Phat
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
