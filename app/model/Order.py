@@ -24,6 +24,7 @@ class OrderStatus(PythonEnum):
     DA_THANH_TOAN = 7
     DANG_CHO_NHAN_HANG = 8
 
+
 class PaymentMethod(PythonEnum):
     THE = 1
     TIEN_MAT = 2
@@ -48,7 +49,8 @@ class Order(db.Model):
 
     order_detail = relationship("OrderDetail", back_populates='order', lazy=True, cascade="all")
     online_order = relationship('OnlineOrder', backref='order', lazy=True, uselist=False, cascade="all")
-    offline_order = relationship('OfflineOrder', back_populates='order',enable_typechecks=False, lazy=True, uselist=False, cascade="all")
+    offline_order = relationship('OfflineOrder', back_populates='order', enable_typechecks=False, lazy=True,
+                                 uselist=False, cascade="all")
     payment_detail = relationship('PaymentDetail', back_populates='order', lazy=True, uselist=False, cascade="all")
 
     customer_id = Column(Integer, ForeignKey('user.user_id'))
@@ -74,21 +76,18 @@ class Order(db.Model):
                     'name': PAYMENT_METHOD_TEXT[self.payment_method.value - 1]
                 }
             },
+            'address': self.address.to_dict(),
             'created_at': self.created_at,
             'customer_id': self.customer_id,
-            'order_detail': [order_detail.to_dict() for order_detail in self.order_detail],
             'total_amount': self.get_amount(),
-            'address': self.address.to_dict()
         }
         return json
 
     def to_detail_dict(self):
         json = self.to_dict()
         json['order_detail'] = [order_detail.to_dict() for order_detail in self.order_detail]
-        json['address'] = self.address.to_dict()
         if self.payment_detail:
             json['payment']['payment_detail'] = self.payment_detail.to_dict()
-
         return json
 
     def get_shipping_fee(self):
@@ -98,7 +97,8 @@ class Order(db.Model):
 class OfflineOrder(Order):
     __tablename__ = 'offline_order'
     order_id = Column(Integer, ForeignKey('order.order_id'), primary_key=True)
-    order = relationship('Order', back_populates='offline_order', enable_typechecks=False, lazy=True, uselist=False, cascade="all")
+    order = relationship('Order', back_populates='offline_order', enable_typechecks=False, lazy=True, uselist=False,
+                         cascade="all")
 
     employee_id = Column(Integer, ForeignKey('user.user_id'))
     employee = relationship("User", back_populates="offline_orders", foreign_keys=[employee_id])
@@ -122,7 +122,7 @@ class OnlineOrder(Order):
     shipping_fee = Column(Double)
     note = Column(String)
 
-    order_cancellation = relationship('OrderCancellation', backref='online_order', lazy=True, uselist=False)
+    order_cancellation = relationship('OrderCancellation', backref='order', lazy=True, uselist=False)
 
     def to_dict(self):
         json = super().to_dict()
@@ -138,7 +138,8 @@ class OnlineOrder(Order):
                 'note': self.note
             }
         }
-        json['total_amount'] = json['total_amount'] + json['order_type']['detail']['shipping_fee']
+        if self.order_cancellation:
+            json['order_type']['detail']['order_cancellation'] = self.order_cancellation.to_dict_detail()
         return json
 
     def get_shipping_fee(self):
@@ -151,7 +152,13 @@ class OrderCancellation(db.Model):
     created_at = Column(DATETIME, default=datetime.now())
     reason = Column(String)
 
-    order = db.relationship('OnlineOrder', backref='order_cancellation', uselist=False)
+    # online_order = db.relationship('OnlineOrder', backref='order_cancellation', uselist=False)
+
+    def to_dict_detail(self):
+        return {
+            'reason': self.reason,
+            'created_at': self.created_at
+        }
 
     def to_dict(self):
         return {
@@ -191,6 +198,7 @@ class PaymentDetail(db.Model):
 
     order_id = Column(Integer, ForeignKey('order.order_id'), unique=True)
     order = relationship("Order", back_populates="payment_detail", enable_typechecks=False, lazy=True)
+
     def to_dict(self):
         return {
             'amount': self.amount,

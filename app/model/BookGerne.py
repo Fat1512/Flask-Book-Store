@@ -21,7 +21,7 @@ class BookGerne(db.Model):
 
     def to_dict(self):
         return {
-            'book_type_id': self.book_type_id,
+            'book_type_id': self.book_gerne_id,
             'name': self.name,
             'lft': self.lft,
             'rgt': self.rgt,

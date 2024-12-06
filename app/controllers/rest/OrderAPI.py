@@ -100,9 +100,10 @@ def confirm_order(order_id):
         "ok": "ok"
     }
 
+
 @order_api_bp.route("/<order_id>/status", methods=['POST'])
 def update_status(order_id):
-    status = request.json.get("id")
+    status = request.json.get("orderStatusId")
     status_enum = OrderStatus(int(status))
 
     update_order_status(order_id, status_enum)
@@ -115,8 +116,6 @@ def update_status(order_id):
     return {
         "messi": "ronaldo"
     }
-
-
 
 
 @order_api_bp.route("/<order_id>/detail", methods=['GET', 'POST'])
