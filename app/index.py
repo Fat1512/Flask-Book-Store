@@ -46,12 +46,14 @@ app.register_blueprint(admin_bp, url_prefix='/admin')
 app.register_blueprint(cart_bp, url_prefix='/cart')
 
 
+
 @app.errorhandler(NotFoundError)
 def handle_custom_error(e):
     return jsonify({
         "error": e.message,
         'status': e.status_code
     })
+
 
 
 @app.context_processor

@@ -417,16 +417,37 @@ const fetchOrder = async function () {
         alert(err.message);
     }
 };
+
 const modifyOrderStatus = async function (orderId, orderStatusId) {
     try {
         const res = await fetch(`${ORDER_API}/${orderId}/status`, {
             method: "POST",
-            body: JSON.stringify({"id": orderStatusId}),
+            body: JSON.stringify({"orderStatusId": orderStatusId}),
             headers: {
                 'Content-Type': 'application/json'
             }
         });
         if (!res.ok) throw new Error("update order status");
+        return await res.json();
+    } catch (err) {
+        alert(err.message);
+    }
+}
+
+const cancelOrder = async function(orderId) {
+    try {
+        const res = await fetch(`${ORDER_API}/orderCancellation`, {
+            method: "POST",
+            body: JSON.stringify({
+                "orderId": orderId,
+                "reason": "Khách yêu cầu hủy"
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!res.ok) throw new Error("update order status");
+        alert("huy thanh cong")
         return await res.json();
     } catch (err) {
         alert(err.message);
@@ -525,12 +546,12 @@ modalUpdateOrderStatusBody.addEventListener("click", function (e) {
     }
 });
 
-modalCancelOrder.addEventListener("click", function (e) {
-    const cancelBtn = e.target.closest(".cancel-back-btn");
+modalCancelOrder.addEventListener("click", async function (e) {
+    const cancelBtn = e.target.closest(".cancel-btn");
     const backCancelBtn = e.target.closest(".cancel-back-btn");
     if (cancelBtn) {
         const orderId = modalCancelOrder.querySelector(".order-cancel-modal").getAttribute("id");
-        modifyOrderStatus(orderId, 5);
+        cancelOrder(orderId);
     }
     if (backCancelBtn) {
         closeModal();
