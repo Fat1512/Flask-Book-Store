@@ -1,3 +1,4 @@
+import confluent_kafka
 from elasticsearch import Elasticsearch
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
