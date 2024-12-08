@@ -21,11 +21,25 @@ app.config["VNPAY_URL"] = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'  
 app.config["VNPAY_TMN_CODE"] = 'MEBTRFP0'
 app.config["VNPAY_HASH_SECRET"] = 'ILFTJ080X209IM562X1NKYTMZ70RLVJO'
 app.config["VNPAY_RETURN_URL"] = 'http://127.0.0.1:5000/account/purchase'
+app.config['KAFKA_BROKER'] = ['127.0.0.1:9091', '127.0.0.1:9092', '127.0.0.1:9093']
+app.config['KAFKA_TOPIC'] = ['dbs_.book_store.attribute', 'dbs_.book_store.book', 'dbs_.book_store.book_gerne',
+                             'dbs_.book_store.extended_book', 'schema-changes.mysql']
 
 es = Elasticsearch(
     hosts=[{'host': 'localhost', 'port': 9200, 'scheme': 'http'}],
     http_auth=('docker-cluster', '090224T@n')
 )
+
+
+consumers = {
+    topic: confluent_kafka.Consumer({
+        'bootstrap.servers': ','.join(app.config['KAFKA_BROKER']),
+        'group.id': 'my-group',
+        'auto.offset.reset': 'earliest'
+    }) for topic in app.config['KAFKA_TOPIC']
+}
+
+
 
 cloudinary.config(
     cloud_name="duk7gxwvc",

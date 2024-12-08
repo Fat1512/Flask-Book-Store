@@ -1,3 +1,6 @@
+import json
+from threading import Thread
+
 from elasticsearch import Elasticsearch
 
 import app.controllers.AccountController
@@ -6,7 +9,7 @@ from app.controllers.rest.AccountAPI import account_rest_bp
 from app.controllers.rest.CartAPI import cart_rest_bp
 from app.controllers.rest.PaymentAPI import payment_rest_bp
 from app.dao import UserDao
-from app import app, login
+from app import app, login, consumers
 from app.dao.CartDao import find_by_cart_id
 from app.exception.NotFoundError import NotFoundError
 from app.model.User import UserRole
@@ -65,6 +68,69 @@ def cart_context():
     }
 
 
+def consume_kafka(topic):
+    """Consume messages from Kafka and index them into Elasticsearch."""
+    consumer = consumers[topic]
+    consumer.subscribe([topic])
+    print("ok")
+    while True:
+        msg = consumer.poll(timeout=1.0)
+        if msg is None:
+            continue
+        elif msg.error():
+            print(msg.error())
+        else:
+            print('process')
+            data = json.loads(msg.value().decode('utf-8'))
+            handler_message(topic, data)
+    consumer.close()
+
+
+def handler_message(topic, data):
+    if topic.__eq__("dbs_.book_store.book"):
+        pass
+    elif topic.__eq__("dbs_.book_store.attribute"):
+        pass
+    elif topic.__eq__("dbs_.book_store.book_gerne"):
+        pass
+    elif topic.__eq__("dbs_.book_store.extended_book"):
+        pass
+
+def handle_topic_book(data):
+    pass
+
+def handle_topic_attribute(data):
+    pass
+
+def handle_topic_book_gerne(data):
+    pass
+
+def handle_topic_extended_book(data):
+    pass
+
+
+
+
+# HTTP endpoint to start Kafka consumer for indexing into Elasticsearch
+# @app.route('/listen/<topic>', methods=['GET'])
+# def listen_topic(topic):
+#     try:
+#         consume_and_index(topic)
+#         return jsonify({'status': 'Listening for messages'}), 200
+#     except Exception as e:
+#         return jsonify({'error': str(e)}), 500
+#
+#
+# @app.route('/status', methods=['GET'])
+# def status():
+#     threads = [{"name": t.name, "alive": t.is_alive()} for t in threading.enumerate()]
+#     return jsonify({"threads": threads})
+
 
 if __name__ == "__main__":
+    KAFKA_TOPICS = app.config["KAFKA_TOPIC"]
+    for topic in KAFKA_TOPICS:
+        consumer_thread = Thread(target=consume_kafka, args=(topic,), daemon=True)
+        consumer_thread.start()
+
     app.run(debug=True)

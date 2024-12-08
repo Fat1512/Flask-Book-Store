@@ -122,7 +122,6 @@ class OnlineOrder(Order):
     shipping_fee = Column(Double)
     note = Column(String)
 
-    order_cancellation = relationship('OrderCancellation', backref='online_order', lazy=True, uselist=False)
 
     def to_dict(self):
         json = super().to_dict()

@@ -20,6 +20,4 @@ class ExtendedBook(db.Model):
         }
 
     def to_dto(self):
-        return {
-            "value": self.value
-        }
+        return self.value

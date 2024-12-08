@@ -50,9 +50,10 @@ class BookIndex:
 
 
 if __name__ == '__main__':
-    # with app.app_context():
-    #     book = Book.query.all()
-    #     book_document = book.to_dto()
-    #     res = es.index(index=BookIndex.index_name, body=book_document)
+    with app.app_context():
+        books = Book.query.all()
+        for book in books:
+            book_document = book.to_dto()
+            res = es.index(index=BookIndex.index_name, body=book_document)
 
-    BookIndex.create_index()
+    # BookIndex.create_index()
