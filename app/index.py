@@ -15,7 +15,7 @@ from app import app, login, consumers
 from app.dao.CartDao import find_by_cart_id
 from app.elasticsearch.BookIndexService import create_document, delete_document
 from app.elasticsearch.KafkaAsysnData import create, update_book_document, delete, \
-    add_attribute_value, modify_attribute, modify_attribute_value
+    add_attribute_value, modify_attribute_value
 from app.exception.NotFoundError import NotFoundError
 from app.model.User import UserRole
 from flask import render_template, request, redirect, url_for, jsonify
@@ -163,24 +163,24 @@ def handle_topic_book_gerne(data):
     pass
 
 
-def handle_topic_attribute(data):
-    try:
-        # Extract necessary information from the message
-        action = data.get('op')  # Assume 'action' field in data determines what to do
-        # Assuming there's an 'id' field that identifies the entity
-        if action == 'u' or action == 'd':
-            # Logic for updating an existing record or entity
-            print('updated')
-            modify_attribute(data['after'])
-        elif action == 'd':
-            # Logic for updating an existing record or entity
-            print('delete')
-            modify_attribute(data['before'])
-        else:
-            print(f"Unknown action: {action}")
-
-    except Exception as e:
-        print(f"Error handling topic1 message: {e}")
+# def handle_topic_attribute(data):
+#     try:
+#         # Extract necessary information from the message
+#         action = data.get('op')  # Assume 'action' field in data determines what to do
+#         # Assuming there's an 'id' field that identifies the entity
+#         if action == 'u' or action == 'd':
+#             # Logic for updating an existing record or entity
+#             print('updated')
+#             modify_attribute(data['after'])
+#         elif action == 'd':
+#             # Logic for updating an existing record or entity
+#             print('delete')
+#             modify_attribute(data['before'])
+#         else:
+#             print(f"Unknown action: {action}")
+#
+#     except Exception as e:
+#         print(f"Error handling topic1 message: {e}")
 
 
 @app.route('/status', methods=['GET'])
