@@ -28,8 +28,14 @@ class BookIndex:
                         "weight": {"type": "float"},
                         "format": {"type": "keyword"},
                         "publisher": {"type": "keyword"},
+                        "book_gerne": {"type": "nested", "properties": {
+                            "book_gerne_id": {"type": "integer"},
+                            "name": {"type": "text"},
+                            "lft": {"type": "integer"},
+                            "rgt": {"type": "integer"},
+                        }},
                         "book_images": {"type": "keyword"},
-                        "extended_books": {'type':"nested", "properties": {
+                        "extended_books": {'type': "nested", "properties": {
                             'attribute_id': {'type': 'integer'},
                             'attribute_name': {'type': 'text'},
                             'value': {'type': 'text'},

@@ -27,13 +27,13 @@
                             <ol class="parent-gerne list-unstyled mb-0 cursor-pointer">
                             </ol>
                             <div class="current-gerne cursor-pointer">
-{#                                <span id="{{ current_gerne[0].id }}"#}
-{#                                      class="selected-filter">{{ current_gerne[0].name }}</span>#}
+                                {#                                <span id="{{ current_gerne[0].id }}"#}
+                                {#                                      class="selected-filter">{{ current_gerne[0].name }}</span>#}
                             </div>
                             <ol class="list-unstyled children-gerne text-filter">
-{#                                {% for c in sub_gerne %}#}
-{#                                    <li><span class="sub-item" id="{{ c.id }}">{{ c.name }}</span></li>#}
-{#                                {% endfor %}#}
+                                {#                                {% for c in sub_gerne %}#}
+                                {#                                    <li><span class="sub-item" id="{{ c.id }}">{{ c.name }}</span></li>#}
+                                {#                                {% endfor %}#}
                             </ol>
                         </div>
                         <div class="price pb-0 pt-3 border-top">
@@ -123,20 +123,18 @@
                                             data-toggle="dropdown">
                                         {% if order == 'latest' %}
                                             Mới nhất
-                                        {% endif %}
-                                        {% if order == 'best_sell_week' %}
-                                            Bán chạy nhất tuần
-                                        {% endif %}
-                                        {% if order == 'best_sell_month' %}
-                                            Bán chạy nhất tháng
-                                        {% endif %}
-                                        {% if order == 'asc' %}
-                                            Giá tăng
-                                        {% endif %}
-                                        {% if order == 'desc' %}
-                                            Giá giảm
-                                        {% endif %}
 
+                                            {% elif order == 'best_sell_week' %}
+                                            Bán chạy nhất tuần
+                                            {% elif order == 'best_sell_month' %}
+                                            Bán chạy nhất tháng
+                                            {% elif order == 'asc' %}
+                                            Giá tăng
+                                            {% elif order == 'desc' %}
+                                            Giá giảm
+                                            {% else %}
+                                            Độ liên quan
+                                        {% endif %}
                                     </button>
                                     <div class="dropdown-menu dropdown-menu-order custom-dropdown-menu">
                                         <span class="dropdown-item" value="latest">Mới nhất</span>
@@ -164,61 +162,61 @@
                             </div>
                         </div>
                         <div class="row list-book mt-4 pt-3 border-top">
-{#                            <p class="label-warning">#}
-{#                                Không có sản phẩm phù hợp với tìm kiếm của bạn#}
-{#                            </p>#}
-{#                            {% for b in pagination.books %}#}
-{#                                <a href="#" class="card col-md-3">#}
-{#                                    <span class="discount text-white">10%</span>#}
-{#                                    <img class="card-img-top"#}
-{#                                         src="{% if  b.images %}#}
-{#                                         	{{ b.images[0].image_url }}#}
-{#                                         	{% else %} null#}
-{#                                         {% endif %} "#}
-{#                                         alt="Card image">#}
-{#                                    <div class="card-body p-0">#}
-{#                                        <p class="card-text">{{ b.title }}</p>#}
-{#                                        <p class="text-primary font-weight-bold mb-1">{{ b.price|currency('VND') }}</p>#}
-{#                                        <p class="text-secondary text-decoration-line-through mb-1">{{ b.price }}đ</p>#}
-{#                                    </div>#}
-{#                                    <div class="rating">#}
-{#                                        <i class="fa-regular fa-star"></i>#}
-{#                                        <i class="fa-regular fa-star"></i>#}
-{#                                        <i class="fa-regular fa-star"></i>#}
-{#                                        <i class="fa-regular fa-star"></i>#}
-{#                                        <i class="fa-regular fa-star"></i>#}
-{#                                    </div>#}
-{#                                </a>#}
-{#                            {% endfor %}#}
+                            {#                            <p class="label-warning">#}
+                            {#                                Không có sản phẩm phù hợp với tìm kiếm của bạn#}
+                            {#                            </p>#}
+                            {#                            {% for b in pagination.books %}#}
+                            {#                                <a href="#" class="card col-md-3">#}
+                            {#                                    <span class="discount text-white">10%</span>#}
+                            {#                                    <img class="card-img-top"#}
+                            {#                                         src="{% if  b.images %}#}
+                            {#                                         	{{ b.images[0].image_url }}#}
+                            {#                                         	{% else %} null#}
+                            {#                                         {% endif %} "#}
+                            {#                                         alt="Card image">#}
+                            {#                                    <div class="card-body p-0">#}
+                            {#                                        <p class="card-text">{{ b.title }}</p>#}
+                            {#                                        <p class="text-primary font-weight-bold mb-1">{{ b.price|currency('VND') }}</p>#}
+                            {#                                        <p class="text-secondary text-decoration-line-through mb-1">{{ b.price }}đ</p>#}
+                            {#                                    </div>#}
+                            {#                                    <div class="rating">#}
+                            {#                                        <i class="fa-regular fa-star"></i>#}
+                            {#                                        <i class="fa-regular fa-star"></i>#}
+                            {#                                        <i class="fa-regular fa-star"></i>#}
+                            {#                                        <i class="fa-regular fa-star"></i>#}
+                            {#                                        <i class="fa-regular fa-star"></i>#}
+                            {#                                    </div>#}
+                            {#                                </a>#}
+                            {#                            {% endfor %}#}
 
                         </div>
                         <nav aria-label="Page navigation example" class="d-flex justify-content-center">
                             <ul class="pagination">
-{#                                {% if pagination.current_page > 1 %}#}
-{#                                    <li class="page-item prev-button">#}
-{#                                        <a class="page-link" href="#" aria-label="Previous">#}
-{#                                            <i class="fa-solid fa-arrow-left"></i>#}
-{#                                        </a>#}
-{#                                    </li>#}
-{#                                {% endif %}#}
-{#                                {% for num in range( 1,pagination.pages + 1 ) %}#}
-{#                                    <li class="page-item item-button">#}
-{#                                        <a class="page-link#}
-{#                                        {% if num == pagination.current_page %}#}
-{#                                        	active#}
-{#                                        {% endif %} "#}
-{#                                           href="/search?page={{ num }}" aria-label="{{ num }}">#}
-{#                                            {{ num }}#}
-{#                                        </a>#}
-{#                                    </li>#}
-{#                                {% endfor %}#}
-{#                                {% if pagination.current_page < pagination.pages %}#}
-{#                                    <li class="page-item next-button">#}
-{#                                        <a class="page-link" href="#" aria-label="Next">#}
-{#                                            <i class="fa-solid fa-arrow-right"></i>#}
-{#                                        </a>#}
-{#                                    </li>#}
-{#                                {% endif %}#}
+                                {#                                {% if pagination.current_page > 1 %}#}
+                                {#                                    <li class="page-item prev-button">#}
+                                {#                                        <a class="page-link" href="#" aria-label="Previous">#}
+                                {#                                            <i class="fa-solid fa-arrow-left"></i>#}
+                                {#                                        </a>#}
+                                {#                                    </li>#}
+                                {#                                {% endif %}#}
+                                {#                                {% for num in range( 1,pagination.pages + 1 ) %}#}
+                                {#                                    <li class="page-item item-button">#}
+                                {#                                        <a class="page-link#}
+                                {#                                        {% if num == pagination.current_page %}#}
+                                {#                                        	active#}
+                                {#                                        {% endif %} "#}
+                                {#                                           href="/search?page={{ num }}" aria-label="{{ num }}">#}
+                                {#                                            {{ num }}#}
+                                {#                                        </a>#}
+                                {#                                    </li>#}
+                                {#                                {% endfor %}#}
+                                {#                                {% if pagination.current_page < pagination.pages %}#}
+                                {#                                    <li class="page-item next-button">#}
+                                {#                                        <a class="page-link" href="#" aria-label="Next">#}
+                                {#                                            <i class="fa-solid fa-arrow-right"></i>#}
+                                {#                                        </a>#}
+                                {#                                    </li>#}
+                                {#                                {% endif %}#}
                             </ul>
                         </nav>
                     </div>

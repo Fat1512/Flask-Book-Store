@@ -66,7 +66,7 @@ class Book(db.Model):
             "quantity": self.quantity,
             "price": self.price,
             "description": self.description,
-            "book_gerne_id": self.book_gerne_id,
+            "book_gerne": self.book_gerne.to_dto(),
             "page_number": self.num_page,
             "weight": self.weight,
             'format': self.format,

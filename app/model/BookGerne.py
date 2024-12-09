@@ -32,5 +32,6 @@ class BookGerne(db.Model):
         return {
             'book_gerne_id': self.book_gerne_id,
             'name': self.name,
-            'attributes': [attriubte.to_dto() for attriubte in self.attributes]
+            'lft': self.lft,
+            'rgt': self.rgt,
         }
