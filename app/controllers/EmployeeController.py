@@ -1,5 +1,5 @@
 from app.dao.OrderDAO import *
-from app.dao.SearchDAO import searchBook
+from app.dao.SearchDAO import search_book
 from app.dao.FormImportDAO import get_form_imports
 from app.dao.ConfigDAO import get_config
 from flask import Blueprint
@@ -12,7 +12,7 @@ employee_bp = Blueprint('employee', __name__)
 
 @employee_bp.route("/checkout")
 def checkout():
-    books = searchBook(limit=8, page=1)
+    books = search_book(limit=8, page=1)
     book_dto = []
     for book in books['books']:
         book_dto.append(book.to_dict())

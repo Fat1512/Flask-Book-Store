@@ -5,7 +5,7 @@ from app import app
 from app.dao.FormImportDAO import get_form_imports, create_form_import
 from app.dao.BookDAO import find_by_id, find_by_barcode, create_book
 from app.dao.CartDao import find_by_user_id
-from app.dao.SearchDAO import searchBook
+from app.dao.SearchDAO import search_book
 
 book_rest_bp = Blueprint('book_rest', __name__)
 
@@ -66,13 +66,17 @@ def book():
     gerne_id = request.args.get('gerneId', type=int, default=1)
     page = request.args.get('page', 1, type=int)
 
-    data = searchBook(keyword, min_price, max_price, order, gerne_id, limit, page)
+    data = search_book(keyword, min_price, max_price, order, gerne_id, limit, page)
     book_dto = []
     for book in data['books']:
         book_dto.append(book.to_dict())
     data['books'] = book_dto
 
-    return data
+    return jsonify({
+        'message': 'success',
+        'status': 200,
+        'data': data
+    })
 
 
 @book_rest_bp.route('/manage', methods=['GET'])
@@ -125,7 +129,7 @@ def test_import():
     page = request.args.get('page', 1, type=int)
     start_date = request.args.get('startDate', 1, type=int)
     end_date = request.args.get('endDate', 1, type=int)
-    form_imports = get_form_imports(import_id=import_id,page=page,start_date=start_date,end_date=end_date)
+    form_imports = get_form_imports(import_id=import_id, page=page, start_date=start_date, end_date=end_date)
     return [formImport.to_dict() for formImport in form_imports]
 
 
@@ -133,5 +137,5 @@ def test_import():
 def testt_import():
     start_date = request.args.get('startDate')
     end_date = request.args.get('endDate')
-    form_imports = get_form_imports(start_date=start_date,end_date=end_date)
+    form_imports = get_form_imports(start_date=start_date, end_date=end_date)
     return form_imports

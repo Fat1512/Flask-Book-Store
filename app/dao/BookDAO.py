@@ -15,6 +15,10 @@ from app.model.ExtendedBook import ExtendedBook
 def find_by_id(id):
     return Book.query.get(id)
 
+def find_by_id_index(id):
+    return Book.query.get(id).to_dto()
+
+
 
 def create_book(data):
     book = Book(title=data['title'], author=data['author'], price=data['price'],

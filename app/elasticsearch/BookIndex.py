@@ -29,15 +29,11 @@ class BookIndex:
                         "format": {"type": "keyword"},
                         "publisher": {"type": "keyword"},
                         "book_images": {"type": "keyword"},
-                        "book_gerne": {"type": "object", "properties": {
-                            'book_gerne_id': {'type': 'integer'},
-                            'name': {'type': 'text'},
-                            'attributes': {'type': 'nested', "properties": {
-                                'attribute_id': {'type': 'integer'},
-                                'attribute_name': {'type': 'text'},
-                            }},
+                        "extended_books": {'type':"nested", "properties": {
+                            'attribute_id': {'type': 'integer'},
+                            'attribute_name': {'type': 'text'},
+                            'value': {'type': 'text'},
                         }},
-                        "extended_books": {"type": "keyword"},
                     }
                 }
             }
@@ -54,6 +50,6 @@ if __name__ == '__main__':
         books = Book.query.all()
         for book in books:
             book_document = book.to_dto()
-            res = es.index(index=BookIndex.index_name, body=book_document)
+            res = es.index(index=BookIndex.index_name, id=book_document['book_id'], body=book_document)
 
     # BookIndex.create_index()

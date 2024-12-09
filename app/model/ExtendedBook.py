@@ -20,4 +20,8 @@ class ExtendedBook(db.Model):
         }
 
     def to_dto(self):
-        return self.value
+        return {
+            "attribute_id": self.attribute_id,
+            'attribute_name': self.attribute.attribute_name,
+            "value": self.value
+        }

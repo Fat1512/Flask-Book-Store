@@ -55,7 +55,7 @@ class Book(db.Model):
             'format': self.format,
             "publisher": "Kim đồng",
             'book_gerne': self.book_gerne.to_dict(),
-            'extended_books': [extended for extended in self.extended_books],
+            'extended_books': [extended.to_dict() for extended in self.extended_books],
         }
 
     def to_dto(self):
@@ -71,7 +71,6 @@ class Book(db.Model):
             "weight": self.weight,
             'format': self.format,
             "publisher": "Kim đồng",
-            'book_gerne': self.book_gerne.to_dto(),
             'book_image': [image.to_dto() for image in self.images],
             'extended_books': [extended.to_dto() for extended in self.extended_books],
         }

@@ -10,7 +10,7 @@
     "database.server.id": "1",
     "database.server.name": "mysql_server",
     "database.include.list": "book_store",
-    "table.include.list": "book_store.book,book_store.book_images,book_store.book_gerne,book_store.attribute,book_store.extended_book",
+    "table.include.list": "book_store.book,book_store.book_image,book_store.extended_book",
     "database.history.kafka.bootstrap.servers": "kafka2:29092",
     "database.history.kafka.topic": "test.mysql_server",
     "schema.history.internal.kafka.topic": "schema-changes.mysql",

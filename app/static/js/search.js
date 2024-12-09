@@ -37,7 +37,7 @@ async function fetchBook(params) {
     const res = await fetch(`${BOOK_API}/?${params}`)
     if (!res.ok) throw Error("Failed getting book")
     const data = await res.json()
-    return data
+    return data['data']
 }
 
 //DISPLAY SPINNER
