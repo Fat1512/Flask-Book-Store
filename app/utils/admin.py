@@ -95,9 +95,7 @@ def stats_revenue_by_month(year=None):
     return full_result
 
 
-# with app.app_context():
-#     stats = book_gerne_statistic()
-#     print(stats)
+
 
 
 def total_revenue_per_gerne(kw=None, selected_month=None):
@@ -286,9 +284,7 @@ def get_books_by_gerne(gerne_id=None):
     return query.all()
 
 
-# with app.app_context():
-#     stats = get_books_by_gerne()
-#     print(stats)
+
 
 
 # def book_statistic_frequency():
@@ -323,10 +319,6 @@ def book_statistic_frequency(gerne_id=None):
     return query.all()
 
 
-#
-# with app.app_context():
-#     stats = book_statistic_frequency()
-#     print(stats)
 
 
 def account_management(user_role=None):
@@ -344,10 +336,6 @@ def account_management(user_role=None):
 
     return query.all()
 
-
-# with app.app_context():
-#     stats = account_management()
-#     print(stats)
 
 
 def book_management(gerne_id=None):
@@ -373,9 +361,7 @@ def book_management(gerne_id=None):
     return query.all()
 
 
-# with app.app_context():
-#     stats = book_management()
-#     print(stats)
+
 
 
 def bookgerne_management(kw=None):

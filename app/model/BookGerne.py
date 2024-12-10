@@ -12,7 +12,7 @@ class BookGerne(db.Model):
     books = db.relationship('Book', back_populates='book_gerne', lazy=True)
     attributes = db.relationship('Attribute', backref='book_gerne', lazy=True)
 
-    def __init__(self, name, lft, rgt, book_type_id=None, description=None):
+    def __init__(self, book_type_id, name, description, lft, rgt):
         self.book_type_id = book_type_id
         self.name = name
         self.description = description
@@ -32,5 +32,6 @@ class BookGerne(db.Model):
         return {
             'book_gerne_id': self.book_gerne_id,
             'name': self.name,
-            'attributes': [attriubte.to_dto() for attriubte in self.attributes]
+            'lft': self.lft,
+            'rgt': self.rgt,
         }

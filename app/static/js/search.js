@@ -1,7 +1,7 @@
 //API
 const bookGerne_API = '/api/v1/bookGerne'
 const BOOK_API = '/api/v1/book'
-
+const SEARCH_API = '/api/v1/search'
 
 // DECLARE VARIABLE
 var margin = 0
@@ -34,7 +34,7 @@ async function fetchGerne(id) {
 
 //FETCH DATA BOOK
 async function fetchBook(params) {
-    const res = await fetch(`${BOOK_API}/?${params}`)
+    const res = await fetch(`${SEARCH_API}/?${params}`)
     if (!res.ok) throw Error("Failed getting book")
     const data = await res.json()
     return data['data']
@@ -62,7 +62,7 @@ function renderBookNull(bookElemnt, paginationElemnt) {
 }
 
 async function render_book(params) {
-    const {books, current_page, pages} = await fetchBook(params)
+    const {data:books, current_page, pages} = await fetchBook(params)
     const bookElemnts = document.querySelector('.list-book')
     const paginationElemnt = document.querySelector('.pagination')
     if (!books.length) {
@@ -73,7 +73,7 @@ async function render_book(params) {
         <a href="/search/detail?bookId=${b.book_id}" class="card col-md-3">
         <span class="discount text-white">10%</span>
         <img class="card-img-top"
-             src="${b.images.length ? b.images[0].image_url : null}"
+             src="${b.book_image.length ? b.book_image[0].image_url : null}"
              alt="Card image">
         <div class="card-body p-0">
             <p class="card-text">${b.title}</p>

@@ -130,13 +130,13 @@ const renderComment = function (data) {
                     <p class="p-0 m-0">${i + 1} sao</p>
                     <div class="review-rating">
                         <div style="width: 0%;"></div>
-                    </div>
+                    </div>           
                         <div class="review-star"
                              style="width: calc(200px * ${startArr[i] / (totalComment + 1)});">
                             <div style="width: 0%;"></div>
                         </div>
                
-                    <p class="p-0 m-0">
+                    <p class="p-0 m-0"> 
                             ${Math.round(startArr[i] / (totalComment + 1) * 100)}
                         %</p>
                 </div>

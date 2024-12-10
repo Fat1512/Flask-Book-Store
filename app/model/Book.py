@@ -40,6 +40,8 @@ class Book(db.Model):
     cart_item = db.relationship('CartItem', back_populates='book', lazy=True)
 
     def to_dict(self):
+        images_dict = [image.to_dict() for image in self.images]
+        extended_books_dict = [ex.to_dict() for ex in self.extended_books]
         return {
             "book_id": self.book_id,
             "author": self.author,
@@ -66,7 +68,7 @@ class Book(db.Model):
             "quantity": self.quantity,
             "price": self.price,
             "description": self.description,
-            "book_gerne_id": self.book_gerne_id,
+            "book_gerne": self.book_gerne.to_dto(),
             "page_number": self.num_page,
             "weight": self.weight,
             'format': self.format,
