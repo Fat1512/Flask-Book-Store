@@ -18,7 +18,8 @@ def purchase():
 
     status = request.args.get('type', type=int)
     order = find_add_by_user_id(status)
-    order_to_dict = [order.to_dict() for order in order]
+
+    order_to_dict = [order.to_detail_dict() for order in order]
     is_success = request.args.get('payment', default=None)
 
     return render_template("purchase.html", is_success=is_success, order=order_to_dict)

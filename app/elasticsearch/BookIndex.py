@@ -28,10 +28,6 @@ class BookIndex:
                         "weight": {"type": "float"},
                         "format": {"type": "keyword"},
                         "publisher": {"type": "keyword"},
-<<<<<<< HEAD
-                        "book_images": {"type": "keyword"},
-                        "extended_books": {'type':"nested", "properties": {
-=======
                         "book_gerne": {"type": "nested", "properties": {
                             "book_gerne_id": {"type": "integer"},
                             "name": {"type": "text"},
@@ -40,7 +36,7 @@ class BookIndex:
                         }},
                         "book_images": {"type": "keyword"},
                         "extended_books": {'type': "nested", "properties": {
->>>>>>> ab64b8660cc3e57d56ab869f7998cb88bb80e9bb
+
                             'attribute_id': {'type': 'integer'},
                             'attribute_name': {'type': 'text'},
                             'value': {'type': 'text'},
