@@ -118,9 +118,7 @@ class OnlineOrder(Order):
     shipping_fee = Column(Double)
     note = Column(String)
 
-    customer_id = Column(Integer, ForeignKey('user.user_id'))
-    customer = relationship("User", back_populates="online_orders")
-    order_cancellation = relationship('OrderCancellation', backref='online_order', lazy=True, uselist=False)
+
 
     def to_dict(self):
         json = super().to_dict()
@@ -148,6 +146,7 @@ class OrderCancellation(db.Model):
     created_at = Column(DATETIME)
     reason = Column(String)
 
+    order = db.relationship('OnlineOrder',backref='order_cancellation',uselist = False)
     def to_dict(self):
         return {
             'reason': self.reason,
