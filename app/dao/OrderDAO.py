@@ -1,7 +1,7 @@
 from app.exception.NotFoundError import NotFoundError
 from app.model.Book import Book
 from app.model.Order import Order, PaymentDetail, ShippingMethod, OrderCancellation
-from sqlalchemy import desc, asc, func, or_
+from sqlalchemy import desc, asc, func
 from datetime import datetime
 from app import app, db
 from app.model.Order import OrderStatus, PaymentMethod, OnlineOrder, OfflineOrder, OrderDetail
@@ -55,6 +55,7 @@ def find_order_by_id(id):
 
 def find_all(**kwargs):
     orders = Order.query
+    order_id = kwargs.get("order_id")
     status = kwargs.get('status')
     payment_method = kwargs.get('payment_method')
     sort_by = kwargs.get('sort_by')
@@ -62,6 +63,12 @@ def find_all(**kwargs):
     order_type = kwargs.get("order_type")
 
     page = kwargs.get("page")
+
+    start_date = kwargs.get("start_date")
+    end_date = kwargs.get("end_date")
+
+    if order_id:
+        orders = orders.filter(Order.order_id == int(order_id))
 
     if order_type == "1":
         orders = orders.join(OnlineOrder)
@@ -71,10 +78,19 @@ def find_all(**kwargs):
         orders = orders.filter(Order.order_id == OfflineOrder.order_id)
 
     if status:
-        orders = orders.filter(Order.status == OrderStatus(int(status)))
+        status_array = [OrderStatus(int(status_elm)) for status_elm in status]
+        orders = orders.filter(Order.status.in_(status_array))
 
     if payment_method:
         orders = orders.filter(Order.payment_method == PaymentMethod(int(payment_method)))
+
+    if start_date:
+        start_date = datetime.strptime(start_date, "%Y-%m-%d")
+        orders = orders.filter(Order.created_at >= start_date)
+
+    if end_date:
+        end_date = datetime.strptime(end_date, "%Y-%m-%d")
+        orders = orders.filter(Order.created_at <= end_date)
 
     if 'date' == sort_by:
         orders = orders.order_by(desc(Order.created_at)) if sort_dir.__eq__("desc") else orders.order_by(
@@ -119,10 +135,12 @@ def update_order(order_id, order_list):
 
 def create_online_order(request):
     payment_method = PaymentMethod.THE if request.get('paymentMethod').__eq__('VNPay') else PaymentMethod.TIEN_MAT
+    status = OrderStatus.DANG_CHO_THANH_TOAN if request.get('paymentMethod').__eq__('VNPay') else OrderStatus.DANG_XU_LY
     shipping_method = ShippingMethod.GIAO_HANG if request.get('shippingMethod').__eq__(
         'ship') else ShippingMethod.CUA_HANG
+
     shipping_fee = request.get('shippingFee')
-    online_order = OnlineOrder(status=OrderStatus.DANG_XU_LY,
+    online_order = OnlineOrder(status=status,
                                payment_method=payment_method,
                                created_at=datetime.now(),
                                address_id=request['addressId'],
@@ -132,7 +150,6 @@ def create_online_order(request):
                                )
     db.session.add(online_order)
     db.session.flush()
-
     # order_detail_list = []
     for book in request['books']:
         book_db = Book.query.get(book['bookId'])
@@ -146,30 +163,31 @@ def create_online_order(request):
     return online_order
 
 
-def create_offline_order(order_list):
+def create_offline_order(order_list, user=None):
     offline_order = OfflineOrder(status=OrderStatus.DA_HOAN_THANH,
                                  payment_method=PaymentMethod.TIEN_MAT,
                                  created_at=datetime.utcnow(),
                                  address_id=1,
-                                 employee_id=2)
+                                 employee_id=2,
+                                 customer=user)
+    if user is not None:
+        user.orders.append(offline_order)
 
     db.session.add(offline_order)
     db.session.flush()
-
-    order_detail_list = []
     total_amount = 0
+
     for order_item in order_list:
         book_id = order_item['book_id']
         quantity = int(order_item['quantity'])
         price = int(order_item['price'])
         order_detail = OrderDetail(order_id=offline_order.order_id, book_id=book_id, quantity=quantity, price=price)
-        order_detail_list.append(order_detail)
+        offline_order.order_detail.append(order_detail)
         total_amount = total_amount + quantity * price
 
     payment_detail = PaymentDetail(order_id=offline_order.order_id, created_at=datetime.utcnow(), amount=total_amount)
+    offline_order.payment_detail = payment_detail
 
-    db.session.add_all(order_detail_list)
-    db.session.add(payment_detail)
     db.session.commit()
     return offline_order.to_detail_dict()
 

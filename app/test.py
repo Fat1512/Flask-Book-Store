@@ -79,7 +79,16 @@ obj = {
     "1": 12,
     "b": ''
 }
+date_str = '12-15-2023'
 
+date_object = datetime.strptime(date_str, '%m-%d-%Y')
+print(type(date_object))
+
+date_object = datetime.strptime(date_str, '%m-%d-%Y').date()
+print(type(date_object))
+
+
+# printed in default format
 # if obj["1"] is not None and obj["b"] is not None:
 #     print("ok")
 

@@ -7,7 +7,7 @@ from app import db
 from app.model.BookGerne import BookGerne
 
 
-def searchBook(keyword=None, min_price=None, max_price=None,
+def search_book(keyword=None, min_price=None, max_price=None,
                order=None, gerne_id=None, limit=None, page=None, quantity_status=None):
     query = Book.query
     if keyword:

@@ -7,6 +7,8 @@ import hashlib
 from app.model.Cart import Cart
 from app.model.Account import Account
 
+from app.model.Address import Address
+
 
 class UserRole(RoleEnum):
     ADMIN = 1

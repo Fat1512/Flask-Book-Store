@@ -457,14 +457,14 @@
                         </div>
                         <div class="d-flex justify-content-between flex-column p-4 mt-4"
                              style="background-color: #f5f9fc">
-                            <div class="row">
+                            <div class="row filter-input-container">
                                 <div class="col-4">
                                     <div class="form-group mb-0 w-100 d-flex order-id-search-container">
                                         <div class="input-group input-group-alternative input-group-merge w-65 ml-r">
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text"><i class="fas fa-search"></i></span>
                                             </div>
-                                            <input class="form-control" placeholder="Nhap ma don" type="text">
+                                            <input class="form-control input-search" placeholder="Nhap ma don" type="text">
                                         </div>
                                         {#                                        <div class="dropdown dropdown-btn align-content-center text-right">#}
                                         {#                                            <button type="button"#}
@@ -495,13 +495,13 @@
                                     </div>
                                 </div>
                                 <div class="col-1">
-                                    <div class="btn border border-1">Xóa hết</div>
+                                    <div class="btn btn-delete-all border border-1">Xóa hết</div>
                                 </div>
                                 <div class="col-1">
-                                    <div class="btn btn-primary">Lọc</div>
+                                    <div class="btn btn-search btn-primary">Tìm kiếm</div>
                                 </div>
                             </div>
-                            <div class="pt-2 row gap-3 filter-container">
+                            <div class="pt-2 row gap-3 filter-droplist-container">
                                 <div class="col-2">
                                     <div style="" class="pr-2 w-100 btn-group">
                                         <button class="btn btn-outline-dark dropdown-toggle
@@ -773,60 +773,59 @@
         </footer>
     </div>
 </div>
-<div class="modal ">
-    <div class="overlay "></div>
-    <div class="modal-body  modal-update-order-item-status item-bg-color">
+<div class="modal">
+    <div class="overlay"></div>
+    <div class="modal-body d-none modal-update-order-status item-bg-color">
         <div class="d-flex flex-column w-100">
-
-{#            <div class="card p-5">#}
-{#                <div class="d-flex justify-content-between">#}
-{#                    <a class="fa fa-arrow-left display-4 cursor-pointer product-detail-back-btn"#}
-{#                       href="/employee/order"#}
-{#                       aria-hidden="true"></a>#}
-{#                    <button class="btn primary-btn btn-invoice bg-red text-white"#}
-{#                            style="justify-items: flex-end !important;">#}
-{#                        Hiển thị in hóa đơn#}
-{#                    </button>#}
-{#                </div>#}
-{#                <div class="card-header pl-0 bg-transparent border-0">#}
-{#                    <h3 class="mb-0 display-4">Thông tin đơn</h3>#}
-{#                </div>#}
-{#                <div class="row justify-content-between">#}
-{#                    <div class="col-6">#}
-{#                        <div class="d-flex">#}
-{#                            <h2 class="pr-3">Mã đơn: </h2>#}
-{#                            <h2 class="font-weight-400" order-id="">#}
-{#                        </div>#}
-{#                        <div class="d-flex">#}
-{#                            <h2 class="pr-3">Trạng thái: </h2>#}
-{#                            <h2 class="font-weight-400 "></h2>#}
-{#                        </div>#}
-{#                        <div class="d-flex">#}
-{#                            <h2 class="pr-3">Phương thức thanh toán: </h2>#}
-{#                            <h2 class="font-weight-400"> }}</h2>#}
-{#                        </div>#}
-{#                        <div class="d-flex">#}
-{#                            <h2 class="pr-3">Ngày tạo: </h2>#}
-{#                            <h2 class="font-weight-400"></h2>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                    <div class="col-6">#}
-{#                        <div class="d-flex">#}
-{#                            <h2 class="pr-3 w-600">Loại đơn: </h2>#}
-{#                            <h2 class="font-weight-400"></h2>#}
-{#                        </div>#}
-{##}
-{#                            <div class="d-flex">#}
-{#                                <h2 class="pr-3">Phương thức vận chuyển: </h2>#}
-{#                                <h2 class="font-weight-400">name'] }}</h2>#}
-{#                            </div>#}
-{#                            <div class="d-flex">#}
-{#                                <h2 class="pr-3">Nhân viên thanh toán: </h2>#}
-{#                                <h2 class="font-weight-400"> }}</h2>#}
-{#                            </div>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </div>#}
+            {#            <div class="card p-5">#}
+            {#                <div class="d-flex justify-content-between">#}
+            {#                    <a class="fa fa-arrow-left display-4 cursor-pointer product-detail-back-btn"#}
+            {#                       href="/employee/order"#}
+            {#                       aria-hidden="true"></a>#}
+            {#                    <button class="btn primary-btn btn-invoice bg-red text-white"#}
+            {#                            style="justify-items: flex-end !important;">#}
+            {#                        Hiển thị in hóa đơn#}
+            {#                    </button>#}
+            {#                </div>#}
+            {#                <div class="card-header pl-0 bg-transparent border-0">#}
+            {#                    <h3 class="mb-0 display-4">Thông tin đơn</h3>#}
+            {#                </div>#}
+            {#                <div class="row justify-content-between">#}
+            {#                    <div class="col-6">#}
+            {#                        <div class="d-flex">#}
+            {#                            <h2 class="pr-3">Mã đơn: </h2>#}
+            {#                            <h2 class="font-weight-400" order-id="">#}
+            {#                        </div>#}
+            {#                        <div class="d-flex">#}
+            {#                            <h2 class="pr-3">Trạng thái: </h2>#}
+            {#                            <h2 class="font-weight-400 "></h2>#}
+            {#                        </div>#}
+            {#                        <div class="d-flex">#}
+            {#                            <h2 class="pr-3">Phương thức thanh toán: </h2>#}
+            {#                            <h2 class="font-weight-400"> }}</h2>#}
+            {#                        </div>#}
+            {#                        <div class="d-flex">#}
+            {#                            <h2 class="pr-3">Ngày tạo: </h2>#}
+            {#                            <h2 class="font-weight-400"></h2>#}
+            {#                        </div>#}
+            {#                    </div>#}
+            {#                    <div class="col-6">#}
+            {#                        <div class="d-flex">#}
+            {#                            <h2 class="pr-3 w-600">Loại đơn: </h2>#}
+            {#                            <h2 class="font-weight-400"></h2>#}
+            {#                        </div>#}
+            {##}
+            {#                            <div class="d-flex">#}
+            {#                                <h2 class="pr-3">Phương thức vận chuyển: </h2>#}
+            {#                                <h2 class="font-weight-400">name'] }}</h2>#}
+            {#                            </div>#}
+            {#                            <div class="d-flex">#}
+            {#                                <h2 class="pr-3">Nhân viên thanh toán: </h2>#}
+            {#                                <h2 class="font-weight-400"> }}</h2>#}
+            {#                            </div>#}
+            {#                    </div>#}
+            {#                </div>#}
+            {#            </div>#}
 
             <div>order id: #79686</div>
             <div>Trạng thái</div>
@@ -861,6 +860,27 @@
             </div>
         </div>
 
+    </div>
+    <div class="modal-body d-none modal-cancel-order item-bg-color">
+        <div class="w-100 d-flex justify-content-center align-content-center flex-column">
+            <h1 class="modal-title d-flex justify-content-center pt-4" id="modalLabel">
+                <i class="fas fa-exclamation-circle text-warning display-1"></i>
+            </h1>
+            <h2 class="text-center">Bạn có chắc chắn hủy không ?</h2>
+
+            <div class="d-flex pt-4">
+                <button type="button"
+                        class="cancel-back-btn w-50 btn btn-primary bg-white text-black border border-0"
+                        style="color: var(--black-color) !important">
+                    Trở lại
+                </button>
+                <button type="button"
+                        class="cancel-btn w-50 btn btn-primary border border-0"
+                        style="color: var(--white-color) !important; background-color: var(--red)">
+                    Hủy
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"

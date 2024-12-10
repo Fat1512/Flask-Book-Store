@@ -393,9 +393,12 @@ def bookgerne_management(kw=None):
 
 
 def profile():
+    # Kiểm tra xem current_user có tồn tại không
+    if not current_user.is_authenticated:
+        return None  # Trả về None nếu không có người dùng hiện tại (chưa đăng nhập)
+
     query = db.session.query(
         Account.username,
-        # func.concat(User.first_name, ' ', User.last_name).label('full_name'),
         User.first_name,
         User.last_name,
         User.email,
@@ -407,11 +410,11 @@ def profile():
         case(
             (User.sex == 0, True), else_=False
         ).label('is_female'),
-        extract('day', User.date_of_birth).label('day'),  # Tách ngày
-        extract('month', User.date_of_birth).label('month'),  # Tách tháng
-        extract('year', User.date_of_birth).label('year')  # Tách năm
-
+        extract('day', User.date_of_birth).label('day'),
+        extract('month', User.date_of_birth).label('month'),
+        extract('year', User.date_of_birth).label('year')
     ).join(Account, Account.user_id == User.user_id
-    ).filter(User.user_id == current_user.user_id)  # Lọc theo user_id của current_user
+    ).filter(User.user_id == current_user.user_id)
 
-    return query.first()  # Trả về một hàng kết quả
+    # Trả về kết quả của truy vấn hoặc None nếu không tìm thấy kết quả
+    return query.first()  # Trả về một hàng kết quả hoặc None nếu không có dữ liệu

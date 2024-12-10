@@ -200,6 +200,7 @@ const renderOrderItem = function (books) {
                         <input input-id="${book.book_id}" inputmode="numeric"
                                oninput="this.value = this.value.replace(/\\D+/g, '')"
                                class="text-center" value="${book.quantity}">
+                               class="text-center" value="${book.quantity}">
                         <span class="cursor-pointer increment-qty-btn">+</span>
                     </div>
                 </div>

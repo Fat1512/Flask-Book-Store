@@ -7,7 +7,7 @@ from app import app
 from app.dao.BookDAO import find_all, paginate_book, find_by_gerne, find_by_id
 from app.dao.BookGerneDAO import get_depth_gerne
 from app.dao.CartDao import find_by_cart_id
-from app.dao.SearchDAO import searchBook
+from app.dao.SearchDAO import search_book
 
 home_bp = Blueprint('search', __name__)
 
@@ -23,7 +23,7 @@ def search_main():
     book_gerne = get_depth_gerne(gerne_id)
 
     page = request.args.get('page', 1, type=int)
-    pagination = searchBook(keyword, minPrice, maxPrice, order, gerne_id, limit, page)
+    pagination = search_book(keyword, minPrice, maxPrice, order, gerne_id, limit, page)
 
     return render_template("search.html"
                            , current_gerne=book_gerne["current_gerne"]

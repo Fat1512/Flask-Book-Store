@@ -30,9 +30,6 @@ class FormImport(db.Model):
         json['total_quantity'] = total_quantity
         return json
 
-
-
-
 # {
 #     'form_id': 12,
 #     'created_at': 12,
@@ -50,5 +47,5 @@ class FormImport(db.Model):
 #             'quantity': 12
 #         }
 #     ],
-#       'total'
+#       'total': quantity
 # }

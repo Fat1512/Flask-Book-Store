@@ -26,9 +26,20 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/employeeAddProducts.css') }}">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
 
 <body>
+{#<div class="h-100vh position-relative">#}
+{#    <div class="spinner">#}
+{#    <div class="spinner-border text-warning" role="status">#}
+{#        <div class="loader"></div>#}
+{#    </div>#}
+{#    <p>Loading...</p>#}
+{#    <div class="overlay">#}
+{#    </div>#}
+{#</div>#}
+{#</div>#}
 <!-- Sidenav -->
 <nav class="sidenav navbar navbar-vertical  fixed-left  navbar-expand-xs navbar-light bg-white" id="sidenav-main">
     <div class="scrollbar-inner">
@@ -431,24 +442,46 @@
                             <div class="form-container">
                                 <form>
                                     <div class="form-group">
-                                        <label for="product-image">Hình ảnh sách</label>
-                                        <div class="upload-box" id="product-image">
-                                            <button>Thêm hình ảnh</button>
+                                        <label class="label-name" for="product-image">Hình ảnh sách</label>
+
+                                        <div class="upload-box d-flex" id="product-image">
+                                            <div class="image-list">
+
+                                            </div>
+                                            <div class="upload-box-image ">
+                                                <label for="book-image"
+                                                       class="cursor-pointer d-flex flex-column align-items-center text-center text-primary">
+                                                    <div class="upload-box-image-icon">
+                                                        <svg viewBox="0 0 23 21" xmlns="http://www.w3.org/2000/svg">
+                                                            <path fill="#c92127"
+                                                                  d="M18.5 0A1.5 1.5 0 0 1 20 1.5V12c-.49-.07-1.01-.07-1.5 0V1.5H2v12.65l3.395-3.408a.75.75 0 0 1 .958-.087l.104.087L7.89 12.18l3.687-5.21a.75.75 0 0 1 .96-.086l.103.087 3.391 3.405c.81.813.433 2.28-.398 3.07A5.235 5.235 0 0 0 14.053 18H2a1.5 1.5 0 0 1-1.5-1.5v-15A1.5 1.5 0 0 1 2 0h16.5z"></path>
+                                                            <path fill="#c92127"
+                                                                  d="M6.5 4.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM18.5 14.25a.75.75 0 0 1 1.5 0v2.25h2.25a.75.75 0 0 1 0 1.5H20v2.25a.75.75 0 0 1-1.5 0V18h-2.25a.75.75 0 0 1 0-1.5h2.25v-2.25z"></path>
+                                                        </svg>
+                                                    </div>
+                                                    Tải ảnh lên
+                                                </label>
+                                                <input class="d-none" type="file" id="book-image" name='book-image'
+                                                       multiple>
+                                            </div>
                                         </div>
-                                        <label for="product-video">Video sách</label>
-                                        <div class="upload-box" id="product-video">
-                                            <button>Thêm video</button>
+
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="label-name" for="product-name">Tên sách</label>
+                                        <div class="upload-box">
+                                            <input type="text" class="product-name m-0 w-100" id="product-name"
+                                                   name="title"
+                                                   placeholder="Nhập vào" width="150%">
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label for="product-name">Tên sách</label>
-                                        <div>
-                                            <input type="text" class="product-name" id="product-name"
-                                                   placeholder="Nhập vào" width="150%">
-                                        </div>
-                                        <label style="margin-left: 40px;">Thể loại</label>
+                                        <label class="label-name">Thể loại</label>
                                         <div class="upload-box">
-                                            <button onclick="openModal()">Danh mục</button>
+                                            <input onclick="openModal()" type="text" class="product-name m-0 w-100"
+                                                   name="input-gerne"
+                                                   placeholder="Nhập vào danh mục" width="150%">
+
                                         </div>
 
                                         <!-- Modal Overlay -->
@@ -464,7 +497,7 @@
 
                                                 <div class="menu-columns">
                                                     <div class="menu-column" id="col1">
-                                                        <div class="menu-item" onclick="toggleSubMenu('Health', this)">
+                                                        <div class="menu-item" onclick="toggleSubMenu(1, this)">
                                                             Sách Trong Nước
                                                         </div>
 
@@ -496,12 +529,11 @@
                                     <div class="">
                                         <label for="product-description">Mô tả sản phẩm</label>
                                         <div class="description-upload">
-                        <textarea id="product-description"
-                                  placeholder="Nhập mô tả sản phẩm hoặc tải lên hình ảnh">
-
-                        </textarea>
+                                            <textarea id="product-description" cols="5" rows="3"
+                                                      class="comment-area"
+                                                      placeholder="Nhập mô tả sản phẩm hoặc tải lên hình ảnh"></textarea>
                                         </div>
-                                        <button>Tải lên hình ảnh</button>
+
                                     </div>
                                 </form>
                             </div>
@@ -553,40 +585,48 @@
                         <div class="row icon-examples">
                             <div class="form-container">
                                 <form>
-                                    <div class="form-group">
+
+                                    <div class="group-extend-atrtribute">
                                         <div class="form-group">
-                                            <label>Nhà xuất bản</label>
-                                            <div class="dropdown-container">
-                                                <input type="text" id="genreSearch"
-                                                       class="dropdown-search product-publisher" autocomplete="off">
+                                            <label class="attribute-name">Thuộc tính khác</label>
+                                            <div class="dropdown-container attribute-value">
+                                                <input disabled type="text" id="genreSearch"
+                                                       class="m-0 dropdown-search product-publisher"
+                                                       name="dropdown-search"
+                                                       autocomplete="off">
+
                                                 <div class="dropdown-list" id="genreList">
                                                 </div>
                                             </div>
                                         </div>
-                                        <div id="newGenreContainer" style="display: none;" class="form-group">
-                                            <label for="newGenre">Nhà xuất bản khác</label>
-                                            <div>
-                                                <input type="text" id="newGenre" name="newGenre"
-                                                       class="product-publisher">
-                                            </div>
-                                        </div>
                                     </div>
+                                    {#                                        <div id="newGenreContainer" style="display: none;" class="form-group">#}
+                                    {#                                            <label for="newGenre">Nhà xuất bản khác</label>#}
+                                    {#                                            <div>#}
+                                    {#                                                <input type="text" id="newGenre" name="newGenre"#}
+                                    {#                                                       class="product-publisher">#}
+                                    {#                                            </div>#}
+                                    {#                                        </div>#}
+
 
                                     <div class="form-group">
                                         <label for="product-name">Tác giả</label>
                                         <div>
-                                            <input type="text" class="product-author" id="product-author" placeholder=""
+                                            <input type="text" class="product-author" name="product-author"
+                                                   id="product-author" placeholder=""
                                                    width="150%">
                                         </div>
                                         <label for="product-name">Số trang</label>
                                         <div>
-                                            <input type="number" class="product-num-page" id="product-num-page"
+                                            <input type="number" class="product-num-page" name="product-num-page"
+                                                   id="product-num-page"
                                                    placeholder=""
                                                    width="150%">
                                         </div>
                                         <label for="product-name">Hình thức</label>
                                         <div>
-                                            <input type="text" class="product-format" id="product-format" placeholder=""
+                                            <input type="text" class="product-format" name="product-format"
+                                                   id="product-format" placeholder=""
                                                    width="150%">
                                         </div>
                                     </div>
@@ -594,18 +634,20 @@
                                     <div class="form-group">
                                         <label for="product-name">Giá sách</label>
                                         <div>
-                                            <input type="number" class="product-price" id="product-price" placeholder=""
+                                            <input type="number" class="product-price" name="product-price"
+                                                   id="product-price" placeholder=""
                                                    width="150%">
                                         </div>
-                                        <label for="product-name">Số lượng</label>
-                                        <div>
-                                            <input type="text" class="product-quantity" id="product-quantity"
-                                                   placeholder=""
-                                                   width="150%">
-                                        </div>
+                                        {#                                        <label for="product-name">Số lượng</label>#}
+                                        {#                                        <div>#}
+                                        {#                                            <input type="text" class="product-quantity" id="product-quantity"#}
+                                        {#                                                   placeholder=""#}
+                                        {#                                                   width="150%">#}
+                                        {#                                        </div>#}
                                         <label for="product-name">Cân nặng</label>
                                         <div>
-                                            <input type="number" class="product-weight" id="product-weight"
+                                            <input type="number" class="product-weight" name="product-weight"
+                                                   id="product-weight"
                                                    placeholder=""
                                                    width="150%">
                                         </div>
@@ -614,19 +656,28 @@
                                     <div class="form-group">
                                         <label for="product-name">Kích thước</label>
                                         <div>
-                                            <input type="number" class="product-dimension-r" id="product-dimension-r"
+                                            <input type="number" name="product-dimension-r" class="product-dimension-r"
+                                                   id="product-dimension-r"
                                                    placeholder="R" width="150%">
                                         </div>
                                         <div>
-                                            <input type="number" class="product-dimension-d" id="product-dimension-d"
+                                            <input type="number" name="product-dimension-d" class="product-dimension-d"
+                                                   id="product-dimension-d"
                                                    placeholder="D"
                                                    width="150%">
                                         </div>
                                         <div>
-                                            <input type="number" class="product-dimension-c" id="product-dimension-c"
+                                            <input type="number" name="product-dimension-c" class="product-dimension-c"
+                                                   id="product-dimension-c"
                                                    placeholder="C"
                                                    width="150%">
                                         </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <button class="btn btn-primary-outline btn-large">Hủy</button>
+                                        <button class="btn btn-create-book btn-large btn-primary">
+                                            Tạo sách
+                                        </button>
                                     </div>
                                 </form>
                             </div>
@@ -636,37 +687,7 @@
             </div>
         </div>
     </div>
-<!--    &lt;!&ndash; Footer &ndash;&gt;-->
-<!--    <footer class="footer pt-0">-->
-<!--        <div class="row align-items-center justify-content-lg-between">-->
-<!--            <div class="col-lg-6">-->
-<!--                <div class="copyright text-center  text-lg-left  text-muted">-->
-<!--                    &copy; 2020 <a href="https://www.creative-tim.com" class="font-weight-bold ml-1"-->
-<!--                                   target="_blank">Creative-->
-<!--                    Tim</a>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="col-lg-6">-->
-<!--                <ul class="nav nav-footer justify-content-center justify-content-lg-end">-->
-<!--                    <li class="nav-item">-->
-<!--                        <a href="https://www.creative-tim.com" class="nav-link" target="_blank">Creative Tim</a>-->
-<!--                    </li>-->
-<!--                    <li class="nav-item">-->
-<!--                        <a href="https://www.creative-tim.com/presentation" class="nav-link" target="_blank">About-->
-<!--                            Us</a>-->
-<!--                    </li>-->
-<!--                    <li class="nav-item">-->
-<!--                        <a href="http://blog.creative-tim.com" class="nav-link" target="_blank">Blog</a>-->
-<!--                    </li>-->
-<!--                    <li class="nav-item">-->
-<!--                        <a href="https://github.com/creativetimofficial/argon-dashboard/blob/master/LICENSE.md"-->
-<!--                           class="nav-link"-->
-<!--                           target="_blank">MIT License</a>-->
-<!--                    </li>-->
-<!--                </ul>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </footer>-->
+
 </div>
 <!--</div>-->
 
@@ -683,6 +704,7 @@
         integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
 <script src="{{ url_for('static', filename='js/employeeAddProducts.js') }}"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 </body>
 
 </html>

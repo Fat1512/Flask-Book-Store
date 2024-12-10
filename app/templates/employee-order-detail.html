@@ -438,11 +438,8 @@
                         <div class="col-6">
                             <div class="d-flex">
                                 <h2 class="pr-3">Mã đơn: </h2>
-                                <h2 class="font-weight-400" order-id="{{ order['order_id'] }}">{{ order['order_id'] }}</h2>
-                            </div>
-                            <div class="d-flex">
-                                <h2 class="pr-3">Trạng thái: </h2>
-                                <h2 class="font-weight-400 ">{{ order['status']['name'] }}</h2>
+                                <h2 class="font-weight-400"
+                                    order-id="{{ order['order_id'] }}">{{ order['order_id'] }}</h2>
                             </div>
                             <div class="d-flex">
                                 <h2 class="pr-3">Phương thức thanh toán: </h2>
@@ -458,7 +455,6 @@
                                 <h2 class="pr-3 w-600">Loại đơn: </h2>
                                 <h2 class="font-weight-400">{{ order['order_type']['name'] }}</h2>
                             </div>
-
                             {% if order['order_type']['id'] == 1 %}
                                 <div class="d-flex">
                                     <h2 class="pr-3">Phương thức vận chuyển: </h2>
@@ -469,6 +465,28 @@
                                 <div class="d-flex">
                                     <h2 class="pr-3">Nhân viên thanh toán: </h2>
                                     <h2 class="font-weight-400">{{ order['order_type']['detail']['employee_name'] }}</h2>
+                                </div>
+                            {% endif %}
+                            <div class="d-flex">
+                                <h2 class="pr-3">Trạng thái: </h2>
+                                <h2 class="font-weight-400 ">{{ order['status']['name'] }}</h2>
+                            </div>
+
+                            {% if order['status']['id'] == 4 and order['payment']['payment_detail'] %}
+                                {# Da hoan thanh #}
+                                <div class="d-flex">
+                                    <h2 class="pr-3">Thanh toán lúc: </h2>
+                                    <h2 class="font-weight-400 ">{{ order['payment']['payment_detail']['created_at'] }}</h2>
+                                </div>
+                            {% endif %}
+                            {% if order['status']['id'] == 5 %} {# Da huy #}
+                                <div class="d-flex">
+                                    <h2 class="pr-3">Hủy lúc: </h2>
+                                    <h2 class="font-weight-400 ">{{ order['order_type']['detail']['order_cancellation']['created_at'] }}</h2>
+                                </div>
+                                <div class="d-flex">
+                                    <h2 class="pr-3">Lý do hủy: </h2>
+                                    <h2 class="font-weight-400 ">{{ order['order_type']['detail']['order_cancellation']['reason'] }}</h2>
                                 </div>
                             {% endif %}
                         </div>
@@ -621,10 +639,9 @@
                 </div>
                 <div class="card-header invoice-header text-center">
                     <p class="mb-0 font-weight-bold">Mã đơn: {{ order['order_id'] }} &nbsp; | &nbsp; Ngày
-                        đặt: {{ order['created_at'] }}
+                        mua: {{ order['created_at'] }}
                         &nbsp; | &nbsp; Hotline: 19008386
-                        &nbsp; | &nbsp; Trạng thái: {{ order['status']['name'] }} &nbsp; | &nbsp; Loại
-                        đơn: {{ order['order_type']['name'] }}</p>
+                        &nbsp; | &nbsp; Loại đơn: {{ order['order_type']['name'] }}</p>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -649,7 +666,19 @@
                                     {{ order['order_type']['detail']['shipping_method']['name'] }} <br>
                                 {% endif %}
                                 <strong class="font-weight-600">Phương thức thanh
-                                    toán:</strong> {{ order['payment']['payment_method']['name'] }}
+                                    toán:</strong> {{ order['payment']['payment_method']['name'] }} <br>
+                                <strong class="font-weight-600">Trạng thái</strong> {{ order['status']['name'] }} <br>
+                                {% if order['status']['id'] == 4 and order['payment']['payment_detail'] %}
+                                    {# Da hoan thanh #}
+                                    <strong class="font-weight-600">Thanh toán lúc</strong>
+                                    {{ order['payment']['payment_detail']['created_at'] }}
+                                {% endif %}
+                                {% if order['status']['id'] == 5 %} {# Da huy #}
+                                    <strong class="font-weight-600">Hủy lúc</strong>
+                                    {{ order['order_type']['detail']['order_cancellation']['created_at'] }} <br>
+                                    <strong class="font-weight-600">Lý do hủy</strong>
+                                    {{ order['order_type']['detail']['order_cancellation']['reason'] }} <br>
+                                {% endif %}
                             </p>
                         </div>
                         <div class="table-responsive">
@@ -677,16 +706,16 @@
                                         <td>{{ (orderItem['price'] * orderItem['quantity'])|currency('VND') }}</td>
                                     </tr>
                                 {% endfor %}
-                                    <tr class="text-right">
-                                        {% if order['order_type']['id'] == 1 %}
-                                            <td colspan="5"><strong>Phí ship:</strong></td>
-                                            <td class="text-center"> {{ order['order_type']['detail']['shipping_fee']|currency('VND') }} </td>
-                                        {% endif %}
-                                    </tr>
-                                    <tr class="text-right">
-                                        <td colspan="5"><strong>Tổng tiền:</strong></td>
-                                        <td class="text-center">{{ order['total_amount']|currency('VND') }}</td>
-                                    </tr>
+                                <tr class="text-right">
+                                    {% if order['order_type']['id'] == 1 %}
+                                        <td colspan="5"><strong>Phí ship:</strong></td>
+                                        <td class="text-center"> {{ order['order_type']['detail']['shipping_fee']|currency('VND') }} </td>
+                                    {% endif %}
+                                </tr>
+                                <tr class="text-right">
+                                    <td colspan="5"><strong>Tổng tiền:</strong></td>
+                                    <td class="text-center">{{ order['total_amount']|currency('VND') }}</td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -694,7 +723,8 @@
                             <div class="col-md-6">
                                 {% if order['order_type']['id'] == 1 %}
                                     <p class="text-justify">
-                                        <strong>Ghi chú:</strong> {% if order['order_type']['detail']['note'] %} {{order['order_type']['detail']['note']}} {% endif %}
+                                        <strong>Ghi chú:</strong> {% if order['order_type']['detail']['note'] %}
+                                        {{ order['order_type']['detail']['note'] }} {% endif %}
                                         <br>
                                     </p>
                                 {% endif %}

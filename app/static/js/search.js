@@ -37,7 +37,7 @@ async function fetchBook(params) {
     const res = await fetch(`${BOOK_API}/?${params}`)
     if (!res.ok) throw Error("Failed getting book")
     const data = await res.json()
-    return data
+    return data['data']
 }
 
 //DISPLAY SPINNER
@@ -143,7 +143,6 @@ const render_pagination = function (current_page, pages) {
 
 
 const renderGerne = async function (currentGerne, subGerne) {
-    console.log("ok")
     renderParentGerne()
     renderCurrentGerne(currentGerne)
     renderSubGerne(subGerne)
@@ -155,7 +154,8 @@ const renderParentGerne = function () {
 
     async function handleParentOnclick(elements, id) {
         addParamURL('gerneId', id)
-        const {current_gerne: currentGerne, sub_gerne: subGerne} = await fetchGerne(id)
+        const res = await fetchGerne(id)
+        const {current_gerne: currentGerne, sub_gerne: subGerne} = res['data']
         let rmElement = []
         elements.forEach(e => {
             if (e.id >= id) {
@@ -202,7 +202,8 @@ const renderSubGerne = function (listBookGerne) {
 
     async function handleOnClickSubItem(id) {
         addParamURL('gerneId', id)
-        const {current_gerne: currentGerne, sub_gerne: subGerne} = await fetchGerne(id)
+        const res = await fetchGerne(id)
+        const {current_gerne: currentGerne, sub_gerne: subGerne} = res['data']
         margin += 10
         if (subGerne.length) {
             await renderGerne(currentGerne, subGerne)
@@ -303,7 +304,8 @@ const search = document.querySelector(".icon-search")
 //     s.addEventListener("click", () => handleOnClick(s.id))
 // })
 async function test() {
-    const {current_gerne: currentGerne, sub_gerne: subGerne} = await fetchGerne(1)
+    const res = await fetchGerne(1)
+    const {current_gerne: currentGerne, sub_gerne: subGerne} = res['data']
     await renderGerne(currentGerne, subGerne)
 }
 

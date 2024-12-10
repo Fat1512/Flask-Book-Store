@@ -1,7 +1,7 @@
 from app.dao.CartDao import delete_cart_item
 from app.dao.OrderDAO import *
-from app.dao.UserDao import *
 from app.dao.PaymentDAO import create_payment
+from app.dao.UserDao import *
 from app.dao.FormImportDAO import *
 from flask import Blueprint, jsonify
 from flask import render_template, request
@@ -16,17 +16,22 @@ def get_order():
     if request.args.get("status"):
         status = request.args.get("status").split(',')
     payment_method = request.args.get("paymentMethod")
+    order_id = request.args.get("orderId")
     sort_by = request.args.get("sortBy")
     sort_dir = request.args.get("dir")
     order_type = request.args.get("orderType")
     page = request.args.get("page", 1)
-
-    orders = find_all(status=status,
+    start_date = request.args.get("startDate")
+    end_date = request.args.get("endDate")
+    orders = find_all(order_id=order_id,
+                      status=status,
                       payment_method=payment_method,
                       sort_by=sort_by,
                       sort_dir=sort_dir,
                       order_type=order_type,
-                      page=int(page))
+                      page=int(page),
+                      start_date=start_date,
+                      end_date=end_date)
     return orders
 
 
@@ -98,7 +103,7 @@ def confirm_order(order_id):
 
 @order_api_bp.route("/<order_id>/status", methods=['POST'])
 def update_status(order_id):
-    status = request.json.get("id")
+    status = request.json.get("orderStatusId")
     status_enum = OrderStatus(int(status))
 
     update_order_status(order_id, status_enum)
