@@ -60,7 +60,7 @@
                                 <li class="address-user">
                                     <div class="address-card d-flex justify-content-between align-items-start">
                                         <div class="address-info d-flex align-items-center">
-                                            <div class="address-item-tick address-item-tick-active"
+                                            <div class="address-item-tick"
                                                  value="{{ address.address_id }}">
                                                 <svg data-v-05e59da4="" width="12" height="12" viewBox="0 0 12 12"
                                                      fill="none"
@@ -127,7 +127,7 @@
                 <div class="group-book">
                     <ul class="list-unstyled">
                         {% for item in cartTick %}
-                            <li id={{ item.bookId }} class="book-item d-flex">
+                            <li id="{{ item.bookId }}" class="book-item d-flex">
                             <div class="book-item-img">
                                 <img class="w-100"
                                      src="{{ item.img }}">

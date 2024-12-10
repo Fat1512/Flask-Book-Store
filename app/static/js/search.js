@@ -1,7 +1,7 @@
 //API
 const bookGerne_API = '/api/v1/bookGerne'
 const BOOK_API = '/api/v1/book'
-
+const SEARCH_API = '/api/v1/search'
 
 // DECLARE VARIABLE
 var margin = 0
@@ -34,10 +34,10 @@ async function fetchGerne(id) {
 
 //FETCH DATA BOOK
 async function fetchBook(params) {
-    const res = await fetch(`${BOOK_API}/?${params}`)
+    const res = await fetch(`${SEARCH_API}/?${params}`)
     if (!res.ok) throw Error("Failed getting book")
     const data = await res.json()
-    return data
+    return data['data']
 }
 
 //DISPLAY SPINNER
@@ -62,7 +62,7 @@ function renderBookNull(bookElemnt, paginationElemnt) {
 }
 
 async function render_book(params) {
-    const {books, current_page, pages} = await fetchBook(params)
+    const {data:books, current_page, pages} = await fetchBook(params)
     const bookElemnts = document.querySelector('.list-book')
     const paginationElemnt = document.querySelector('.pagination')
     if (!books.length) {
@@ -73,7 +73,7 @@ async function render_book(params) {
         <a href="/search/detail?bookId=${b.book_id}" class="card col-md-3">
         <span class="discount text-white">10%</span>
         <img class="card-img-top"
-             src="${b.images.length ? b.images[0].image_url : null}"
+             src="${b.book_image.length ? b.book_image[0].image_url : null}"
              alt="Card image">
         <div class="card-body p-0">
             <p class="card-text">${b.title}</p>
@@ -143,7 +143,6 @@ const render_pagination = function (current_page, pages) {
 
 
 const renderGerne = async function (currentGerne, subGerne) {
-    console.log("ok")
     renderParentGerne()
     renderCurrentGerne(currentGerne)
     renderSubGerne(subGerne)
@@ -155,7 +154,8 @@ const renderParentGerne = function () {
 
     async function handleParentOnclick(elements, id) {
         addParamURL('gerneId', id)
-        const {current_gerne: currentGerne, sub_gerne: subGerne} = await fetchGerne(id)
+        const res = await fetchGerne(id)
+        const {current_gerne: currentGerne, sub_gerne: subGerne} = res['data']
         let rmElement = []
         elements.forEach(e => {
             if (e.id >= id) {
@@ -202,7 +202,8 @@ const renderSubGerne = function (listBookGerne) {
 
     async function handleOnClickSubItem(id) {
         addParamURL('gerneId', id)
-        const {current_gerne: currentGerne, sub_gerne: subGerne} = await fetchGerne(id)
+        const res = await fetchGerne(id)
+        const {current_gerne: currentGerne, sub_gerne: subGerne} = res['data']
         margin += 10
         if (subGerne.length) {
             await renderGerne(currentGerne, subGerne)
@@ -303,7 +304,8 @@ const search = document.querySelector(".icon-search")
 //     s.addEventListener("click", () => handleOnClick(s.id))
 // })
 async function test() {
-    const {current_gerne: currentGerne, sub_gerne: subGerne} = await fetchGerne(1)
+    const res = await fetchGerne(1)
+    const {current_gerne: currentGerne, sub_gerne: subGerne} = res['data']
     await renderGerne(currentGerne, subGerne)
 }
 

@@ -1,5 +1,6 @@
 from sqlalchemy import Table, Column, Integer, ForeignKey, String
 from app import db
+from app.model.Attribute import Attribute
 
 
 class ExtendedBook(db.Model):
@@ -10,9 +11,17 @@ class ExtendedBook(db.Model):
 
     book = db.relationship('Book', back_populates='extended_books')
     attribute = db.relationship('Attribute', back_populates='extended_books')
+
     def to_dict(self):
         return {
             'book_id': self.book_id,
             'attribute_name': self.attribute.attribute_name,
             'value': self.value
+        }
+
+    def to_dto(self):
+        return {
+            "attribute_id": self.attribute_id,
+            'attribute_name': self.attribute.attribute_name,
+            "value": self.value
         }

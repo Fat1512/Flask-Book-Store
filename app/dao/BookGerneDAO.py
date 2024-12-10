@@ -3,6 +3,16 @@ from app import db
 from app.model.BookGerne import BookGerne
 import json
 
+
+def find_by_id(book_gerne_id):
+    return BookGerne.query.get(book_gerne_id)
+
+
+def find_all_extend_attribute(gerne_id):
+    book_gerne = BookGerne.query.get(gerne_id)
+    return book_gerne.attributes
+
+
 def get_depth_gerne(id):
     query = """
         SELECT node.book_gerne_id,node.name, node.rgt,node.lft,(COUNT(parent.name) - (sub_tree.depth + 1)) AS depth
@@ -31,11 +41,15 @@ def get_depth_gerne(id):
     current_gerne = [{
         "id": row[0],
         "name": row[1],
+        'rgt':row[2],
+        'lft':row[3],
         "depth": row[4]
     } for row in rows if row.depth == 0]
     sub_gerne = [{
         "id": row[0],
         "name": row[1],
+        'rgt': row[2],
+        'lft': row[3],
         "depth": row[4]
     } for row in rows if row.depth == 1]
     return {

@@ -8,6 +8,34 @@ ORDER_STATUS_TEXT = ["Đang xử lý", "Chờ giao hàng", "Đang giao hàng", "
 PAYMENT_METHOD_TEXT = ["Thẻ", "Tiền mặt"]
 SHIPPING_METHOD_TEXT = ["Giao hàng", "Tại cửa hàng"]
 
+order_type = {
+    '_score': {
+        'field': '_score',
+        'direction': 'desc',
+    },
+    'asc': {
+        'field': 'price',
+        'direction': 'asc',
+    },
+    'desc': {
+        'field': 'price',
+        'direction': 'desc',
+    },
+    'latest': {
+        'field': 'created_at',
+        'direction': 'desc',
+    },
+    'best_sell_week': {
+        'field': 'price',
+        'direction': 'desc',
+    },
+    'best_sell_price': {
+        'field': 'price',
+        'direction': 'desc',
+    }
+
+}
+
 
 def format_currency_filter(price, currency='VND'):
     # Format the value using Babel's format_currency

@@ -82,9 +82,9 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="login.html">
+                        <a class="nav-link" href="/admin/profile">
                             <i class="ni ni-key-25 text-info"></i>
-                            <span class="nav-link-text">Login</span>
+                            <span class="nav-link-text">Hồ sơ</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -302,7 +302,7 @@
                             <div class="media align-items-center">
                   <span class="avatar avatar-sm rounded-circle">
                     <img alt="Image placeholder"
-                         src="https://png.pngtree.com/png-vector/20191101/ourmid/pngtree-cartoon-color-simple-male-avatar-png-image_1934459.jpg">
+                         src="{{ current_user.avt_url }}">
                   </span>
                                 <div class="media-body  ml-2  d-none d-lg-block">
                                     <span class="mb-0 text-sm  font-weight-bold">{{ current_user.full_name }}</span>
@@ -315,7 +315,7 @@
                                 <div class="dropdown-header noti-title">
                                     <h6 class="text-overflow m-0">Chào {{ current_user.full_name }}</h6>
                                 </div>
-                                <a href="#!" class="dropdown-item">
+                                <a href="/admin/profile" class="dropdown-item">
                                     <i class="ni ni-single-02"></i>
                                     <span>Hồ sơ</span>
                                 </a>

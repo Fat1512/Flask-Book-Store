@@ -22,8 +22,8 @@ def get_purchase():
 @account_rest_bp.route('/comment', methods=['POST'])
 def post_comment():
     data = request.json
-
     comment = create_comment(data)
+
     return jsonify({
         "msg": "success",
         "status": 200,

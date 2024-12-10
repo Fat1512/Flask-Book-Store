@@ -12,6 +12,21 @@ function extractCurrencyNumber(currencyString) {
     return parseFloat(numericValue.replace(',', '.')); // Convert to float, replace comma with dot
 }
 
+const showToast = function (message, isError) {
+    const color = isError ? 'var(--red)' : "#6cbf6c"
+    Toastify({
+        text: message,
+        duration: 3000,
+        newWindow: true,
+        close: true,
+        gravity: "top", // `top` or `bottom`
+        position: "center", // `left`, `center` or `right`
+        stopOnFocus: true, // Prevents dismissing of toast on hover
+        style: {
+            background: color,
+        }
+    }).showToast()
+}
 const payment = async function (params) {
     try {
         const resPayment = await fetch(`${PAYMENT_API}/?orderId=${params}`, {
@@ -27,10 +42,10 @@ const payment = async function (params) {
         if (!resPayment.ok) {
             throw new Error(`HTTP error! status: ${resPayment.status}`);
         }
-        window.location.replace(result['vnpay_url'])
+        window.location.href =result['vnpay_url']
 
     } catch (error) {
-        alert('Failed to payment.');
+        showToast(error.message, true)
     }
 }
 
@@ -51,7 +66,7 @@ const createOrder = async function (data) {
             if (data['paymentMethod'] === 'VNPay')
                 await payment(result['orderId'])
             else {
-                window.location.replace('http://127.0.0.1:5000/cart')
+                window.location.replace('http://127.0.0.1:5000/account/purchase')
             }
         }
     } catch (error) {
@@ -237,19 +252,19 @@ const handleCreateOrder = async function () {
     try {
         if (checked.getAttribute('value') === 'inperson') {
             if (inputAddress.value.trim() === '')
-                throw Error("Addres null")
+                 throw Error("Vui lòng chọn địa chỉ nhận hàng")
 
             addressSelected = document.querySelector('.address-item.active-address')
                 .getAttribute('value')
         } else {
             if (!addressUser)
-                throw Error("Addres null")
+                throw Error("Vui lòng chọn địa chỉ nhận hàng")
             addressSelected = addressUser.getAttribute('value')
         }
         if (!isChekedPayment)
-            throw Error('payment null')
+            throw Error('Vui lòng chọn phương thức thanh toán')
         if (!policyCheckbox.checked)
-            throw Error("ok")
+            throw Error("Bạn cần phải chấp nhận chính sách trước khi thanh toán")
 
         const books = []
         document.querySelectorAll('.book-item').forEach(item => {
@@ -275,7 +290,7 @@ const handleCreateOrder = async function () {
 
         await createOrder(data)
     } catch (error) {
-        console.log(error)
+        showToast(error.message, true)
     }
 }
 const btnConfirm = document.querySelector('.btn-confirm')

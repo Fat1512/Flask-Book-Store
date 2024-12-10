@@ -403,7 +403,7 @@ const renderInvoice = function (order) {
                 <p class="mb-0 font-weight-bold">Mã đơn: ${order['order_id']} &nbsp; | &nbsp; Ngày
                     đặt: ${dateFormatter.format(new Date(order['created_at']))}
                     &nbsp; | &nbsp; Hotline: 19008386
-                    &nbsp; | &nbsp; Trạng thái: ${order['status']['name']} &nbsp; | &nbsp; Loại
+                    &nbsp; | &nbsp; Loại
                     đơn: ${order['order_type']['name']}</p>
             </div>
             <div class="card-body">
@@ -423,7 +423,9 @@ const renderInvoice = function (order) {
                     <div class="col-md-6 text-right">
                         <p>
                             ${order['order_type']['id'] === 1 ? `<strong class="font-weight-600"> Phương thức vận chuyển:</strong> ${order['order_type']['detail']['shipping_method']['name']}` : ''}
-                            <strong class="font-weight-600">Phương thức thanh toán:</strong> ${order['payment']['payment_method']['name']}
+                            <strong class="font-weight-600">Phương thức thanh toán:</strong> ${order['payment']['payment_method']['name']} <br>
+                            <strong class="font-weight-600">Trạng thái</strong> ${ order['status']['name'] } <br>
+                            <strong class="font-weight-600">Thanh toán lúc</strong>${order['payment']['payment_detail']['created_at'] }
                         </p>
                     </div>
                     <div class="table-responsive">
@@ -464,11 +466,6 @@ const renderInvoice = function (order) {
                     </div>
                     <div class="row col-12 pt-3 justify-content-between">
                         <div class="col-md-6">
-                                ${order['order_type']['id'] === 1 ? `
-                                <p>
-                                    <strong>Ghi chú:</strong> {% if order['order_type']['detail']['note'] %} order['note'] {% endif %}
-                                    <br>
-                                </p>` : ''}
                         </div>
                         <div class="col-md-6">
                             <p class="text-right">

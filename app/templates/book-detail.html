@@ -11,7 +11,10 @@
                 <div class="col-md-5 rounded banner">
                     <div class="item-bg-color rounded p-3">
                         <div class="poster d-flex justify-content-center">
-                            <img src="{{ book.images[0].image_url }}">
+                            <img src="{% if book.images|length %}
+                                 	{{ book.images[0].image_url }}
+                                 	{% else %} ''
+                                 {% endif %} ">
                         </div>
                         <div class="images">
                             <ul class="list-unstyled list-image d-flex justify-content-start pb-3">
@@ -108,7 +111,10 @@
                         <a class="text-decoration-none text-black" href="/search/detail?bookId={{ b.book_id }}"
                            style="width: 244px">
                             <img class="card-img-top"
-                                 src="{{ b.images[0].image_url }}"
+                                 src="{% if b.images|length %}
+                                 	{{ b.images[0].image_url }}
+                                 	{% else %} ''
+                                 {% endif %} "
                                  alt="Card image">
                             <div class="card-body p-0">
                                 <p style="; min-height: 48px" class="card-text">{{ b.title }}</p>
@@ -135,17 +141,19 @@
                 <div class="rating-infor d-flex align-items-center">
                     <div class="overview text-center d-flex align-items-center">
                         <div>
-                            <p class="mb-2 text-large"><span class="font-weight-bold">{{ "%.0f" % avg_rating }}</span>/5
+                            <p class="mb-2 text-large"><span
+                                    class="font-weight-bold">{{ avg_rating | round(0, method='floor') }}</span>/5
                             </p>
-                            {% for i in range(0,avg_rating|int) %}
+                            {% for i in range(0, (avg_rating| round(0, method='floor'))|int ) %}
                                 <i class="text-warning fa-solid fa-star"></i>
                             {% endfor %}
 
-                            {% for i in range(0, 5 - avg_rating|int) %}
+                            {% for i in range(0, 5 - (avg_rating| round(0, method='floor'))|int ) %}
                                 <i class="fa-regular fa-star"></i>
                             {% endfor %}
 
-                            <p length='{{ comments|length }}' class="text-warning total-comment">({{ comments|length }} đánh giá)</p>
+                            <p length='{{ comments|length }}' class="text-warning total-comment">({{ comments|length }}
+                                đánh giá)</p>
                         </div>
                         <div class="star-percent position-relative ml-3">
                             {% for i in range(5,0,-1) %}

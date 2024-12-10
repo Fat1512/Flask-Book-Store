@@ -7,6 +7,8 @@ import hashlib
 from app.model.Cart import Cart
 from app.model.Account import Account
 
+from app.model.Address import Address
+
 
 class UserRole(RoleEnum):
     ADMIN = 1
@@ -34,7 +36,7 @@ class User(db.Model):
     offline_orders = relationship("OfflineOrder", back_populates="employee", foreign_keys="[OfflineOrder.employee_id]", lazy=True)
     orders = relationship("Order", back_populates="customer", enable_typechecks=False, foreign_keys="[Order.customer_id]", lazy=True)
     account = relationship('Account', back_populates='user', uselist=False)
-    # online_orders = relationship("OnlineOrder", back_populates="customer", lazy=True)
+    online_orders = relationship("OnlineOrder", back_populates="customer", foreign_keys="[Order.customer_id]", lazy=True)
     form_import = relationship("FormImport", back_populates="employee", lazy=True)
     cart = relationship("Cart", back_populates="user")
 

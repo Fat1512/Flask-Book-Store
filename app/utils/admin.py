@@ -6,9 +6,10 @@ from app.model.Order import OrderDetail
 from app.model.User import User
 from app.model.Account import Account
 from app.model.Publisher import Publisher
-from sqlalchemy import or_, func
+from sqlalchemy import or_, func, case
 from datetime import datetime, timedelta, date
 from sqlalchemy.sql import extract
+from flask_login import current_user
 
 
 def book_gerne_statistic(kw=None, selected_month=None):
@@ -55,9 +56,6 @@ def book_gerne_statistic(kw=None, selected_month=None):
 from sqlalchemy.sql import func, extract
 from datetime import datetime
 
-from sqlalchemy.sql import func, extract
-from datetime import datetime
-
 
 def stats_revenue_by_month(year=None):
     """
@@ -97,9 +95,7 @@ def stats_revenue_by_month(year=None):
     return full_result
 
 
-# with app.app_context():
-#     stats = book_gerne_statistic()
-#     print(stats)
+
 
 
 def total_revenue_per_gerne(kw=None, selected_month=None):
@@ -288,9 +284,7 @@ def get_books_by_gerne(gerne_id=None):
     return query.all()
 
 
-# with app.app_context():
-#     stats = get_books_by_gerne()
-#     print(stats)
+
 
 
 # def book_statistic_frequency():
@@ -325,10 +319,6 @@ def book_statistic_frequency(gerne_id=None):
     return query.all()
 
 
-#
-# with app.app_context():
-#     stats = book_statistic_frequency()
-#     print(stats)
 
 
 def account_management(user_role=None):
@@ -346,10 +336,6 @@ def account_management(user_role=None):
 
     return query.all()
 
-
-# with app.app_context():
-#     stats = account_management()
-#     print(stats)
 
 
 def book_management(gerne_id=None):
@@ -375,9 +361,6 @@ def book_management(gerne_id=None):
     return query.all()
 
 
-# with app.app_context():
-#     stats = book_management()
-#     print(stats)
 
 
 
@@ -387,9 +370,37 @@ def bookgerne_management(kw=None):
         BookGerne.name,
         BookGerne.lft,
         BookGerne.rgt
-        ).group_by(BookGerne.book_gerne_id, BookGerne.name)
+    ).group_by(BookGerne.book_gerne_id, BookGerne.name)
 
     if kw:
         query = query.filter(BookGerne.name.contains(kw))
 
     return query.all()
+
+
+def profile():
+    # Kiểm tra xem current_user có tồn tại không
+    if not current_user.is_authenticated:
+        return None  # Trả về None nếu không có người dùng hiện tại (chưa đăng nhập)
+
+    query = db.session.query(
+        Account.username,
+        User.first_name,
+        User.last_name,
+        User.email,
+        User.phone_number,
+        User.avt_url,
+        case(
+            (User.sex == 1, True), else_=False
+        ).label('is_male'),
+        case(
+            (User.sex == 0, True), else_=False
+        ).label('is_female'),
+        extract('day', User.date_of_birth).label('day'),
+        extract('month', User.date_of_birth).label('month'),
+        extract('year', User.date_of_birth).label('year')
+    ).join(Account, Account.user_id == User.user_id
+    ).filter(User.user_id == current_user.user_id)
+
+    # Trả về kết quả của truy vấn hoặc None nếu không tìm thấy kết quả
+    return query.first()  # Trả về một hàng kết quả hoặc None nếu không có dữ liệu

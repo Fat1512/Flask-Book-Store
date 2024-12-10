@@ -5,7 +5,7 @@ from flask_login import current_user
 from flask import Blueprint
 from app.utils.admin import book_gerne_statistic
 from flask import jsonify
-from app.utils.admin import total_revenue_per_gerne, book_statistic_frequency, account_management, book_management, stats_revenue_by_month, bookgerne_management
+from app.utils.admin import total_revenue_per_gerne, book_statistic_frequency, account_management, book_management, stats_revenue_by_month, bookgerne_management, profile
 from datetime import datetime
 import math
 from app import app, db
@@ -184,6 +184,14 @@ def admin_bookgerne_manager():
         })
 
 
+@admin_bp.route("/profile")
+@admin_required
+def admin_profile():
+    profile_data = profile()
+    current_year = datetime.now().year
+    return render_template("admin-profile.html", profile=profile_data, current_year=current_year)
+
+
 @admin_bp.route("/statistic")
 @admin_required
 def admin_statistic():
@@ -352,3 +360,32 @@ def delete_bookgerne(book_gerne_id):
         app.logger.error(f"Error deleting book genre: {str(e)}")
         return jsonify({"success": False, "message": "Internal server error", "error": str(e)}), 500
 
+
+@admin_bp.route('/update-profile', methods=['POST'])
+@admin_required
+def update_profile():
+    data = request.get_json()
+
+    try:
+        # Lấy thông tin người dùng từ current_user
+        user = User.query.filter_by(user_id=current_user.user_id).first()
+
+        if not user:
+            return jsonify({"success": False, "message": "User not found"}), 404
+
+        # Cập nhật thông tin người dùng từ dữ liệu client gửi lên
+        user.first_name = data.get('first_name', user.first_name)
+        user.last_name = data.get('last_name', user.last_name)
+        user.email = data.get('email', user.email)
+        user.phone_number = data.get('phone_number', user.phone_number)
+        user.sex = data.get('sex', user.sex)
+        user.date_of_birth = data.get('date_of_birth', user.date_of_birth)
+        user.avt_url = data.get('avt_url', user.avt_url)
+
+        # Lưu các thay đổi vào cơ sở dữ liệu
+        db.session.commit()
+
+        return jsonify({"success": True, "updated": data}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"success": False, "message": str(e)}), 500

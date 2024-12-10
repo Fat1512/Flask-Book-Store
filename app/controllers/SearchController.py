@@ -7,7 +7,8 @@ from app import app
 from app.dao.BookDAO import find_all, paginate_book, find_by_gerne, find_by_id
 from app.dao.BookGerneDAO import get_depth_gerne
 from app.dao.CartDao import find_by_cart_id
-from app.dao.SearchDAO import searchBook
+from app.dao.SearchDAO import search_book, search_book_es
+from app.utils.helper import order_type
 
 home_bp = Blueprint('search', __name__)
 
@@ -15,25 +16,29 @@ home_bp = Blueprint('search', __name__)
 @home_bp.route('/')
 def search_main():
     keyword = request.args.get('keyword')
-    minPrice = request.args.get('minPrice', type=float, default=None)
-    maxPrice = request.args.get('maxPrice', type=float)
-    order = request.args.get('order', default=app.config['ORDER'])
+    min_price = request.args.get('minPrice', type=float, default=None)
+    max_price = request.args.get('maxPrice', type=float)
+    order = request.args.get('order', default='_score')
     limit = request.args.get('limit', type=int, default=app.config['PAGE_SIZE'])
+    page = request.args.get('page', type=int, default=1)
     gerne_id = request.args.get('gerneId', type=int, default=1)
-    book_gerne = get_depth_gerne(gerne_id)
 
-    page = request.args.get('page', 1, type=int)
-    pagination = searchBook(keyword, minPrice, maxPrice, order, gerne_id, limit, page)
+    book_gerne = get_depth_gerne(gerne_id)
+    book = search_book_es(keyword=keyword, min_price=min_price, max_price=max_price, order=order_type[order]
+                          , limit=limit
+                          , page=page - 1
+                          , lft=book_gerne['current_gerne'][0]['lft']
+                          , rgt=book_gerne['current_gerne'][0]['rgt'])
 
     return render_template("search.html"
                            , current_gerne=book_gerne["current_gerne"]
                            , sub_gerne=book_gerne["sub_gerne"]
                            , keyword=keyword
-                           , minPrice=minPrice
-                           , maxPrice=maxPrice
+                           , minPrice=min_price
+                           , maxPrice=max_price
                            , order=order
                            , limit=limit
-                           , pagination=pagination)
+                           , pagination=book)
 
 
 @home_bp.route('/detail')
@@ -49,6 +54,7 @@ def get_detail():
         "Số trang": book.num_page,
         "Hình thức": book.format,
     }
+
     comments = book.comments
     comments = sorted(comments, key=lambda x: x.created_at, reverse=True)
 
