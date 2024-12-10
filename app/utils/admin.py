@@ -384,6 +384,7 @@ def profile():
         return None  # Trả về None nếu không có người dùng hiện tại (chưa đăng nhập)
 
     query = db.session.query(
+        Account.user_id,
         Account.username,
         User.first_name,
         User.last_name,

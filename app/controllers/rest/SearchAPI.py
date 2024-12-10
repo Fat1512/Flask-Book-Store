@@ -32,5 +32,6 @@ def search():
         'total': int(book['total']),
         'current_page': page,
         'pages': math.ceil(book['total'] / limit),
-        'data': [book['_source'] for book in book['data']]
+        'data': book['data'],
+        'extended_books': book['extended_books']
     })

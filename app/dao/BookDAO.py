@@ -1,3 +1,6 @@
+import random
+from datetime import datetime, timedelta
+
 import cloudinary
 
 from app.exception.NotFoundError import NotFoundError
@@ -11,13 +14,12 @@ import math
 from app.model.BookImage import BookImage
 from app.model.ExtendedBook import ExtendedBook
 
-
 def find_by_id(id):
     return Book.query.get(id)
 
+
 def find_by_id_index(id):
     return Book.query.get(id).to_dto()
-
 
 
 def create_book(data):

@@ -1,6 +1,6 @@
 from app.dao.UserDao import *
 from flask import Blueprint, jsonify
-import numpy as np
+
 from flask import render_template, request
 import json
 

@@ -1,5 +1,6 @@
 import math
 from colorsys import rgb_to_hls
+from sys import prefix
 
 from flask import jsonify
 from sqlalchemy import text
@@ -14,141 +15,138 @@ from app.model.BookGerne import BookGerne
 def search_book_es(keyword, min_price, max_price,
                    order, lft, rgt, limit, page):
     index_name = BookIndex.index_name
-    query = {}
+    condition = {}
     if keyword:
-        query = {
-            "query": {
-                "bool": {
-                    "must": [
-                        {
-                            "bool": {
-                                "should": [
-                                    {
-                                        "match_phrase_prefix": {
-                                            "description": {
-                                                "max_expansions": 2,
-                                                "query": keyword,
-                                                "slop": 3
-                                            }
-                                        }
-                                    }
-                                    , {
-                                        "match_phrase_prefix": {
-                                            "author": {
-                                                "query": keyword,
-                                                "max_expansions": 5
-                                            }
-                                        }
-                                    }
-                                    , {
-                                        "match_phrase_prefix": {
-                                            "title": {
-                                                "boost": 2.0,
-                                                "max_expansions": 5,
-                                                "query": keyword
-                                            }
+        condition = {
 
-                                        }
-                                    }
-                                    , {
-                                        "nested": {
-                                            "path": "extended_books",
-                                            "query": {
-                                                "match": {
-                                                    "extended_books.value": {
-                                                        "query": keyword,
-                                                        "fuzziness": "AUTO"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
+            "bool": {
+                "should": [
+                    {
+                        "match_phrase_prefix": {
+                            "description": {
+                                "max_expansions": 2,
+                                "query": keyword,
+                                "slop": 3
                             }
                         }
-                    ],
-                    "filter": [
-                        {
-                            "range": {
-                                "price": {
-                                    "gte": min_price,
-                                    "lte": max_price
-                                }
-                            },
+                    }
+                    , {
+                        "match_phrase_prefix": {
+                            "author": {
+                                "query": keyword,
+                                "max_expansions": 5
+                            }
                         }
-                        , {
-                            "nested": {
-                                "path": "book_gerne",
-                                "query": {
-                                    "range": {
-                                        "book_gerne.lft": {
-                                            "gte": lft,
-                                            "lte": rgt
-                                        }
+                    }
+                    , {
+                        "match_phrase_prefix": {
+                            "title": {
+                                "boost": 2.0,
+                                "max_expansions": 5,
+                                "query": keyword
+                            }
+
+                        }
+                    }
+                    , {
+                        "nested": {
+                            "path": "extended_books",
+                            "query": {
+                                "match": {
+                                    "extended_books.value": {
+                                        "query": keyword,
+                                        "fuzziness": "AUTO"
                                     }
                                 }
                             }
                         }
-                    ]
-                }
-            },
-            "sort": [
-                {order['field']: order['direction']}
-            ],
-            "from": page * limit,
-            "size": limit,
-            "track_total_hits": True,
-            "_source": ['book_id', 'book_image', "title", "price", "extended_books"]
+                    }
+                ]
+            }
         }
+
     else:
-        query = {
-            "query": {
-                'bool':{
-                    'must':[
-                        {
-                            "match_all": {}
+        condition = {
+            "match_all": {}
+        }
+    prefix_query = {
+        'bool': {
+            'must': [
+                condition,
+            ],
+            "filter": [
+                {
+                    "range": {
+                        "price": {
+                            "gte": min_price,
+                            "lte": max_price
                         }
-                    ],
-                    "filter": [
-                        {
+                    },
+                }
+                , {
+                    "nested": {
+                        "path": "book_gerne",
+                        "query": {
                             "range": {
-                                "price": {
-                                    "gte": min_price,
-                                    "lte": max_price
-                                }
-                            },
-                        }
-                        , {
-                            "nested": {
-                                "path": "book_gerne",
-                                "query": {
-                                    "range": {
-                                        "book_gerne.lft": {
-                                            "gte": lft,
-                                            "lte": rgt
-                                        }
-                                    }
+                                "book_gerne.lft": {
+                                    "gte": lft,
+                                    "lte": rgt
                                 }
                             }
                         }
-                    ]
+                    }
                 }
-
-            },
-            "sort": [
-                {order['field']: order['direction']}
-            ],
-
-            "from": page * limit,
-            "size": limit,
-            "track_total_hits": True,
-            "_source": ['book_id', 'book_image', "title", "price", "extended_books"]
-        }
+            ]
+        },
+    }
+    aggregation_query = {
+        'query': prefix_query,
+        "aggs": {
+            "nested_extended_books": {
+                "nested": {
+                    "path": "extended_books"
+                },
+                "aggs": {
+                    "group_by_attribute_id": {
+                        "terms": {
+                            "field": "extended_books.attribute_id",
+                            "size": 10
+                        },
+                        "aggs": {
+                            "attribute_name": {
+                                "terms": {
+                                    "field": "extended_books.attribute_name",
+                                    "size": 1
+                                }
+                            },
+                            "collect_values": {
+                                "terms": {
+                                    "field": "extended_books.value",
+                                    "size": 10
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "size": 0
+    }
+    query = {
+        "query": prefix_query,
+        "sort": [
+            {"_score": "asc"}
+        ],
+        "from": 0,
+        "size": 12,
+        "_source": ["title", "price", "extended_books", "book_image"]
+    }
     try:
         response = es.search(index=index_name, body=query)
-
+        aggregation = es.search(index=index_name, body=aggregation_query)
         return {
-            'data': response['hits']['hits'],
+            'data': [data['_source'] for data in response['hits']['hits']],
+            'extended_books': aggregation['aggregations']['nested_extended_books']['group_by_attribute_id']['buckets'],
             'total': response['hits']['total']['value'],
         }  # Return matching documents
     except Exception as e:

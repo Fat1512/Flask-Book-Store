@@ -28,6 +28,8 @@ class BookIndex:
                         "weight": {"type": "float"},
                         "format": {"type": "keyword"},
                         "publisher": {"type": "keyword"},
+                        "created_at": {"type": "date"},
+                        "released_at": {"type": "date"},
                         "book_gerne": {"type": "nested", "properties": {
                             "book_gerne_id": {"type": "integer"},
                             "name": {"type": "text"},
@@ -38,8 +40,8 @@ class BookIndex:
                         "extended_books": {'type': "nested", "properties": {
 
                             'attribute_id': {'type': 'integer'},
-                            'attribute_name': {'type': 'text'},
-                            'value': {'type': 'text'},
+                            'attribute_name': {'type': 'keyword'},
+                            'value': {'type': 'keyword'},
                         }},
                     }
                 }
@@ -53,10 +55,11 @@ class BookIndex:
 
 
 if __name__ == '__main__':
+    # BookIndex.create_index()
     with app.app_context():
         books = Book.query.all()
         for book in books:
             book_document = book.to_dto()
             res = es.index(index=BookIndex.index_name, id=book_document['book_id'], body=book_document)
 
-    # BookIndex.create_index()
+

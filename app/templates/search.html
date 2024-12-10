@@ -94,6 +94,24 @@
                                 </li>
                             </ul>
                         </div>
+                        {% for ex in extended_books %}
+                            <div class="price pb-0 pt-3 border-top">
+                                <p class="font-weight-bold mb-0 pb-1">{{ ex.attribute_name.buckets[0].key }}
+                                    <span class="text-secondary">({{ ex.attribute_name.buckets[0].doc_count }})</span>
+                                </p>
+                                <ul class="text-decoration-none list-unstyled box-filter pl-2">
+                                    {% for value in ex.collect_values.buckets %}
+                                        <li>
+                                            <a class="checkbox {% if minPrice == 0 %}checkbox-checked {% else %} checkbox-unchecked{% endif %}"
+                                               value="{{ value.key }}"
+                                            > {{ value.key }} <span class="text-secondary">({{ value.doc_count }})</span></a>
+                                        </li>
+                                    {% endfor %}
+
+                                </ul>
+                            </div>
+                        {% endfor %}
+
                     </div>
                 </div>
                 <div class="col-md-9 rounded">
@@ -124,15 +142,15 @@
                                         {% if order == 'latest' %}
                                             Mới nhất
 
-                                            {% elif order == 'best_sell_week' %}
+                                        {% elif order == 'best_sell_week' %}
                                             Bán chạy nhất tuần
-                                            {% elif order == 'best_sell_month' %}
+                                        {% elif order == 'best_sell_month' %}
                                             Bán chạy nhất tháng
-                                            {% elif order == 'asc' %}
+                                        {% elif order == 'asc' %}
                                             Giá tăng
-                                            {% elif order == 'desc' %}
+                                        {% elif order == 'desc' %}
                                             Giá giảm
-                                            {% else %}
+                                        {% else %}
                                             Độ liên quan
                                         {% endif %}
                                     </button>

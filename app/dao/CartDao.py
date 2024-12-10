@@ -1,3 +1,4 @@
+from flask_login import current_user
 from sqlalchemy.testing.config import db_url
 from app import db
 from app.model.Cart import Cart

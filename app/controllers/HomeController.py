@@ -36,16 +36,12 @@ def index():
         data = json.load(f)
         bestselling_books = data[0:5]
 
-    user_data = None
-    if current_user.is_authenticated:
-        user_data = profile()
 
-    current_year = datetime.now().year
 
     return render_template("home.html",
                            bestselling_books=bestselling_books,
                            new_release=new_release,
-                           category_section=category_section, profile=user_data, current_year=current_year)
+                           category_section=category_section)
 
 
 @index_bp.route('/update-profile', methods=['POST'])

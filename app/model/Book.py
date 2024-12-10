@@ -1,4 +1,6 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Double, DATETIME
+from datetime import datetime
+
+from sqlalchemy import Column, Integer, String, ForeignKey, Double, DATETIME, DATE
 from app import db, app
 from sqlalchemy.orm import relationship
 from app.model.BookImage import BookImage
@@ -20,7 +22,8 @@ class Book(db.Model):
     quantity = Column(Integer, default=0)
     price = Column(Double)
     description = Column(String)
-    release_date = Column(DATETIME)
+    release_date = Column(DATE)
+    created_at = Column(DATETIME, default=datetime.now())
     num_page = Column(Integer)
     dimension = Column(String)
     weight = Column(Double)
@@ -46,6 +49,8 @@ class Book(db.Model):
             "book_id": self.book_id,
             "author": self.author,
             "title": self.title,
+            'created_at': self.created_at,
+            'release_date': self.release_date,
             "quantity": self.quantity,
             "price": self.price,
             "description": self.description,
@@ -65,6 +70,8 @@ class Book(db.Model):
             "book_id": self.book_id,
             "author": self.author,
             "title": self.title,
+            'created_at': self.created_at,
+            'release_date': self.release_date,
             "quantity": self.quantity,
             "price": self.price,
             "description": self.description,

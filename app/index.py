@@ -1,9 +1,11 @@
 import json
 import pdb
 import threading
+from datetime import datetime
 from threading import Thread
 
 from elasticsearch import Elasticsearch
+from flask_login import current_user
 
 import app.controllers.AccountController
 from app.controllers.CartController import cart_bp
@@ -33,6 +35,7 @@ from app.controllers.AccountController import account_bp
 from app.controllers.AdminController import admin_bp, update_book
 from app.controllers.CartController import cart_bp
 from app.controllers.rest.CartAPI import cart_rest_bp
+from app.utils.admin import profile
 
 app.register_blueprint(home_bp, url_prefix='/search')
 app.register_blueprint(employee_bp, url_prefix='/employee')
@@ -43,7 +46,7 @@ app.register_blueprint(book_gerne_rest_bp, url_prefix='/api/v1/bookGerne')
 app.register_blueprint(book_rest_bp, url_prefix='/api/v1/book')
 app.register_blueprint(order_api_bp, url_prefix='/api/v1/order')
 app.register_blueprint(cart_rest_bp, url_prefix='/api/v1/cart')
-app.register_blueprint(search_res_bp,url_prefix='/api/v1/search')
+app.register_blueprint(search_res_bp, url_prefix='/api/v1/search')
 app.register_blueprint(payment_rest_bp, url_prefix='/api/v1/payment')
 
 app.register_blueprint(account_rest_bp, url_prefix='/api/v1/account')
@@ -51,7 +54,6 @@ app.register_blueprint(index_bp, url_prefix='/')
 app.register_blueprint(account_bp, url_prefix='/account')
 app.register_blueprint(admin_bp, url_prefix='/admin')
 app.register_blueprint(cart_bp, url_prefix='/cart')
-
 
 
 @app.errorhandler(NotFoundError)
@@ -63,15 +65,22 @@ def handle_custom_error(e):
 
 
 @app.context_processor
-def cart_context():
-    cart = find_by_cart_id(2)
-    cart_items = cart.cart_items
-    total_price = cart.total_price()
-
-    return {
-        "cart_items": cart_items,
-        "total_price": total_price
+def context():
+    app_context = {
+        "cart_items": None,
+        "total_price": None,
+        'current_year': datetime.now().year,
+        "profile": None
     }
+    if current_user.is_authenticated:
+        user_data = profile()
+        cart = find_by_cart_id(user_data.user_id)
+        app_context['cart_items'] = cart.cart_items
+        app_context['total_price'] = cart.total_price()
+        app_context['profile'] = user_data
+        return app_context
+
+    return app_context
 
 
 def consume_kafka(topic):
@@ -184,7 +193,6 @@ def handle_topic_book_gerne(data):
 #
 #     except Exception as e:
 #         print(f"Error handling topic1 message: {e}")
-
 
 @app.route('/status', methods=['GET'])
 def status():

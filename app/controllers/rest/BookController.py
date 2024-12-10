@@ -1,6 +1,9 @@
 import json
+from datetime import datetime, timedelta
 
 from flask import Blueprint, request, jsonify
+from sqlalchemy.sql.functions import random
+
 from app import app
 from app.dao.FormImportDAO import get_form_imports, create_form_import
 from app.dao.BookDAO import find_by_id, find_by_barcode, create_book
@@ -13,6 +16,8 @@ book_rest_bp = Blueprint('book_rest', __name__)
 @book_rest_bp.route('/test')
 def get_books():
     return find_by_id(54).to_dict()
+
+
 
 
 @book_rest_bp.route('/', methods=['POST'])
@@ -90,7 +95,7 @@ def get_manage_books():
     gerne_id = request.args.get('gerneId', type=int)
     page = request.args.get('page', 1, type=int)
 
-    data = searchBook(keyword, min_price, max_price, order, gerne_id, limit, page, quantity_status)
+    data = search_book(keyword, min_price, max_price, order, gerne_id, limit, page, quantity_status)
     book_dto = []
 
     for book in data['books']:
