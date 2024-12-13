@@ -4,7 +4,7 @@ from re import findall
 
 from flask import Blueprint, request, render_template
 from app import app
-from app.dao.BookDAO import find_all, paginate_book, find_by_gerne, find_by_id
+from app.dao.BookDAO import find_all, paginate_book, find_by_gerne, find_by_id, count_book_sell
 from app.dao.BookGerneDAO import get_depth_gerne
 from app.dao.CartDao import find_by_cart_id
 from app.dao.SearchDAO import search_book, search_book_es
@@ -29,7 +29,7 @@ def search_main():
                           , page=page - 1
                           , lft=book_gerne['current_gerne'][0]['lft']
                           , rgt=book_gerne['current_gerne'][0]['rgt'])
-    print('test',book["extended_books"])
+    print('test',book)
     return render_template("search.html"
                            , current_gerne=book_gerne["current_gerne"]
                            , sub_gerne=book_gerne["sub_gerne"]
@@ -47,6 +47,7 @@ def get_detail():
     book_id = request.args.get('bookId', type=int)
     book = find_by_id(book_id)
     books = find_by_gerne(book.book_gerne_id)
+    sold_book = count_book_sell(book_id)
     detail_book = {
         "Mã sản phẩm": book.book_id,
         "Tác giả": book.author,
@@ -55,13 +56,13 @@ def get_detail():
         "Số trang": book.num_page,
         "Hình thức": book.format,
     }
+    print('test', book.price)
 
     comments = book.comments
     comments = sorted(comments, key=lambda x: x.created_at, reverse=True)
 
     for ex in book.extended_books:
         detail_book[ex.attribute.attribute_name] = ex.value
-
     avg_star = [0, 0, 0, 0, 0]
     avg_rating = 0
     if len(comments):
@@ -71,6 +72,7 @@ def get_detail():
         avg_rating = avg_rating / len(comments)
 
     return render_template("book-detail.html", book=book
+                           , sold_book=sold_book
                            , detail_book=detail_book
                            , books=books
                            , comments=comments

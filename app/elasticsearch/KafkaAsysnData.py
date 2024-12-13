@@ -1,6 +1,6 @@
 import pdb
 
-from app.dao.BookDAO import find_by_id, find_by_id_index
+from app.dao.BookDAO import find_by_id
 from app.elasticsearch.BookIndexService import delete_document, create_document, update_document, \
     add_attribute_value_document, update_document_bulk
 from app.exception.NotFoundError import NotFoundError

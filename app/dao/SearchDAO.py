@@ -12,13 +12,76 @@ from app import db, es
 from app.model.BookGerne import BookGerne
 
 
+def get_suggest(keyword):
+    index_name = BookIndex.index_name
+    query = {
+        "query": {
+            "bool": {
+                "should": [
+                    {
+                        "match_phrase_prefix": {
+                            "description": {
+                                "max_expansions": 2,
+                                "query": keyword,
+                                "slop": 3
+                            }
+                        }
+                    }
+                    , {
+                        "match_phrase_prefix": {
+                            "author": {
+                                "query": keyword,
+                                "max_expansions": 5
+                            }
+                        }
+                    }
+                    , {
+                        "match_phrase_prefix": {
+                            "title": {
+                                "boost": 2.0,
+                                "max_expansions": 5,
+                                "query": keyword
+                            }
+
+                        }
+                    }
+                    , {
+                        "nested": {
+                            "path": "extended_books",
+                            "query": {
+                                "match": {
+                                    "extended_books.value": {
+                                        "query": keyword,
+                                        "fuzziness": "AUTO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "sort": [
+            {'_score': 'desc'}
+        ],
+        "from": 0,
+        "size": 8,
+    }
+    try:
+        response = es.search(index=index_name, body=query)
+        return {
+            'data': [data['_source'] for data in response['hits']['hits']],
+        }  # Return matching documents
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 def search_book_es(keyword, min_price, max_price,
                    order, lft, rgt, limit, page):
     index_name = BookIndex.index_name
     condition = {}
     if keyword:
         condition = {
-
             "bool": {
                 "should": [
                     {
@@ -135,11 +198,11 @@ def search_book_es(keyword, min_price, max_price,
     query = {
         "query": prefix_query,
         "sort": [
-            {"_score": "asc"}
+            {order['field']: order['direction']}
         ],
-        "from": 0,
-        "size": 12,
-        "_source": ["title", "price", "extended_books", "book_image"]
+        "from": page * limit,
+        "size": limit,
+        "_source": ["book_id","title", "price", "extended_books", "book_image"]
     }
     try:
         response = es.search(index=index_name, body=query)

@@ -6,7 +6,7 @@ from sqlalchemy.sql.functions import random
 
 from app import app
 from app.dao.FormImportDAO import get_form_imports, create_form_import
-from app.dao.BookDAO import find_by_id, find_by_barcode, create_book
+from app.dao.BookDAO import find_by_id, find_by_barcode, create_book, count_book_sell
 from app.dao.CartDao import find_by_user_id
 from app.dao.SearchDAO import search_book
 
@@ -18,6 +18,13 @@ def get_books():
     return find_by_id(54).to_dict()
 
 
+@book_rest_bp.route('/<book_id>/sold')
+def get_sold(book_id):
+    return jsonify({
+        'message': 'success',
+        'status': 200,
+        'soldBook': count_book_sell(book_id)
+    })
 
 
 @book_rest_bp.route('/', methods=['POST'])
@@ -31,6 +38,8 @@ def create_books():
     format = request.form.get('format')
     weight = request.form.get('weight')
     dimension = request.form.get('dimension')
+    publisher = request.form.get('publisher')
+    release_date = request.form.get('release_date')
 
     # Handle book_images (file upload)
     book_images = request.files.getlist('book_images[]')
@@ -45,13 +54,14 @@ def create_books():
         "price": float(price),
         "num_page": int(num_page),
         "description": description,
-        "format": format,
+        "format": int(format) + 1,
+        'publisher': int(publisher),
+        "release_date": datetime.strptime(release_date, '%d/%m/%Y'),
         "weight": float(weight),
         "dimension": dimension,
         "book_images": book_images,
         "extend_attributes": extend_attributes
     }
-
     create_book(data)
 
     return jsonify({

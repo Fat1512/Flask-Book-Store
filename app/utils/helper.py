@@ -2,6 +2,7 @@ from babel.numbers import format_currency
 import locale
 from datetime import datetime
 
+FORMAT_BOOK_TEXT = ["Bìa cứng", "Bìa mềm"]
 ORDER_TYPE_TEXT = ["Đặt online", "Mua trực tiếp"]
 ORDER_STATUS_TEXT = ["Đang xử lý", "Chờ giao hàng", "Đang giao hàng", "Đã hoàn thành", "Đã hủy", "Đang chờ thanh toán",
                      "Đã thanh toán", "Đang chờ nhận"]
@@ -39,6 +40,7 @@ order_type = {
 
 def format_currency_filter(price, currency='VND'):
     # Format the value using Babel's format_currency
+    print('price', price)
     return format_currency(price, currency, locale='vi_VN')
 
 

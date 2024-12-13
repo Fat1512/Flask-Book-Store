@@ -12,6 +12,12 @@ from app.model.Comment import Comment
 from app.model.CartItem import CartItem
 from app.model.Cart import Cart
 from app.model.FormImportDetail import FormImportDetail
+from enum import Enum as PythonEnum
+
+
+class BookFormat(PythonEnum):
+    BIA_CUNG = 1
+    BIA_MEM = 2
 
 
 class Book(db.Model):
@@ -33,7 +39,7 @@ class Book(db.Model):
     book_gerne_id = Column(Integer, ForeignKey('book_gerne.book_gerne_id'))
 
     book_gerne = db.relationship('BookGerne', back_populates='books', lazy=True)
-    publisher_info = db.relationship('Publisher', back_populates='publisher_books_relation',
+    publisher_info = db.relationship('Publisher', back_populates='publisher_books_relation', uselist=False,
                                      foreign_keys=[publisher_id], lazy=True)
     images = db.relationship('BookImage', backref='book', lazy=True)
     order_detail = relationship("OrderDetail", back_populates="book", lazy=True)
@@ -60,7 +66,7 @@ class Book(db.Model):
             "barcode": self.barcode,
             "images": [image.to_dict() for image in self.images],
             'format': self.format,
-            "publisher": "Kim đồng",
+            "publisher": self.publisher_info.to_dict(),
             'book_gerne': self.book_gerne.to_dict(),
             'extended_books': [extended.to_dict() for extended in self.extended_books],
         }

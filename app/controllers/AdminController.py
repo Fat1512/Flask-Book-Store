@@ -1,11 +1,13 @@
 import app.utils.admin
+from app.dao.PublisherDAO import find_all
 from app.model.User import UserRole
 from flask import render_template, redirect, url_for, request
 from flask_login import current_user
 from flask import Blueprint
 from app.utils.admin import book_gerne_statistic
 from flask import jsonify
-from app.utils.admin import total_revenue_per_gerne, book_statistic_frequency, account_management, book_management, stats_revenue_by_month, bookgerne_management, profile
+from app.utils.admin import total_revenue_per_gerne, book_statistic_frequency, account_management, book_management, \
+    stats_revenue_by_month, bookgerne_management, profile
 from datetime import datetime
 import math
 from app import app, db
@@ -14,6 +16,7 @@ from app.model.User import User
 from app.model.Book import Book
 from app.model.Account import Account
 from app.model.Publisher import Publisher
+from app.utils.helper import FORMAT_BOOK_TEXT
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -38,7 +41,8 @@ def admin_home():
 
 @admin_bp.route("/add-products")
 def add_products_process():
-    return render_template("employee-add-products.html")
+    publishers = find_all()
+    return render_template("employee-add-products.html", publishers=publishers, formats=FORMAT_BOOK_TEXT)
 
 
 @admin_bp.route("/book-manager")
@@ -87,7 +91,6 @@ def admin_statistic_revenue():
     start_idx = (page - 1) * page_size
     end_idx = start_idx + page_size
     paginated_stats = stats[start_idx:end_idx]
-
 
     total_revenue = total_revenue_per_gerne(kw=kw, selected_month=selected_month)
 
@@ -175,13 +178,13 @@ def admin_bookgerne_manager():
     end_idx = start_idx + page_size
     paginated_stats = stats[start_idx:end_idx]
     return render_template("admin-bookgerne-manager.html",
-        kw=kw,
-        stats=paginated_stats,
-        books={
-            'current_page': page,
-            'total_page': math.ceil(total / page_size),
-            'pages': range(1, math.ceil(total / page_size) + 1),
-        })
+                           kw=kw,
+                           stats=paginated_stats,
+                           books={
+                               'current_page': page,
+                               'total_page': math.ceil(total / page_size),
+                               'pages': range(1, math.ceil(total / page_size) + 1),
+                           })
 
 
 @admin_bp.route("/profile")
@@ -203,6 +206,7 @@ def admin_statistic():
 def get_gernes():
     gernes = db.session.query(BookGerne.book_gerne_id, BookGerne.name).all()
     return jsonify([{"id": gerne.book_gerne_id, "name": gerne.name} for gerne in gernes])
+
 
 @admin_bp.route("/api/user_roles", methods=["GET"])
 @admin_required
@@ -311,7 +315,6 @@ def add_bookgerne():
         app.logger.error(f"Lỗi khi thêm thể loại: {str(e)}")
         print(f"Lỗi khi thêm thể loại: {str(e)}")  # Debug lỗi
         return jsonify({'success': False, 'message': 'Lỗi server', 'error': str(e)}), 500
-
 
 
 @admin_bp.route('/update-bookgerne/<int:book_gerne_id>', methods=['POST'])

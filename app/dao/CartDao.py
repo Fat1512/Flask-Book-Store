@@ -39,7 +39,7 @@ def delete_cart_item(book_id):
 
 
 def add_cart_item(book_id):
-    cart = Cart.query.filter(Cart.cart_id == 2).first()
+    cart = Cart.query.filter(Cart.cart_id == current_user.get_id()).first()
     for item in cart.cart_items:
         if item.book_id == book_id:
             item.quantity += 1

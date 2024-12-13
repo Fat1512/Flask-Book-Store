@@ -25,9 +25,9 @@ def update_order_status(order_id, status):
     db.session.commit()
 
 
-def find_add_by_user_id(status):
+def find_add_by_user_id(user_id, status):
     order = Order.query
-    order = order.filter(Order.customer_id == 2)
+    order = order.filter(Order.customer_id == user_id)
     if status and status != 8:
         order = order.filter(Order.status == OrderStatus(int(status)))
     order = order.order_by(desc(Order.created_at))

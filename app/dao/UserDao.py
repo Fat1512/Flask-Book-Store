@@ -1,4 +1,5 @@
 import app.model.User
+from app.model.Address import Address
 from app.model.User import User
 from app.model.Account import Account
 import hashlib
@@ -50,6 +51,7 @@ def add_offline_user(first_name, last_name, email, avt_url=None, sex=None, phone
     db.session.add(u)
     db.session.commit()
 
+
 def add_user(first_name, last_name, username, password, email, avt_url=None, sex=None, phone_number=None,
              date_of_birth=None, isActive=None, last_access=None):
     password = hashlib.md5(password.strip().encode('utf-8')).hexdigest()
@@ -83,6 +85,24 @@ def find_by_customer_id_phone_number(user_id, phone_number):
     query = User.query
     query = query.filter(User.user_id == user_id, User.phone_number == phone_number)
     return query.first()
+
+
+def find_user_address(user_id):
+    return Address.query.filter(Address.user_id == user_id).all()
+
+
+def add_address(user_id, data):
+    user = User.query.get(user_id)
+    address_db = Address(first_name=data['first_name'], last_name=data['last_name'],
+                         phone_number=data['phone'],
+                         city=data['city'],
+                         district=data['district'],
+                         ward=data['ward'],
+                         address=data['address'], )
+    user.address.append(address_db)
+    db.session.commit()
+
+    return address_db
 
 
 def find_by_phone_number(phone_number):

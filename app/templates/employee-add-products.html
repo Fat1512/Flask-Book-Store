@@ -32,13 +32,13 @@
 <body>
 <div class="h-100vh position-relative">
     <div class="spinner">
-    <div class="spinner-border text-warning" role="status">
-        <div class="loader"></div>
+        <div class="spinner-border text-warning" role="status">
+            <div class="loader"></div>
+        </div>
+        <p>Loading...</p>
+        <div class="overlay">
+        </div>
     </div>
-    <p>Loading...</p>
-    <div class="overlay">
-    </div>
-</div>
 </div>
 <!-- Sidenav -->
 <nav class="sidenav navbar navbar-vertical  fixed-left  navbar-expand-xs navbar-light bg-white" id="sidenav-main">
@@ -443,29 +443,32 @@
                                 <form>
                                     <div class="form-group">
                                         <label class="label-name" for="product-image">Hình ảnh sách</label>
-
-                                        <div class="upload-box d-flex" id="product-image">
-                                            <div class="image-list">
-
+                                        <div class="upload-box" id="product-image">
+                                            <div class=" d-flex">
+                                                <div class="image-list">
+                                                </div>
+                                                <div class="upload-box-image ">
+                                                    <label for="book-image"
+                                                           class="cursor-pointer d-flex flex-column align-items-center text-center text-primary">
+                                                        <div class="upload-box-image-icon">
+                                                            <svg viewBox="0 0 23 21" xmlns="http://www.w3.org/2000/svg">
+                                                                <path fill="#c92127"
+                                                                      d="M18.5 0A1.5 1.5 0 0 1 20 1.5V12c-.49-.07-1.01-.07-1.5 0V1.5H2v12.65l3.395-3.408a.75.75 0 0 1 .958-.087l.104.087L7.89 12.18l3.687-5.21a.75.75 0 0 1 .96-.086l.103.087 3.391 3.405c.81.813.433 2.28-.398 3.07A5.235 5.235 0 0 0 14.053 18H2a1.5 1.5 0 0 1-1.5-1.5v-15A1.5 1.5 0 0 1 2 0h16.5z"></path>
+                                                                <path fill="#c92127"
+                                                                      d="M6.5 4.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM18.5 14.25a.75.75 0 0 1 1.5 0v2.25h2.25a.75.75 0 0 1 0 1.5H20v2.25a.75.75 0 0 1-1.5 0V18h-2.25a.75.75 0 0 1 0-1.5h2.25v-2.25z"></path>
+                                                            </svg>
+                                                        </div>
+                                                        Tải ảnh lên
+                                                    </label>
+                                                    <input class="d-none" type="file" id="book-image" name='book-image'
+                                                           multiple>
+                                                </div>
                                             </div>
-                                            <div class="upload-box-image ">
-                                                <label for="book-image"
-                                                       class="cursor-pointer d-flex flex-column align-items-center text-center text-primary">
-                                                    <div class="upload-box-image-icon">
-                                                        <svg viewBox="0 0 23 21" xmlns="http://www.w3.org/2000/svg">
-                                                            <path fill="#c92127"
-                                                                  d="M18.5 0A1.5 1.5 0 0 1 20 1.5V12c-.49-.07-1.01-.07-1.5 0V1.5H2v12.65l3.395-3.408a.75.75 0 0 1 .958-.087l.104.087L7.89 12.18l3.687-5.21a.75.75 0 0 1 .96-.086l.103.087 3.391 3.405c.81.813.433 2.28-.398 3.07A5.235 5.235 0 0 0 14.053 18H2a1.5 1.5 0 0 1-1.5-1.5v-15A1.5 1.5 0 0 1 2 0h16.5z"></path>
-                                                            <path fill="#c92127"
-                                                                  d="M6.5 4.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM18.5 14.25a.75.75 0 0 1 1.5 0v2.25h2.25a.75.75 0 0 1 0 1.5H20v2.25a.75.75 0 0 1-1.5 0V18h-2.25a.75.75 0 0 1 0-1.5h2.25v-2.25z"></path>
-                                                        </svg>
-                                                    </div>
-                                                    Tải ảnh lên
-                                                </label>
-                                                <input class="d-none" type="file" id="book-image" name='book-image'
-                                                       multiple>
-                                            </div>
+                                            <p id="error-image" class="m-0 message-error font-weight-bold">
+                                                Vui lòng chọn ít
+                                                nhất
+                                                1 ảnh </p>
                                         </div>
-
                                     </div>
                                     <div class="form-group">
                                         <label class="label-name" for="product-name">Tên sách</label>
@@ -473,7 +476,10 @@
                                             <input type="text" class="product-name m-0 w-100" id="product-name"
                                                    name="title"
                                                    placeholder="Nhập vào" width="150%">
+                                            <p id="error-title" class="m-0 message-error  font-weight-bold">Vui lòng
+                                                nhập tên sách </p>
                                         </div>
+
                                     </div>
                                     <div class="form-group">
                                         <label class="label-name">Thể loại</label>
@@ -481,7 +487,9 @@
                                             <input onclick="openModal()" type="text" class="product-name m-0 w-100"
                                                    name="input-gerne"
                                                    placeholder="Nhập vào danh mục" width="150%">
-
+                                            <p id="error-gerne" class="m-0 message-error font-weight-bold">Vui chọn thể
+                                                loại
+                                                1 ảnh </p>
                                         </div>
 
                                         <!-- Modal Overlay -->
@@ -531,9 +539,11 @@
                                         <div class="description-upload">
                                             <textarea id="product-description" cols="5" rows="3"
                                                       class="comment-area"
-                                                      placeholder="Nhập mô tả sản phẩm hoặc tải lên hình ảnh"></textarea>
+                                                      placeholder="Nhập mô tả sản phẩm"></textarea>
                                         </div>
-
+                                        <p id="error-description" class="m-0 message-error font-weight-bold">Vui lòng
+                                            nhập mô
+                                            tả</p>
                                     </div>
                                 </form>
                             </div>
@@ -594,85 +604,124 @@
                                                        class="m-0 dropdown-search product-publisher"
                                                        name="dropdown-search"
                                                        autocomplete="off">
-
                                                 <div class="dropdown-list" id="genreList">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    {#                                        <div id="newGenreContainer" style="display: none;" class="form-group">#}
-                                    {#                                            <label for="newGenre">Nhà xuất bản khác</label>#}
-                                    {#                                            <div>#}
-                                    {#                                                <input type="text" id="newGenre" name="newGenre"#}
-                                    {#                                                       class="product-publisher">#}
-                                    {#                                            </div>#}
-                                    {#                                        </div>#}
-
-
                                     <div class="form-group">
-                                        <label for="product-name">Tác giả</label>
-                                        <div>
-                                            <input type="text" class="product-author" name="product-author"
-                                                   id="product-author" placeholder=""
-                                                   width="150%">
+                                        <label class="attribute-name" for="product-name">Nhà xuất bản</label>
+                                        <div class="attribute-value input-outline
+                                        dropdown-toggle dropdown-toggle-publisher rounded"
+                                             data-toggle="dropdown">
+
                                         </div>
-                                        <label for="product-name">Số trang</label>
-                                        <div>
-                                            <input type="number" class="product-num-page" name="product-num-page"
-                                                   id="product-num-page"
-                                                   placeholder=""
-                                                   width="150%">
+                                        <div class="dropdown-menu dropdown-publisher">
+                                            {% for publisher in publishers %}
+                                                <span class="dropdown-item"
+                                                      value='{{ publisher.publisher_id }}'>{{ publisher.publisher_name }}</span>
+                                            {% endfor %}
                                         </div>
-                                        <label for="product-name">Hình thức</label>
-                                        <div>
-                                            <input type="text" class="product-format" name="product-format"
-                                                   id="product-format" placeholder=""
-                                                   width="150%">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="attribute-name" for="product-name">Hình thức</label>
+                                        <div class="attribute-value input-outline dropdown-toggle dropdown-toggle-format rounded"
+                                             data-toggle="dropdown">
+                                        </div>
+                                        <div class="dropdown-menu dropdown-format">
+                                            {% for format in formats %}
+                                                <span class="dropdown-item"
+                                                      value='{{ loop.index }}'>{{ format }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="attribute-name" for="product-name">Ngày xuất bản</label>
+                                        <div class="attribute-value">
+                                            <input id="release-date" class="p-2 input-ouline rounded w-100"
+                                                   name="release-date"
+                                                   placeholder="dd/MM/yyyy"
+                                                   maxlength="10">
+                                            <p id="errorMessage" class="text-primary m-0"></p>
+                                        </div>
+                                    </div>
+                                    <div class="form-group flex-wrap">
+                                        <div class="w-25 d-flex">
+                                            <label class="form-group-title" for="product-name">Tác giả</label>
+                                            <div class="form-group-input">
+                                                <input type="text" class="product-author" name="product-author"
+                                                       id="product-author" placeholder=""
+                                                       width="150%">
+                                                <p id="error-author" class="m-0 message-error font-weight-bold">Vui lòng
+                                                    nhập
+                                                    tác giả</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="w-25 d-flex">
+                                            <label class="form-group-title" for="product-name">Số trang</label>
+                                            <div class="form-group-input">
+                                                <input type="number" class="product-num-page" name="product-num-page"
+                                                       id="product-num-page"
+                                                       placeholder=""
+                                                       width="150%">
+                                                <p id="error-num-pages" class="m-0 message-error font-weight-bold">Vui
+                                                    lòng nhập
+                                                    số trang</p>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex w-25">
+                                            <label class="form-group-title" for="product-name">Giá sách</label>
+                                            <div class="form-group-input">
+                                                <input type="number" class="product-price" name="product-price"
+                                                       id="product-price" placeholder=""
+                                                       width="150%">
+                                                <p id="error-price" class="m-0 message-error font-weight-bold">Vui lòng
+                                                    nhập
+                                                    giá</p>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex w-25">
+                                            <label class="form-group-title" for="product-name">Cân nặng</label>
+                                            <div class="form-group-input">
+                                                <input type="number" class="product-weight" name="product-weight"
+                                                       id="product-weight"
+                                                       placeholder=""
+                                                       width="150%">
+                                                <p id="error-weight" class="m-0 message-error font-weight-bold">Vui lòng
+                                                    nhập
+                                                    cân nặng</p>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex w-100">
+                                            <label class="mr-1" for="product-name">Kích thước</label>
+                                            <div class="form-group-input">
+                                                <input type="number" name="product-dimension-r"
+                                                       class="product-dimension-r"
+                                                       id="product-dimension-r"
+                                                       placeholder="R" width="150%">
+                                                <p id="error-dimessions" class="m-0 message-error font-weight-bold">Vui
+                                                    lòng nhập
+                                                    đủ kích thước</p>
+                                            </div>
+                                            <div class="form-group-input">
+                                                <input type="number" name="product-dimension-d"
+                                                       class="product-dimension-d"
+                                                       id="product-dimension-d"
+                                                       placeholder="D"
+                                                       width="150%">
+                                            </div>
+                                            <div class="form-group-input">
+                                                <input type="number" name="product-dimension-c"
+                                                       class="product-dimension-c"
+                                                       id="product-dimension-c"
+                                                       placeholder="C"
+                                                       width="150%">
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <div class="form-group">
-                                        <label for="product-name">Giá sách</label>
-                                        <div>
-                                            <input type="number" class="product-price" name="product-price"
-                                                   id="product-price" placeholder=""
-                                                   width="150%">
-                                        </div>
-                                        {#                                        <label for="product-name">Số lượng</label>#}
-                                        {#                                        <div>#}
-                                        {#                                            <input type="text" class="product-quantity" id="product-quantity"#}
-                                        {#                                                   placeholder=""#}
-                                        {#                                                   width="150%">#}
-                                        {#                                        </div>#}
-                                        <label for="product-name">Cân nặng</label>
-                                        <div>
-                                            <input type="number" class="product-weight" name="product-weight"
-                                                   id="product-weight"
-                                                   placeholder=""
-                                                   width="150%">
-                                        </div>
-                                    </div>
 
-                                    <div class="form-group">
-                                        <label for="product-name">Kích thước</label>
-                                        <div>
-                                            <input type="number" name="product-dimension-r" class="product-dimension-r"
-                                                   id="product-dimension-r"
-                                                   placeholder="R" width="150%">
-                                        </div>
-                                        <div>
-                                            <input type="number" name="product-dimension-d" class="product-dimension-d"
-                                                   id="product-dimension-d"
-                                                   placeholder="D"
-                                                   width="150%">
-                                        </div>
-                                        <div>
-                                            <input type="number" name="product-dimension-c" class="product-dimension-c"
-                                                   id="product-dimension-c"
-                                                   placeholder="C"
-                                                   width="150%">
-                                        </div>
-                                    </div>
                                     <div class="text-right">
                                         <button class="btn btn-primary-outline btn-large">Hủy</button>
                                         <button class="btn btn-create-book btn-large btn-primary">

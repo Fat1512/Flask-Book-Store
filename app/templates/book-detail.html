@@ -50,13 +50,13 @@
                         <div class="item-text row m-0">
                             <span class="col-md-6">Nhà cung cấp: <span
                                     class="font-weight-bold">Nhà Xuất Bản Kim Đồng</span></span>
-                            <span class="col-md-6"> Tác giả: <span class="font-weight-bold">Gosho Aoyama, Takahiro Okura, Shima Mizuki</span>
+                            <span class="col-md-6"> Tác giả: <span class="font-weight-bold">{{ book.author}}</span>
                                 </span>
                             <span class="col-md-6"> Nhà xuất bản:
-                                 <span class="font-weight-bold">Kim Đồng</span>
+                                 <span class="font-weight-bold">{{ book.publisher_info.publisher_name }}</span>
                                 </span>
                             <span class="col-md-6">Hình thức bìa:
-                                 <span class="font-weight-bold">Bìa Mềm</span>
+                                 <span class="font-weight-bold">{{ book.format }}</span>
                                 </span>
                         </div>
                         <div class="rating">
@@ -65,8 +65,8 @@
                             <span><i class="fa-regular fa-star"></i></span>
                             <span><i class="fa-regular fa-star"></i></span>
                             <span><i class="fa-regular fa-star"></i></span>
-                            <span class="text-warning">(0 đánh giá)</span>
-                            <span class="ml-3 text-center"> | Đã bán 100</span>
+                            <span class="text-warning">({{ book.comments|length }} đánh giá)</span>
+                            <span class="ml-3 text-center"> | Đã bán {{ sold_book }}</span>
                         </div>
                         <div class="">
                             <span class="text-large text-primary font-weight-bold">{{ book.price|currency('VND') }} </span>
@@ -212,7 +212,7 @@
         </div>
     </div>
     </div>
-    <div class="modal">
+    <div class="modal modal-comment">
         <div class="overlay"></div>
         <div class="modal-body item-bg-color">
             <div class="header d-flex">
