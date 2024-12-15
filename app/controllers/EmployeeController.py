@@ -12,7 +12,7 @@ employee_bp = Blueprint('employee', __name__)
 
 @employee_bp.route("/checkout")
 def checkout():
-    books = search_book(limit=8, page=1)
+    books = search_book(limit=12, page=1, gerne_id=1, order="desc")
     book_dto = []
     for book in books['books']:
         book_dto.append(book.to_dict())
@@ -48,7 +48,7 @@ def get_order():
 def update_order(order_id):
     order = find_by_id(order_id)
 
-    books = search_book(limit=8, page=1)
+    books = search_book(limit=12, page=1, gerne_id=1, order="desc")
     book_dto = []
     for book in books['books']:
         book_dto.append(book.to_dict())

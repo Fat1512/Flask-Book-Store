@@ -208,4 +208,6 @@ if __name__ == "__main__":
         consumer_thread = Thread(target=consume_kafka, args=(topic,), daemon=True)
         consumer_thread.start()
 
-    app.run(debug=True)
+    # app.run(debug=True)
+    app.run(port=5000)
+

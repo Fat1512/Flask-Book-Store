@@ -3,7 +3,6 @@ let currentCheckedBookState = {};
 let currentItemState = {};
 
 const url = new URL(window.location);
-const BOOK_MANAGE_API = "/api/v1/book/manage"
 const CONFIG_API = "/api/v1/config"
 const BOOK_API = "/api/v1/book"
 let config;
@@ -46,7 +45,7 @@ const searchInput = document.querySelector(".search-input");
 
 const fetchBook = async function(params) {
     try {
-        const res = await fetch(`${BOOK_MANAGE_API}${params}`)
+        const res = await fetch(`${BOOK_API}/manage/${params}`)
         if(!res.ok) throw new Error("Cannot fetch books");
         return await res.json();
     } catch(err) {
@@ -79,6 +78,7 @@ const postFormImport = async function() {
         throw err;
     }
 }
+
 
 //===============================================================FUNCTION===============================================================
 const openModal = function () {

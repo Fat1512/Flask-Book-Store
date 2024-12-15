@@ -9,7 +9,6 @@ from app.utils.helper import order_type
 
 search_res_bp = Blueprint('search_rest', __name__)
 
-
 @search_res_bp.route('/')
 def search():
     keyword = request.args.get('keyword')
