@@ -119,6 +119,8 @@ class OnlineOrder(Order):
     shipping_fee = Column(Double)
     note = Column(String)
 
+    order_cancellation = relationship('OrderCancellation', backref='order', lazy=True, uselist=False)
+
 
     def to_dict(self):
         json = super().to_dict()
@@ -135,7 +137,7 @@ class OnlineOrder(Order):
             }
         }
         if self.order_cancellation:
-            json['order_type']['detail']['order_cancellation'] = self.order_cancellation.to_dict_detail()
+            json['order_type']['detail']['order_cancellation'] = self.order_cancellation.to_dict()
         return json
 
     def get_shipping_fee(self):
@@ -148,7 +150,6 @@ class OrderCancellation(db.Model):
     created_at = Column(DATETIME, default=datetime.now())
     reason = Column(String)
 
-    order = db.relationship('OnlineOrder', backref='order_cancellation', uselist=False)
 
     def to_dict(self):
         return {

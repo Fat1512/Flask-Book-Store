@@ -29,6 +29,7 @@ from app.controllers.OrderController import order_bp
 from app.controllers.rest.BookController import book_rest_bp
 from app.controllers.rest.AccountAPI import account_rest_bp
 from app.controllers.rest.ConfigAPI import config_api_bp
+from app.controllers.rest.UserAPI import user_api_bp
 from app.controllers.rest.OrderAPI import order_api_bp, update
 from app.controllers.rest.BookGerneController import book_gerne_rest_bp
 from app.controllers.AccountController import account_bp
@@ -46,6 +47,7 @@ app.register_blueprint(book_gerne_rest_bp, url_prefix='/api/v1/bookGerne')
 app.register_blueprint(book_rest_bp, url_prefix='/api/v1/book')
 app.register_blueprint(order_api_bp, url_prefix='/api/v1/order')
 app.register_blueprint(cart_rest_bp, url_prefix='/api/v1/cart')
+app.register_blueprint(user_api_bp, url_prefix='/api/v1/user')
 app.register_blueprint(search_res_bp, url_prefix='/api/v1/search')
 app.register_blueprint(payment_rest_bp, url_prefix='/api/v1/payment')
 
@@ -64,23 +66,23 @@ def handle_custom_error(e):
     })
 
 
-@app.context_processor
-def context():
-    app_context = {
-        "cart_items": None,
-        "total_price": None,
-        'current_year': datetime.now().year,
-        "profile": None
-    }
-    if current_user.is_authenticated:
-        user_data = profile()
-        cart = find_by_cart_id(user_data.user_id)
-        app_context['cart_items'] = cart.cart_items
-        app_context['total_price'] = cart.total_price()
-        app_context['profile'] = user_data
-        return app_context
-
-    return app_context
+# @app.context_processor
+# def context():
+#     app_context = {
+#         "cart_items": None,
+#         "total_price": None,
+#         'current_year': datetime.now().year,
+#         "profile": None
+#     }
+#     if current_user.is_authenticated:
+#         user_data = profile()
+#         cart = find_by_cart_id(user_data.user_id)
+#         app_context['cart_items'] = cart.cart_items
+#         app_context['total_price'] = cart.total_price()
+#         app_context['profile'] = user_data
+#         return app_context
+# 
+#     return app_context
 
 
 def consume_kafka(topic):

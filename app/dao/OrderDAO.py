@@ -5,6 +5,7 @@ from sqlalchemy import desc, asc, func
 from datetime import datetime
 from app import app, db
 from app.model.Order import OrderStatus, PaymentMethod, OnlineOrder, OfflineOrder, OrderDetail
+from decimal import *
 import math
 
 
@@ -197,7 +198,7 @@ def calculate_total_order_amount(order_id):
         OrderDetail.order_id == order_id).first()[0]
     shipping_fee = db.session.query(OnlineOrder.shipping_fee).filter(OnlineOrder.order_id == order_id).first()
     total_amount = total_amount + shipping_fee[0] if shipping_fee is not None else total_amount
-    return total_amount
+    return Decimal(total_amount)
 
 
 def count_order():
