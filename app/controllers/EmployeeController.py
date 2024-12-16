@@ -62,17 +62,17 @@ def get_order_detail(order_id):
     today = datetime.utcnow()
     return render_template("employee-order-detail.html", order=order, today=today)
 
-@employee_bp.route("/category")
-def get_category():
-    with open('data/category.json', encoding="utf8") as f:
-        data = json.load(f)
-        categories = data[0:4]
-    return categories
+# @employee_bp.route("/category")
+# def get_category():
+#     with open('data/category.json', encoding="utf8") as f:
+#         data = json.load(f)
+#         categories = data[0:4]
+#     return categories
 
 
 @employee_bp.route("/import")
 def import_book():
-    books = searchBook(limit=15, page=1)
+    books = search_book(limit=15, page=1)
     book_dto = []
     for book in books['books']:
         book_dto.append(book.to_dict_manage())

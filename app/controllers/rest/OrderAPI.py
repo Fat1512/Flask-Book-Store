@@ -1,3 +1,5 @@
+from flask_login import current_user
+
 from app.dao.CartDao import delete_cart_item
 from app.dao.OrderDAO import *
 from app.dao.PaymentDAO import create_payment
@@ -70,10 +72,10 @@ def offline_order():
 @order_api_bp.route('/onlineOrder', methods=['POST'])
 def online_order():
     data = request.json
-    order = create_online_order(data)
+    order = create_online_order(current_user.get_id(), data)
 
     for book in data['books']:
-        delete_cart_item(book['bookId'])
+        delete_cart_item(current_user.get_id(),book['bookId'])
 
     return jsonify({
         "message": "SUCCESS",

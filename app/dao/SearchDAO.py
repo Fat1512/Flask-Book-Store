@@ -3,7 +3,7 @@ from colorsys import rgb_to_hls
 from sys import prefix
 
 from flask import jsonify
-from sqlalchemy import text
+from sqlalchemy import text, desc, asc
 
 from app.elasticsearch.BookIndex import BookIndex
 from app.model.Config import Config
@@ -108,7 +108,6 @@ def search_book_es(keyword, min_price, max_price,
                                 "max_expansions": 5,
                                 "query": keyword
                             }
-
                         }
                     }
                     , {
@@ -202,7 +201,7 @@ def search_book_es(keyword, min_price, max_price,
         ],
         "from": page * limit,
         "size": limit,
-        "_source": ["book_id","title", "price", "extended_books", "book_image"]
+        "_source": ["book_id", "title", "price", "extended_books", "book_image"]
     }
     try:
         response = es.search(index=index_name, body=query)
@@ -217,17 +216,17 @@ def search_book_es(keyword, min_price, max_price,
 
 
 def search_book(keyword=None, min_price=None, max_price=None,
-                order=None, gerne_id=None, limit=None, page=None, quantity_status=None):
+                order=None, direction=None, gerne_id=None, limit=None, page=1, quantity_status=None):
     query = Book.query
     if keyword:
         query = query.filter(Book.title.contains(keyword))
     if max_price:
         query = query.filter(Book.price.between(min_price, max_price))
     if order:
-        if order == 'desc':
-            query = query.order_by(Book.price.desc())
-        elif order == 'asc':
-            query = query.order_by(Book.price.asc())
+        if direction == 'desc':
+            query = query.order_by(desc(getattr(Book, order)))
+        elif direction == 'asc':
+            query = query.order_by(asc(getattr(Book, order)))
     if gerne_id:
         gerne = BookGerne.query.get(gerne_id)
         query = query.join(BookGerne)

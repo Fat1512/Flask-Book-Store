@@ -76,12 +76,13 @@ def book():
     keyword = request.args.get('keyword')
     min_price = request.args.get('minPrice', type=float, default=None)
     max_price = request.args.get('maxPrice', type=float)
-    order = request.args.get('order', default=app.config['ORDER'])
+    order = request.args.get('order', default=None)
     limit = request.args.get('limit', type=int, default=app.config['PAGE_SIZE'])
     gerne_id = request.args.get('gerneId', type=int, default=1)
     page = request.args.get('page', 1, type=int)
 
-    data = search_book(keyword, min_price, max_price, order, gerne_id, limit, page)
+    data = search_book(keyword=keyword, min_price=min_price, max_price=max_price, order=order, gerne_id=gerne_id,
+                       limit=limit, page=page)
     book_dto = []
     for book in data['books']:
         book_dto.append(book.to_dict())

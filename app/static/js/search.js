@@ -57,13 +57,13 @@ async function fetchBook(params) {
 //DISPLAY SPINNER
 function showSpinner() {
     document.querySelector('.spinner').style.display = 'block';
-    document.querySelector('.overlay').style.display = 'block';
+    document.querySelector('.overlay-spinner').style.display = 'block';
 }
 
 // HIDE SPINNER
 function hideSpinner() {
     document.querySelector('.spinner').style.display = 'none';
-    document.querySelector('.overlay').style.display = 'none';
+    document.querySelector('.overlay-spinner').style.display = 'none';
 }
 
 function renderBookNull(bookElemnt, paginationElemnt) {

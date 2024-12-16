@@ -66,7 +66,7 @@ class Book(db.Model):
             "barcode": self.barcode,
             "images": [image.to_dict() for image in self.images],
             'format': self.format,
-            "publisher": self.publisher_info.to_dict(),
+            "publisher": self.publisher_info.to_dict() if self.publisher_info else None,
             'book_gerne': self.book_gerne.to_dict(),
             'extended_books': [extended.to_dict() for extended in self.extended_books],
         }
@@ -108,3 +108,4 @@ class Book(db.Model):
         if self.quantity < quantity:
             return False
         self.quantity -= quantity
+        return True

@@ -42,7 +42,7 @@ const payment = async function (params) {
         if (!resPayment.ok) {
             throw new Error(`HTTP error! status: ${resPayment.status}`);
         }
-        window.location.href =result['vnpay_url']
+        window.location.href = result['vnpay_url']
 
     } catch (error) {
         showToast(error.message, true)
@@ -68,9 +68,11 @@ const createOrder = async function (data) {
             else {
                 window.location.replace('http://127.0.0.1:5000/account/purchase')
             }
+        } else {
+            throw new Error(result['error'])
         }
     } catch (error) {
-        alert('Failed to delete cart.');
+        window.location.replace('http://127.0.0.1:5000/cart/')
     }
 }
 
@@ -219,17 +221,15 @@ methodList.forEach(el => {
     })
 })
 const addressUserList = document.querySelectorAll('.address-user')
-const modalAddress = document.querySelector('.modal-address')
+// const modalAddress = document.querySelector('.modal-address')
 
-function handleCloseForm() {
-    modalAddress.style = 'display:none'
-}
-
-modalAddress.querySelector('.close-form').addEventListener('click', () => handleCloseForm())
-modalAddress.querySelector('.btn-back').addEventListener('click', () => handleCloseForm())
+// function handleCloseForm() {
+//     modalAddress.style = 'display:none'
+// }
+//
+// modalAddress.querySelector('.close-form').addEventListener('click', () => handleCloseForm())
+// modalAddress.querySelector('.btn-back').addEventListener('click', () => handleCloseForm())
 addressUserList.forEach(addressUser => {
-    const buttonUpdate = addressUser.querySelector(".update-link")
-    buttonUpdate.addEventListener('click', () => modalAddress.style = 'display:flex')
     addressUser.addEventListener('click', (e) => {
         let prev = document.querySelector('.address-item-tick.address-item-tick-active')
         if (prev) {
@@ -252,7 +252,7 @@ const handleCreateOrder = async function () {
     try {
         if (checked.getAttribute('value') === 'inperson') {
             if (inputAddress.value.trim() === '')
-                 throw Error("Vui lòng chọn địa chỉ nhận hàng")
+                throw Error("Vui lòng chọn địa chỉ nhận hàng")
 
             addressSelected = document.querySelector('.address-item.active-address')
                 .getAttribute('value')

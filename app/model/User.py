@@ -30,7 +30,7 @@ class User(db.Model):
     isActive = Column(Boolean, default=True)
     last_access = Column(DateTime, default=datetime.utcnow)
     user_role = Column(Enum(UserRole), default=UserRole.USER)
-    address = relationship('Address', backref='user', lazy=True)
+    address = relationship('Address', backref='user', lazy=True, cascade='all, delete-orphan')
     # order = relationship('Order', backref='user', lazy=True, foreign_keys='Order.user_id')
 
     offline_orders = relationship("OfflineOrder", back_populates="employee", foreign_keys="[OfflineOrder.employee_id]",

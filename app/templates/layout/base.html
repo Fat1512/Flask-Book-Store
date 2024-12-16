@@ -47,7 +47,18 @@
 </head>
 <body>
 {% block header %} {% include 'layout/header.html' %} {% endblock %}
-{% block content %} {% endblock %}
+<div class="spinner">
+    <div class="spinner-border text-warning" role="status">
+
+    </div>
+    <p>Loading...</p>
+    <div class="overlay-spinner">
+    </div>
+</div>
+{% block content %}
+
+
+{% endblock %}
 {% block footer %} {% include'layout/footer.html' %} {% endblock %}
 </body>
 

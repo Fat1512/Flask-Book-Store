@@ -1,4 +1,5 @@
 import app.model.User
+from app.exception.NotFoundError import NotFoundError
 from app.model.Address import Address
 from app.model.User import User
 from app.model.Account import Account
@@ -103,6 +104,33 @@ def add_address(user_id, data):
     db.session.commit()
 
     return address_db
+
+
+def delete_address(user_id, address_id):
+    user = User.query.get(user_id)
+
+    for a in user.address:
+        if a.address_id == address_id:
+            user.address.remove(a)
+            db.session.commit()
+            return a
+
+    raise NotFoundError("Not found address")
+
+
+def update_address(user_id, address_id, data):
+    user = User.query.get(user_id)
+    for a in user.address:
+        if a.address_id == address_id:
+            for key, value in data.items():
+                if hasattr(a, key):  # Optional: Check if the attribute exists
+                    setattr(a, key, value)
+                else:
+                    raise ValueError(f"Invalid attribute: {key}")
+                    # Commit the changes
+            db.session.commit()
+            return a
+    raise NotFoundError("Not found address")
 
 
 def find_by_phone_number(phone_number):

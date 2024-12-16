@@ -3,6 +3,9 @@
     height: 400px;
     padding: 20px;
 }
+.poster > img {
+    max-width: 360px;
+}
 
 .images {
     padding: 5px;

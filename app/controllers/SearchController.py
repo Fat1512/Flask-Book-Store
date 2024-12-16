@@ -29,7 +29,6 @@ def search_main():
                           , page=page - 1
                           , lft=book_gerne['current_gerne'][0]['lft']
                           , rgt=book_gerne['current_gerne'][0]['rgt'])
-    print('test',book)
     return render_template("search.html"
                            , current_gerne=book_gerne["current_gerne"]
                            , sub_gerne=book_gerne["sub_gerne"]

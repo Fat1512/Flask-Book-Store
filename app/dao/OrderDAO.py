@@ -1,3 +1,4 @@
+from app.exception.InsufficientError import InsufficientError
 from app.exception.NotFoundError import NotFoundError
 from app.model.Book import Book
 from app.model.Order import Order, PaymentDetail, ShippingMethod, OrderCancellation
@@ -133,7 +134,7 @@ def update_order(order_id, order_list):
     db.session.commit()
 
 
-def create_online_order(request):
+def create_online_order(user_id, request):
     payment_method = PaymentMethod.THE if request.get('paymentMethod').__eq__('VNPay') else PaymentMethod.TIEN_MAT
     status = OrderStatus.DANG_CHO_THANH_TOAN if request.get('paymentMethod').__eq__('VNPay') else OrderStatus.DANG_XU_LY
     shipping_method = ShippingMethod.GIAO_HANG if request.get('shippingMethod').__eq__(
@@ -146,19 +147,23 @@ def create_online_order(request):
                                address_id=request['addressId'],
                                shipping_method=shipping_method,
                                shipping_fee=shipping_fee,
-                               customer_id=2
+                               customer_id=user_id
                                )
-    db.session.add(online_order)
-    db.session.flush()
-    # order_detail_list = []
+
     for book in request['books']:
         book_db = Book.query.get(book['bookId'])
         if book_db is None: raise NotFoundError('Không tìm thấy sách')
 
-        book_db.decrease_book(quantity=book['quantity'])
+        if not book_db.decrease_book(quantity=book['quantity']):
+            raise InsufficientError(f"{book_db.title} không đủ số lượng", {
+                'book_id': book_db.book_id,
+                "current_quantity": book_db.quantity
+            })
+
         order_detail = OrderDetail(book_id=book['bookId'], quantity=book['quantity'], price=book['finalPrice'])
         online_order.order_detail.append(order_detail)
 
+    db.session.add(online_order)
     db.session.commit()
     return online_order
 

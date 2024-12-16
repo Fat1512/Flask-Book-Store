@@ -11,6 +11,7 @@ import app.controllers.AccountController
 from app.controllers.CartController import cart_bp
 from app.controllers.rest.AccountAPI import account_rest_bp
 from app.controllers.rest.CartAPI import cart_rest_bp
+from app.dao.CartDao import update_cart
 from app.controllers.rest.PaymentAPI import payment_rest_bp
 from app.controllers.rest.SearchAPI import search_res_bp
 from app.dao import UserDao
@@ -19,9 +20,11 @@ from app.dao.CartDao import find_by_cart_id
 from app.elasticsearch.BookIndexService import create_document, delete_document
 from app.elasticsearch.KafkaAsysnData import create, update_book_document, delete, \
     add_attribute_value, modify_attribute_value
+from app.exception.CartItemError import CartItemError
+from app.exception.InsufficientError import InsufficientError
 from app.exception.NotFoundError import NotFoundError
 from app.model.User import UserRole
-from flask import render_template, request, redirect, url_for, jsonify
+from flask import render_template, request, redirect, url_for, jsonify, flash
 from app.controllers.SearchController import home_bp
 from app.controllers.HomeController import index_bp
 from app.controllers.EmployeeController import employee_bp
@@ -57,10 +60,44 @@ app.register_blueprint(cart_bp, url_prefix='/cart')
 
 
 @app.errorhandler(NotFoundError)
-def handle_custom_error(e):
+def handle_not_found_error(e):
     return jsonify({
-        "error": e.message,
+        'name': type(e).__name__,
+        "message": e.message,
         'status': e.status_code
+    })
+
+
+@app.errorhandler(InsufficientError)
+def handle_insufficient_error(e):
+    update_cart(current_user.get_id(), {
+        'bookId': e.details['book_id'],
+        'quantity': e.details['current_quantity']
+    })
+    flash(e.message, "error")
+    return jsonify({
+        'name': type(e).__name__,  # Get the name of the exception
+        "message": e.message,
+        'details': e.details,
+        "status": e.status_code
+    })
+
+
+@app.errorhandler(CartItemError)
+def handle_cart_item_error(e):
+    return jsonify({
+        'name': type(e).__name__,  # Get the name of the exception
+        "message": e.message,
+        "status": e.status_code
+    })
+
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    return jsonify({
+        'name': type(e).__name__,
+        "message": e.message,
+        "status": 500
     })
 
 
