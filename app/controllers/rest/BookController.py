@@ -1,13 +1,11 @@
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from flask import Blueprint, request, jsonify
-from sqlalchemy.sql.functions import random
 
 from app import app
-from app.dao.FormImportDAO import get_form_imports, create_form_import
+from app.dao.FormImportDAO import find_form_imports, create_form_import, find_form_import_by_id
 from app.dao.BookDAO import find_by_id, find_by_barcode, create_book, count_book_sell
-from app.dao.CartDao import find_by_user_id
 from app.dao.SearchDAO import search_book
 
 book_rest_bp = Blueprint('book_rest', __name__)
@@ -100,7 +98,7 @@ def get_manage_books():
     min_price = request.args.get('minPrice', type=float, default=None)
     max_price = request.args.get('maxPrice', type=float)
     order = request.args.get('order')
-    limit = request.args.get('limit', type=int, default=app.config['PAGE_SIZE'])
+    limit = request.args.get('limit', type=int, default=app.config['PAGE_SIZE'] + 10)
     quantity_status = request.args.get("quantityStatus", type=int)
     gerne_id = request.args.get('gerneId', type=int)
     page = request.args.get('page', 1, type=int)
@@ -138,19 +136,27 @@ def create_import():
     return create_form_import(data)
 
 
+@book_rest_bp.route('/import/<int:import_id>/detail')
+def get_import_form_detail(import_id):
+    return find_form_import_by_id(import_id)
+
+
 @book_rest_bp.route('/import', methods=['GET'])
-def test_import():
-    import_id = request.args.get('importId')
+def get_import_form():
+    form_import_id = request.args.get('formImportId', type=str)
     page = request.args.get('page', 1, type=int)
-    start_date = request.args.get('startDate', 1, type=int)
-    end_date = request.args.get('endDate', 1, type=int)
-    form_imports = get_form_imports(import_id=import_id, page=page, start_date=start_date, end_date=end_date)
-    return [formImport.to_dict() for formImport in form_imports]
+    start_date = request.args.get('startDate', type=str)
+    end_date = request.args.get('endDate', type=str)
+    form_imports = find_form_imports(form_import_id=form_import_id, page=page, start_date=start_date, end_date=end_date)
+
+    form_imports['form_imports'] = [form_import.to_dict() for form_import in form_imports['form_imports']]
+
+    return form_imports
 
 
 @book_rest_bp.route('/import/test', methods=['GET'])
 def testt_import():
     start_date = request.args.get('startDate')
     end_date = request.args.get('endDate')
-    form_imports = get_form_imports(start_date=start_date, end_date=end_date)
+    form_imports = find_form_imports(start_date=start_date, end_date=end_date)
     return form_imports

@@ -1,4 +1,3 @@
-
 let currentCheckedBookState = {};
 let currentItemState = {};
 
@@ -7,6 +6,8 @@ const CONFIG_API = "/api/v1/config"
 const BOOK_API = "/api/v1/book"
 let config;
 
+const deleteUrlParams = (params) => params.forEach(param => url.searchParams.delete(param));
+const addUrlParams = (params) => params.forEach(param => url.searchParams.set(param[0], param[1]));
 
 const dateFormatter = new Intl.DateTimeFormat('vi-VN', {
     weekday: 'short', // e.g., Thứ Sáu
@@ -38,32 +39,33 @@ const statusType = document.querySelector(".status-type");
 const importList = document.querySelector(".import-list");
 const importContainer = document.querySelector(".import-container");
 const bookList = document.querySelector(".book-list");
+const pagination = document.querySelector(".pagination");
 
 const searchDropdownMenu = document.querySelector(".search-dropdown-menu");
 const searchInput = document.querySelector(".search-input");
-//===============================================================API===============================================================
 
-const fetchBook = async function(params) {
+//===============================================================API===============================================================
+const fetchBook = async function () {
     try {
-        const res = await fetch(`${BOOK_API}/manage/${params}`)
-        if(!res.ok) throw new Error("Cannot fetch books");
+        const res = await fetch(`${BOOK_API}/manage${url.search}`)
+        if (!res.ok) throw new Error("Cannot fetch books");
         return await res.json();
-    } catch(err) {
+    } catch (err) {
         throw err;
     }
 }
 
-const fetchBookById = async function(id) {
+const fetchBookById = async function (id) {
     try {
         const res = await fetch(`${BOOK_API}/${id}/manage`)
-        if(!res.ok) throw new Error("Cannot fetch book");
+        if (!res.ok) throw new Error("Cannot fetch book");
         return await res.json();
-    } catch(err) {
+    } catch (err) {
         throw err;
     }
 }
 
-const postFormImport = async function() {
+const postFormImport = async function () {
     try {
         const res = await fetch(`${BOOK_API}/import`, {
             method: "POST",
@@ -72,9 +74,9 @@ const postFormImport = async function() {
                 'Content-Type': 'application/json'
             }
         });
-        if(!res.ok) throw new Error("Can't create import form");
+        if (!res.ok) throw new Error("Can't create import form");
         return await res.json();
-    } catch(err) {
+    } catch (err) {
         throw err;
     }
 }
@@ -101,19 +103,19 @@ const closeModal = function () {
     modalExport.classList.remove("d-flex");
 }
 
-const openBookModal = function() {
+const openBookModal = function () {
     openModal();
     modalBook.classList.add("d-flex");
     modalBook.classList.remove("d-none");
 }
 
-const openExportModal = function() {
+const openExportModal = function () {
     openModal();
     modalExport.classList.add("d-flex");
     modalExport.classList.remove("d-none");
 }
 
-const removeAllCheckedBox = function() {
+const removeAllCheckedBox = function () {
     currentCheckedBookState = {};
     bookList.querySelectorAll("input").forEach(input => input.checked = false);
     allCheckBox.checked = false;
@@ -137,53 +139,62 @@ const extractBookItemData = function (bookItem) {
     };
 };
 
-const renewBookList = async function() {
-    const data = await fetchBook(url.search);
-    renderBookItems(data['books']);
-    url.searchParams.delete("quantityStatus");
+const resetBookContainerState = async function () {
+    deleteUrlParams(["page", "quantityStatus", "keyword"]);
+    removeAllCheckedBox();
+    searchInput.value = '';
+    statusType.querySelectorAll(".filter-type-item").forEach(item => {
+        item.querySelector("input").checked = false;
+    });
+
+    const data = await fetchBook();
+    renderBookContainer(data);
+
 }
+
 //===============================================================EVENT===============================================================
-
-
 let currentSelectedSearchType;
-searchDropdownMenu.addEventListener("click", function(e) {
+searchDropdownMenu.addEventListener("click", function (e) {
     searchInput.placeholder = e.target.textContent;
-    const id = +e.target.getAttribute("id");
-    currentSelectedSearchType = id;
+    currentSelectedSearchType = +e.target.getAttribute("id");
 })
 
-searchInput.addEventListener("keypress", async function(e) {
-    if(e.key !== "Enter") return;
 
+searchInput.addEventListener("keypress", async function (e) {
+    if (e.key !== "Enter") return;
+    deleteUrlParams(["quantityStatus", "page", "keyword"]);
     try {
         let data;
-        if(currentSelectedSearchType === 1) { //Fetch by title
-            data = await fetchBook(`?keyword=${searchInput.value}`);
-        }
-        else { //Fetch by id
-            if (searchInput.value.trim() === '' || searchInput.value.trim() === null) {
-                data = await fetchBook(`?keyword=${searchInput.value}`);
-            }
-            else data = {'books': [await fetchBookById(+searchInput.value)]};
-        }
-        renderBookItems(data['books']);
-    } catch(err) {
-        throw(err.message);
+        if (currentSelectedSearchType === 1) { //Fetch by title
+            addUrlParams([["keyword", searchInput.value]])
+            data = await fetchBook();
+        } else if (searchInput.value.trim() === '' || searchInput.value.trim() === null) {
+            addUrlParams([["keyword", searchInput.value]])
+            data = await fetchBook();
+        } else
+            data = {
+                'books': [await fetchBookById(+searchInput.value)],
+                'pages': 1,
+                'current_page': 1
+            };
+        renderBookContainer(data);
+    } catch (err) {
+        throw (err.message);
     }
 })
 
-window.addEventListener("load", async function() {
+window.addEventListener("load", async function () {
     try {
         const res = await fetch(`${CONFIG_API}`);
-        if(!res.ok) throw new Error("cannot fetch config");
+        if (!res.ok) throw new Error("cannot fetch config");
         config = await res.json();
-    } catch(err) {
+    } catch (err) {
         alert(err.message);
     }
 })
 
-exportBtn.addEventListener("click", async function() {
-    if(Object.keys(currentItemState).length === 0) {
+exportBtn.addEventListener("click", async function () {
+    if (Object.keys(currentItemState).length === 0) {
         // renderToast("Phải có ít nhất 1 sản phẩm", "center", "orange");
         return;
     }
@@ -191,7 +202,7 @@ exportBtn.addEventListener("click", async function() {
         const formImport = await postFormImport();
         openExportModal();
         renderImportedForm(formImport);
-        resetState();
+        resetCurrentItemState();
         const {jsPDF} = window.jspdf;
         html2canvas(document.querySelector("#invoice"), {
             useCORS: true,
@@ -210,10 +221,10 @@ exportBtn.addEventListener("click", async function() {
             pdf.save(`form_import_${document.querySelector('[form-import-id]').getAttribute("form-import-id")}.pdf`);
         });
 
-    } catch(err) {
+    } catch (err) {
         alert(err.message);
     } finally {
-        await renewBookList();
+        await resetBookContainerState();
     }
 });
 
@@ -222,9 +233,9 @@ deleteBtn.addEventListener("click", () => {
     renderImportedItems();
 });
 
-overlay.addEventListener("click", () => {
+overlay.addEventListener("click", async function () {
     closeModal();
-    removeAllCheckedBox();
+    await resetBookContainerState();
 });
 
 openModalBookBtn.addEventListener("click", openBookModal);
@@ -260,9 +271,9 @@ allCheckBox.addEventListener("click", function (e) {
     }
 });
 
-addBookBtn.addEventListener("click", function() {
+addBookBtn.addEventListener("click", function () {
     Object.entries(currentCheckedBookState).forEach(item => {
-        if(currentItemState[item[0]]) {
+        if (currentItemState[item[0]]) {
             currentItemState[item[0]]['quantity'] += 1;
         } else {
             currentItemState[item[0]] = item[1];
@@ -271,11 +282,11 @@ addBookBtn.addEventListener("click", function() {
         }
     });
     renderImportedItems();
-    removeAllCheckedBox();
+    resetBookContainerState();
     closeModal();
 });
 
-statusType.addEventListener("click", async function(e)  {
+statusType.addEventListener("click", async function (e) {
 
     const filterItem = e.target.closest(".filter-type-item");
     if (!filterItem) return;
@@ -290,19 +301,20 @@ statusType.addEventListener("click", async function(e)  {
         input.checked = itemId === toggleId ? !input.checked : false;
         isToggle ||= input.checked;
     })
-    url.searchParams.delete("quantityStatus");
 
-    if(isToggle)
-        url.searchParams.set("quantityStatus", toggleId);
+    deleteUrlParams(["quantityStatus", "page"]);
+
+    if (isToggle)
+        addUrlParams([["quantityStatus", toggleId]])
     try {
         const data = await fetchBook(url.search);
-        renderBookItems(data['books']);
+        renderBookContainer(data);
     } catch (err) {
         alert(err.message);
     }
 });
 
-importContainer.addEventListener("click", function(e) {
+importContainer.addEventListener("click", function (e) {
     const removeBtn = e.target.closest(".remove-import-item-btn");
     const incrementBtn = e.target.closest(".increment-qty-btn");
     const decrementBtn = e.target.closest(".decrement-qty-btn");
@@ -327,20 +339,62 @@ importContainer.addEventListener("click", function(e) {
     isTriggered && renderImportedItems();
 })
 
-importContainer.addEventListener("change", function(e) {
+importContainer.addEventListener("change", function (e) {
     const input = e.target;
-    if (input.value < config['min_restock_qty'] || input.value === '') input.value = config['min_restock_qty'];
+    if (input.value < config['min_restock_qty'] || input.value === '' || isNaN(input.value)) input.value = config['min_restock_qty'];
     currentItemState[+input.getAttribute("input-id")]['quantity'] = +input.value;
     renderImportedItems()
 })
 
 
-const resetState = function () {
+pagination.addEventListener("click", async function (e) {
+    const item = e.target.closest(".page-item");
+    if (!item || item.classList.contains("disabled") || item.classList.contains("active")) return;
+
+    try {
+        addUrlParams([["page", item.getAttribute("page")]]);
+        const data = await fetchBook();
+        renderBookContainer(data);
+    } catch (err) {
+        alert(err.message);
+    }
+});
+
+const resetCurrentItemState = function () {
     currentItemState = {};
     renderImportedItems();
+
 }
 
-const renderImportedItems = function() {
+
+const renderPagination = function (total_page, current_page) {
+    const prev = `
+        <li class="page-item ${current_page == 1 ? "disabled" : ""}" page=${current_page - 1}>
+            <div class="page-link" tabindex="-1">
+                <i class="fas fa-angle-left "></i>
+                <span class="sr-only">Previous</span>
+            </div>
+        </li>`;
+    const content = [...Array(total_page).keys()].map(page => {
+        return `
+            <li class="page-item ${page + 1 == current_page ? "active" : ""}" page=${page + 1}>
+                <div class="page-link" >${page + 1}</div>
+            </li>`;
+    }).join('');
+    const next = `
+        <li class="page-item ${current_page == total_page ? "disabled" : ""}" page=${current_page + 1}>
+            <div class="page-link" >
+                <i class="fas fa-angle-right"></i>
+                <span class="sr-only">Next</span>
+            </div>
+        </li>`;
+    pagination.innerHTML = '';
+    pagination.insertAdjacentHTML('beforeend', prev)
+    pagination.insertAdjacentHTML('beforeend', content)
+    pagination.insertAdjacentHTML('beforeend', next)
+}
+
+const renderImportedItems = function () {
     importList.innerHTML = '';
     const html = Object.entries(currentItemState).map(item => {
         return `
@@ -387,8 +441,8 @@ const renderImportedItems = function() {
                 </div>
             </td>
             <td>
-                <div class="product-qty-status text-xs ${item[1]['stockQuantity'] < config['min_restock_level'] ? 'product-qty-status-shortage' : '' } text-center py-1 cursor-pointer">
-                        ${item[1]['stockQuantity'] < config['min_restock_level'] ? 'Cần nhập thêm' : 'Đủ số lượng' }
+                <div class="product-qty-status text-xs ${item[1]['stockQuantity'] < config['min_restock_level'] ? 'product-qty-status-shortage' : ''} text-center py-1 cursor-pointer">
+                        ${item[1]['stockQuantity'] < config['min_restock_level'] ? 'Cần nhập thêm' : 'Đủ số lượng'}
                 </div>
             </td>
             <td class="text-right remove-import-item-btn">
@@ -398,11 +452,12 @@ const renderImportedItems = function() {
                     </a>
                 </div>
             </td>
-        </tr>`}).join("");
+        </tr>`
+    }).join("");
     importList.insertAdjacentHTML("beforeend", html);
 }
 
-const renderBookItems = function(books) {
+const renderBookItems = function (books) {
     bookList.innerHTML = '';
     const html = books.map(book => `
         <tr class="cursor-pointer book-item" id="${book['book_id']}">
@@ -456,11 +511,11 @@ const renderBookItems = function(books) {
                     ${book['quantity'] >= config['min_restock_level'] ? "Đủ số lượng" : "Cần nhập thêm"} 
                 </div>
             </td>
-        </tr>`).join("");
+        </tr>`).join('');
     bookList.insertAdjacentHTML("beforeend", html);
 }
 
-const renderImportedForm = function(form) {
+const renderImportedForm = function (form) {
     const html = `
     <div id="invoice" class="mt-4 w-100" form-import-id="${form['form_import_id']}">
         <div class="card">
@@ -528,4 +583,9 @@ const renderImportedForm = function(form) {
     </div>`;
     modalExport.innerHTML = '';
     modalExport.insertAdjacentHTML("beforeend", html);
+}
+
+const renderBookContainer = function (data) {
+    renderBookItems(data['books']);
+    renderPagination(data['pages'], data['current_page']);
 }

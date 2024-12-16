@@ -1,6 +1,6 @@
 from app.dao.OrderDAO import *
 from app.dao.SearchDAO import search_book
-from app.dao.FormImportDAO import get_form_imports
+from app.dao.FormImportDAO import find_form_imports
 from app.dao.ConfigDAO import get_config
 from flask import Blueprint
 from datetime import datetime
@@ -62,6 +62,7 @@ def get_order_detail(order_id):
     today = datetime.utcnow()
     return render_template("employee-order-detail.html", order=order, today=today)
 
+
 @employee_bp.route("/category")
 def get_category():
     with open('data/category.json', encoding="utf8") as f:
@@ -72,10 +73,12 @@ def get_category():
 
 @employee_bp.route("/import")
 def import_book():
-    books = search_book(limit=15, page=1)
+    books = search_book(limit=app.config['PAGE_SIZE'] + 10, page=1)
     book_dto = []
+
     for book in books['books']:
         book_dto.append(book.to_dict_manage())
+
     books['books'] = book_dto
     config = get_config()
     return render_template("employee-import.html", books=books, config=config)
@@ -83,8 +86,12 @@ def import_book():
 
 @employee_bp.route("/import/history")
 def import_book_history():
+    page = request.args.get("page", 1, type=int)
+    start_date = request.args.get("startDate", type=str)
+    end_date = request.args.get("endDate", type=str)
 
-    form_imports = get_form_imports()
+    form_imports = find_form_imports(page=page, start_date=start_date, end_date=end_date)
     form_imports['form_imports'] = [form_import.to_dict() for form_import in form_imports['form_imports']]
 
-    return render_template("employee-import-history.html", form_imports=form_imports)
+    return render_template("employee-import-history.html", form_imports=form_imports, end_date=end_date,
+                           start_date=start_date, page=page)
