@@ -32,6 +32,7 @@ from app.controllers.OrderController import order_bp
 from app.controllers.rest.BookController import book_rest_bp
 from app.controllers.rest.AccountAPI import account_rest_bp
 from app.controllers.rest.ConfigAPI import config_api_bp
+from app.controllers.rest.UserAPI import user_api_bp
 from app.controllers.rest.OrderAPI import order_api_bp, update
 from app.controllers.rest.BookGerneController import book_gerne_rest_bp
 from app.controllers.AccountController import account_bp
@@ -49,6 +50,7 @@ app.register_blueprint(book_gerne_rest_bp, url_prefix='/api/v1/bookGerne')
 app.register_blueprint(book_rest_bp, url_prefix='/api/v1/book')
 app.register_blueprint(order_api_bp, url_prefix='/api/v1/order')
 app.register_blueprint(cart_rest_bp, url_prefix='/api/v1/cart')
+app.register_blueprint(user_api_bp, url_prefix='/api/v1/user')
 app.register_blueprint(search_res_bp, url_prefix='/api/v1/search')
 app.register_blueprint(payment_rest_bp, url_prefix='/api/v1/payment')
 

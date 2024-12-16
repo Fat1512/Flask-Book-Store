@@ -130,7 +130,7 @@ const initialTabState = [
 
 
 //---------------------------------------------CONTAINER---------------------------------------------
-const productSearchBox = document.querySelector('.product-search-box');
+const searchBox = document.querySelector('.search-box');
 const orderTable = document.querySelector(".order-table");
 const orderList = document.querySelector(".order-list");
 const pagination = document.querySelector(".pagination");
@@ -479,6 +479,7 @@ const openCancelOrderModal = function () {
 
 //---------------------------------------------EVENT---------------------------------------------
 
+
 inputStartDate.addEventListener("change", async function(e) {
     const value = inputStartDate.value;
     if(!value) {
@@ -527,6 +528,7 @@ btnSearch.addEventListener("click", async function () {
 
     currentSearchParam['orderId'] = orderId;
     const data = await fetchOrder();
+
     renderOrder(data['orders'], currentTab);
     renderPagination(data['total_page'], data['current_page']);
 })
@@ -589,7 +591,7 @@ orderTab.addEventListener("click", async function (e) {
         data = await fetchOrder();
         hideFilter()
     }
-    console.log(data);
+
     renderOrder(data['orders'], currentTab);
     renderPagination(data['total_page'], data['current_page']);
     resetAllState()
@@ -743,5 +745,4 @@ window.addEventListener("load", function () {
         }
     })
     renderLabel();
-
 })

@@ -40,9 +40,12 @@ const qrBtn = document.querySelector(".qr-code-btn");
 
 const searchPhoneNumBtn = document.querySelector(".search-phone-number-btn");
 const addPhoneNumBtn = document.querySelector(".add-phone-number-btn");
+const searchBtn = document.querySelector(".btn-search");
+const resetBtn = document.querySelector(".btn-reset");
 
 const inputGroupSearchPhoneNumber = document.querySelector(".input-group-search-phone-number");
 const inputGroupAddPhoneNumber = document.querySelector(".input-group-add-phone-number");
+const inputSearch = document.querySelector(".input-search");
 
 const phoneNumberDropDown = document.querySelector(".phone-number-dropdown");
 const customerNameContainer = document.querySelector(".customer-name-container");
@@ -102,6 +105,28 @@ async function fetchPhoneNumber(phoneNumber) {
     } catch(err) {
         throw err;
     }
+}
+
+async function fetchBooks() {
+    const res = await fetch(`/api/v1/book`, {
+        method: "GET",
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    if(!res.ok) throw new Error("Sách không tồn tại");
+    return await res.json();
+}
+
+async function fetchBookById(bookId) {
+    const res = await fetch(`/api/v1/book/${bookId}/manage`, {
+        method: "GET",
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    if(!res.ok) throw new Error("Sách không tồn tại");
+    return await res.json();
 }
 
 async function fetchBookByBarcode(barcode) {
@@ -185,7 +210,7 @@ const resetCustomerInfoState = function() {
     currentCustomerInfoState = {};
     inputGroupAddPhoneNumber.querySelector("input").value = '';
     inputGroupSearchPhoneNumber.querySelector("input").value = '';
-}
+};
 
 searchPhoneNumBtn.addEventListener("click", function() {
     inputGroupSearchPhoneNumber.classList.add("d-flex");
@@ -193,7 +218,7 @@ searchPhoneNumBtn.addEventListener("click", function() {
     inputGroupAddPhoneNumber.classList.remove("d-flex");
     inputGroupAddPhoneNumber.classList.add("d-none");
     resetCustomerInfoState();
-})
+});
 
 addPhoneNumBtn.addEventListener("click", function() {
     inputGroupSearchPhoneNumber.classList.add("d-none");
@@ -201,38 +226,57 @@ addPhoneNumBtn.addEventListener("click", function() {
     inputGroupAddPhoneNumber.classList.remove("d-none");
     inputGroupAddPhoneNumber.classList.add("d-flex");
     resetCustomerInfoState();
-})
+});
 
+searchBtn.addEventListener("click", async function() {
+    try {
+        const bookId = inputSearch.value;
+        const book = await fetchBookById(bookId);
+        renderBookItem([book]);
+    } catch(err) {
+        alert(err.message);
+    }
+});
+
+resetBtn.addEventListener("click", async function() {
+    try {
+         const books = await fetchBooks();
+         console.log(books);
+         renderBookItem(books['data']['books']);
+
+         inputSearch.value = '';
+    } catch(err) {
+        alert(err.message);
+    }
+});
 
 inputGroupSearchPhoneNumber.addEventListener("focusout", function(e) {
     phoneNumberDropDown.classList.add("d-none");
-})
+});
 
 inputGroupSearchPhoneNumber.addEventListener("focusin", function(e) {
     phoneNumberDropDown.classList.remove("d-none");
-})
+});
 
 inputGroupAddPhoneNumber.addEventListener("input", (e) => {
     currentCustomerInfoState = {
         'id': null,
         'phone_number': e.target.value
     }
-})
+});
 
 inputGroupSearchPhoneNumber.addEventListener("input", async function(e) {
     clearTimeout(currentPhoneNumberSearchTimeoutID)
     currentPhoneNumberSearchTimeoutID = setTimeout(async function() {
         try {
             const data = await fetchPhoneNumber(e.target.value);
-            console.log(data)
             renderPhoneNumberList(data);
         } catch(err) {
             console.log(err.message);
         }
 
     }, 100);
-})
-
+});
 
 checkoutBtn.addEventListener("click", async function () {
 
@@ -342,6 +386,25 @@ const renderToast = function(text, position="center", background="#6cbf6c") {
     }).showToast();
 }
 
+const renderBookItem = function(books) {
+    const html = books.map(book => `
+    <a class="product-item card col-3 cursor-pointer" id="${book['book_id']}">
+        <span class="discount text-white">10%</span>
+        <img class="card-img-top"
+             src="${book['images'][0]['image_url']}"
+             alt="Card image">
+        <div class="card-body p-0">
+            <p class="card-text product-name">${ book['title'] }</p>
+            <p class="text-primary font-weight-bold mb-1 product-price">${vndCurrencyFormat.format(book['price'])}</p>
+            <p class="text-secondary text-decoration-line-through mb-1">${vndCurrencyFormat.format(1000)}</p>
+        </div>
+    </a>`).join('');
+
+    productContainer.innerHTML = '';
+    console.log(productContainer);
+    productContainer.insertAdjacentHTML("beforeend", html);
+}
+
 const renderOrderItem = function (books) {
     const orderList = orderContainer.querySelector(".order-list");
     orderList.innerHTML = '';
@@ -413,19 +476,17 @@ const renderInvoice = function (order) {
                     </div>
                     <div class="col-md-6">
                         <p>
-                            <strong class="font-weight-600">Họ và Tên:</strong> ${order['address']['first_name']} ${order['address']['last_name']}<br>
-                            <strong class="font-weight-600">Địa chỉ:</strong> ${order['address']['address']} <br>
-                            <strong class="font-weight-600">Thành phố:</strong> ${order['address']['city']} <br>
-                            <strong class="font-weight-600">Nước:</strong> ${order['address']['country']} <br>
+                            <strong class="font-weight-600">Họ và Tên:</strong> ${order['address']['fullname']} <br>
+                            <strong class="font-weight-600">Địa chỉ:</strong> ${order['address']['address']} ${order['address']['province']}<br>
                             <strong class="font-weight-600">Số điện thoại:</strong> ${order['address']['phone_number']} <br>
                         </p>
                     </div>
                     <div class="col-md-6 text-right">
                         <p>
                             ${order['order_type']['id'] === 1 ? `<strong class="font-weight-600"> Phương thức vận chuyển:</strong> ${order['order_type']['detail']['shipping_method']['name']}` : ''}
-                            <strong class="font-weight-600">Phương thức thanh toán:</strong> ${order['payment']['payment_method']['name']} <br>
+                            <strong class="font-weight-600">Phương thức thanh toán: </strong> ${order['payment']['payment_method']['name']} <br>
                             <strong class="font-weight-600">Trạng thái</strong> ${ order['status']['name'] } <br>
-                            <strong class="font-weight-600">Thanh toán lúc</strong>${order['payment']['payment_detail']['created_at'] }
+                            <strong class="font-weight-600">Thanh toán lúc: </strong>${dateFormatter.format(new Date(order['payment']['payment_detail']['created_at']))}
                         </p>
                     </div>
                     <div class="table-responsive">

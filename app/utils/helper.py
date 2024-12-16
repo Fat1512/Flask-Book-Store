@@ -34,10 +34,9 @@ order_type = {
         'field': 'price',
         'direction': 'desc',
     }
-
 }
 
-
+locale.setlocale(locale.LC_ALL, "vi-VN")
 def format_currency_filter(price, currency='VND'):
     # Format the value using Babel's format_currency
     print('price', price)

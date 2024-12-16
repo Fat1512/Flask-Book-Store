@@ -24,8 +24,8 @@
           integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/argon.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" type="text/css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/employee.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/employee.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/FormPrint.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/employeeCheckout.css') }}">
 
@@ -405,12 +405,12 @@
                     </div>
                     <form class="col-4 navbar-search navbar-search-light form-inline mr-sm-3" id="navbar-search-main">
                         <div class="form-group mb-0">
-{#                            <div class="input-group input-group-alternative input-group-merge">#}
-{#                                <div class="input-group-prepend">#}
-{#                                    <span class="input-group-text"><i class="fas fa-search"></i></span>#}
-{#                                </div>#}
-{#                                <input class="form-control" placeholder="Nhap so dien thoai" type="text">#}
-{#                            </div>#}
+                            {#                            <div class="input-group input-group-alternative input-group-merge">#}
+                            {#                                <div class="input-group-prepend">#}
+                            {#                                    <span class="input-group-text"><i class="fas fa-search"></i></span>#}
+                            {#                                </div>#}
+                            {#                                <input class="form-control" placeholder="Nhap so dien thoai" type="text">#}
+                            {#                            </div>#}
                         </div>
                         <button type="button" class="close" data-action="search-close" data-target="#navbar-search-main"
                                 aria-label="Close">
@@ -463,9 +463,9 @@
                     </div>
                     <div class="pl-4 customer-name-container">
                         {#                        <span class="customer-name">Họ tên khách hàng:  Lê TẤn phét</span>#}
-{#                        <a class="btn btn-sm btn-icon-only text-light cursor-pointer" role="button">#}
-{#                            <i class="fa fa-window-close" aria-hidden="true"></i>#}
-{#                        </a>#}
+                        {#                        <a class="btn btn-sm btn-icon-only text-light cursor-pointer" role="button">#}
+                        {#                            <i class="fa fa-window-close" aria-hidden="true"></i>#}
+                        {#                        </a>#}
                     </div>
                     <div class="card-header bg-transparent border-0 d-flex justify-content-between align-content-center">
                         <h3 class="mb- display-4">Sản phẩm</h3>
@@ -568,20 +568,28 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text"><i class="fas fa-search"></i></span>
                                     </div>
-                                    <input class="form-control product-search-box" placeholder="Nhap ten san pham"
+                                    <input class="form-control search-box input-search" placeholder="Nhap ma san pham"
                                            type="text">
                                 </div>
                             </div>
                         </form>
-                        <div class="dropdown col-5 dropdown-btn align-content-center text-right">
-                            <button type="button"
-                                    class="btn btn-primary dropdown-toggle dropdown-btn-change justify-content-end"
-                                    data-toggle="dropdown">
-                                Lọc
-                            </button>
-                            <div class="dropdown-menu">
-                                <div class="dropdown-item" id="0" href="">Tên sản phẩm</div>
-                                <div class="dropdown-item" id="1" href="">Barcode</div>
+                        <div class="dropdown col-6 dropdown-btn align-content-center text-right">
+                            {#                            <button type="button"#}
+                            {#                                    class="btn btn-primary dropdown-toggle dropdown-btn-change justify-content-end"#}
+                            {#                                    data-toggle="dropdown">#}
+                            {#                                Lọc#}
+                            {#                            </button>#}
+                            {#                            <div class="dropdown-menu">#}
+                            {#                                <div class="dropdown-item" id="0" href="">Tên sản phẩm</div>#}
+                            {#                                <div class="dropdown-item" id="1" href="">Barcode</div>#}
+                            {#                            </div>#}
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="btn btn-reset border border-1">Về mặc định</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="btn btn-search btn-primary">Tìm kiếm</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -590,7 +598,7 @@
                             <a class="product-item card col-3 cursor-pointer" id="{{ book['book_id'] }}">
                                 <span class="discount text-white">10%</span>
                                 <img class="card-img-top"
-                                     src="{{ book['images'][0]['image_url'] }}"
+                                     src="{% if  book['images'] %}{{ book['images'][0]['image_url'] }} {% else %}null{% endif %}"
                                      alt="Card image">
                                 <div class="card-body p-0">
                                     <p class="card-text product-name">{{ book['title'] }}</p>
@@ -619,26 +627,26 @@
                             {#                                </a>#}
                             {#                            </li>#}
 
-                            <li class="page-item{% if books['current_page'] == 1 %} disabled {% endif %}"
-                                page={{ books['current_page'] - 1 }}>
-                                <a class="page-link" tabindex="-1">
-                                    <i class="fas fa-angle-left "></i>
-                                    <span class="sr-only">Previous</span>
-                                </a>
-                            </li>
-                            {% for page in range(books['pages']) %}
-                                <li class="page-item{% if page + 1 == books['current_page'] %} active {% endif %}"
-                                    page={{ page + 1 }}>
-                                    <div class="page-link">{{ page + 1 }}</div>
-                                </li>
-                            {% endfor %}
-                            <li class="page-item {% if books['current_page'] == books['total_page'] %} disabled {% endif %}"
-                                page={{ books['current_page'] + 1 }}>
-                                <a class="page-link">
-                                    <i class="fas fa-angle-right"></i>
-                                    <span class="sr-only">Next</span>
-                                </a>
-                            </li>
+                            {#                            <li class="page-item{% if books['current_page'] == 1 %} disabled {% endif %}"#}
+                            {#                                page={{ books['current_page'] - 1 }}>#}
+                            {#                                <a class="page-link" tabindex="-1">#}
+                            {#                                    <i class="fas fa-angle-left "></i>#}
+                            {#                                    <span class="sr-only">Previous</span>#}
+                            {#                                </a>#}
+                            {#                            </li>#}
+                            {#                            {% for page in range(books['pages']) %}#}
+                            {#                                <li class="page-item{% if page + 1 == books['current_page'] %} active {% endif %}"#}
+                            {#                                    page={{ page + 1 }}>#}
+                            {#                                    <div class="page-link">{{ page + 1 }}</div>#}
+                            {#                                </li>#}
+                            {#                            {% endfor %}#}
+                            {#                            <li class="page-item {% if books['current_page'] == books['total_page'] %} disabled {% endif %}"#}
+                            {#                                page={{ books['current_page'] + 1 }}>#}
+                            {#                                <a class="page-link">#}
+                            {#                                    <i class="fas fa-angle-right"></i>#}
+                            {#                                    <span class="sr-only">Next</span>#}
+                            {#                                </a>#}
+                            {#                            </li>#}
                         </ul>
                     </nav>
                 </div>

@@ -10,18 +10,16 @@ function extractCurrencyNumber(currencyString) {
 
 const BOOK_API = "/api/v1/book"
 
-const TIME_OUT = 50;
-const placeHolderAttribute = ["Nhap ten san pham", "Nhap barcode"]
-let fetchOption = 0;
-let currentTimeOutId;
-
-const productSearchBox = document.querySelector('.product-search-box');
+const inputSearch = document.querySelector('.input-search');
 const dropDownBtn = document.querySelector(".dropdown-btn");
 const restoreOrderBtn = document.querySelector(".restore-btn");
 const updateBtn = document.querySelector(".update-btn");
 
 const orderContainer = document.querySelector(".order-container");
 const productContainer = document.querySelector(".product-container");
+
+const searchBtn = document.querySelector(".btn-search");
+const resetBtn = document.querySelector(".btn-reset");
 
 let initialOrderItemsState = {};
 let currentOrderItemsState = {};
@@ -38,26 +36,27 @@ const fetchProductByBarcode = async function (barcode) {
     }
 }
 
-const fetchProductByName = async function (name) {
-    try {
-        const res = await fetch(`${BOOK_API}/title/${barcode}`);
-        if(!res.ok) throw("sth wrong");
-        return await res.json();
-    } catch(err) {
-        throw err;
-    }
+async function fetchBooks() {
+    const res = await fetch(`/api/v1/book`, {
+        method: "GET",
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    if(!res.ok) throw new Error("Sách không tồn tại");
+    return await res.json();
 }
 
-
-const productFetchingFunction = [fetchProductByName, fetchProductByBarcode];
-
-productSearchBox.addEventListener("keypress", async function (e) {
-    if(e.key !== "Enter") return;
-    // try {
-    //
-    //     const data = await productFetchingFunction[fetchOption]();
-    //     }
+async function fetchBookById(bookId) {
+    const res = await fetch(`/api/v1/book/${bookId}/manage`, {
+        method: "GET",
+        headers: {
+            'Content-Type': 'application/json'
+        }
     });
+    if(!res.ok) throw new Error("Sách không tồn tại");
+    return await res.json();
+}
 
 dropDownBtn.addEventListener("click", function (e) {
     e.preventDefault();
@@ -116,6 +115,28 @@ orderContainer.addEventListener("click", function (e) {
     isTriggered && renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]));
 });
 
+searchBtn.addEventListener("click", async function() {
+    try {
+        const bookId = inputSearch.value;
+        const book = await fetchBookById(bookId);
+        renderBookItem([book]);
+    } catch(err) {
+        alert(err.message);
+    }
+});
+
+resetBtn.addEventListener("click", async function() {
+    try {
+         const books = await fetchBooks();
+         console.log(books);
+         renderBookItem(books['data']['books']);
+
+         inputSearch.value = '';
+    } catch(err) {
+        alert(err.message);
+    }
+});
+
 orderContainer.addEventListener("change", function (e) {
     const input = e.target;
     if (input.value == 0 || input.value == '') input.value = 1;
@@ -124,10 +145,12 @@ orderContainer.addEventListener("change", function (e) {
     renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]))
 })
 
+
 restoreOrderBtn.addEventListener("click", () => {
     renderOrderItem(Object.entries(initialOrderItemsState).map(item => item[1]))
     currentOrderItemsState = JSON.parse(JSON.stringify(initialOrderItemsState));
 });
+
 
 updateBtn.addEventListener("click", async function (e) {
     updateBtn.classList.remove("bg-blue")
@@ -173,6 +196,25 @@ updateBtn.addEventListener("click", async function (e) {
     }
 })
 
+const renderBookItem = function(books) {
+    const html = books.map(book => `
+    <a class="product-item card col-3 cursor-pointer" id="${book['book_id']}">
+        <span class="discount text-white">10%</span>
+        <img class="card-img-top"
+             src="${book['images'][0]['image_url']}"
+             alt="Card image">
+        <div class="card-body p-0">
+            <p class="card-text product-name">${ book['title'] }</p>
+            <p class="text-primary font-weight-bold mb-1 product-price">${vndCurrencyFormat.format(book['price'])}</p>
+            <p class="text-secondary text-decoration-line-through mb-1">${vndCurrencyFormat.format(1000)}</p>
+        </div>
+    </a>`).join('');
+
+    productContainer.innerHTML = '';
+    console.log(productContainer);
+    productContainer.insertAdjacentHTML("beforeend", html);
+}
+
 const renderOrderItem = function (books) {
     const orderList = orderContainer.querySelector(".order-list");
     orderList.innerHTML = '';
@@ -181,16 +223,16 @@ const renderOrderItem = function (books) {
             <th scope="row">
                 <div class="media align-items-center">
                     <div class="media-body text-left text-truncate book-item">
-                        <span class="name mb-0 text-sm text-center w-100">${book.title}</span>
+                        <span class="order-item-name mb-0 text-sm text-center w-100">${book.title}</span>
                     </div>
                 </div>
             </th>
-            <td class="budget text-center">
+            <td class="budget text-center order-item-price">
                 ${vndCurrencyFormat.format(book.price)}
             </td>
             <td>
                 <span class="badge badge-dot mr-4 text-center w-100">
-                <span class="status text-center">${book.discount}</span>
+                <span class="status text-center order-item-discount">${book.discount}</span>
                 </span>
             </td>
             <td>
@@ -199,7 +241,6 @@ const renderOrderItem = function (books) {
                         <span class="cursor-pointer decrement-qty-btn">-</span>
                         <input input-id="${book.book_id}" inputmode="numeric"
                                oninput="this.value = this.value.replace(/\\D+/g, '')"
-                               class="text-center" value="${book.quantity}">
                                class="text-center" value="${book.quantity}">
                         <span class="cursor-pointer increment-qty-btn">+</span>
                     </div>
