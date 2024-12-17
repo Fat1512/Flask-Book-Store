@@ -34,13 +34,21 @@ def get_order():
                       page=int(page),
                       start_date=start_date,
                       end_date=end_date)
-    return orders
+    return jsonify({
+        "message": "Success",
+        "status": 200,
+        "data": orders
+    })
 
 
 @order_api_bp.route("/<int:order_id>/update", methods=['POST'])
 def update(order_id):
     update_order(order_id, request.json)
-    return request.json
+    return jsonify({
+        "message": "Success",
+        "status": 200,
+        "data": request.json
+    })
 
 
 @order_api_bp.route("/add", methods=['POST'], endpoint='test_add')
@@ -65,8 +73,11 @@ def offline_order():
         return False
 
     order = create_offline_order(order_list, user)
-
-    return order
+    return jsonify({
+        "message": "Successfully Created",
+        "status": 200,
+        "data": order
+    })
 
 
 @order_api_bp.route('/onlineOrder', methods=['POST'])
@@ -78,7 +89,7 @@ def online_order():
         delete_cart_item(current_user.get_id(),book['bookId'])
 
     return jsonify({
-        "message": "SUCCESS",
+        "message": "Success",
         "status": 200,
         "orderId": order.order_id
     })
@@ -89,7 +100,7 @@ def cancel_order():
     data = request.json
     order_cancellation = create_order_cancellation(data)
     return jsonify({
-        'message': 'SUCCESS',
+        'message': 'Successfully Cancelled',
         'status': 200,
         'data': order_cancellation.to_dict()
     })
@@ -98,9 +109,10 @@ def cancel_order():
 @order_api_bp.route("/<order_id>/confirm", methods=['GET'])
 def confirm_order(order_id):
     update_order_status(order_id, OrderStatus.CHO_GIAO_HANG)
-    return {
-        "ok": "ok"
-    }
+    return jsonify({
+        'message': 'Successfully Confirmed',
+        'status': 200
+    })
 
 
 @order_api_bp.route("/<order_id>/status", methods=['POST'])
@@ -115,18 +127,25 @@ def update_status(order_id):
         total_amount = calculate_total_order_amount(order_id)
         payment_detail = PaymentDetail(order_id=order.order_id, created_at=datetime.utcnow(), amount=total_amount)
         create_payment(payment_detail)
-    return {
-        "messi": "ronaldo"
-    }
+
+    return jsonify({
+        'message': 'Successfully Updated Status',
+        'status': 200
+    })
 
 
 @order_api_bp.route("/<order_id>/detail", methods=['GET', 'POST'])
 def find(order_id):
     order = find_by_id(order_id)
-    return order
+
+    return jsonify({
+        'message': 'Success',
+        'status': 200,
+        'data': order
+    })
 
 
 @order_api_bp.route("/test/<int:order_id>", methods=["GET"])
 def test_order(order_id):
-    return get_form_imports()
+    return find_form_imports()
     # calculate_total_order_amount(order_id)

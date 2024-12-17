@@ -123,11 +123,24 @@ def find_all(**kwargs):
 
 def update_order(order_id, order_list):
     query = OrderDetail.query
-    query.filter(OrderDetail.order_id == order_id).delete()
+    order_details = query.filter(OrderDetail.order_id == order_id).all()
 
+    for order_detail in order_details:
+        order_detail.book.increase_book(order_detail.quantity)
+        db.session.delete(order_detail)
+    db.session.flush()
     for order_item in order_list:
         book_id = order_item['book_id']
-        quantity = order_item['quantity']
+
+        book_db = Book.query.get(book_id)
+        if book_db is None: raise NotFoundError('Không tìm thấy sách')
+
+        quantity = int(order_item['quantity'])
+        res = book_db.decrease_book(quantity=quantity)
+
+        if not res:
+            raise Exception("")
+
         price = order_item['price']
         order_detail = OrderDetail(order_id=order_id, book_id=book_id, quantity=quantity, price=price)
         db.session.add(order_detail)
@@ -185,7 +198,14 @@ def create_offline_order(order_list, user=None):
 
     for order_item in order_list:
         book_id = order_item['book_id']
+        book_db = Book.query.get(book_id)
+
+        if book_db is None: raise NotFoundError('Không tìm thấy sách')
+
         quantity = int(order_item['quantity'])
+        res = book_db.decrease_book(quantity=quantity)
+        if not res:
+            raise Exception("")
         price = int(order_item['price'])
         order_detail = OrderDetail(order_id=offline_order.order_id, book_id=book_id, quantity=quantity, price=price)
         offline_order.order_detail.append(order_detail)

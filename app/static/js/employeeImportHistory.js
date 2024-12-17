@@ -53,7 +53,8 @@ const fetchImportForm = async function () {
         const param = '?' + Object.entries(currentSearchParam).map(pr => pr[0] + '=' + pr[1]).join("&");
         const res = await fetch(`${IMPORT_API}${param}`);
         if (!res.ok) throw new Error("Cannot fetch import form");
-        return await res.json();
+        const data = await res.json();
+        return data['data'];
     } catch (err) {
         throw err;
     }
@@ -63,7 +64,8 @@ const fetchImportFormDetail = async function (importFormId) {
     try {
         const res = await fetch(`${IMPORT_API}/${importFormId}/detail`);
         if (!res.ok) throw new Error("Cannot fetch import form detail");
-        return await res.json();
+        const data = await res.json();
+        return data['data'];
     } catch (err) {
         throw err;
     }

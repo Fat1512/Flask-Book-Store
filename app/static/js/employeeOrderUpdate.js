@@ -11,7 +11,6 @@ function extractCurrencyNumber(currencyString) {
 const BOOK_API = "/api/v1/book"
 
 const inputSearch = document.querySelector('.input-search');
-const dropDownBtn = document.querySelector(".dropdown-btn");
 const restoreOrderBtn = document.querySelector(".restore-btn");
 const updateBtn = document.querySelector(".update-btn");
 
@@ -28,43 +27,53 @@ let currentOrderItemsState = {};
 
 const fetchProductByBarcode = async function (barcode) {
     try {
-        const res = await fetch(`${BOOK_API}/barcode/${barcode}`);
-        if(!res.ok) throw("sth wrong");
-        return await res.json();
-    } catch(err) {
+        const res = await fetch(`${BOOK_API}/barcode/${barcode}`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!res.ok) throw ("sth wrong");
+        const data = await res.json();
+        return data['data'];
+    } catch (err) {
         throw err;
     }
 }
 
 async function fetchBooks() {
-    const res = await fetch(`/api/v1/book`, {
-        method: "GET",
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
-    if(!res.ok) throw new Error("Sách không tồn tại");
-    return await res.json();
+    try {
+        const res = await fetch(`/api/v1/book`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!res.ok) throw new Error("Sách không tồn tại");
+        const data = await res.json();
+        return data['data'];
+    } catch (err) {
+        throw err;
+    }
+
 }
 
 async function fetchBookById(bookId) {
-    const res = await fetch(`/api/v1/book/${bookId}/manage`, {
-        method: "GET",
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
-    if(!res.ok) throw new Error("Sách không tồn tại");
-    return await res.json();
+    try {
+        const res = await fetch(`/api/v1/book/${bookId}/manage`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!res.ok) throw new Error("Sách không tồn tại");
+        const data = await res.json();
+        return data['data'];
+    } catch (err) {
+        throw err;
+    }
 }
 
-dropDownBtn.addEventListener("click", function (e) {
-    e.preventDefault();
-    const target = e.target.closest('.dropdown-item');
-    if (!target) return;
-    fetchOption = +e.target.getAttribute("id");
-    productSearchBox.setAttribute("placeholder", placeHolderAttribute[fetchOption]);
-});
 
 productContainer.addEventListener("click", function (e) {
     const productItem = e.target.closest(".product-item");
@@ -77,8 +86,7 @@ productContainer.addEventListener("click", function (e) {
     } else {
         currentOrderItemsState[id] = {
             'book_id': id,
-            'price': productItem.querySelector(".product-price").textContent.split(".")[0].trim(),
-            'discount': productItem.querySelector(".discount").textContent,
+            'price': extractCurrencyNumber(productItem.querySelector(".product-price").textContent),
             'title': productItem.querySelector(".product-name").textContent,
             'quantity': 1
         };
@@ -115,24 +123,24 @@ orderContainer.addEventListener("click", function (e) {
     isTriggered && renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]));
 });
 
-searchBtn.addEventListener("click", async function() {
+searchBtn.addEventListener("click", async function () {
     try {
         const bookId = inputSearch.value;
         const book = await fetchBookById(bookId);
         renderBookItem([book]);
-    } catch(err) {
+    } catch (err) {
         alert(err.message);
     }
 });
 
-resetBtn.addEventListener("click", async function() {
+resetBtn.addEventListener("click", async function () {
     try {
-         const books = await fetchBooks();
-         console.log(books);
-         renderBookItem(books['data']['books']);
+        const books = await fetchBooks();
+        console.log(books);
+        renderBookItem(books['data']['books']);
 
-         inputSearch.value = '';
-    } catch(err) {
+        inputSearch.value = '';
+    } catch (err) {
         alert(err.message);
     }
 });
@@ -196,17 +204,16 @@ updateBtn.addEventListener("click", async function (e) {
     }
 })
 
-const renderBookItem = function(books) {
+const renderBookItem = function (books) {
     const html = books.map(book => `
     <a class="product-item card col-3 cursor-pointer" id="${book['book_id']}">
-        <span class="discount text-white">10%</span>
         <img class="card-img-top"
              src="${book['images'][0]['image_url']}"
              alt="Card image">
         <div class="card-body p-0">
-            <p class="card-text product-name">${ book['title'] }</p>
+            <p class="card-text product-name">${book['title']}</p>
             <p class="text-primary font-weight-bold mb-1 product-price">${vndCurrencyFormat.format(book['price'])}</p>
-            <p class="text-secondary text-decoration-line-through mb-1">${vndCurrencyFormat.format(1000)}</p>
+            <p class="text-dark font-weight-light mb-1">qty: ${ book['quantity'] }</p>
         </div>
     </a>`).join('');
 
@@ -229,11 +236,6 @@ const renderOrderItem = function (books) {
             </th>
             <td class="budget text-center order-item-price">
                 ${vndCurrencyFormat.format(book.price)}
-            </td>
-            <td>
-                <span class="badge badge-dot mr-4 text-center w-100">
-                <span class="status text-center order-item-discount">${book.discount}</span>
-                </span>
             </td>
             <td>
                 <div class="d-flex justify-content-center">
@@ -269,7 +271,6 @@ orderContainer.querySelectorAll(".order-item").forEach(orderItem => {
     const obj = {
         'book_id': orderItem.getAttribute("id"),
         'price': extractCurrencyNumber(orderItem.querySelector(".order-item-price").textContent),
-        'discount': orderItem.querySelector(".order-item-discount").textContent,
         'title': orderItem.querySelector(".order-item-name").textContent,
         'quantity': orderItem.querySelector(`[input-id="${orderItem.getAttribute("id")}"]`).value
     }

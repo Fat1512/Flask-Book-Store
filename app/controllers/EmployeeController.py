@@ -40,8 +40,8 @@ def get_order():
                       page=int(page),
                       start_date=start_date,
                       end_date=end_date)
-    return render_template("employee-order.html", orders=orders, status=status, paymentMethod=payment_method,
-                           sortBy=sort_by, sortDir=sort_dir, orderType=order_type)
+    return render_template("employee-order.html", orders=orders, status=status, payment_method=payment_method,
+                           sort_by=sort_by, sort_dir=sort_dir, order_type=order_type, start_date=start_date, end_date=end_date)
 
 
 @employee_bp.route("/order/<order_id>/update")

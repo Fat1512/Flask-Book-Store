@@ -274,6 +274,7 @@ const renderPagination = function (total_page, current_page) {
     pagination.insertAdjacentHTML('beforeend', next)
 }
 const renderLabel = function () {
+    console.log(currentLabel);
     filterLabelContainer.innerHTML = '';
     const html = Object.entries(currentLabel).map(label =>
         `<span class="badge badge-secondary bg-red text-white cursor-pointer mr-2">${label[0]}</span>`).join('');
@@ -418,7 +419,9 @@ const fetchOrder = async function () {
         const param = '?' + Object.entries(currentSearchParam).map(pr => pr[0] + '=' + pr[1]).join("&");
         const res = await fetch(`${ORDER_API}${param}`);
         if (!res.ok) throw new Error("Cannot fetch order");
-        return await res.json();
+        const data = await res.json();
+        console.log(data);
+        return data['data'];
     } catch (err) {
         alert(err.message);
     }
@@ -434,7 +437,8 @@ const modifyOrderStatus = async function (orderId, orderStatusId) {
             }
         });
         if (!res.ok) throw new Error("update order status");
-        return await res.json();
+        const data = await res.json();
+        return data['data'];
     } catch (err) {
         alert(err.message);
     }
@@ -453,8 +457,9 @@ const cancelOrder = async function(orderId) {
             }
         });
         if (!res.ok) throw new Error("update order status");
-        alert("huy thanh cong")
-        return await res.json();
+
+        const data = await res.json();
+        return data['data'];
     } catch (err) {
         alert(err.message);
     }
@@ -495,6 +500,8 @@ inputStartDate.addEventListener("change", async function(e) {
         addCurrentParams([["startDate", value]]);
         addUrlParams([["startDate", value]]);
     }
+
+    window.history.pushState({}, '', url);
 
     const data = await fetchOrder();
 
@@ -734,7 +741,6 @@ const handleFilterChange = async function (parent, setParams, deletedParams, tog
 
     window.history.pushState({}, '', url);
 
-    console.log(currentSearchParam);
 
     const data = await fetchOrder();
     renderOrder(data['orders'])
