@@ -76,7 +76,7 @@ def delete_add_user(address_id):
 @account_rest_bp.route('/comment', methods=['POST'])
 def post_comment():
     data = request.json
-    comment = create_comment(data)
+    comment = create_comment(current_user.get_id(), data)
 
     return jsonify({
         "msg": "success",

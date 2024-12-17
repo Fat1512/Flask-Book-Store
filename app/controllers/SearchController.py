@@ -3,6 +3,8 @@ from email.policy import default
 from re import findall
 
 from flask import Blueprint, request, render_template
+from flask_login import current_user
+
 from app import app
 from app.dao.BookDAO import find_all, paginate_book, find_by_gerne, find_by_id, count_book_sell
 from app.dao.BookGerneDAO import get_depth_gerne
@@ -15,20 +17,25 @@ home_bp = Blueprint('search', __name__)
 
 @home_bp.route('/')
 def search_main():
-    keyword = request.args.get('keyword')
-    min_price = request.args.get('minPrice', type=float, default=None)
-    max_price = request.args.get('maxPrice', type=float)
-    order = request.args.get('order', default='_score')
-    limit = request.args.get('limit', type=int, default=app.config['PAGE_SIZE'])
-    page = request.args.get('page', type=int, default=1)
-    gerne_id = request.args.get('gerneId', type=int, default=1)
+    all_query_params = dict(request.args)
+    print('test', current_user.get_id())
+    keyword = all_query_params.pop('keyword', None)
+    price = all_query_params.pop('price', '0,999999999').split(',')
+    min_price = int(price[0])
+    max_price = int(price[1])
+    order = all_query_params.pop('order', '_score')
+    limit = int(all_query_params.pop('limit', app.config['ORDER_PAGE_SIZE']))
+    page = int(all_query_params.pop('page', 1))
+    gerne_id = int(all_query_params.pop('gerneId', 1))
 
     book_gerne = get_depth_gerne(gerne_id)
+
     book = search_book_es(keyword=keyword, min_price=min_price, max_price=max_price, order=order_type[order]
                           , limit=limit
                           , page=page - 1
                           , lft=book_gerne['current_gerne'][0]['lft']
-                          , rgt=book_gerne['current_gerne'][0]['rgt'])
+                          , rgt=book_gerne['current_gerne'][0]['rgt']
+                          , extended_books=all_query_params)
     return render_template("search.html"
                            , current_gerne=book_gerne["current_gerne"]
                            , sub_gerne=book_gerne["sub_gerne"]
@@ -38,6 +45,7 @@ def search_main():
                            , order=order
                            , limit=limit
                            , extended_books=book["extended_books"]
+                           , params=all_query_params
                            , pagination=book)
 
 
@@ -45,7 +53,7 @@ def search_main():
 def get_detail():
     book_id = request.args.get('bookId', type=int)
     book = find_by_id(book_id)
-    books = find_by_gerne(book.book_gerne_id)
+    books = search_book(gerne_id=book.book_gerne_id, limit=12)['books']
     sold_book = count_book_sell(book_id)
     detail_book = {
         "Mã sản phẩm": book.book_id,

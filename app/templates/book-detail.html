@@ -50,7 +50,7 @@
                         <div class="item-text row m-0">
                             <span class="col-md-6">Nhà cung cấp: <span
                                     class="font-weight-bold">Nhà Xuất Bản Kim Đồng</span></span>
-                            <span class="col-md-6"> Tác giả: <span class="font-weight-bold">{{ book.author}}</span>
+                            <span class="col-md-6"> Tác giả: <span class="font-weight-bold">{{ book.author }}</span>
                                 </span>
                             <span class="col-md-6"> Nhà xuất bản:
                                  <span class="font-weight-bold">{{ book.publisher_info.publisher_name }}</span>
@@ -118,9 +118,7 @@
                                  alt="Card image">
                             <div class="card-body p-0">
                                 <p style="; min-height: 48px" class="card-text">{{ b.title }}</p>
-                                <p class="text-primary font-weight-bold mb-1">{{ b.price|currency('VND') }} <span
-                                        class="discount">-10%</span></p>
-                                <p class="text-secondary text-decoration-line-through mb-1">{{ b.price|currency('VND') }}</p>
+                                <p class="text-primary font-weight-bold mb-1">{{ b.price|currency('VND') }}
                             </div>
                             <div class="rating">
                                 <i class="fa-regular fa-star"></i>
@@ -241,6 +239,20 @@
             </div>
         </div>
     </div>
+{#    <div class="carousel-container">#}
+{#        <div class="carousel-slide">#}
+{#            {% if book.images|length %}#}
+{#                {% for image in book.images %}#}
+{#                    <img src="{{ image.image_url }}" alt="Image 1">#}
+{#                {% endfor %}#}
+{#            {% endif %}#}
+{##}
+{#        </div>#}
+{#        <div class="carousel-nav">#}
+{#            <button id="prev">❮</button>#}
+{#            <button id="next">❯</button>#}
+{#        </div>#}
+{#    </div>#}
 {% endblock %}
 {% block js %}
     <script src="{{ url_for('static', filename='js/slickyCarousel.js') }}"></script>

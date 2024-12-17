@@ -376,7 +376,8 @@ modalAddAddress.querySelector('.form-address').addEventListener('submit', (e) =>
 
             if (!value) {
                 flag = false
-                document.querySelector(`input[name='${key}']`).style = 'border: 1px solid red'
+
+                modalAddAddress.querySelector(`input[name='${key}']`).style = 'border: 1px solid red'
             }
         });
         if (flag) {

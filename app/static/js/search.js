@@ -31,6 +31,7 @@ async function fetchGerne(id) {
         const res = await fetch(`${bookGerne_API}?gerneId=${id}`)
         if (!res.ok) throw Error("Failed getting book gerne")
         const data = await res.json()
+
         return data
     } catch (error) {
 
@@ -46,6 +47,7 @@ async function fetchBook(params) {
         const res = await fetch(`${SEARCH_API}/?${params}`)
         if (!res.ok) throw Error("Failed getting book")
         const data = await res.json()
+
         return data
     } catch (error) {
 
@@ -76,23 +78,25 @@ function renderBookNull(bookElemnt, paginationElemnt) {
 }
 
 async function render_book(params, isFilter = false) {
+
     const {data: books, current_page, pages, extended_books: filters} = await fetchBook(params)
+
     const bookElemnts = document.querySelector('.list-book')
     const paginationElemnt = document.querySelector('.pagination')
     if (!books.length) {
         renderBookNull(bookElemnts, paginationElemnt)
-        return
-    }
-    bookElemnts.innerHTML = books.map(b => `
+
+    } else {
+        bookElemnts.innerHTML = books.map(b => `
         <a href="/search/detail?bookId=${b.book_id}" class="card col-md-3">
-        <span class="discount text-white">10%</span>
+        
         <img class="card-img-top"
              src="${b.book_image.length ? b.book_image[0].image_url : null}"
              alt="Card image">
         <div class="card-body p-0">
             <p class="card-text">${b.title}</p>
             <p class="text-primary font-weight-bold mb-1">${VND.format(b.price)}</p>
-            <p class="text-secondary text-decoration-line-through mb-1">${b.price}</p>
+          
         </div>
         <div class="rating">
             <i class="fa-regular fa-star"></i>
@@ -103,7 +107,8 @@ async function render_book(params, isFilter = false) {
         </div>
     </a>
     `).join("")
-    render_pagination(current_page, pages)
+        render_pagination(current_page, pages)
+    }
     if (!isFilter)
         renderGroupFiler(filters)
 
@@ -112,12 +117,13 @@ async function render_book(params, isFilter = false) {
 const renderGroupFiler = function (filters) {
     const groupFilterExtend = document.querySelector('.group-filter-extend')
     groupFilterExtend.innerHTML = filters.map((filter, index) => {
+        const prevValue = extendBookParams[`group-filter-${index}`]
         const valueHTML = filter.collect_values.buckets.map(value => `
              <li>
-                <a class="checkbox checkbox-unchecked"
-                   value="${value.key}"
+                <a class="checkbox ${prevValue === value.key ? "checkbox-checked" : "checkbox-unchecked"}"
+                value="${value.key}"
                 > ${value.key}
-                    <span class="text-secondary">(${value.doc_count})</span></a>
+                 <span class="text-secondary">(${value.doc_count})</span></a>
 
             </li>
         `).join('')
@@ -151,31 +157,37 @@ const render_pagination = function (current_page, pages) {
         })
     }
 
-    const prevButton = current_page === 1 ? null : `
-           <li class="page-item">
-                <a class="page-link prev-button" href="#" aria-label="Previous">
-                    <i class="fa-solid fa-arrow-left"></i>
-                </a>
-            </li>
-    `
+    const prevButton = current_page === 1 ? null :
+        `
+        <li class="page-item">
+        <a class="page-link prev-button" href="#" aria-label="Previous">
+        <i class="fa-solid fa-arrow-left"></i>
+        </a>
+        </li>
+        `
+
     html.push(prevButton)
     for (let i = 1; i < pages + 1; i++) {
-        html.push(`
-         <li class="page-item item-button">
-            <a class="page-link ${i === current_page ? 'active' : ""}"  href="#" aria-label=${i}>
-                ${i}
-            </a>
+        html.push(
+            `
+        <li class="page-item item-button">
+        <a class="page-link ${i === current_page ? 'active' : ""}"  href="#" aria-label=${i}>
+        ${i}
+        </a>
         </li>
-       `)
+        `
+        )
 
     }
-    const nextButton = current_page === pages ? null : ` 
-         <li class="page-item next-button">
-            <a class="page-link" href="#" aria-label="Next">
-                <i class="fa-solid fa-arrow-right"></i>
-            </a>
+    const nextButton = current_page === pages ? null :
+        `
+        <li class="page-item next-button">
+        <a class="page-link" href="#" aria-label="Next">
+        <i class="fa-solid fa-arrow-right"></i>
+        </a>
         </li>
-    `
+        `
+
     html.push(nextButton)
     el.innerHTML = html.join("")
     const paginationNumElemnts = document.querySelectorAll('.item-button')
@@ -226,7 +238,9 @@ const renderParentGerne = function () {
 
     if (current) {
         parent.insertAdjacentHTML("beforeend",
-            `<li style="margin-left: ${margin}px"><span id="${current.id ? current.id : 1}" class="parent-gerne-item">${current.textContent}</span></li>`)
+
+            `<li style="margin-left: ${margin}px"><span id="${current.id ? current.id : 1}" class="parent-gerne-item">${current.textContent}</span></li>`
+        )
 
         const elements = document.querySelectorAll('.parent-gerne-item')
         elements.forEach(el => {
@@ -237,9 +251,11 @@ const renderParentGerne = function () {
 }
 const renderCurrentGerne = function (currentGerne) {
     const el = document.querySelector(".current-gerne")
-    el.innerHTML = `
-         <span style="margin-left: ${margin + 10}px" id="${currentGerne[0].id}" class="selected-filter">${currentGerne[0].name}</span>
-    `
+    el.innerHTML =
+        `
+        <span style="margin-left: ${margin + 10}px" id="${currentGerne[0].id}" class="selected-filter">${currentGerne[0].name}</span>
+        `
+
     el.children[0].addEventListener('click', e => {
         document.querySelector('.selected-filter').classList.remove("selected-filter")
         e.target.classList.add("selected-filter")
@@ -264,8 +280,10 @@ const renderSubGerne = function (listBookGerne) {
         await render_book(getCurrentParams())
     }
 
-    el.innerHTML = listBookGerne.map(b => `
-         <li style="margin-left: ${margin + 20}px"><span class="sub-item" id="${b.id}">${b.name}</span></li>`)
+    el.innerHTML = listBookGerne.map(b =>
+        `
+        <li style="margin-left: ${margin + 20}px"><span class="sub-item" id="${b.id}">${b.name}</span></li>`
+    )
         .join("")
     const elements = document.querySelectorAll('.sub-item')
     elements.forEach(e => e.addEventListener('click', () => handleOnClickSubItem(e.id)))
@@ -273,25 +291,35 @@ const renderSubGerne = function (listBookGerne) {
 //INVOKE FUNCTION
 const handleDeleteFilter = async function (e) {
     if (!(e.target.getAttribute('class') === "fa-solid fa-x")) return
-    const checkboxEl = document.querySelector('.checkbox-checked')
 
-    deleteParamURL('minPrice');
-    deleteParamURL('maxPrice');
+    const parent = e.target.parentNode.parentNode
+    const checkboxEl = document.querySelector(
+        `#${parent.id} .checkbox-checked`
+    )
+
+    delete extendBookParams[parent.id]
+    deleteParamURL(parent.id);
     deleteParamURL('page')
-    document.querySelector('.price-filter').remove()
+    document.querySelector(
+        `.filter-list #${parent.id}`
+    ).remove()
     checkboxEl.classList.remove('checkbox-checked')
     window.history.pushState({}, '', CURRENT_URL);
-    render_book(CURRENT_URL.searchParams.toString().split("?")[1])
+    render_book(getCurrentParams())
 
 }
 
 
 function handleSelectOrder(nameNode, param) {
-    const els = document.querySelector(`.dropdown-menu-${nameNode}`)
+    const els = document.querySelector(
+        `.dropdown-menu-${nameNode}`
+    )
     els.querySelectorAll('.dropdown-item').forEach(
         el => el.addEventListener('click', () => {
             const value = el.getAttribute('value')
-            document.querySelector(`.dropdown-toggle-${nameNode}`).textContent
+            document.querySelector(
+                `.dropdown-toggle-${nameNode}`
+            ).textContent
                 = el.textContent
             CURRENT_URL.searchParams.set(param, value)
             deleteParamURL('page')
@@ -331,7 +359,7 @@ handleSelectOrder('order', 'order')
 render_book(getCurrentParams())
 
 const price = document.querySelector('#price.group-filter')
-price.addEventListener('click', (e) => handleSelectedFileter(price,e))
+price.addEventListener('click', (e) => handleSelectedFileter(price, e))
 
 function handleSelectedFileter(element, e) {
     if (e.target.tagName === 'SPAN') return
@@ -344,23 +372,30 @@ function handleSelectedFileter(element, e) {
         deleteParamURL("page")
         listFiler.insertAdjacentHTML('beforeend',
             `<li id ="${element.id}" class="filter-item mr-3 mb-3 price-filter">
-                <span >${element.getAttribute('value')}: ${e.target.textContent}</span>
-                <a class="cursor-pointer delete-filter ml-1"><i class="fa-solid fa-x"></i></a>
-              </li>`)
+        <span >${element.getAttribute('value')}: ${e.target.textContent}</span>
+        <span class="cursor-pointer delete-filter ml-1"><i class="fa-solid fa-x"></i></span>
+        </li>`
+        )
         prev.classList.remove('checkbox-checked')
-        listFiler.querySelector(`#${element.id}`).remove()
+        listFiler.querySelector(
+            `#${element.id}`
+        ).remove()
     } else if (prev === e.target) {
         deleteParamURL(element.id)
         deleteParamURL("page")
         prev.classList.remove('checkbox-checked')
-        listFiler.querySelector(`#${element.id}`).remove()
+        listFiler.querySelector(
+            `#${element.id}`
+        ).remove()
     } else {
         addParamURL(element.id, e.target.getAttribute('value'))
         listFiler.insertAdjacentHTML('beforeend',
-            `<li id ="${element.id}" class="filter-item mr-3 mb-3 price-filter">
-                <span >${element.getAttribute('value')}: ${e.target.textContent}</span>
-                <a class="cursor-pointer delete-filter ml-1"><i class="fa-solid fa-x"></i></a>
-              </li>`)
+
+            `<li id ="${element.id}" class="filter-item mr-3 mb-3 price-filter" value="${e.target.getAttribute('value')}">
+        <span >${element.getAttribute('value')}: ${e.target.textContent}</span>
+        <span class="cursor-pointer delete-filter ml-1"><i class="fa-solid fa-x"></i></span>
+        </li>`
+        )
     }
 
     window.history.pushState({}, '', CURRENT_URL);

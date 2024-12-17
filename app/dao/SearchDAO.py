@@ -76,7 +76,7 @@ def get_suggest(keyword):
         return jsonify({"error": str(e)}), 500
 
 
-def search_book_es(keyword, min_price, max_price,
+def search_book_es(keyword, min_price, max_price, extended_books,
                    order, lft, rgt, limit, page):
     index_name = BookIndex.index_name
     condition = {}
@@ -131,11 +131,32 @@ def search_book_es(keyword, min_price, max_price,
         condition = {
             "match_all": {}
         }
+    array_condition = [condition]
+    if extended_books:
+        ex_condition = {
+            "bool": {
+                'must': [
+                    {
+                        "nested": {
+                            "path": "extended_books",
+                            "query": {
+                                "term": {
+                                    "extended_books.value": ex
+                                }
+                            }
+                        }
+                    }
+                    for ex in extended_books.values()]
+            }
+
+        }
+        array_condition.append(ex_condition)
+
     prefix_query = {
         'bool': {
-            'must': [
-                condition,
-            ],
+            'must':
+                array_condition
+            ,
             "filter": [
                 {
                     "range": {
@@ -162,7 +183,25 @@ def search_book_es(keyword, min_price, max_price,
         },
     }
     aggregation_query = {
-        'query': prefix_query,
+        'query': {
+            'bool': {
+                "filter": [
+                    {
+                        "nested": {
+                            "path": "book_gerne",
+                            "query": {
+                                "range": {
+                                    "book_gerne.lft": {
+                                        "gte": lft,
+                                        "lte": rgt
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        },
         "aggs": {
             "nested_extended_books": {
                 "nested": {
