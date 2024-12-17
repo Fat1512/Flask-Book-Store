@@ -108,3 +108,4 @@ class Book(db.Model):
         if self.quantity < quantity:
             return False
         self.quantity -= quantity
+        return True

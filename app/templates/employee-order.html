@@ -464,7 +464,8 @@
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text"><i class="fas fa-search"></i></span>
                                             </div>
-                                            <input class="form-control input-search" placeholder="Nhap ma don" type="text">
+                                            <input class="form-control input-search" placeholder="Nhap ma don"
+                                                   type="text">
                                         </div>
                                         {#                                        <div class="dropdown dropdown-btn align-content-center text-right">#}
                                         {#                                            <button type="button"#}
@@ -484,13 +485,16 @@
                                         <div class="form-group w-100 d-flex pr-3">
                                             <label for="email">Bắt đầu</label>
                                             <input type="date" class="form-control input-start-date"
-                                                   placeholder="Enter email" id="email">
+                                                   placeholder="Enter email"
+                                                   id="email"
+                                                   value="{{ start_date }}">
                                         </div>
                                         <div class="form-group w-100 d-flex">
                                             <label for="email">Kết thúc</label>
                                             <input type="date" class="form-control input-end-date"
                                                    placeholder="Enter email"
-                                                   id="email">
+                                                   id="email"
+                                                   value="{{ end_date }}">
                                         </div>
                                     </div>
                                 </div>
@@ -513,7 +517,7 @@
                                             <div class="form-check filter-type-item cursor-pointer" id="1">
                                                 <div class="form-check-label d-flex justify-content-between align-content-center">
                                                     <input type="checkbox"
-                                                            {% if sortBy == "date" and sortDir == "asc" %}
+                                                            {% if sort_by == "date" and sort_dir == "asc" %}
                                                            checked {% endif %} class="">
                                                     <span class="dropdown-item">Thời gian đặt mới nhất</span>
                                                 </div>
@@ -521,7 +525,7 @@
                                             <div class="form-check filter-type-item" id="2">
                                                 <div class="form-check-label d-flex justify-content-between align-content-center">
                                                     <input type="checkbox"
-                                                            {% if sortBy == "date" and sortDir == "desc" %}
+                                                            {% if sort_by == "date" and sort_dir == "desc" %}
                                                            checked {% endif %} class="">
                                                     <span class="dropdown-item">Thời gian đặt cũ nhất</span>
                                                 </div>
@@ -529,7 +533,7 @@
                                             <div class="form-check filter-type-item" id="3">
                                                 <div class="form-check-label d-flex justify-content-between align-content-center">
                                                     <input type="checkbox"
-                                                            {% if sortBy == "total-amount" and sortDir == "asc" %}
+                                                            {% if sort_by == "total-amount" and sort_dir == "asc" %}
                                                            checked {% endif %} class="">
                                                     <span class="dropdown-item">Tổng tiền tăng dần</span>
                                                 </div>
@@ -537,7 +541,7 @@
                                             <div class="form-check filter-type-item" id="4">
                                                 <div class="form-check-label d-flex justify-content-between align-content-center">
                                                     <input type="checkbox"
-                                                            {% if sortBy == "total-amount" and sortDir == "desc" %}
+                                                            {% if sort_by == "total-amount" and sort_dir == "desc" %}
                                                            checked {% endif %} class="">
                                                     <span class="dropdown-item">Tổng tiền giảm dần</span>
                                                 </div>
@@ -601,14 +605,14 @@
                                         <div class="dropdown-menu order-type dropdown-menu-pagination">
                                             <div class="form-check filter-type-item cursor-pointer" id="1">
                                                 <div class="form-check-label d-flex justify-content-between align-content-center">
-                                                    <input type="checkbox" {% if orderType == "1" %} checked {% endif %}
+                                                    <input type="checkbox" {% if order_type == "1" %} checked {% endif %}
                                                            class="">
                                                     <span class="dropdown-item">Đặt online</span>
                                                 </div>
                                             </div>
                                             <div class="form-check filter-type-item" id="2">
                                                 <div class="form-check-label d-flex justify-content-between align-content-center">
-                                                    <input type="checkbox" {% if orderType == "2" %} checked {% endif %}
+                                                    <input type="checkbox" {% if order_type == "2" %} checked {% endif %}
                                                            class="">
                                                     <span class="dropdown-item">Mua trực tiếp</span>
                                                 </div>
@@ -626,7 +630,7 @@
                                         <div class="dropdown-menu payment-method-type dropdown-menu-pagination">
                                             <div class="form-check filter-type-item" id="1">
                                                 <div class="form-check-label d-flex justify-content-between align-content-center">
-                                                    <input type="checkbox" {% if paymentMethod == "1" %}
+                                                    <input type="checkbox" {% if payment_method == "1" %}
                                                            checked {% endif %}
                                                            class="">
                                                     <span class="dropdown-item">Thẻ</span>
@@ -634,7 +638,7 @@
                                             </div>
                                             <div class="form-check filter-type-item" id="2">
                                                 <div class="form-check-label d-flex justify-content-between align-content-center">
-                                                    <input type="checkbox" {% if paymentMethod == "2" %}
+                                                    <input type="checkbox" {% if payment_method == "2" %}
                                                            checked {% endif %}
                                                            class="">
                                                     <span class="dropdown-item">Tiền mặt</span>

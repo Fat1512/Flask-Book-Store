@@ -65,7 +65,6 @@ def create_books():
     return jsonify({
         'message': 'success',
         'status': 200
-
     })
 
 
@@ -110,35 +109,66 @@ def get_manage_books():
         book_dto.append(book.to_dict_manage())
     data['books'] = book_dto
 
-    return data
+    return jsonify({
+        'message': 'Success',
+        'status': 200,
+        'data': data
+    })
 
 
 @book_rest_bp.route('/<book_id>/manage', methods=['GET'])
 def get_manage_book(book_id):
     book = find_by_id(book_id)
     if book is None:
-        return {}
-    return book.to_dict_manage()
+        jsonify({
+            'message': 'Not Found',
+            'status': 404
+        })
+
+    return jsonify({
+        'message': 'Success',
+        'status': 200,
+        'data': book.to_dict_manage()
+    })
 
 
 @book_rest_bp.route('/barcode/<barcode>', methods=['GET'])
 def get_by_barcode(barcode):
     barcode = find_by_barcode(barcode).first().to_dict()
     if not barcode:
-        return False
-    return barcode
+        return jsonify({
+            'message': 'Not Found',
+            'status': 404
+        })
+
+    return jsonify({
+        'message': 'Success',
+        'status': 200,
+        'data': barcode
+    })
 
 
 # -------------------------------import book-------------------------------
 @book_rest_bp.route('/import', methods=['POST'])
 def create_import():
     data = request.json
-    return create_form_import(data)
+    form_import = create_form_import(data)
+
+    return jsonify({
+        'message': 'Successfully Created',
+        'status': 200,
+        'data': form_import
+    })
 
 
 @book_rest_bp.route('/import/<int:import_id>/detail')
 def get_import_form_detail(import_id):
-    return find_form_import_by_id(import_id)
+    form_import = find_form_import_by_id(import_id)
+    return jsonify({
+        'message': 'Success',
+        'status': 200,
+        'data': form_import
+    })
 
 
 @book_rest_bp.route('/import', methods=['GET'])
@@ -151,12 +181,8 @@ def get_import_form():
 
     form_imports['form_imports'] = [form_import.to_dict() for form_import in form_imports['form_imports']]
 
-    return form_imports
-
-
-@book_rest_bp.route('/import/test', methods=['GET'])
-def testt_import():
-    start_date = request.args.get('startDate')
-    end_date = request.args.get('endDate')
-    form_imports = find_form_imports(start_date=start_date, end_date=end_date)
-    return form_imports
+    return jsonify({
+        'message': 'Success',
+        'status': 200,
+        'data': form_imports
+    })

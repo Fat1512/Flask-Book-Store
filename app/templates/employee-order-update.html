@@ -477,9 +477,9 @@
                                             <div class="col-lg-12">
                                                     <span class="form-control-label"
                                                           for="input-address">Họ và tên: </span>
-                                                <span>{{ order['address']['first_name'] }} {{ order['address']['last_name'] }}</span>
+                                                <span>{{ order['address']['fullname'] }} </span>
                                             </div>
-                                           <div class="col-lg-12">
+                                            <div class="col-lg-12">
                                                     <span class="form-control-label"
                                                           for="input-address">Địa chỉ: </span>
                                                 <span>{{ order['address']['address'] }} {{ order['address']['province'] }}</span>
@@ -531,7 +531,6 @@
                             <tr>
                                 <th scope="col" class="sort text-center w-25" data-sort="name">Ten san pham</th>
                                 <th scope="col" class="sort text-center" data-sort="budget">Gia</th>
-                                <th scope="col" class="sort text-center" data-sort="status">Giam gia</th>
                                 <th scope="col" class="text-center">So luong</th>
                                 <th scope="col" class="sort text-center" data-sort="completion">Tong tien</th>
                                 <th scope="col"></th>
@@ -550,11 +549,6 @@
                                     </th>
                                     <td class="budget text-center order-item-price">
                                         {{ order_item['price']|currency('VND') }}
-                                    </td>
-                                    <td>
-                                    <span class="badge badge-dot mr-4 text-center w-100">
-                                    <span class="status text-center order-item-discount">10%</span>
-                                    </span>
                                     </td>
                                     <td>
                                         <div class="d-flex justify-content-center">
@@ -654,15 +648,14 @@
                     <div class="row px-5 product-container">
                         {% for book in books['books'] %}
                             <a class="product-item card col-3 cursor-pointer" id="{{ book['book_id'] }}">
-                                <span class="discount text-white">10%</span>
                                 <img class="card-img-top"
                                      src="
                                              {% if  book['images'] %}{{ book['images'][0]['image_url'] }} {% else %}null{% endif %}"
                                      alt="Card image">
                                 <div class="card-body p-0">
                                     <p class="card-text product-name">{{ book['title'] }}</p>
-                                    <p class="text-primary font-weight-bold mb-1 product-price">{{ book['price'] }}đ</p>
-                                    <p class="text-secondary text-decoration-line-through mb-1">1000đ</p>
+                                    <p class="text-primary font-weight-bold mb-1 product-price">{{ book['price']|currency('VND') }}</p>
+                                    <p class="text-dark font-weight-light mb-1">qty: {{ book['quantity'] }}</p>
                                 </div>
                             </a>
                         {% endfor %}

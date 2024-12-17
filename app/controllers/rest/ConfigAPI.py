@@ -6,11 +6,17 @@ import json
 
 config_api_bp = Blueprint('/api/v1/config', __name__)
 
+
 @config_api_bp.route("/")
 def getconfig():
     config = get_config()
-    return {
-        'min_restock_level': config.min_restock_level,
-        'min_restock_qty': config.min_restock_qty,
-        'order_cancel_period': config.order_cancel_period
-    }
+
+    return jsonify({
+        "status": 200,
+        "message": "Success",
+        'data': {
+            'min_restock_level': config.min_restock_level,
+            'min_restock_qty': config.min_restock_qty,
+            'order_cancel_period': config.order_cancel_period
+        }
+    })

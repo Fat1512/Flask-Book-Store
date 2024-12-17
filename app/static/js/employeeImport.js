@@ -49,7 +49,8 @@ const fetchBook = async function () {
     try {
         const res = await fetch(`${BOOK_API}/manage${url.search}`)
         if (!res.ok) throw new Error("Cannot fetch books");
-        return await res.json();
+        const data = await res.json();
+        return data['data'];
     } catch (err) {
         throw err;
     }
@@ -59,7 +60,8 @@ const fetchBookById = async function (id) {
     try {
         const res = await fetch(`${BOOK_API}/${id}/manage`)
         if (!res.ok) throw new Error("Cannot fetch book");
-        return await res.json();
+        const data = await res.json();
+        return data['data'];
     } catch (err) {
         throw err;
     }
@@ -75,7 +77,8 @@ const postFormImport = async function () {
             }
         });
         if (!res.ok) throw new Error("Can't create import form");
-        return await res.json();
+        const data = await res.json();
+        return data['data'];
     } catch (err) {
         throw err;
     }
@@ -179,7 +182,7 @@ searchInput.addEventListener("keypress", async function (e) {
             };
         renderBookContainer(data);
     } catch (err) {
-        throw (err.message);
+        alert(err.message);
     }
 })
 
@@ -187,7 +190,8 @@ window.addEventListener("load", async function () {
     try {
         const res = await fetch(`${CONFIG_API}`);
         if (!res.ok) throw new Error("cannot fetch config");
-        config = await res.json();
+        const data = await res.json();
+        config = data['data'];
     } catch (err) {
         alert(err.message);
     }
@@ -396,6 +400,7 @@ const renderPagination = function (total_page, current_page) {
 
 const renderImportedItems = function () {
     importList.innerHTML = '';
+    console.log(currentItemState)
     const html = Object.entries(currentItemState).map(item => {
         return `
         <tr class="import-item" id="${item[1]['bookId']}">
