@@ -1,3 +1,4 @@
+//---------------------------------------------CONSTANTS---------------------------------------------
 const vndCurrencyFormat = new Intl.NumberFormat('vi-VN', {
     style: 'currency',
     currency: 'VND',
@@ -23,8 +24,13 @@ const timeFormatter = new Intl.DateTimeFormat('vi-VN', {
     // timeZoneName: 'short' // e.g., GMT
 });
 
-//============================================DOM============================================
+const Color = {
+    WARNING: "orange",
+    ERROR: `var(--red)`,
+    SUCCESS: "#6cbf6c"
+}
 
+//---------------------------------------------DOM ELEMENTS & STATES---------------------------------------------
 const modal = document.querySelector(".modal");
 const modalBody = document.querySelector(".modal-body");
 const overlay = document.querySelector(".overlay")
@@ -55,348 +61,15 @@ let currentAddressesState = {};
 let currentCustomerInfoState = {};
 let currentPhoneNumberSearchTimeoutID;
 
-//============================================Barcode Scanner============================================
-let html5QrcodeScanner = new Html5QrcodeScanner(
-    "reader", {
-        fps: 10,
-        qrbox: {width: 300, height: 200},
-    },
-    false
-);
-html5QrcodeScanner.render(onScanSuccess, onScanFailure);
-
-async function onScanSuccess(decodedText, decodedResult) {
-
-    html5QrcodeScanner.pause(1);
-    setTimeout(() => {
-        html5QrcodeScanner.resume();
-        modal.classList.remove("d-flex")
-        overlay.classList.remove("d-flex");
-    }, 1000);
-
-    try {
-        const data = await fetchBookByBarcode(decodedText);
-        if (currentOrderItemsState[data['book_id']]) {
-            currentOrderItemsState[data['book_id']]['quantity'] = +currentOrderItemsState[data['book_id']]['quantity'] + 1;
-        } else {
-            currentOrderItemsState[data['book_id']] = data;
-            currentOrderItemsState[data['book_id']]['quantity'] = 1;
-        }
-        renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]));
-    } catch (err) {
-        renderToast(err.message, "center", "orange");
-    }
-}
-
-function onScanFailure(error) {
-}
-
-//============================================API============================================
-
-async function fetchPhoneNumber(phoneNumber) {
-    try {
-        const res = await fetch(`/api/v1/user/phone_number/${phoneNumber}`, {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        if (!res.ok) throw new Error("Không có số điện thoại tương ứng");
-        const data = await res.json();
-        return data['data'];
-    } catch (err) {
-        throw err;
-    }
-}
-
-async function fetchBooks() {
-    try {
-        const res = await fetch(`/api/v1/book`, {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        if (!res.ok) throw new Error("Sách không tồn tại");
-        const data = await res.json();
-        return data['data'];
-    } catch (err) {
-        throw err;
-    }
-
-}
-
-async function fetchBookById(bookId) {
-    try {
-        const res = await fetch(`/api/v1/book/${bookId}/manage`, {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        if (!res.ok) throw new Error("Sách không tồn tại");
-        const data = await res.json();
-        return data['data'];
-    } catch (err) {
-        throw err;
-    }
-}
-
-async function fetchBookByBarcode(barcode) {
-    try {
-        const res = await fetch(`/api/v1/book/barcode/${barcode}`, {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        if (!res.ok) throw new Error("Barcode không tồn tại")
-        const data = await res.json();
-        return data['data'];
-    } catch (err) {
-        throw err;
-    }
-}
-
-async function postOfflineOrder() {
-
-    let data = {
-        'customerInfo': currentCustomerInfoState,
-        'orderList': Object.values(currentOrderItemsState)
-    };
-    const res = await fetch(`/api/v1/order/add`, {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
-    console.log(res);
-    if (!res.ok) throw new Error("Sách không đủ số lượng vui lòng kiểm tra lại");
-    data = await res.json();
-    return data['data'];
-}
-
-//============================================FUNCTION============================================
-
-const openModal = function () {
-    modal.classList.add("d-flex");
-    overlay.classList.add("d-flex");
-}
-
-const closeModal = function () {
-    modal.classList.remove("d-flex");
-    overlay.classList.remove("d-flex");
-    barcodeScanner.classList.remove("d-none");
-
-    Array.from(modalBody.children).forEach(child => {
-        if (child !== barcodeScanner) modalBody.removeChild(child);
-    })
-}
-
-const resetState = function () {
-    currentOrderItemsState = {};
-    renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]));
-}
-
-//============================================EVENT============================================
-
-qrBtn.addEventListener("click", openModal);
-
-overlay.addEventListener("click", closeModal);
-
-deleteAllBtn.addEventListener("click", resetState);
-
-phoneNumberDropDown.addEventListener("mousedown", function (e) {
-    const target = e.target.closest("li");
-    if (!target) return;
-    const id = +target.getAttribute("id");
-    renderCustomerName(currentAddressesState[id]);
-
-    //retain the selected id
-    currentCustomerInfoState = currentAddressesState[id];
-});
-
-customerNameContainer.addEventListener("click", function (e) {
-    const deleteCustomerBtn = e.target.closest(".btn");
-    if (!deleteCustomerBtn) return;
-    resetCustomerInfoState();
-});
-
-
-const resetCustomerInfoState = function () {
-    customerNameContainer.innerHTML = '';
-    currentCustomerInfoState = {};
-    inputGroupAddPhoneNumber.querySelector("input").value = '';
-    inputGroupSearchPhoneNumber.querySelector("input").value = '';
-};
-
-searchPhoneNumBtn.addEventListener("click", function () {
-    inputGroupSearchPhoneNumber.classList.add("d-flex");
-    inputGroupSearchPhoneNumber.classList.remove("d-none");
-    inputGroupAddPhoneNumber.classList.remove("d-flex");
-    inputGroupAddPhoneNumber.classList.add("d-none");
-    resetCustomerInfoState();
-});
-
-addPhoneNumBtn.addEventListener("click", function () {
-    inputGroupSearchPhoneNumber.classList.add("d-none");
-    inputGroupSearchPhoneNumber.classList.remove("d-flex");
-    inputGroupAddPhoneNumber.classList.remove("d-none");
-    inputGroupAddPhoneNumber.classList.add("d-flex");
-    resetCustomerInfoState();
-});
-
-searchBtn.addEventListener("click", async function () {
-    try {
-        const bookId = inputSearch.value;
-        const book = await fetchBookById(bookId);
-        renderBookItem([book]);
-    } catch (err) {
-        alert(err.message);
-    }
-});
-
-resetBtn.addEventListener("click", async function () {
-    try {
-        const books = await fetchBooks();
-        console.log(books);
-        renderBookItem(books['data']['books']);
-
-        inputSearch.value = '';
-    } catch (err) {
-        alert(err.message);
-    }
-});
-
-inputGroupSearchPhoneNumber.addEventListener("focusout", function (e) {
-    phoneNumberDropDown.classList.add("d-none");
-});
-
-inputGroupSearchPhoneNumber.addEventListener("focusin", function (e) {
-    phoneNumberDropDown.classList.remove("d-none");
-});
-
-inputGroupAddPhoneNumber.addEventListener("input", (e) => {
-    currentCustomerInfoState = {
-        'id': null,
-        'phone_number': e.target.value
-    }
-});
-
-inputGroupSearchPhoneNumber.addEventListener("input", async function (e) {
-    clearTimeout(currentPhoneNumberSearchTimeoutID)
-    currentPhoneNumberSearchTimeoutID = setTimeout(async function () {
-        try {
-            const data = await fetchPhoneNumber(e.target.value);
-            renderPhoneNumberList(data);
-        } catch (err) {
-            console.log(err.message);
-        }
-
-    }, 100);
-});
-
-checkoutBtn.addEventListener("click", async function () {
-
-    if (Object.keys(currentOrderItemsState).length === 0) {
-        renderToast("Phải có ít nhất 1 sản phẩm", "center", "orange");
-        return;
-    }
-    try {
-        const order = await postOfflineOrder();
-        renderToast("Đã xuất hóa đơn", "right", "#6cbf6c")
-        openModal();
-        resetState();
-        barcodeScanner.classList.add("d-none");
-
-        renderInvoice(order);
-        renderToast("Đang tải xuống...", "right", "orange");
-
-        const {jsPDF} = window.jspdf;
-        html2canvas(document.querySelector("#invoice"), {
-            useCORS: true,
-            allowTaint: false,
-            scale: 2 // Improves image quality
-        }).then(canvas => {
-            const imgData = canvas.toDataURL("image/png");
-            const pdf = new jsPDF("p", "mm", "a4");
-
-            // Add image to PDF
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-            pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-            pdf.save(`invoice_${document.querySelector('[order-id]').getAttribute("order-id")}.pdf`);
-
-            renderToast("Đã tải xuống", "right")
-        });
-    } catch (err) {
-        renderToast(err.message, "center", "orange");
-    }
-});
-
-productContainer.addEventListener("click", function (e) {
-    const productItem = e.target.closest(".product-item");
-    if (!productItem) return;
-    const id = productItem.getAttribute("id");
-
-    if (currentOrderItemsState[id]) {
-        const input = orderContainer.querySelector(`[input-id="${id}"]`);
-        currentOrderItemsState[id]['quantity'] = +input.value + 1;
-    } else {
-        currentOrderItemsState[id] = {
-            'book_id': id,
-            'price': extractCurrencyNumber(productItem.querySelector(".product-price").textContent),
-            'title': productItem.querySelector(".product-name").textContent,
-            'quantity': 1
-        };
-    }
-    renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]));
-});
-
-orderContainer.addEventListener("click", function (e) {
-    const removeBtn = e.target.closest(".remove-order-item-btn");
-    const incrementBtn = e.target.closest(".increment-qty-btn");
-    const decrementBtn = e.target.closest(".decrement-qty-btn");
-    const id = e.target.closest(".order-item")?.getAttribute("id");
-    let isTriggered = false;
-
-    if (removeBtn) {
-        delete currentOrderItemsState[+id];
-        isTriggered ||= true;
-    }
-    if (incrementBtn) {
-        const input = incrementBtn.previousElementSibling;
-        currentOrderItemsState[+id]['quantity'] = +input.value + 1;
-        isTriggered ||= true;
-    }
-    if (decrementBtn) {
-        const input = decrementBtn.nextElementSibling;
-        currentOrderItemsState[+id]['quantity'] = input.value > 1 ? +input.value - 1 : input.value;
-        isTriggered ||= true;
-    }
-    isTriggered && renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]));
-});
-
-orderContainer.addEventListener("change", function (e) {
-    const input = e.target;
-    if (input.value == 0 || input.value == '') input.value = 1;
-
-    currentOrderItemsState[+input.getAttribute("input-id")]['quantity'] = +input.value;
-    renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]))
-})
-
-//============================================RENDER============================================
-const renderToast = function (text, position = "center", background = "#6cbf6c") {
+//---------------------------------------------RENDER---------------------------------------------
+const renderToast = function (text, background) {
     Toastify({
         text: text,
         duration: 3000,
         newWindow: true,
         close: true,
         gravity: "top", // `top` or `bottom`
-        position: position, // `left`, `center` or `right`
+        position: right, // `left`, `center` or `right`
         stopOnFocus: true, // Prevents dismissing of toast on hover
         style: {
             background: background,
@@ -573,3 +246,332 @@ const renderCustomerName = function (currentAddress) {
     customerNameContainer.insertAdjacentHTML("beforeend", html);
 }
 
+
+
+//---------------------------------------------API UTILITY---------------------------------------------
+const fetchPhoneNumber = async function(phoneNumber) {
+    try {
+        const res = await fetch(`/api/v1/user/phone_number/${phoneNumber}`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!res.ok) throw new Error("Không có số điện thoại tương ứng");
+        const data = await res.json();
+        return data['data'];
+    } catch (err) {
+        throw err;
+    }
+}
+
+const fetchBooks = async function() {
+    try {
+        const res = await fetch(`/api/v1/book`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!res.ok) throw new Error("Sách không tồn tại");
+        const data = await res.json();
+        return data['data'];
+    } catch (err) {
+        throw err;
+    }
+}
+
+const fetchBookById = async function(bookId) {
+    try {
+        const res = await fetch(`/api/v1/book/${bookId}/manage`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!res.ok) throw new Error("Sách không tồn tại");
+        const data = await res.json();
+        return data['data'];
+    } catch (err) {
+        throw err;
+    }
+}
+
+const fetchBookByBarcode = async function(barcode) {
+    try {
+        const res = await fetch(`/api/v1/book/barcode/${barcode}`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!res.ok) throw new Error("Barcode không tồn tại")
+        const data = await res.json();
+        return data['data'];
+    } catch (err) {
+        throw err;
+    }
+}
+
+const postOfflineOrder = async function() {
+    let data = {
+        'customerInfo': currentCustomerInfoState,
+        'orderList': Object.values(currentOrderItemsState)
+    };
+    const res = await fetch(`/api/v1/order/add`, {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if (!res.ok) throw new Error("Sách không đủ số lượng vui lòng kiểm tra lại");
+    data = await res.json();
+    return data['data'];
+}
+
+
+
+//---------------------------------------------DOM UTILITY---------------------------------------------
+let html5QrcodeScanner = new Html5QrcodeScanner(
+    "reader", {
+        fps: 10,
+        qrbox: {width: 300, height: 200},
+    },
+    false
+);
+html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+
+async function onScanSuccess(decodedText, decodedResult) {
+
+    html5QrcodeScanner.pause(1);
+    setTimeout(() => {
+        html5QrcodeScanner.resume();
+        modal.classList.remove("d-flex")
+        overlay.classList.remove("d-flex");
+    }, 1000);
+
+    try {
+        const data = await fetchBookByBarcode(decodedText);
+        if (currentOrderItemsState[data['book_id']]) {
+            currentOrderItemsState[data['book_id']]['quantity'] = +currentOrderItemsState[data['book_id']]['quantity'] + 1;
+        } else {
+            currentOrderItemsState[data['book_id']] = data;
+            currentOrderItemsState[data['book_id']]['quantity'] = 1;
+        }
+        renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]));
+    } catch (err) {
+        renderToast(err.messageColor.ERROR);
+    }
+}
+
+function onScanFailure(error) {}
+
+const openModal = function () {
+    modal.classList.add("d-flex");
+    overlay.classList.add("d-flex");
+}
+
+const closeModal = function () {
+    modal.classList.remove("d-flex");
+    overlay.classList.remove("d-flex");
+    barcodeScanner.classList.remove("d-none");
+
+    Array.from(modalBody.children).forEach(child => {
+        if (child !== barcodeScanner) modalBody.removeChild(child);
+    })
+}
+
+const resetState = function () {
+    currentOrderItemsState = {};
+    renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]));
+}
+
+//---------------------------------------------EVENT---------------------------------------------
+qrBtn.addEventListener("click", openModal);
+
+overlay.addEventListener("click", closeModal);
+
+deleteAllBtn.addEventListener("click", resetState);
+
+phoneNumberDropDown.addEventListener("mousedown", function (e) {
+    const target = e.target.closest("li");
+    if (!target) return;
+    const id = +target.getAttribute("id");
+    renderCustomerName(currentAddressesState[id]);
+
+    //retain the selected id
+    currentCustomerInfoState = currentAddressesState[id];
+});
+
+customerNameContainer.addEventListener("click", function (e) {
+    const deleteCustomerBtn = e.target.closest(".btn");
+    if (!deleteCustomerBtn) return;
+    resetCustomerInfoState();
+});
+
+const resetCustomerInfoState = function () {
+    customerNameContainer.innerHTML = '';
+    currentCustomerInfoState = {};
+    inputGroupAddPhoneNumber.querySelector("input").value = '';
+    inputGroupSearchPhoneNumber.querySelector("input").value = '';
+};
+
+searchPhoneNumBtn.addEventListener("click", function () {
+    inputGroupSearchPhoneNumber.classList.add("d-flex");
+    inputGroupSearchPhoneNumber.classList.remove("d-none");
+    inputGroupAddPhoneNumber.classList.remove("d-flex");
+    inputGroupAddPhoneNumber.classList.add("d-none");
+    resetCustomerInfoState();
+});
+
+addPhoneNumBtn.addEventListener("click", function () {
+    inputGroupSearchPhoneNumber.classList.add("d-none");
+    inputGroupSearchPhoneNumber.classList.remove("d-flex");
+    inputGroupAddPhoneNumber.classList.remove("d-none");
+    inputGroupAddPhoneNumber.classList.add("d-flex");
+    resetCustomerInfoState();
+});
+
+searchBtn.addEventListener("click", async function () {
+    try {
+        const bookId = inputSearch.value;
+        const book = await fetchBookById(bookId);
+        renderBookItem([book]);
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
+    }
+});
+
+
+resetBtn.addEventListener("click", async function () {
+    try {
+        const books = await fetchBooks();
+        renderBookItem(books['data']['books']);
+
+        inputSearch.value = '';
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
+    }
+});
+
+inputGroupSearchPhoneNumber.addEventListener("focusout", function (e) {
+    phoneNumberDropDown.classList.add("d-none");
+});
+
+inputGroupSearchPhoneNumber.addEventListener("focusin", function (e) {
+    phoneNumberDropDown.classList.remove("d-none");
+});
+
+inputGroupAddPhoneNumber.addEventListener("input", (e) => {
+    currentCustomerInfoState = {
+        'id': null,
+        'phone_number': e.target.value
+    }
+});
+
+inputGroupSearchPhoneNumber.addEventListener("input", async function (e) {
+    clearTimeout(currentPhoneNumberSearchTimeoutID)
+    currentPhoneNumberSearchTimeoutID = setTimeout(async function () {
+        try {
+            const data = await fetchPhoneNumber(e.target.value);
+            renderPhoneNumberList(data);
+        } catch (err) {
+            renderToast(err.message, Color.ERROR);
+        }
+    }, 100);
+});
+
+checkoutBtn.addEventListener("click", async function () {
+    if (Object.keys(currentOrderItemsState).length === 0) {
+        renderToast("Phải có ít nhất 1 sản phẩm", Color.WARNING);
+        return;
+    }
+    try {
+        const order = await postOfflineOrder();
+        renderToast("Đã xuất hóa đơn", Color.SUCCESS)
+        openModal();
+        resetState();
+        barcodeScanner.classList.add("d-none");
+
+        renderInvoice(order);
+        renderToast("Đang tải xuống...", Color.WARNING);
+
+        const {jsPDF} = window.jspdf;
+        html2canvas(document.querySelector("#invoice"), {
+            useCORS: true,
+            allowTaint: false,
+            scale: 2 // Improves image quality
+        }).then(canvas => {
+            const imgData = canvas.toDataURL("image/png");
+            const pdf = new jsPDF("p", "mm", "a4");
+
+            // Add image to PDF
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+            pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+            pdf.save(`invoice_${document.querySelector('[order-id]').getAttribute("order-id")}.pdf`);
+
+            renderToast("Đã tải xuống", Color.SUCCESS)
+        });
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
+    }
+});
+
+
+productContainer.addEventListener("click", function (e) {
+    const productItem = e.target.closest(".product-item");
+    if (!productItem) return;
+    const id = productItem.getAttribute("id");
+
+    if (currentOrderItemsState[id]) {
+        const input = orderContainer.querySelector(`[input-id="${id}"]`);
+        currentOrderItemsState[id]['quantity'] = +input.value + 1;
+    } else {
+        currentOrderItemsState[id] = {
+            'book_id': id,
+            'price': extractCurrencyNumber(productItem.querySelector(".product-price").textContent),
+            'title': productItem.querySelector(".product-name").textContent,
+            'quantity': 1
+        };
+    }
+    renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]));
+});
+
+
+orderContainer.addEventListener("click", function (e) {
+    const removeBtn = e.target.closest(".remove-order-item-btn");
+    const incrementBtn = e.target.closest(".increment-qty-btn");
+    const decrementBtn = e.target.closest(".decrement-qty-btn");
+    const id = e.target.closest(".order-item")?.getAttribute("id");
+    let isTriggered = false;
+
+    if (removeBtn) {
+        delete currentOrderItemsState[+id];
+        isTriggered ||= true;
+    }
+    if (incrementBtn) {
+        const input = incrementBtn.previousElementSibling;
+        currentOrderItemsState[+id]['quantity'] = +input.value + 1;
+        isTriggered ||= true;
+    }
+    if (decrementBtn) {
+        const input = decrementBtn.nextElementSibling;
+        currentOrderItemsState[+id]['quantity'] = input.value > 1 ? +input.value - 1 : input.value;
+        isTriggered ||= true;
+    }
+    isTriggered && renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]));
+});
+
+
+orderContainer.addEventListener("change", function (e) {
+    const input = e.target;
+    if (input.value === 0 || input.value === '' || isNaN(input.value)) input.value = 1;
+
+    currentOrderItemsState[+input.getAttribute("input-id")]['quantity'] = +input.value;
+    renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]))
+})

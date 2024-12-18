@@ -18,7 +18,7 @@ def checkout():
         book_dto.append(book.to_dict())
     books['books'] = book_dto
 
-    return render_template("employee-checkout.html", books=books)
+    return render_template("employee/employeeCheckout.html", books=books)
 
 
 @employee_bp.route("/order")
@@ -40,7 +40,7 @@ def get_order():
                       page=int(page),
                       start_date=start_date,
                       end_date=end_date)
-    return render_template("employee-order.html", orders=orders, status=status, payment_method=payment_method,
+    return render_template("employee/employeeOrder.html", orders=orders, status=status, payment_method=payment_method,
                            sort_by=sort_by, sort_dir=sort_dir, order_type=order_type, start_date=start_date, end_date=end_date)
 
 
@@ -53,14 +53,14 @@ def update_order(order_id):
     for book in books['books']:
         book_dto.append(book.to_dict())
     books['books'] = book_dto
-    return render_template("employee-order-update.html", order=order, books=books)
+    return render_template("employee/employeeOrderUpdate.html", order=order, books=books)
 
 
 @employee_bp.route("/order/<order_id>/detail")
 def get_order_detail(order_id):
     order = find_by_id(order_id)
     today = datetime.utcnow()
-    return render_template("employee-order-detail.html", order=order, today=today)
+    return render_template("employee/employeeOrderDetail.html", order=order, today=today)
 
 # @employee_bp.route("/category")
 # def get_category():
@@ -80,7 +80,7 @@ def import_book():
 
     books['books'] = book_dto
     config = get_config()
-    return render_template("employee-import.html", books=books, config=config)
+    return render_template("employee/employeeImport.html", books=books, config=config)
 
 
 @employee_bp.route("/import/history")
@@ -92,5 +92,5 @@ def import_book_history():
     form_imports = find_form_imports(page=page, start_date=start_date, end_date=end_date)
     form_imports['form_imports'] = [form_import.to_dict() for form_import in form_imports['form_imports']]
 
-    return render_template("employee-import-history.html", form_imports=form_imports, end_date=end_date,
+    return render_template("employee/employeeImportHistory.html", form_imports=form_imports, end_date=end_date,
                            start_date=start_date, page=page)

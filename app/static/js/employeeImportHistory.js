@@ -1,3 +1,4 @@
+//---------------------------------------------CONSTANTS---------------------------------------------
 const IMPORT_API = `/api/v1/book/import`;
 const url = new URL(window.location);
 const vndCurrencyFormat = new Intl.NumberFormat('vi-VN', {
@@ -25,6 +26,7 @@ const timeFormatter = new Intl.DateTimeFormat('vi-VN', {
     // timeZoneName: 'short' // e.g., GMT
 });
 
+//---------------------------------------------DOM ELEMENTS & STATES---------------------------------------------
 const modalBodyExport = document.querySelector(".modal-body-export")
 const pagination = document.querySelector(".pagination");
 const modal = document.querySelector(".modal");
@@ -41,198 +43,9 @@ const searchBtn = document.querySelector(".btn-search");
 const printBtn = document.querySelector(".btn-print-import-form");
 let currentSearchParam = {};
 
-const deleteCurrentParams = (params) => params.forEach(param => delete currentSearchParam[param]);
-const addCurrentParams = (params) => params.forEach(param => currentSearchParam[param[0]] = param[1]);
-
-const deleteUrlParams = (params) => params.forEach(param => url.searchParams.delete(param));
-const addUrlParams = (params) => params.forEach(param => url.searchParams.set(param[0], param[1]));
 
 
-const fetchImportForm = async function () {
-    try {
-        const param = '?' + Object.entries(currentSearchParam).map(pr => pr[0] + '=' + pr[1]).join("&");
-        const res = await fetch(`${IMPORT_API}${param}`);
-        if (!res.ok) throw new Error("Cannot fetch import form");
-        const data = await res.json();
-        return data['data'];
-    } catch (err) {
-        throw err;
-    }
-};
-
-const fetchImportFormDetail = async function (importFormId) {
-    try {
-        const res = await fetch(`${IMPORT_API}/${importFormId}/detail`);
-        if (!res.ok) throw new Error("Cannot fetch import form detail");
-        const data = await res.json();
-        return data['data'];
-    } catch (err) {
-        throw err;
-    }
-}
-
-const resetAllState = function () {
-    inputStartDate.value = '';
-    inputEndDate.value = '';
-    inputSearch.value = '';
-
-    currentSearchParam = {};
-    url.search = "";
-    window.history.pushState({}, '', url);
-}
-
-const openModal = function () {
-    overlay.classList.add("d-flex");
-    modal.classList.add("d-flex");
-}
-
-const closeModal = function () {
-    overlay.classList.remove("d-flex");
-    modal.classList.remove("d-flex");
-}
-
-modalBodyExport.addEventListener("click", function (e) {
-    const pdfDownloadBtn = e.target.closest(".btn-download-pdf");
-    if (!pdfDownloadBtn) return;
-
-    const {jsPDF} = window.jspdf;
-
-    Toastify({
-        text: "Đang tải xuống...",
-        duration: 3000,
-        newWindow: true,
-        close: true,
-        gravity: "top", // `top` or `bottom`
-        position: "right", // `left`, `center` or `right`
-        stopOnFocus: true, // Prevents dismissing of toast on hover
-        style: {
-            background: "orange",
-        }
-    }).showToast();
-
-    html2canvas(document.querySelector("#invoice"), {
-        useCORS: true,
-        allowTaint: false,
-        scale: 2 // Improves image quality
-    }).then(canvas => {
-        const imgData = canvas.toDataURL("image/png");
-        const pdf = new jsPDF("p", "mm", "a4");
-
-        // Add image to PDF
-        const imgProps = pdf.getImageProperties(imgData);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-
-        pdf.save(`form_import_${document.querySelector('[form-import-id]').getAttribute("form-import-id")}.pdf`);
-        Toastify({
-            text: "Đã tải thành công !",
-            duration: 3000,
-            newWindow: true,
-            close: true,
-            gravity: "top", // `top` or `bottom`
-            position: "right", // `left`, `center` or `right`
-            stopOnFocus: true, // Prevents dismissing of toast on hover
-            style: {
-                background: "#6cbf6c",
-            }
-        }).showToast();
-    });
-})
-
-resetAllBtn.addEventListener("click", async function () {
-    resetAllState();
-    try {
-        const form = await fetchImportForm();
-        renderImportItems(form['form_imports']);
-        renderPagination(form['total_page'], form['current_page']);
-    } catch (err) {
-        alert(err.message);
-    }
-});
-
-overlay.addEventListener("click", closeModal)
-
-importList.addEventListener("click", async function (e) {
-    const printBtn = e.target.closest(".btn-print-import-form");
-    console.log(printBtn)
-    if (!printBtn) return;
-    try {
-        const formImportId = e.target.closest(".import-item").getAttribute("id");
-        const form = await fetchImportFormDetail(formImportId);
-        openModal();
-        renderImportForm(form);
-    } catch (err) {
-        alert(err.message);
-    }
-});
-
-searchBtn.addEventListener("click", async function () {
-    const formImportId = inputSearch.value;
-    resetAllState();
-    currentSearchParam['formImportId'] = formImportId;
-
-    const form = await fetchImportForm();
-    renderImportItems(form['form_imports']);
-    renderPagination(form['total_page'], form['current_page']);
-});
-
-inputStartDate.addEventListener("change", async function () {
-    const value = inputStartDate.value;
-
-    deleteCurrentParams(["startDate", "page", "formImportId"])
-    deleteUrlParams(["startDate", "page", "formImportId"]);
-    inputSearch.value = '';
-
-    if (value) {
-        addCurrentParams([["startDate", value]]);
-        addUrlParams([["startDate", value]]);
-    }
-
-    window.history.pushState({}, '', url);
-
-    const form = await fetchImportForm();
-    renderImportItems(form['form_imports']);
-    renderPagination(form['total_page'], form['current_page']);
-});
-
-
-inputEndDate.addEventListener("change", async function () {
-    const value = inputEndDate.value;
-    deleteCurrentParams(["endDate", "page", "formImportId"])
-    deleteUrlParams(["endDate", "page", "formImportId"]);
-    inputSearch.value = '';
-    if (value) {
-        addCurrentParams([["endDate", value]]);
-        addUrlParams([["endDate", value]]);
-    }
-
-    window.history.pushState({}, '', url);
-
-    const form = await fetchImportForm();
-    renderImportItems(form['form_imports']);
-    renderPagination(form['total_page'], form['current_page']);
-});
-
-pagination.addEventListener("click", async function (e) {
-    const item = e.target.closest(".page-item");
-    if (!item || item.classList.contains("disabled") || item.classList.contains("active")) return;
-
-    deleteUrlParams(["page"]);
-    deleteCurrentParams(["page"]);
-
-    addUrlParams([["page", item.getAttribute("page")]]);
-    addCurrentParams([["page", item.getAttribute("page")]]);
-
-    window.history.pushState({}, '', url);
-
-    const form = await fetchImportForm();
-
-    renderImportItems(form['form_imports']);
-    renderPagination(form['total_page'], form['current_page']);
-});
-
+//---------------------------------------------RENDER---------------------------------------------
 const renderPagination = function (total_page, current_page) {
     const prev = `
         <li class="page-item ${current_page == 1 ? "disabled" : ""}" page=${current_page - 1}>
@@ -378,3 +191,204 @@ const renderImportForm = function (form) {
     modalBodyExport.innerHTML = '';
     modalBodyExport.insertAdjacentHTML("beforeend", html);
 };
+
+const renderToast = function (text, background) {
+    Toastify({
+        text: text,
+        duration: 3000,
+        newWindow: true,
+        close: true,
+        gravity: "top",
+        position: right,
+        stopOnFocus: true,
+        style: {
+            background: background,
+        }
+    }).showToast();
+}
+//---------------------------------------------API UTILITY---------------------------------------------
+const fetchImportForm = async function () {
+    try {
+        const param = '?' + Object.entries(currentSearchParam).map(pr => pr[0] + '=' + pr[1]).join("&");
+        const res = await fetch(`${IMPORT_API}${param}`);
+        if (!res.ok) throw new Error("Cannot fetch import form");
+        const data = await res.json();
+        return data['data'];
+    } catch (err) {
+        throw err;
+    }
+};
+
+const fetchImportFormDetail = async function (importFormId) {
+    try {
+        const res = await fetch(`${IMPORT_API}/${importFormId}/detail`);
+        if (!res.ok) throw new Error("Cannot fetch import form detail");
+        const data = await res.json();
+        return data['data'];
+    } catch (err) {
+        throw err;
+    }
+}
+//---------------------------------------------DOM UTILITY---------------------------------------------
+const openModal = function () {
+    overlay.classList.add("d-flex");
+    modal.classList.add("d-flex");
+}
+
+const closeModal = function () {
+    overlay.classList.remove("d-flex");
+    modal.classList.remove("d-flex");
+}
+
+const resetAllState = function () {
+    inputStartDate.value = '';
+    inputEndDate.value = '';
+    inputSearch.value = '';
+
+    currentSearchParam = {};
+    url.search = "";
+    window.history.pushState({}, '', url);
+}
+
+const deleteCurrentParams = (params) => params.forEach(param => delete currentSearchParam[param]);
+const addCurrentParams = (params) => params.forEach(param => currentSearchParam[param[0]] = param[1]);
+
+const deleteUrlParams = (params) => params.forEach(param => url.searchParams.delete(param));
+const addUrlParams = (params) => params.forEach(param => url.searchParams.set(param[0], param[1]));
+
+//---------------------------------------------EVENT---------------------------------------------
+modalBodyExport.addEventListener("click", function (e) {
+    const pdfDownloadBtn = e.target.closest(".btn-download-pdf");
+    if (!pdfDownloadBtn) return;
+
+    const {jsPDF} = window.jspdf;
+
+    renderToast('Đang tải xuống...', Color.WARNING);
+    html2canvas(document.querySelector("#invoice"), {
+        useCORS: true,
+        allowTaint: false,
+        scale: 2 // Improves image quality
+    }).then(canvas => {
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF("p", "mm", "a4");
+
+        // Add image to PDF
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+
+        pdf.save(`form_import_${document.querySelector('[form-import-id]').getAttribute("form-import-id")}.pdf`);
+        renderToast("Đã tải thành công !", Color.SUCCESS);
+    });
+})
+
+resetAllBtn.addEventListener("click", async function () {
+    resetAllState();
+    try {
+        const form = await fetchImportForm();
+        renderImportItems(form['form_imports']);
+        renderPagination(form['total_page'], form['current_page']);
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
+    }
+});
+
+overlay.addEventListener("click", closeModal)
+
+importList.addEventListener("click", async function (e) {
+    try {
+        const printBtn = e.target.closest(".btn-print-import-form");
+        if (!printBtn) return;
+        const formImportId = e.target.closest(".import-item").getAttribute("id");
+        const form = await fetchImportFormDetail(formImportId);
+        openModal();
+        renderImportForm(form);
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
+    }
+});
+
+searchBtn.addEventListener("click", async function () {
+    try {
+        const formImportId = inputSearch.value;
+        resetAllState();
+        currentSearchParam['formImportId'] = formImportId;
+
+        const form = await fetchImportForm();
+        renderImportItems(form['form_imports']);
+        renderPagination(form['total_page'], form['current_page']);
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
+    }
+});
+
+inputStartDate.addEventListener("change", async function () {
+    try {
+        const value = inputStartDate.value;
+
+        deleteCurrentParams(["startDate", "page", "formImportId"])
+        deleteUrlParams(["startDate", "page", "formImportId"]);
+        inputSearch.value = '';
+
+        if (value) {
+            addCurrentParams([["startDate", value]]);
+            addUrlParams([["startDate", value]]);
+        }
+
+        window.history.pushState({}, '', url);
+
+        const form = await fetchImportForm();
+        renderImportItems(form['form_imports']);
+        renderPagination(form['total_page'], form['current_page']);
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
+    }
+});
+
+
+inputEndDate.addEventListener("change", async function () {
+    try {
+        const value = inputEndDate.value;
+
+        deleteCurrentParams(["endDate", "page", "formImportId"])
+        deleteUrlParams(["endDate", "page", "formImportId"]);
+        inputSearch.value = '';
+
+        if (value) {
+            addCurrentParams([["endDate", value]]);
+            addUrlParams([["endDate", value]]);
+        }
+
+        window.history.pushState({}, '', url);
+
+        const form = await fetchImportForm();
+        renderImportItems(form['form_imports']);
+        renderPagination(form['total_page'], form['current_page']);
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
+    }
+});
+
+pagination.addEventListener("click", async function (e) {
+    try {
+        const item = e.target.closest(".page-item");
+        if (!item || item.classList.contains("disabled") || item.classList.contains("active")) return;
+
+        deleteUrlParams(["page"]);
+        deleteCurrentParams(["page"]);
+
+        addUrlParams([["page", item.getAttribute("page")]]);
+        addCurrentParams([["page", item.getAttribute("page")]]);
+
+        window.history.pushState({}, '', url);
+
+        const form = await fetchImportForm();
+
+        renderImportItems(form['form_imports']);
+        renderPagination(form['total_page'], form['current_page']);
+    } catch(err) {
+        renderToast(err.message, Color.ERROR);
+    }
+});
