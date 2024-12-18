@@ -1,13 +1,8 @@
-let currentCheckedBookState = {};
-let currentItemState = {};
-
+//---------------------------------------------CONSTANTS---------------------------------------------
 const url = new URL(window.location);
 const CONFIG_API = "/api/v1/config"
 const BOOK_API = "/api/v1/book"
 let config;
-
-const deleteUrlParams = (params) => params.forEach(param => url.searchParams.delete(param));
-const addUrlParams = (params) => params.forEach(param => url.searchParams.set(param[0], param[1]));
 
 const dateFormatter = new Intl.DateTimeFormat('vi-VN', {
     weekday: 'short', // e.g., Thứ Sáu
@@ -24,6 +19,13 @@ const timeFormatter = new Intl.DateTimeFormat('vi-VN', {
     // timeZoneName: 'short' // e.g., GMT
 });
 
+const Color = {
+    WARNING: "orange",
+    ERROR: `var(--red)`,
+    SUCCESS: "#6cbf6c"
+}
+
+//---------------------------------------------DOM ELEMENTS & STATES---------------------------------------------
 const modal = document.querySelector(".modal");
 const modalExport = document.querySelector(".modal-export");
 const modalBook = document.querySelector(".modal-book");
@@ -44,333 +46,11 @@ const pagination = document.querySelector(".pagination");
 const searchDropdownMenu = document.querySelector(".search-dropdown-menu");
 const searchInput = document.querySelector(".search-input");
 
-//===============================================================API===============================================================
-const fetchBook = async function () {
-    try {
-        const res = await fetch(`${BOOK_API}/manage${url.search}`)
-        if (!res.ok) throw new Error("Cannot fetch books");
-        const data = await res.json();
-        return data['data'];
-    } catch (err) {
-        throw err;
-    }
-}
-
-const fetchBookById = async function (id) {
-    try {
-        const res = await fetch(`${BOOK_API}/${id}/manage`)
-        if (!res.ok) throw new Error("Cannot fetch book");
-        const data = await res.json();
-        return data['data'];
-    } catch (err) {
-        throw err;
-    }
-}
-
-const postFormImport = async function () {
-    try {
-        const res = await fetch(`${BOOK_API}/import`, {
-            method: "POST",
-            body: JSON.stringify(Object.values(currentItemState)),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        if (!res.ok) throw new Error("Can't create import form");
-        const data = await res.json();
-        return data['data'];
-    } catch (err) {
-        throw err;
-    }
-}
-
-
-//===============================================================FUNCTION===============================================================
-const openModal = function () {
-    modal.classList.add("d-flex");
-    overlay.classList.add("d-flex");
-    modal.classList.remove("d-none");
-    overlay.classList.remove("d-none");
-}
-
-const closeModal = function () {
-    modal.classList.remove("d-flex");
-    overlay.classList.remove("d-flex");
-    modal.classList.add("d-none");
-    overlay.classList.add("d-none");
-
-    modalBook.classList.add("d-none");
-    modalBook.classList.remove("d-flex");
-
-    modalExport.classList.add("d-none");
-    modalExport.classList.remove("d-flex");
-}
-
-const openBookModal = function () {
-    openModal();
-    modalBook.classList.add("d-flex");
-    modalBook.classList.remove("d-none");
-}
-
-const openExportModal = function () {
-    openModal();
-    modalExport.classList.add("d-flex");
-    modalExport.classList.remove("d-none");
-}
-
-const removeAllCheckedBox = function () {
-    currentCheckedBookState = {};
-    bookList.querySelectorAll("input").forEach(input => input.checked = false);
-    allCheckBox.checked = false;
-}
-
-const extractBookItemData = function (bookItem) {
-    const bookId = +bookItem.querySelector(".book-item-id").textContent.trim();
-    const title = bookItem.querySelector(".book-item-title").textContent.trim();
-    const gerne = bookItem.querySelector(".book-item-gerne").textContent.trim();
-    const author = bookItem.querySelector(".book-item-author").textContent.trim();
-    const img = bookItem.querySelector(".book-item-img").getAttribute("src");
-    const stockQuantity = +bookItem.querySelector(".book-item-quantity").textContent.trim();
-
-    return {
-        bookId,
-        img,
-        title,
-        stockQuantity,
-        gerne,
-        author,
-    };
-};
-
-const resetBookContainerState = async function () {
-    deleteUrlParams(["page", "quantityStatus", "keyword"]);
-    removeAllCheckedBox();
-    searchInput.value = '';
-    statusType.querySelectorAll(".filter-type-item").forEach(item => {
-        item.querySelector("input").checked = false;
-    });
-
-    const data = await fetchBook();
-    renderBookContainer(data);
-
-}
-
-//===============================================================EVENT===============================================================
+let currentCheckedBookState = {};
+let currentItemState = {};
 let currentSelectedSearchType;
-searchDropdownMenu.addEventListener("click", function (e) {
-    searchInput.placeholder = e.target.textContent;
-    currentSelectedSearchType = +e.target.getAttribute("id");
-})
 
-
-searchInput.addEventListener("keypress", async function (e) {
-    if (e.key !== "Enter") return;
-    deleteUrlParams(["quantityStatus", "page", "keyword"]);
-    try {
-        let data;
-        if (currentSelectedSearchType === 1) { //Fetch by title
-            addUrlParams([["keyword", searchInput.value]])
-            data = await fetchBook();
-        } else if (searchInput.value.trim() === '' || searchInput.value.trim() === null) {
-            addUrlParams([["keyword", searchInput.value]])
-            data = await fetchBook();
-        } else
-            data = {
-                'books': [await fetchBookById(+searchInput.value)],
-                'pages': 1,
-                'current_page': 1
-            };
-        renderBookContainer(data);
-    } catch (err) {
-        alert(err.message);
-    }
-})
-
-window.addEventListener("load", async function () {
-    try {
-        const res = await fetch(`${CONFIG_API}`);
-        if (!res.ok) throw new Error("cannot fetch config");
-        const data = await res.json();
-        config = data['data'];
-    } catch (err) {
-        alert(err.message);
-    }
-})
-
-exportBtn.addEventListener("click", async function () {
-    if (Object.keys(currentItemState).length === 0) {
-        // renderToast("Phải có ít nhất 1 sản phẩm", "center", "orange");
-        return;
-    }
-    try {
-        const formImport = await postFormImport();
-        openExportModal();
-        renderImportedForm(formImport);
-        resetCurrentItemState();
-        const {jsPDF} = window.jspdf;
-        html2canvas(document.querySelector("#invoice"), {
-            useCORS: true,
-            allowTaint: false,
-            scale: 2 // Improves image quality
-        }).then(canvas => {
-            const imgData = canvas.toDataURL("image/png");
-            const pdf = new jsPDF("p", "mm", "a4");
-            // Add image to PDF
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-            pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-
-            pdf.save(`form_import_${document.querySelector('[form-import-id]').getAttribute("form-import-id")}.pdf`);
-        });
-
-    } catch (err) {
-        alert(err.message);
-    } finally {
-        await resetBookContainerState();
-    }
-});
-
-deleteBtn.addEventListener("click", () => {
-    currentItemState = {};
-    renderImportedItems();
-});
-
-overlay.addEventListener("click", async function () {
-    closeModal();
-    await resetBookContainerState();
-});
-
-openModalBookBtn.addEventListener("click", openBookModal);
-
-bookList.addEventListener("click", function (e) {
-    const bookItem = e.target.closest(".book-item");
-    if (!bookItem) return;
-
-    const checkedBox = bookItem.querySelector("input");
-    checkedBox.checked = !checkedBox.checked;
-    const bookItemData = extractBookItemData(bookItem);
-
-    if (checkedBox.checked) {
-        currentCheckedBookState[bookItemData['bookId']] = bookItemData;
-    } else {
-        delete currentCheckedBookState[bookItemData['bookId']];
-    }
-});
-
-allCheckBox.addEventListener("click", function (e) {
-    if (allCheckBox.checked) {
-        document.querySelectorAll(".book-item").forEach(bookItem => {
-            bookItem.querySelector("input").checked = true;
-            const bookItemData = extractBookItemData(bookItem);
-            currentCheckedBookState[bookItemData['bookId']] = bookItemData;
-        });
-    } else {
-        document.querySelectorAll(".book-item").forEach(bookItem => {
-            bookItem.querySelector("input").checked = false;
-            const bookItemData = extractBookItemData(bookItem);
-            delete currentCheckedBookState[bookItemData['bookId']];
-        });
-    }
-});
-
-addBookBtn.addEventListener("click", function () {
-    Object.entries(currentCheckedBookState).forEach(item => {
-        if (currentItemState[item[0]]) {
-            currentItemState[item[0]]['quantity'] += 1;
-        } else {
-            currentItemState[item[0]] = item[1];
-            currentItemState[item[0]]['stockQuantity'] = item[1]['stockQuantity'];
-            currentItemState[item[0]]['quantity'] = config['min_restock_qty'];
-        }
-    });
-    renderImportedItems();
-    resetBookContainerState();
-    closeModal();
-});
-
-statusType.addEventListener("click", async function (e) {
-
-    const filterItem = e.target.closest(".filter-type-item");
-    if (!filterItem) return;
-
-    const toggleId = +filterItem.getAttribute("id");
-    let isToggle = false;
-
-    statusType.querySelectorAll(".filter-type-item").forEach(item => {
-        const itemId = +item.getAttribute("id");
-        const input = item.querySelector("input")
-
-        input.checked = itemId === toggleId ? !input.checked : false;
-        isToggle ||= input.checked;
-    })
-
-    deleteUrlParams(["quantityStatus", "page"]);
-
-    if (isToggle)
-        addUrlParams([["quantityStatus", toggleId]])
-    try {
-        const data = await fetchBook(url.search);
-        renderBookContainer(data);
-    } catch (err) {
-        alert(err.message);
-    }
-});
-
-importContainer.addEventListener("click", function (e) {
-    const removeBtn = e.target.closest(".remove-import-item-btn");
-    const incrementBtn = e.target.closest(".increment-qty-btn");
-    const decrementBtn = e.target.closest(".decrement-qty-btn");
-    const id = e.target.closest(".import-item")?.getAttribute("id");
-
-    let isTriggered = false;
-
-    if (removeBtn) {
-        delete currentItemState[+id];
-        isTriggered ||= true;
-    }
-    if (incrementBtn) {
-        const input = incrementBtn.previousElementSibling;
-        currentItemState[+id]['quantity'] = +input.value + 1;
-        isTriggered ||= true;
-    }
-    if (decrementBtn) {
-        const input = decrementBtn.nextElementSibling;
-        currentItemState[+id]['quantity'] = input.value > config['min_restock_qty'] ? +input.value - 1 : +input.value;
-        isTriggered ||= true;
-    }
-    isTriggered && renderImportedItems();
-})
-
-importContainer.addEventListener("change", function (e) {
-    const input = e.target;
-    if (input.value < config['min_restock_qty'] || input.value === '' || isNaN(input.value)) input.value = config['min_restock_qty'];
-    currentItemState[+input.getAttribute("input-id")]['quantity'] = +input.value;
-    renderImportedItems()
-})
-
-
-pagination.addEventListener("click", async function (e) {
-    const item = e.target.closest(".page-item");
-    if (!item || item.classList.contains("disabled") || item.classList.contains("active")) return;
-
-    try {
-        addUrlParams([["page", item.getAttribute("page")]]);
-        const data = await fetchBook();
-        renderBookContainer(data);
-    } catch (err) {
-        alert(err.message);
-    }
-});
-
-const resetCurrentItemState = function () {
-    currentItemState = {};
-    renderImportedItems();
-
-}
-
-
+//---------------------------------------------RENDER---------------------------------------------
 const renderPagination = function (total_page, current_page) {
     const prev = `
         <li class="page-item ${current_page == 1 ? "disabled" : ""}" page=${current_page - 1}>
@@ -400,7 +80,6 @@ const renderPagination = function (total_page, current_page) {
 
 const renderImportedItems = function () {
     importList.innerHTML = '';
-    console.log(currentItemState)
     const html = Object.entries(currentItemState).map(item => {
         return `
         <tr class="import-item" id="${item[1]['bookId']}">
@@ -594,3 +273,348 @@ const renderBookContainer = function (data) {
     renderBookItems(data['books']);
     renderPagination(data['pages'], data['current_page']);
 }
+
+const renderToast = function (text, background) {
+    Toastify({
+        text: text,
+        duration: 3000,
+        newWindow: true,
+        close: true,
+        gravity: "top",
+        position: right,
+        stopOnFocus: true,
+        style: {
+            background: background,
+        }
+    }).showToast();
+}
+
+//---------------------------------------------API UTILITY---------------------------------------------
+const fetchBook = async function () {
+    try {
+        const res = await fetch(`${BOOK_API}/manage${url.search}`)
+        if (!res.ok) throw new Error("Cannot fetch books");
+        const data = await res.json();
+        return data['data'];
+    } catch (err) {
+        throw err;
+    }
+}
+
+const fetchBookById = async function (id) {
+    try {
+        const res = await fetch(`${BOOK_API}/${id}/manage`)
+        if (!res.ok) throw new Error("Cannot fetch book");
+        const data = await res.json();
+        return data['data'];
+    } catch (err) {
+        throw err;
+    }
+}
+
+const postFormImport = async function () {
+    try {
+        const res = await fetch(`${BOOK_API}/import`, {
+            method: "POST",
+            body: JSON.stringify(Object.values(currentItemState)),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!res.ok) throw new Error("Can't create import form");
+        const data = await res.json();
+        return data['data'];
+    } catch (err) {
+        throw err;
+    }
+}
+
+
+//---------------------------------------------DOM UTILITY---------------------------------------------
+const openModal = function () {
+    modal.classList.add("d-flex");
+    overlay.classList.add("d-flex");
+    modal.classList.remove("d-none");
+    overlay.classList.remove("d-none");
+}
+
+const closeModal = function () {
+    modal.classList.remove("d-flex");
+    overlay.classList.remove("d-flex");
+    modal.classList.add("d-none");
+    overlay.classList.add("d-none");
+
+    modalBook.classList.add("d-none");
+    modalBook.classList.remove("d-flex");
+
+    modalExport.classList.add("d-none");
+    modalExport.classList.remove("d-flex");
+}
+
+const openBookModal = function () {
+    openModal();
+    modalBook.classList.add("d-flex");
+    modalBook.classList.remove("d-none");
+}
+
+const openExportModal = function () {
+    openModal();
+    modalExport.classList.add("d-flex");
+    modalExport.classList.remove("d-none");
+}
+
+const removeAllCheckedBox = function () {
+    currentCheckedBookState = {};
+    bookList.querySelectorAll("input").forEach(input => input.checked = false);
+    allCheckBox.checked = false;
+}
+
+const extractBookItemData = function (bookItem) {
+    const bookId = +bookItem.querySelector(".book-item-id").textContent.trim();
+    const title = bookItem.querySelector(".book-item-title").textContent.trim();
+    const gerne = bookItem.querySelector(".book-item-gerne").textContent.trim();
+    const author = bookItem.querySelector(".book-item-author").textContent.trim();
+    const img = bookItem.querySelector(".book-item-img").getAttribute("src");
+    const stockQuantity = +bookItem.querySelector(".book-item-quantity").textContent.trim();
+
+    return {
+        bookId,
+        img,
+        title,
+        stockQuantity,
+        gerne,
+        author,
+    };
+};
+
+const resetBookContainerState = async function () {
+    try {
+        deleteUrlParams(["page", "quantityStatus", "keyword"]);
+        removeAllCheckedBox();
+        searchInput.value = '';
+        statusType.querySelectorAll(".filter-type-item").forEach(item => {
+            item.querySelector("input").checked = false;
+        });
+
+        const data = await fetchBook();
+        renderBookContainer(data);
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
+    }
+}
+
+const resetCurrentItemState = function () {
+    currentItemState = {};
+    renderImportedItems();
+}
+
+const deleteUrlParams = (params) => params.forEach(param => url.searchParams.delete(param));
+
+const addUrlParams = (params) => params.forEach(param => url.searchParams.set(param[0], param[1]));
+
+
+//===============================================================EVENT===============================================================
+searchDropdownMenu.addEventListener("click", function (e) {
+    searchInput.placeholder = e.target.textContent;
+    currentSelectedSearchType = +e.target.getAttribute("id");
+})
+
+searchInput.addEventListener("keypress", async function (e) {
+    if (e.key !== "Enter") return;
+    try {
+        deleteUrlParams(["quantityStatus", "page", "keyword"]);
+        let data;
+        if (currentSelectedSearchType === 1) { //Fetch by title
+            addUrlParams([["keyword", searchInput.value]])
+            data = await fetchBook();
+        } else if (searchInput.value.trim() === '' || searchInput.value.trim() === null) {
+            addUrlParams([["keyword", searchInput.value]])
+            data = await fetchBook();
+        } else
+            data = {
+                'books': [await fetchBookById(+searchInput.value)],
+                'pages': 1,
+                'current_page': 1
+            };
+        renderBookContainer(data);
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
+    }
+})
+
+window.addEventListener("load", async function () {
+    try {
+        const res = await fetch(`${CONFIG_API}`);
+        if (!res.ok) throw new Error("cannot fetch config");
+        const data = await res.json();
+        config = data['data'];
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
+    }
+})
+
+exportBtn.addEventListener("click", async function () {
+    if (Object.keys(currentItemState).length === 0) {
+        renderToast("Phải có ít nhất 1 sản phẩm", Color.WARNING);
+        return;
+    }
+    try {
+        const formImport = await postFormImport();
+        openExportModal();
+        renderImportedForm(formImport);
+        resetCurrentItemState();
+        const {jsPDF} = window.jspdf;
+        html2canvas(document.querySelector("#invoice"), {
+            useCORS: true,
+            allowTaint: false,
+            scale: 2 // Improves image quality
+        }).then(canvas => {
+            const imgData = canvas.toDataURL("image/png");
+            const pdf = new jsPDF("p", "mm", "a4");
+            // Add image to PDF
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+            pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+
+            pdf.save(`form_import_${document.querySelector('[form-import-id]').getAttribute("form-import-id")}.pdf`);
+        });
+
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
+    } finally {
+        await resetBookContainerState();
+    }
+});
+
+deleteBtn.addEventListener("click", () => {
+    currentItemState = {};
+    renderImportedItems();
+});
+
+overlay.addEventListener("click", async function () {
+    closeModal();
+    await resetBookContainerState();
+});
+
+openModalBookBtn.addEventListener("click", openBookModal);
+
+bookList.addEventListener("click", function (e) {
+    const bookItem = e.target.closest(".book-item");
+    if (!bookItem) return;
+
+    const checkedBox = bookItem.querySelector("input");
+    checkedBox.checked = !checkedBox.checked;
+    const bookItemData = extractBookItemData(bookItem);
+
+    if (checkedBox.checked) {
+        currentCheckedBookState[bookItemData['bookId']] = bookItemData;
+    } else {
+        delete currentCheckedBookState[bookItemData['bookId']];
+    }
+});
+
+allCheckBox.addEventListener("click", function (e) {
+    if (allCheckBox.checked) {
+        document.querySelectorAll(".book-item").forEach(bookItem => {
+            bookItem.querySelector("input").checked = true;
+            const bookItemData = extractBookItemData(bookItem);
+            currentCheckedBookState[bookItemData['bookId']] = bookItemData;
+        });
+    } else {
+        document.querySelectorAll(".book-item").forEach(bookItem => {
+            bookItem.querySelector("input").checked = false;
+            const bookItemData = extractBookItemData(bookItem);
+            delete currentCheckedBookState[bookItemData['bookId']];
+        });
+    }
+});
+
+addBookBtn.addEventListener("click", async function () {
+    Object.entries(currentCheckedBookState).forEach(item => {
+        if (currentItemState[item[0]]) {
+            currentItemState[item[0]]['quantity'] += 1;
+        } else {
+            currentItemState[item[0]] = item[1];
+            currentItemState[item[0]]['stockQuantity'] = item[1]['stockQuantity'];
+            currentItemState[item[0]]['quantity'] = config['min_restock_qty'];
+        }
+    });
+    renderImportedItems();
+    closeModal();
+    await resetBookContainerState();
+});
+
+statusType.addEventListener("click", async function (e) {
+    try {
+        const filterItem = e.target.closest(".filter-type-item");
+        if (!filterItem) return;
+
+        const toggleId = +filterItem.getAttribute("id");
+        let isToggle = false;
+
+        statusType.querySelectorAll(".filter-type-item").forEach(item => {
+            const itemId = +item.getAttribute("id");
+            const input = item.querySelector("input")
+
+            input.checked = itemId === toggleId ? !input.checked : false;
+            isToggle ||= input.checked;
+        })
+
+        deleteUrlParams(["quantityStatus", "page"]);
+
+        if (isToggle)
+            addUrlParams([["quantityStatus", toggleId]])
+        const data = await fetchBook(url.search);
+        renderBookContainer(data);
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
+    }
+});
+
+importContainer.addEventListener("click", function (e) {
+    const removeBtn = e.target.closest(".remove-import-item-btn");
+    const incrementBtn = e.target.closest(".increment-qty-btn");
+    const decrementBtn = e.target.closest(".decrement-qty-btn");
+    const id = e.target.closest(".import-item")?.getAttribute("id");
+
+    let isTriggered = false;
+
+    if (removeBtn) {
+        delete currentItemState[+id];
+        isTriggered ||= true;
+    }
+    if (incrementBtn) {
+        const input = incrementBtn.previousElementSibling;
+        currentItemState[+id]['quantity'] = +input.value + 1;
+        isTriggered ||= true;
+    }
+    if (decrementBtn) {
+        const input = decrementBtn.nextElementSibling;
+        currentItemState[+id]['quantity'] = input.value > config['min_restock_qty'] ? +input.value - 1 : +input.value;
+        isTriggered ||= true;
+    }
+    isTriggered && renderImportedItems();
+})
+
+importContainer.addEventListener("change", function (e) {
+    const input = e.target;
+    if (input.value < config['min_restock_qty'] || input.value === '' || isNaN(input.value)) input.value = config['min_restock_qty'];
+    currentItemState[+input.getAttribute("input-id")]['quantity'] = +input.value;
+    renderImportedItems()
+})
+
+
+pagination.addEventListener("click", async function (e) {
+    try {
+        const item = e.target.closest(".page-item");
+        if (!item || item.classList.contains("disabled") || item.classList.contains("active")) return;
+
+        addUrlParams([["page", item.getAttribute("page")]]);
+        const data = await fetchBook();
+        renderBookContainer(data);
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
+    }
+});

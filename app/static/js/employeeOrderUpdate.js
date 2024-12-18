@@ -1,3 +1,4 @@
+//---------------------------------------------CONSTANTS---------------------------------------------
 const vndCurrencyFormat = new Intl.NumberFormat('vi-VN', {
     style: 'currency',
     currency: 'VND',
@@ -8,8 +9,15 @@ function extractCurrencyNumber(currencyString) {
     return parseFloat(numericValue.replace(',', '.')); // Convert to float, replace comma with dot
 }
 
+const Color = {
+    WARNING: "orange",
+    ERROR: `var(--red)`,
+    SUCCESS: "#6cbf6c"
+}
+
 const BOOK_API = "/api/v1/book"
 
+//---------------------------------------------DOM ELEMENTS & STATES---------------------------------------------
 const inputSearch = document.querySelector('.input-search');
 const restoreOrderBtn = document.querySelector(".restore-btn");
 const updateBtn = document.querySelector(".update-btn");
@@ -23,186 +31,22 @@ const resetBtn = document.querySelector(".btn-reset");
 let initialOrderItemsState = {};
 let currentOrderItemsState = {};
 
-//====================================FETCH BARCODE====================================
 
-const fetchProductByBarcode = async function (barcode) {
-    try {
-        const res = await fetch(`${BOOK_API}/barcode/${barcode}`, {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        if (!res.ok) throw ("sth wrong");
-        const data = await res.json();
-        return data['data'];
-    } catch (err) {
-        throw err;
-    }
-}
-
-async function fetchBooks() {
-    try {
-        const res = await fetch(`/api/v1/book`, {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        if (!res.ok) throw new Error("Sách không tồn tại");
-        const data = await res.json();
-        return data['data'];
-    } catch (err) {
-        throw err;
-    }
-
-}
-
-async function fetchBookById(bookId) {
-    try {
-        const res = await fetch(`/api/v1/book/${bookId}/manage`, {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        if (!res.ok) throw new Error("Sách không tồn tại");
-        const data = await res.json();
-        return data['data'];
-    } catch (err) {
-        throw err;
-    }
-}
-
-
-productContainer.addEventListener("click", function (e) {
-    const productItem = e.target.closest(".product-item");
-    if (!productItem) return;
-    const id = productItem.getAttribute("id");
-
-    if (currentOrderItemsState[id]) {
-        const input = orderContainer.querySelector(`[input-id="${id}"]`);
-        currentOrderItemsState[id]['quantity'] = +input.value + 1;
-    } else {
-        currentOrderItemsState[id] = {
-            'book_id': id,
-            'price': extractCurrencyNumber(productItem.querySelector(".product-price").textContent),
-            'title': productItem.querySelector(".product-name").textContent,
-            'quantity': 1
-        };
-    }
-
-    renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]));
-});
-
-orderContainer.addEventListener("click", function (e) {
-    const removeBtn = e.target.closest(".remove-order-item-btn");
-    const incrementBtn = e.target.closest(".increment-qty-btn");
-    const decrementBtn = e.target.closest(".decrement-qty-btn");
-    const id = e.target.closest(".order-item")?.getAttribute("id");
-    let isTriggered = false;
-
-    if (removeBtn) {
-        if (Object.keys(currentOrderItemsState).length === 1) {
-            alert('the order must have at least 1 item');
-            return;
+//---------------------------------------------RENDER---------------------------------------------
+const renderToast = function (text, background) {
+    Toastify({
+        text: text,
+        duration: 3000,
+        newWindow: true,
+        close: true,
+        gravity: "top", // `top` or `bottom`
+        position: right, // `left`, `center` or `right`
+        stopOnFocus: true, // Prevents dismissing of toast on hover
+        style: {
+            background: background,
         }
-        delete currentOrderItemsState[+id];
-        isTriggered ||= true;
-    }
-    if (incrementBtn) {
-        const input = incrementBtn.previousElementSibling;
-        currentOrderItemsState[+id]['quantity'] = +input.value + 1;
-        isTriggered ||= true;
-    }
-    if (decrementBtn) {
-        const input = decrementBtn.nextElementSibling;
-        currentOrderItemsState[+id]['quantity'] = input.value > 1 ? +input.value - 1 : input.value;
-        isTriggered ||= true;
-    }
-    isTriggered && renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]));
-});
-
-searchBtn.addEventListener("click", async function () {
-    try {
-        const bookId = inputSearch.value;
-        const book = await fetchBookById(bookId);
-        renderBookItem([book]);
-    } catch (err) {
-        alert(err.message);
-    }
-});
-
-resetBtn.addEventListener("click", async function () {
-    try {
-        const books = await fetchBooks();
-        console.log(books);
-        renderBookItem(books['data']['books']);
-
-        inputSearch.value = '';
-    } catch (err) {
-        alert(err.message);
-    }
-});
-
-orderContainer.addEventListener("change", function (e) {
-    const input = e.target;
-    if (input.value == 0 || input.value == '') input.value = 1;
-
-    currentOrderItemsState[+input.getAttribute("input-id")]['quantity'] = +input.value;
-    renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]))
-})
-
-
-restoreOrderBtn.addEventListener("click", () => {
-    renderOrderItem(Object.entries(initialOrderItemsState).map(item => item[1]))
-    currentOrderItemsState = JSON.parse(JSON.stringify(initialOrderItemsState));
-});
-
-
-updateBtn.addEventListener("click", async function (e) {
-    updateBtn.classList.remove("bg-blue")
-    updateBtn.classList.add("btn-disable")
-    updateBtn.disabled = true
-    restoreOrderBtn.classList.remove("bg-red")
-    restoreOrderBtn.classList.add("btn-disable")
-    restoreOrderBtn.disabled = true
-    let msg = 'Successfully updated';
-
-    try {
-        const res = await fetch(`/api/v1/order/${+updateBtn.getAttribute("order-id")}/update`, {
-            method: "POST",
-            body: JSON.stringify(Object.values(currentOrderItemsState)),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        if (!res.ok) throw new Error("Something went wrong");
-        initialOrderItemsState = JSON.parse(JSON.stringify(currentOrderItemsState));
-
-    } catch (err) {
-        msg = err.message;
-    } finally {
-        Toastify({
-            text: msg,
-            duration: 3000,
-            newWindow: true,
-            close: true,
-            gravity: "top", // `top` or `bottom`
-            position: "center", // `left`, `center` or `right`
-            stopOnFocus: true, // Prevents dismissing of toast on hover
-            style: {
-                background: "#6cbf6c",
-            }
-        }).showToast();
-        updateBtn.classList.add("bg-blue")
-        updateBtn.classList.remove("btn-disable")
-        updateBtn.disabled = false
-        restoreOrderBtn.classList.add("bg-red")
-        restoreOrderBtn.classList.remove("btn-disable")
-        restoreOrderBtn.disabled = false
-    }
-})
+    }).showToast();
+}
 
 const renderBookItem = function (books) {
     const html = books.map(book => `
@@ -218,7 +62,6 @@ const renderBookItem = function (books) {
     </a>`).join('');
 
     productContainer.innerHTML = '';
-    console.log(productContainer);
     productContainer.insertAdjacentHTML("beforeend", html);
 }
 
@@ -266,6 +109,156 @@ const renderOrderItem = function (books) {
     document.querySelector(".total-amount").textContent = vndCurrencyFormat.format(totalAmount + shippingFee);
     orderList.insertAdjacentHTML('beforeend', html);
 }
+
+
+
+//---------------------------------------------API UTILITY---------------------------------------------
+async function fetchBooks() {
+    try {
+        const res = await fetch(`${BOOK_API}`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!res.ok) throw new Error("Sách không tồn tại");
+        const data = await res.json();
+        return data['data'];
+    } catch (err) {
+        throw err;
+    }
+}
+
+async function fetchBookById(bookId) {
+    try {
+        const res = await fetch(`/api/v1/book/${bookId}/manage`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!res.ok) throw new Error("Sách không tồn tại");
+        const data = await res.json();
+        return data['data'];
+    } catch (err) {
+        throw err;
+    }
+}
+
+//---------------------------------------------EVENT---------------------------------------------
+productContainer.addEventListener("click", function (e) {
+    const productItem = e.target.closest(".product-item");
+    if (!productItem) return;
+    const id = productItem.getAttribute("id");
+
+    if (currentOrderItemsState[id]) {
+        const input = orderContainer.querySelector(`[input-id="${id}"]`);
+        currentOrderItemsState[id]['quantity'] = +input.value + 1;
+    } else {
+        currentOrderItemsState[id] = {
+            'book_id': id,
+            'price': extractCurrencyNumber(productItem.querySelector(".product-price").textContent),
+            'title': productItem.querySelector(".product-name").textContent,
+            'quantity': 1
+        };
+    }
+
+    renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]));
+});
+
+orderContainer.addEventListener("click", function (e) {
+    const removeBtn = e.target.closest(".remove-order-item-btn");
+    const incrementBtn = e.target.closest(".increment-qty-btn");
+    const decrementBtn = e.target.closest(".decrement-qty-btn");
+    const id = e.target.closest(".order-item")?.getAttribute("id");
+    let isTriggered = false;
+
+    if (removeBtn) {
+        if (Object.keys(currentOrderItemsState).length === 1) {
+            renderToast("Đơn phải có ít nhất 1 sản phẩm", Color.ERROR);
+            return;
+        }
+        delete currentOrderItemsState[+id];
+        isTriggered ||= true;
+    }
+    if (incrementBtn) {
+        const input = incrementBtn.previousElementSibling;
+        currentOrderItemsState[+id]['quantity'] = +input.value + 1;
+        isTriggered ||= true;
+    }
+    if (decrementBtn) {
+        const input = decrementBtn.nextElementSibling;
+        currentOrderItemsState[+id]['quantity'] = input.value > 1 ? +input.value - 1 : input.value;
+        isTriggered ||= true;
+    }
+    isTriggered && renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]));
+});
+
+searchBtn.addEventListener("click", async function () {
+    try {
+        const bookId = inputSearch.value;
+        const book = await fetchBookById(bookId);
+        renderBookItem([book]);
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
+    }
+});
+
+resetBtn.addEventListener("click", async function () {
+    try {
+        const books = await fetchBooks();
+        renderBookItem(books['data']['books']);
+        inputSearch.value = '';
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
+    }
+});
+
+orderContainer.addEventListener("change", function (e) {
+    const input = e.target;
+    if (input.value === 0 || input.value === '' | isNaN(input.value)) input.value = 1;
+
+    currentOrderItemsState[+input.getAttribute("input-id")]['quantity'] = +input.value;
+    renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]))
+})
+
+
+restoreOrderBtn.addEventListener("click", () => {
+    renderOrderItem(Object.entries(initialOrderItemsState).map(item => item[1]))
+    currentOrderItemsState = JSON.parse(JSON.stringify(initialOrderItemsState));
+});
+
+
+updateBtn.addEventListener("click", async function (e) {
+    updateBtn.classList.remove("bg-blue")
+    updateBtn.classList.add("btn-disable")
+    updateBtn.disabled = true
+    restoreOrderBtn.classList.remove("bg-red")
+    restoreOrderBtn.classList.add("btn-disable")
+    restoreOrderBtn.disabled = true
+
+    try {
+        const res = await fetch(`/api/v1/order/${+updateBtn.getAttribute("order-id")}/update`, {
+            method: "POST",
+            body: JSON.stringify(Object.values(currentOrderItemsState)),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!res.ok) throw new Error("Có lỗi xảy ra !");
+        initialOrderItemsState = JSON.parse(JSON.stringify(currentOrderItemsState));
+        renderToast("Cập nhật thành công !", Color.SUCCESS)
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
+    } finally {
+        updateBtn.classList.add("bg-blue")
+        updateBtn.classList.remove("btn-disable")
+        updateBtn.disabled = false
+        restoreOrderBtn.classList.add("bg-red")
+        restoreOrderBtn.classList.remove("btn-disable")
+        restoreOrderBtn.disabled = false
+    }
+})
 
 orderContainer.querySelectorAll(".order-item").forEach(orderItem => {
     const obj = {

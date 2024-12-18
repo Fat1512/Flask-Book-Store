@@ -1,0 +1,355 @@
+{% extends 'admin/layout/base.html' %}
+{% block css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/employeeOrder.css') }}">
+{% endblock %}
+{% block js %}
+    <script type="module" src="{{ url_for('static', filename='js/employeeOrder.js') }}"></script>
+{% endblock %}
+{% block content %}
+    <div class="header bg-primary pb-6">
+        <div class="container-fluid">
+            <div class="header-body">
+                <div class="row align-items-center py-4">
+                    <div class="col-3">
+                        <h6 class="h2 text-white d-inline-block mb-0"></h6>
+                        <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                            <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                                <li class="breadcrumb-item"><a href="#">Quản lý đơn đặt</a></li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <form class="col-8 navbar-search navbar-search-light form-inline mr-sm-3" id="navbar-search-main">
+                        <div class="form-group mb-0 w-100">
+                            <div class="input-group input-group-alternative input-group-merge w-100">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                </div>
+                                <input class="form-control" placeholder="Nhap ma don" type="text">
+                            </div>
+                            <div>
+
+                            </div>
+                        </div>
+                        <button type="button" class="close" data-action="search-close" data-target="#navbar-search-main"
+                                aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid mt-6">
+        <div class="row order-table">
+            <div class="col">
+                <div class="card">
+                    <!-- Card header -->
+                    <div class="card-header border-0">
+                        <h3 class="mb-0">Quản lý đơn đặt</h3>
+                        <div class="filter-label-container">
+                        </div>
+                        <div class="py-4">
+                            <ul class="nav nav-tabs justify-content-start order-tab" id="myTab" role="tablist">
+                                <li class="nav-item all-order">
+                                    <a class="nav-link active" id="children-tab" data-toggle="tab" href="#children"
+                                       role="tab" aria-controls="children" aria-selected="true">Tất cả</a>
+                                </li>
+                                <li class="nav-item  update-order-info">
+                                    <a class="nav-link" id="textbook-tab" data-toggle="tab" href="#textbook" role="tab"
+                                       aria-controls="textbook" aria-selected="false">Cập nhật thông tin đơn</a>
+                                </li>
+                                <li class="nav-item  update-order-status">
+                                    <a class="nav-link" id="literature-tab" data-toggle="tab" href="#literature"
+                                       role="tab" aria-controls="literature" aria-selected="false">Cập nhật trạng
+                                        thái</a>
+                                </li>
+                                <li class="nav-item  cancel-order">
+                                    <a class="nav-link" id="psychology-tab" data-toggle="tab" href="#psychology"
+                                       role="tab" aria-controls="psychology" aria-selected="false">Hủy đơn</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="d-flex justify-content-between flex-column p-4 mt-4"
+                             style="background-color: #f5f9fc">
+                            <div class="row filter-input-container">
+                                <div class="col-4">
+                                    <div class="form-group mb-0 w-100 d-flex order-id-search-container">
+                                        <div class="input-group input-group-alternative input-group-merge w-65 ml-r">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                            </div>
+                                            <input class="form-control input-search" placeholder="Nhap ma don"
+                                                   type="text">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="d-flex date-search-container">
+                                        <div class="form-group w-100 d-flex pr-3">
+                                            <label for="email">Bắt đầu</label>
+                                            <input type="date" class="form-control input-start-date"
+                                                   placeholder="Enter email"
+                                                   id="email"
+                                                   value="{{ start_date }}">
+                                        </div>
+                                        <div class="form-group w-100 d-flex">
+                                            <label for="email">Kết thúc</label>
+                                            <input type="date" class="form-control input-end-date"
+                                                   placeholder="Enter email"
+                                                   id="email"
+                                                   value="{{ end_date }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-1">
+                                    <div class="btn btn-reset-all border border-1">Reset</div>
+                                </div>
+                                <div class="col-1">
+                                    <div class="btn btn-search btn-primary">Tìm kiếm</div>
+                                </div>
+                            </div>
+                            <div class="pt-2 row gap-3 filter-droplist-container">
+                                <div class="col-2">
+                                    <div style="" class="pr-2 w-100 btn-group">
+                                        <button class="btn btn-outline-dark dropdown-toggle
+                                                       dropdown-toggle-pagination"
+                                                data-toggle="dropdown">
+                                            Sắp xếp
+                                        </button>
+                                        <div class="dropdown-menu sort-type dropdown-menu-pagination">
+                                            <div class="form-check filter-type-item cursor-pointer" id="1">
+                                                <div class="form-check-label d-flex justify-content-between align-content-center">
+                                                    <input type="checkbox"
+                                                            {% if sort_by == "date" and sort_dir == "asc" %}
+                                                           checked {% endif %} class="">
+                                                    <span class="dropdown-item">Thời gian đặt mới nhất</span>
+                                                </div>
+                                            </div>
+                                            <div class="form-check filter-type-item" id="2">
+                                                <div class="form-check-label d-flex justify-content-between align-content-center">
+                                                    <input type="checkbox"
+                                                            {% if sort_by == "date" and sort_dir == "desc" %}
+                                                           checked {% endif %} class="">
+                                                    <span class="dropdown-item">Thời gian đặt cũ nhất</span>
+                                                </div>
+                                            </div>
+                                            <div class="form-check filter-type-item" id="3">
+                                                <div class="form-check-label d-flex justify-content-between align-content-center">
+                                                    <input type="checkbox"
+                                                            {% if sort_by == "total-amount" and sort_dir == "asc" %}
+                                                           checked {% endif %} class="">
+                                                    <span class="dropdown-item">Tổng tiền tăng dần</span>
+                                                </div>
+                                            </div>
+                                            <div class="form-check filter-type-item" id="4">
+                                                <div class="form-check-label d-flex justify-content-between align-content-center">
+                                                    <input type="checkbox"
+                                                            {% if sort_by == "total-amount" and sort_dir == "desc" %}
+                                                           checked {% endif %} class="">
+                                                    <span class="dropdown-item">Tổng tiền giảm dần</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-2">
+                                    <div style="" class="pr-2 w-100 btn-group">
+                                        <button type="button" class="btn btn-outline-dark dropdown-toggle
+                                                       dropdown-toggle-pagination"
+                                                data-toggle="dropdown">
+                                            Trạng thái
+                                        </button>
+                                        <div class="dropdown-menu status-type dropdown-menu-pagination">
+                                            <div class="form-check filter-type-item" id="1">
+                                                <div class="form-check-label d-flex justify-content-between align-content-center">
+                                                    <input type="checkbox" {% if status == "1" %} checked {% endif %}
+                                                           class="">
+                                                    <span class="dropdown-item">Đang xử lý</span>
+                                                </div>
+                                            </div>
+                                            <div class="form-check filter-type-item" id="2">
+                                                <div class="form-check-label d-flex justify-content-between align-content-center">
+                                                    <input type="checkbox" {% if status == "2" %} checked {% endif %}
+                                                           class="">
+                                                    <span class="dropdown-item">Chờ giao hàng</span>
+                                                </div>
+                                            </div>
+                                            <div class="form-check filter-type-item" id="3">
+                                                <div class="form-check-label d-flex justify-content-between align-content-center">
+                                                    <input type="checkbox" {% if status == "3" %} checked {% endif %}
+                                                           class="">
+                                                    <span class="dropdown-item">Đang giao hàng</span>
+                                                </div>
+                                            </div>
+                                            <div class="form-check filter-type-item" id="4">
+                                                <div class="form-check-label d-flex justify-content-between align-content-center">
+                                                    <input type="checkbox" {% if status == "4" %} checked {% endif %}
+                                                           class="">
+                                                    <span class="dropdown-item">Đã hoàn thành</span>
+                                                </div>
+                                            </div>
+                                            <div class="form-check filter-type-item" id="5">
+                                                <div class="form-check-label d-flex justify-content-between align-content-center">
+                                                    <input type="checkbox" {% if status == "5" %} checked {% endif %}
+                                                           class="">
+                                                    <span class="dropdown-item">Đã hủy</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-2">
+                                    <div style="" class="pr-2 btn-group w-100">
+                                        <button class="btn btn-outline-dark dropdown-toggle
+                                                       dropdown-toggle-pagination"
+                                                data-toggle="dropdown">
+                                            Loại đơn
+                                        </button>
+                                        <div class="dropdown-menu order-type dropdown-menu-pagination">
+                                            <div class="form-check filter-type-item cursor-pointer" id="1">
+                                                <div class="form-check-label d-flex justify-content-between align-content-center">
+                                                    <input type="checkbox" {% if order_type == "1" %}
+                                                           checked {% endif %}
+                                                           class="">
+                                                    <span class="dropdown-item">Đặt online</span>
+                                                </div>
+                                            </div>
+                                            <div class="form-check filter-type-item" id="2">
+                                                <div class="form-check-label d-flex justify-content-between align-content-center">
+                                                    <input type="checkbox" {% if order_type == "2" %}
+                                                           checked {% endif %}
+                                                           class="">
+                                                    <span class="dropdown-item">Mua trực tiếp</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-2">
+                                    <div style="" class="pr-2 w-100 btn-group">
+                                        <button type="button" class="btn btn-outline-dark dropdown-toggle
+                                                       dropdown-toggle-pagination"
+                                                data-toggle="dropdown">
+                                            Phương thức thanh toán
+                                        </button>
+                                        <div class="dropdown-menu payment-method-type dropdown-menu-pagination">
+                                            <div class="form-check filter-type-item" id="1">
+                                                <div class="form-check-label d-flex justify-content-between align-content-center">
+                                                    <input type="checkbox" {% if payment_method == "1" %}
+                                                           checked {% endif %}
+                                                           class="">
+                                                    <span class="dropdown-item">Thẻ</span>
+                                                </div>
+                                            </div>
+                                            <div class="form-check filter-type-item" id="2">
+                                                <div class="form-check-label d-flex justify-content-between align-content-center">
+                                                    <input type="checkbox" {% if payment_method == "2" %}
+                                                           checked {% endif %}
+                                                           class="">
+                                                    <span class="dropdown-item">Tiền mặt</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Light table -->
+                    <div class="table-responsive" style="min-height: 200px">
+                        <table class="table align-items-center table-flush">
+                            <thead class="thead-light">
+                            <tr>
+                                <th scope="col" class="sort" data-sort="name">Order ID</th>
+                                <th scope="col" class="sort" data-sort="budget">Loại đơn</th>
+                                <th scope="col" class="sort" data-sort="status">Tong Tien</th>
+                                <th scope="col">Trang thai</th>
+                                <th scope="col" class="sort" data-sort="completion">Thoi Gian Dat</th>
+                                <th scope="col" class="sort">Phuong thuc thanh toan</th>
+                                <th scope="col"></th>
+                            </tr>
+                            </thead>
+                            <tbody class="list order-list">
+                            {% for order in orders['orders'] %}
+                                <tr class="order-id" id="{{ order['order_id'] }}">
+                                    <th scope="row">
+                                        <div class="media align-items-center">
+                                            <div order-id="{{ order['order_id'] }}"
+                                                 id="{{ order['order_id'] }}">{{ order['order_id'] }}</div>
+                                        </div>
+                                    </th>
+                                    <td>
+                                        <div class="media-body">
+                                            <span class="name mb-0 text-sm">{{ order['order_type']['name'] }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="budget">
+                                        {{ order['total_amount']|currency('VND') }}
+                                    </td>
+                                    <td>
+                                    <span class="badge badge-dot mr-4">
+                                    <i class="bg-warning"></i>
+                                    <span class="status">{{ order['status']['name'] }}</span>
+                                    </span>
+                                    </td>
+                                    <td>
+                                        <div class="avatar-group">
+                                            {{ order['created_at']|datetime() }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="avatar-group">
+                                            {{ order['payment']['payment_method']['name'] }}
+                                        </div>
+                                    </td>
+                                    <td class="text-right">
+                                        <div class="dropdown">
+                                            <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
+                                               data-toggle="dropdown"
+                                               aria-haspopup="true" aria-expanded="false">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                                <a class="dropdown-item" tab="0">Chi tiet</a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Card footer -->
+                    <div class="card-footer py-4">
+                        <nav aria-label="...">
+                            <ul class="pagination justify-content-end mb-0">
+                                <li class="page-item{% if orders['current_page'] == 1 %} disabled {% endif %}"
+                                    page={{ orders['current_page'] - 1 }}>
+                                    <a class="page-link" tabindex="-1">
+                                        <i class="fas fa-angle-left "></i>
+                                        <span class="sr-only">Previous</span>
+                                    </a>
+                                </li>
+                                {% for page in range(orders['total_page']) %}
+                                    <li class="page-item{% if page + 1 == orders['current_page'] %} active {% endif %}"
+                                        page={{ page + 1 }}>
+                                        <div class="page-link">{{ page + 1 }}</div>
+                                    </li>
+                                {% endfor %}
+                                <li class="page-item {% if orders['current_page'] == orders['total_page'] %} disabled {% endif %}"
+                                    page={{ orders['current_page'] + 1 }}>
+                                    <a class="page-link">
+                                        <i class="fas fa-angle-right"></i>
+                                        <span class="sr-only">Next</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

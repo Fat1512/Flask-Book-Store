@@ -1,3 +1,4 @@
+//---------------------------------------------CONSTANTS---------------------------------------------
 const vndCurrencyFormat = new Intl.NumberFormat('vi-VN', {
     style: 'currency',
     currency: 'VND',
@@ -80,6 +81,7 @@ const paymentMethodParams = [
 ];
 
 //shipping method = 1: ship ve nha
+//shipping method = 2: cua hang
 const shippingStatus = {
     "1": {//shipping id
         "1": "Đang xử lý", //order status id
@@ -111,37 +113,30 @@ const initialTabState = [
         "status": "1,2,8"
     }
 ]
-//shipping method = 2: cua hang
 
 /**
  *     DANG_XU_LY = 1
  *     CHO_GIAO_HANG = 2
  *     DANG_GIAO_HANG = 3
- *
  *     DA_HOAN_THANH = 4
  *     DA_HUY = 5
- *
  *     DANG_CHO_THANH_TOAN = 6
  *     DA_THANH_TOAN = 7
- *
  *     DANG_CHO_NHAN = 8
- * @type {Element}
  */
 
 
-//---------------------------------------------CONTAINER---------------------------------------------
-const searchBox = document.querySelector('.search-box');
-const orderTable = document.querySelector(".order-table");
+//---------------------------------------------DOM ELEMENTS & STATES---------------------------------------------
 const orderList = document.querySelector(".order-list");
 const pagination = document.querySelector(".pagination");
 const filterLabelContainer = document.querySelector(".filter-label-container");
-//---------------------------------------------FILTER---------------------------------------------
+
 const orderType = document.querySelector(".order-type");
 const sortType = document.querySelector(".sort-type");
 const statusType = document.querySelector(".status-type");
 const paymentMethodType = document.querySelector(".payment-method-type");
 
-//=======================================
+
 const orderTab = document.querySelector(".order-tab");
 const dateSearchContainer = document.querySelector(".date-search-container");
 const filterDropListContainer = document.querySelector(".filter-droplist-container");
@@ -152,8 +147,6 @@ const overlay = document.querySelector(".overlay");
 
 const btnResetAll = document.querySelector(".btn-reset-all");
 const btnSearch = document.querySelector(".btn-search");
-//---------------------------------------------FUNCTION---------------------------------------------
-
 const inputStartDate = document.querySelector(".input-start-date");
 const inputEndDate = document.querySelector(".input-end-date");
 const inputSearch = document.querySelector(".input-search");
@@ -162,38 +155,7 @@ let currentLabel = {};
 let currentSearchParam = {};
 let currentOrderItemsState = {};
 let currentTab = 0;
-
-const resetAllState = function () {
-    currentLabel = {};
-    currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
-    inputStartDate.value = '';
-    inputEndDate.value = '';
-    inputSearch.value = '';
-
-    renderLabel()
-    document.querySelectorAll("input:checked").forEach(input => input.checked = false);
-
-    url.search = "";
-    window.history.pushState({}, '', url);
-}
-
-const hideFilter = function () {
-    filterDropListContainer.classList.add("hide");
-    dateSearchContainer.classList.add("hide");
-}
-const unhideFilter = function () {
-    filterDropListContainer.classList.remove("hide");
-    dateSearchContainer.classList.remove("hide");
-};
-
-const deleteCurrentParams = (params) => params.forEach(param => delete currentSearchParam[param]);
-
-const addCurrentParams = (params) => params.forEach(param => currentSearchParam[param[0]] = param[1]);
-
-const deleteUrlParams = (params) => params.forEach(param => url.searchParams.delete(param));
-
-const addUrlParams = (params) => params.forEach(param => url.searchParams.set(param[0], param[1]));
-
+//---------------------------------------------RENDER---------------------------------------------
 const renderOrder = function (orders, tab = 0) {
     orderList.innerHTML = '';
     currentOrderItemsState = {};
@@ -273,14 +235,15 @@ const renderPagination = function (total_page, current_page) {
     pagination.insertAdjacentHTML('beforeend', content)
     pagination.insertAdjacentHTML('beforeend', next)
 }
+
 const renderLabel = function () {
-    console.log(currentLabel);
     filterLabelContainer.innerHTML = '';
     const html = Object.entries(currentLabel).map(label =>
         `<span class="badge badge-secondary bg-red text-white cursor-pointer mr-2">${label[0]}</span>`).join('');
 
     filterLabelContainer.insertAdjacentHTML('beforeend', html);
 }
+
 const renderStatusUpdateForm = function (order, statusArray) {
     const html = `
     <div class="card p-5 order-update-modal" id="${order['order_id']}">
@@ -414,16 +377,31 @@ const renderCancelForm = function (order) {
     modalCancelOrder.insertAdjacentHTML("beforeend", html);
 };
 
+const renderToast = function (text, background) {
+    Toastify({
+        text: text,
+        duration: 3000,
+        newWindow: true,
+        close: true,
+        gravity: "top",
+        position: right,
+        stopOnFocus: true,
+        style: {
+            background: background,
+        }
+    }).showToast();
+}
+//---------------------------------------------API UTILITY---------------------------------------------
 const fetchOrder = async function () {
     try {
         const param = '?' + Object.entries(currentSearchParam).map(pr => pr[0] + '=' + pr[1]).join("&");
         const res = await fetch(`${ORDER_API}${param}`);
-        if (!res.ok) throw new Error("Cannot fetch order");
+        if (!res.ok) throw new Error("Có lỗi khi lấy đơn");
+
         const data = await res.json();
-        console.log(data);
         return data['data'];
     } catch (err) {
-        alert(err.message);
+        throw err;
     }
 };
 
@@ -436,15 +414,16 @@ const modifyOrderStatus = async function (orderId, orderStatusId) {
                 'Content-Type': 'application/json'
             }
         });
-        if (!res.ok) throw new Error("update order status");
+        if (!res.ok) throw new Error("Có lỗi khi cập nhật trạng thái");
+
         const data = await res.json();
         return data['data'];
     } catch (err) {
-        alert(err.message);
+        throw err;
     }
 };
 
-const cancelOrder = async function(orderId) {
+const cancelOrder = async function (orderId) {
     try {
         const res = await fetch(`${ORDER_API}/orderCancellation`, {
             method: "POST",
@@ -456,15 +435,16 @@ const cancelOrder = async function(orderId) {
                 'Content-Type': 'application/json'
             }
         });
-        if (!res.ok) throw new Error("update order status");
+        if (!res.ok) throw new Error("Có lỗi khi hủy");
 
         const data = await res.json();
         return data['data'];
     } catch (err) {
-        alert(err.message);
+        throw err;
     }
 }
 
+//---------------------------------------------DOM UTILITY---------------------------------------------
 const openModal = function () {
     overlay.classList.add("d-flex");
     modal.classList.add("d-flex");
@@ -487,127 +467,220 @@ const openCancelOrderModal = function () {
     modalCancelOrder.classList.remove("d-none");
 }
 
+const resetAllState = function () {
+    currentLabel = {};
+    currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
+    inputStartDate.value = '';
+    inputEndDate.value = '';
+    inputSearch.value = '';
+
+    renderLabel()
+    document.querySelectorAll("input:checked").forEach(input => input.checked = false);
+
+    url.search = "";
+    window.history.pushState({}, '', url);
+}
+
+const hideFilter = function () {
+    filterDropListContainer.classList.add("hide");
+    dateSearchContainer.classList.add("hide");
+}
+
+const unhideFilter = function () {
+    filterDropListContainer.classList.remove("hide");
+    dateSearchContainer.classList.remove("hide");
+};
+
+const deleteCurrentParams = (params) => params.forEach(param => delete currentSearchParam[param]);
+
+const addCurrentParams = (params) => params.forEach(param => currentSearchParam[param[0]] = param[1]);
+
+const deleteUrlParams = (params) => params.forEach(param => url.searchParams.delete(param));
+
+const addUrlParams = (params) => params.forEach(param => url.searchParams.set(param[0], param[1]));
+
+const handleFilterChange = async function (parent, setParams, deletedParams, toggleId) {
+    try {
+        deleteUrlParams(deletedParams);
+        deleteCurrentParams(deletedParams);
+
+        let isToggle = false;
+        parent.querySelectorAll(".filter-type-item").forEach(item => {
+            const itemId = +item.getAttribute("id");
+            const input = item.querySelector("input")
+            const label = item.querySelector(".dropdown-item")
+            input.checked = itemId === toggleId ? !input.checked : false;
+            if (input.checked) {
+                currentLabel[label.textContent] = true;
+            } else {
+                delete currentLabel[label.textContent];
+            }
+            isToggle ||= input.checked;
+        })
+
+        if (isToggle) {
+            addCurrentParams(setParams)
+            addUrlParams(setParams);
+        }
+
+        window.history.pushState({}, '', url);
+
+        const data = await fetchOrder();
+        renderOrder(data['orders'])
+        renderPagination(data['total_page'], data['current_page']);
+        renderLabel();
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
+    }
+};
+
 
 //---------------------------------------------EVENT---------------------------------------------
+inputStartDate.addEventListener("change", async function (e) {
+    try {
+        const value = inputStartDate.value;
+        if (!value) {
+            deleteCurrentParams(["startDate"])
+            deleteUrlParams(["startDate"]);
+        } else {
+            addCurrentParams([["startDate", value]]);
+            addUrlParams([["startDate", value]]);
+        }
+        window.history.pushState({}, '', url);
 
+        const data = await fetchOrder();
 
-inputStartDate.addEventListener("change", async function(e) {
-    const value = inputStartDate.value;
-    if(!value) {
-        deleteCurrentParams(["startDate"])
-        deleteUrlParams(["startDate"]);
-    } else {
-        addCurrentParams([["startDate", value]]);
-        addUrlParams([["startDate", value]]);
+        renderOrder(data['orders']);
+        renderPagination(data['total_page'], data['current_page']);
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
     }
-
-    window.history.pushState({}, '', url);
-
-    const data = await fetchOrder();
-
-    renderOrder(data['orders']);
-    renderPagination(data['total_page'], data['current_page']);
 });
 
-inputEndDate.addEventListener("change", async function(e) {
-    const value = inputEndDate.value;
-    if(!value) {
-        deleteCurrentParams(["endDate"])
-        deleteUrlParams(["endDate"]);
-    } else {
-        addCurrentParams([["endDate", value]]);
-        addUrlParams([["endDate", value]]);
+inputEndDate.addEventListener("change", async function (e) {
+    try {
+        const value = inputEndDate.value;
+        if (!value) {
+            deleteCurrentParams(["endDate"])
+            deleteUrlParams(["endDate"]);
+        } else {
+            addCurrentParams([["endDate", value]]);
+            addUrlParams([["endDate", value]]);
+        }
+        window.history.pushState({}, '', url);
+
+        const data = await fetchOrder();
+
+        renderOrder(data['orders']);
+        renderPagination(data['total_page'], data['current_page']);
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
     }
-
-    const data = await fetchOrder();
-
-    renderOrder(data['orders']);
-    renderPagination(data['total_page'], data['current_page']);
 });
 
 btnResetAll.addEventListener("click", async function () {
-    resetAllState();
-    const data = await fetchOrder();
-    renderOrder(data['orders']);
-    renderPagination(data['total_page'], data['current_page']);
+    try {
+        resetAllState();
+
+        const data = await fetchOrder();
+
+        renderOrder(data['orders']);
+        renderPagination(data['total_page'], data['current_page']);
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
+    }
 });
 
 btnSearch.addEventListener("click", async function () {
-    const orderId = inputSearch.value;
-    if (orderId.trim() === '') return;
+    try {
+        const orderId = inputSearch.value;
+        if (orderId.trim() === '') return;
 
-    resetAllState();
-    currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
+        resetAllState();
+        currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
 
-    currentSearchParam['orderId'] = orderId;
-    const data = await fetchOrder();
+        currentSearchParam['orderId'] = orderId;
+        const data = await fetchOrder();
 
-    renderOrder(data['orders'], currentTab);
-    renderPagination(data['total_page'], data['current_page']);
+        renderOrder(data['orders'], currentTab);
+        renderPagination(data['total_page'], data['current_page']);
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
+    }
 })
 
-modalUpdateOrderStatusBody.addEventListener("click", function (e) {
-    const input = e.target.closest("input");
-    const confirmBtn = e.target.closest(".btn-confirm-change-status");
-    if (input) {
-        const currentState = input.checked;
-        modalUpdateOrderStatusBody.querySelectorAll("input").forEach(inp => inp.checked = false);
-        input.checked = currentState;
-    }
-    if (confirmBtn) {
-        const orderId = modalUpdateOrderStatusBody.querySelector(".order-update-modal").getAttribute("id");
-        const selectedStatusId = modalUpdateOrderStatusBody.querySelector("input:checked").getAttribute("id");
-        modifyOrderStatus(orderId, selectedStatusId);
+modalUpdateOrderStatusBody.addEventListener("click", async function (e) {
+    try {
+        const input = e.target.closest("input");
+        const confirmBtn = e.target.closest(".btn-confirm-change-status");
+        if (input) {
+            const currentState = input.checked;
+            modalUpdateOrderStatusBody.querySelectorAll("input").forEach(inp => inp.checked = false);
+            input.checked = currentState;
+        }
+        if (confirmBtn) {
+            const orderId = modalUpdateOrderStatusBody.querySelector(".order-update-modal").getAttribute("id");
+            const selectedStatusId = modalUpdateOrderStatusBody.querySelector("input:checked").getAttribute("id");
+            await modifyOrderStatus(orderId, selectedStatusId);
+            renderToast("Cập nhật thành công", Color.SUCCESS);
+        }
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
     }
 });
 
 modalCancelOrder.addEventListener("click", async function (e) {
-    const cancelBtn = e.target.closest(".cancel-btn");
-    const backCancelBtn = e.target.closest(".cancel-back-btn");
-    if (cancelBtn) {
-        const orderId = modalCancelOrder.querySelector(".order-cancel-modal").getAttribute("id");
-        cancelOrder(orderId);
-    }
-    if (backCancelBtn) {
-        closeModal();
+    try {
+        const cancelBtn = e.target.closest(".cancel-btn");
+        const backCancelBtn = e.target.closest(".cancel-back-btn");
+        if (cancelBtn) {
+            const orderId = modalCancelOrder.querySelector(".order-cancel-modal").getAttribute("id");
+            await cancelOrder(orderId);
+            renderToast("Đã hủy thành công", Color.SUCCESS);
+        }
+        if (backCancelBtn) {
+            closeModal();
+        }
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
     }
 });
 
 orderTab.addEventListener("click", async function (e) {
-    const allOrder = e.target.closest(".all-order");
-    const updateOrderInfo = e.target.closest(".update-order-info");
-    const updateOrderStatus = e.target.closest(".update-order-status");
-    const cancelOrder = e.target.closest(".cancel-order");
+    try {
+        const allOrder = e.target.closest(".all-order");
+        const updateOrderInfo = e.target.closest(".update-order-info");
+        const updateOrderStatus = e.target.closest(".update-order-status");
+        const cancelOrder = e.target.closest(".cancel-order");
 
-    let data;
-    if (allOrder) {
-        currentTab = 0;
-        currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
-        data = await fetchOrder();
-        unhideFilter();
-    }
-    if (updateOrderInfo) {
-        currentTab = 1;
-        currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
-        data = await fetchOrder();
-        hideFilter()
-    }
-    if (updateOrderStatus) {
-        currentTab = 2;
-        currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
-        data = await fetchOrder();
-        hideFilter()
-    }
-    if (cancelOrder) {
-        currentTab = 3;
-        currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
-        data = await fetchOrder();
-        hideFilter()
-    }
+        let data;
+        if (allOrder) {
+            currentTab = 0;
+            currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
+            unhideFilter();
+        } else {
+            if (updateOrderInfo) {
+                currentTab = 1;
+                currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
+            }
+            if (updateOrderStatus) {
+                currentTab = 2;
+                currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
+            }
+            if (cancelOrder) {
+                currentTab = 3;
+                currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
+            }
+            hideFilter()
+        }
 
-    renderOrder(data['orders'], currentTab);
-    renderPagination(data['total_page'], data['current_page']);
-    resetAllState()
+        data = await fetchOrder();
+        renderOrder(data['orders'], currentTab);
+        renderPagination(data['total_page'], data['current_page']);
+        resetAllState();
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
+    }
 });
 /**
  * tab = 0: view order detail
@@ -667,6 +740,7 @@ orderList.addEventListener("click", async function (e) {
 });
 
 overlay.addEventListener("click", closeModal)
+
 sortType.addEventListener("click", (e) => {
     const item = e.target.closest(".filter-type-item");
     if (!item) return;
@@ -700,53 +774,25 @@ orderType.addEventListener("click", (e) => {
 });
 
 pagination.addEventListener("click", async function (e) {
-    const item = e.target.closest(".page-item");
-    if (!item || item.classList.contains("disabled") || item.classList.contains("active")) return;
+    try {
+        const item = e.target.closest(".page-item");
+        if (!item || item.classList.contains("disabled") || item.classList.contains("active")) return;
 
-    deleteUrlParams(["page"]);
-    deleteCurrentParams(["page"]);
+        deleteUrlParams(["page"]);
+        deleteCurrentParams(["page"]);
 
-    addUrlParams([["page", item.getAttribute("page")]]);
-    addCurrentParams([["page", item.getAttribute("page")]]);
+        addUrlParams([["page", item.getAttribute("page")]]);
+        addCurrentParams([["page", item.getAttribute("page")]]);
 
-    window.history.pushState({}, '', url);
+        window.history.pushState({}, '', url);
 
-    const data = await fetchOrder();
-    renderOrder(data['orders'])
-    renderPagination(data['total_page'], data['current_page']);
-})
-
-const handleFilterChange = async function (parent, setParams, deletedParams, toggleId) {
-    deleteUrlParams(deletedParams);
-    deleteCurrentParams(deletedParams);
-
-    let isToggle = false;
-    parent.querySelectorAll(".filter-type-item").forEach(item => {
-        const itemId = +item.getAttribute("id");
-        const input = item.querySelector("input")
-        const label = item.querySelector(".dropdown-item")
-        input.checked = itemId === toggleId ? !input.checked : false;
-        if (input.checked) {
-            currentLabel[label.textContent] = true;
-        } else {
-            delete currentLabel[label.textContent];
-        }
-        isToggle ||= input.checked;
-    })
-
-    if (isToggle) {
-        addCurrentParams(setParams)
-        addUrlParams(setParams);
+        const data = await fetchOrder();
+        renderOrder(data['orders'])
+        renderPagination(data['total_page'], data['current_page']);
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
     }
-
-    window.history.pushState({}, '', url);
-
-
-    const data = await fetchOrder();
-    renderOrder(data['orders'])
-    renderPagination(data['total_page'], data['current_page']);
-    renderLabel();
-};
+})
 
 window.addEventListener("load", function () {
     document.querySelectorAll(".filter-type-item").forEach(item => {
