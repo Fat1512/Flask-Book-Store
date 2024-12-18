@@ -150,7 +150,7 @@ const modalUpdateOrderStatusBody = document.querySelector(".modal-update-order-s
 const modalCancelOrder = document.querySelector(".modal-cancel-order");
 const overlay = document.querySelector(".overlay");
 
-const btnDeleteAll = document.querySelector(".btn-delete-all");
+const btnResetAll = document.querySelector(".btn-reset-all");
 const btnSearch = document.querySelector(".btn-search");
 //---------------------------------------------FUNCTION---------------------------------------------
 
@@ -185,10 +185,13 @@ const unhideFilter = function () {
     filterDropListContainer.classList.remove("hide");
     dateSearchContainer.classList.remove("hide");
 };
+
 const deleteCurrentParams = (params) => params.forEach(param => delete currentSearchParam[param]);
+
 const addCurrentParams = (params) => params.forEach(param => currentSearchParam[param[0]] = param[1]);
 
 const deleteUrlParams = (params) => params.forEach(param => url.searchParams.delete(param));
+
 const addUrlParams = (params) => params.forEach(param => url.searchParams.set(param[0], param[1]));
 
 const renderOrder = function (orders, tab = 0) {
@@ -242,7 +245,8 @@ const renderOrder = function (orders, tab = 0) {
             </tr>`
     }).join("");
     orderList.insertAdjacentHTML('beforeend', html);
-}
+};
+
 const renderPagination = function (total_page, current_page) {
     const prev = `
         <li class="page-item ${current_page == 1 ? "disabled" : ""}" page=${current_page - 1}>
@@ -382,7 +386,8 @@ const renderStatusUpdateForm = function (order, statusArray) {
     </div>`;
     modalUpdateOrderStatusBody.innerHTML = '';
     modalUpdateOrderStatusBody.insertAdjacentHTML("beforeend", html);
-}
+};
+
 const renderCancelForm = function (order) {
     const html = `
         <div class="w-100 d-flex justify-content-center align-content-center flex-column order-cancel-modal" id="${order['order_id']}">
@@ -406,7 +411,8 @@ const renderCancelForm = function (order) {
         </div>`;
     modalCancelOrder.innerHTML = '';
     modalCancelOrder.insertAdjacentHTML("beforeend", html);
-}
+};
+
 const fetchOrder = async function () {
     try {
         const param = '?' + Object.entries(currentSearchParam).map(pr => pr[0] + '=' + pr[1]).join("&");
@@ -432,7 +438,7 @@ const modifyOrderStatus = async function (orderId, orderStatusId) {
     } catch (err) {
         alert(err.message);
     }
-}
+};
 
 const cancelOrder = async function(orderId) {
     try {
@@ -512,7 +518,7 @@ inputEndDate.addEventListener("change", async function(e) {
     renderPagination(data['total_page'], data['current_page']);
 });
 
-btnDeleteAll.addEventListener("click", async function () {
+btnResetAll.addEventListener("click", async function () {
     resetAllState();
     const data = await fetchOrder();
     renderOrder(data['orders']);
@@ -727,6 +733,8 @@ const handleFilterChange = async function (parent, setParams, deletedParams, tog
     }
 
     window.history.pushState({}, '', url);
+
+    console.log(currentSearchParam);
 
     const data = await fetchOrder();
     renderOrder(data['orders'])
