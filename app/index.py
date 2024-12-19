@@ -1,11 +1,14 @@
 import json
 import pdb
 import threading
+from datetime import datetime
 from threading import Thread
-
+from app.dao.OrderDAO import delete_orders_after_48hrs
 from elasticsearch import Elasticsearch
+from flask_login import current_user
 
 import app.controllers.AccountController
+from app import scheduler
 from app.controllers.CartController import cart_bp
 from app.controllers.rest.AccountAPI import account_rest_bp
 from app.controllers.rest.CartAPI import cart_rest_bp
@@ -53,7 +56,8 @@ app.register_blueprint(book_gerne_rest_bp, url_prefix='/api/v1/bookGerne')
 app.register_blueprint(book_rest_bp, url_prefix='/api/v1/book')
 app.register_blueprint(order_api_bp, url_prefix='/api/v1/order')
 app.register_blueprint(cart_rest_bp, url_prefix='/api/v1/cart')
-app.register_blueprint(search_res_bp,url_prefix='/api/v1/search')
+app.register_blueprint(user_api_bp, url_prefix='/api/v1/user')
+app.register_blueprint(search_res_bp, url_prefix='/api/v1/search')
 app.register_blueprint(payment_rest_bp, url_prefix='/api/v1/payment')
 
 app.register_blueprint(account_rest_bp, url_prefix='/api/v1/account')
@@ -86,6 +90,7 @@ def handle_insufficient_error(e):
         "status": e.status_code
     })
 
+
 @app.errorhandler(GeneralInsufficientError)
 def handle_general_insufficient_error(e):
     return jsonify({
@@ -93,11 +98,6 @@ def handle_general_insufficient_error(e):
         "message": e.message,
         "status": e.status_code
     })
-
-    return {
-        "cart_items": cart_items,
-        "total_price": total_price
-    }
 
 
 def consume_kafka(topic):
@@ -212,6 +212,20 @@ def handle_topic_book_gerne(data):
 #         print(f"Error handling topic1 message: {e}")
 
 
+@scheduler.task('interval', id='my_job', seconds=5)
+def my_job():
+    with app.app_context():
+        delete_orders_after_48hrs()
+        print('This job is executed every 5 seconds.')
+
+
+@scheduler.task('interval', id='my_job', seconds=5)
+def my_job():
+    with app.app_context():
+        delete_orders_after_48hrs()
+        print('This job is executed every 5 seconds.')
+
+
 @app.route('/status', methods=['GET'])
 def status():
     threads = [{"name": t.name, "alive": t.is_alive()} for t in threading.enumerate()]
@@ -223,5 +237,6 @@ if __name__ == "__main__":
     for topic in KAFKA_TOPICS:
         consumer_thread = Thread(target=consume_kafka, args=(topic,), daemon=True)
         consumer_thread.start()
+    scheduler.start()
 
     app.run(debug=True)

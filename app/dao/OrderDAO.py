@@ -1,14 +1,17 @@
+import pdb
+
 from app.exception.InsufficientError import InsufficientError
 from app.exception.GeneralInsufficientError import GeneralInsufficientError
 from app.exception.NotFoundError import NotFoundError
 from app.model.Book import Book
 from app.model.Order import Order, PaymentDetail, ShippingMethod, OrderCancellation
 from sqlalchemy import desc, asc, func
-from datetime import datetime
+from datetime import datetime, timedelta
 from app import app, db
 from app.model.Order import OrderStatus, PaymentMethod, OnlineOrder, OfflineOrder, OrderDetail
 from decimal import *
 import math
+
 
 # find by id, find by sdt khach hang
 # filter by status, PTTT
@@ -62,6 +65,7 @@ def find_order_by_id(id):
     order = Order.query.get(id)
     if not order: raise NotFoundError("Không tìm thấy đơn để cập nhật")
     return order
+
 
 def find_all(**kwargs):
     orders = Order.query
@@ -192,7 +196,7 @@ def create_online_order(user_id, request):
 def create_offline_order(order_list, user=None):
     offline_order = OfflineOrder(status=OrderStatus.DA_HOAN_THANH,
                                  payment_method=PaymentMethod.TIEN_MAT,
-                                 created_at=datetime.utcnow(),
+                                 created_at=datetime.utcnow() + timedelta(hours=7),
                                  address_id=1,
                                  employee_id=2,
                                  customer=user)
@@ -218,7 +222,8 @@ def create_offline_order(order_list, user=None):
         offline_order.order_detail.append(order_detail)
         total_amount = total_amount + quantity * price
 
-    payment_detail = PaymentDetail(order_id=offline_order.order_id, created_at=datetime.utcnow(), amount=total_amount)
+    payment_detail = PaymentDetail(order_id=offline_order.order_id, created_at=datetime.utcnow() + timedelta(hours=7),
+                                   amount=total_amount)
     offline_order.payment_detail = payment_detail
 
     db.session.commit()
@@ -231,6 +236,24 @@ def calculate_total_order_amount(order_id):
     shipping_fee = db.session.query(OnlineOrder.shipping_fee).filter(OnlineOrder.order_id == order_id).first()
     total_amount = total_amount + shipping_fee[0] if shipping_fee is not None else total_amount
     return Decimal(total_amount)
+
+
+def delete_orders_after_48hrs():
+    expired_time = datetime.utcnow() + timedelta(hours=7) - timedelta(hours=48)
+    orders = Order.query.filter(Order.created_at < expired_time,
+                                Order.online_order is not None,
+                                Order.payment_method == PaymentMethod.TIEN_MAT,
+                                Order.status == OrderStatus.DANG_CHO_NHAN)
+    orders = orders.join(OnlineOrder).filter(Order.created_at < expired_time,
+                                             Order.payment_method == PaymentMethod.TIEN_MAT,
+                                             Order.status == OrderStatus.DANG_CHO_NHAN,
+                                             OnlineOrder.shipping_method == ShippingMethod.CUA_HANG).all()
+
+    for order in orders:
+        create_order_cancellation({
+            "orderId": order.order_id,
+            "reason": "Đơn quá 48h"
+        })
 
 
 def count_order():
