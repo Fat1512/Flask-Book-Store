@@ -17,7 +17,7 @@ const renderToast = function (text, background) {
         newWindow: true,
         close: true,
         gravity: "top",
-        position: right,
+        position: "right",
         stopOnFocus: true,
         style: {
             background: background,

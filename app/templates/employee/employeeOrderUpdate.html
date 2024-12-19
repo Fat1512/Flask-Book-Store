@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/employee.css') }}">
 {% endblock %}
 {% block js %}
-    <script src="{{ url_for('static', filename='js/employeeOrderUpdate.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/employee/employeeOrderUpdate.js') }}"></script>
 {% endblock %}
 {% block content %}
     <div class="header bg-primary pb-6">
@@ -46,47 +46,66 @@
         <div class="row product-detail">
             <div class="col-12">
                 <div class="card p-5">
+                    <div class="col-12 pb-5">
+                        <a class="fa fa-arrow-left display-4 cursor-pointer product-detail-back-btn"
+                           href="/employee/order"
+                           aria-hidden="true"></a>
+                    </div>
+                    <div class="card-header pl-0 bg-transparent border-0">
+                        <h3 class="mb-0 display-4 font-weight-700">THÔNG TIN KHÁCH HÀNG</h3>
+                    </div>
                     <div class="row justify-content-between">
-                        <div class="col-12 pb-5">
-                            <a class="fa fa-arrow-left display-4 cursor-pointer product-detail-back-btn"
-                               href="/employee/order"
-                               aria-hidden="true"></a>
+                        <div class="col-12">
+                            <div class="d-flex">
+                                <h2 class="pr-3">Mã khách hàng: </h2>
+                                <h2 class="font-weight-400"
+                                    user-id="{{ order['user']['id'] }}">{{ order['user']['id'] }}</h2>
+                            </div>
+                            <div class="d-flex">
+                                <h2 class="pr-3">Tên khách hàng: </h2>
+                                <h2 class="font-weight-400">{{ order['user']['fullname'] }}</h2>
+                            </div>
                         </div>
+                    </div>
+                    <div class="card-header pl-0 bg-transparent border-0">
+                        <h3 class="mb-0 display-4 font-weight-700">THÔNG TIN ĐƠN HÀNG</h3>
+                    </div>
+                    <div class="row justify-content-between">
                         <div class="col-6">
                             <div class="d-flex">
-                                <h1 class="pr-3">Mã đơn: </h1>
-                                <h1 class="font-weight-400">{{ order['order_id'] }}</h1>
+                                <h2 class="pr-3">Mã đơn: </h2>
+                                <h2 class="font-weight-400">{{ order['order_id'] }}</h2>
                             </div>
 
                             <div class="d-flex">
-                                <h1 class="pr-3">Trạng thái: </h1>
-                                <h1 class="font-weight-400">{{ order['status']['name'] }}</h1>
+                                <h2 class="pr-3">Trạng thái: </h2>
+                                <h2 class="font-weight-400">{{ order['status']['name'] }}</h2>
                             </div>
                             <div class="d-flex">
-                                <h1 class="pr-3">Phương thức thanh toán: </h1>
-                                <h1 class="font-weight-400">{{ order['payment']['payment_method']['name'] }}</h1>
+                                <h2 class="pr-3">Phương thức thanh toán: </h2>
+                                <h2 class="font-weight-400">{{ order['payment']['payment_method']['name'] }}</h2>
                             </div>
                             <div class="d-flex">
-                                <h1 class="pr-3">Ngày tạo: </h1>
-                                <h1 class="font-weight-400">{{ order['created_at'] }}</h1>
+                                <h2 class="pr-3">Ngày tạo: </h2>
+                                <h2 class="font-weight-400">{{ order['created_at'] }}</h2>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="d-flex">
-                                <h1 class="pr-3">Loại đơn: </h1>
-                                <h1 class="font-weight-400">{{ order['order_type']['name'] }}</h1>
+                                <h2 class="pr-3">Loại đơn: </h2>
+                                <h2 class="font-weight-400">{{ order['order_type']['name'] }}</h2>
                             </div>
 
                             {% if order['order_type']['id'] == 1 %}
                                 <div class="d-flex">
-                                    <h1 class="pr-3">Phương thức vận chuyển: </h1>
-                                    <h1 class="font-weight-400">{{ order['order_type']['detail']['shipping_method']['name'] }}</h1>
+                                    <h2 class="pr-3">Phương thức vận chuyển: </h2>
+                                    <h2 class="font-weight-400">{{ order['order_type']['detail']['shipping_method']['name'] }}</h2>
                                 </div>
                             {% endif %}
                             {% if order['order_type']['id'] == 2 %}
                                 <div class="d-flex">
-                                    <h1 class="pr-3">Nhân viên thanh toán: </h1>
-                                    <h1 class="font-weight-400">{{ order['order_type']['detail']['employee_name'] }}</h1>
+                                    <h2 class="pr-3">Nhân viên thanh toán: </h2>
+                                    <h2 class="font-weight-400">{{ order['order_type']['detail']['employee_name'] }}</h2>
                                 </div>
                             {% endif %}
                         </div>
@@ -95,7 +114,7 @@
                         <form>
                             <div class="row pb-4">
                                 <div class="col-6">
-                                    <h6 class=" display-4 text-muted mb-4">Thông tin</h6>
+                                    <h6 class=" display-4 text-muted mb-4">Thông tin giao nhận</h6>
                                     <div class="pl-lg-4">
                                         <div class="row">
                                             <div class="col-lg-12">
@@ -147,16 +166,16 @@
             <div class="col-8">
                 <div class="card">
                     <div class="card-header bg-transparent border-0">
-                        <h3 class="mb-0">Sản phẩm</h3>
+                        <h3 class="mb-0 display-4 font-weight-700">Sản phẩm</h3>
                     </div>
                     <div class="table-responsive">
                         <table class="order-container table align-items-center table-flush">
                             <thead class="thead-light">
                             <tr>
-                                <th scope="col" class="sort text-center w-25" data-sort="name">Ten san pham</th>
-                                <th scope="col" class="sort text-center" data-sort="budget">Gia</th>
-                                <th scope="col" class="text-center">So luong</th>
-                                <th scope="col" class="sort text-center" data-sort="completion">Tong tien</th>
+                                <th scope="col" class="sort text-center w-25" data-sort="name">Tên sản phẩm</th>
+                                <th scope="col" class="sort text-center" data-sort="budget">Giá</th>
+                                <th scope="col" class="text-center">Số lượng</th>
+                                <th scope="col" class="sort text-center" data-sort="completion">Tổng tiền</th>
                                 <th scope="col"></th>
                             </tr>
 
@@ -220,15 +239,20 @@
                         <div class="d-flex py-3">
                             <div class="w-50 px-3">
                                 <button type="button"
-                                        class="restore-btn w-100 btn btn-primary bg-red text-white border border-0">
+                                        class="restore-btn w-100 btn btn-primary bg-white text-black border border-0"
+                                        style="color: var(--black-color) !important">
                                     Khôi phục
                                 </button>
                             </div>
                             <div class="w-50 px-3">
+{#                                <button order-id="{{ order['order_id'] }}" type="button"#}
+{#                                        class="update-btn w-100 btn btn-primary bg-blue text-white border border-0">#}
+{##}
+{#                                </button>#}
                                 <button order-id="{{ order['order_id'] }}" type="button"
-                                        class="update-btn w-100 btn btn-primary bg-blue text-white border border-0">
-                                    Cập
-                                    Nhật
+                                        class="update-btn w-100 btn btn-primary border border-0"
+                                        style="color: var(--white-color) !important; background-color: var(--red)">
+                                    Cập nhật
                                 </button>
                             </div>
                         </div>
@@ -244,7 +268,7 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text"><i class="fas fa-search"></i></span>
                                     </div>
-                                    <input class="form-control input-search" placeholder="Nhap ma san pham"
+                                    <input class="form-control input-search" placeholder="Nhập barcode"
                                            type="text">
                                 </div>
                             </div>
@@ -273,9 +297,9 @@
                         {% for book in books['books'] %}
                             <a class="product-item card col-3 cursor-pointer" id="{{ book['book_id'] }}">
                                 <img class="card-img-top"
-                                     src="
-                                             {% if  book['images'] %}{{ book['images'][0]['image_url'] }} {% else %}null{% endif %}"
-                                     alt="Card image">
+                                     src="{% if  book['images'] %}{{ book['images'][0]['image_url'] }} {% else %}null{% endif %}"
+                                     alt="Card image"
+                                    style="height: auto !important;">
                                 <div class="card-body p-0">
                                     <p class="card-text product-name">{{ book['title'] }}</p>
                                     <p class="text-primary font-weight-bold mb-1 product-price">{{ book['price']|currency('VND') }}</p>
@@ -291,12 +315,12 @@
     </div>
 {% endblock %}
 {% block modal %}
-<div class="modal">
-    <div class="overlay"></div>
-    <div class="modal-body item-bg-color">
-        <div id="reader">
+    <div class="modal">
+        <div class="overlay"></div>
+        <div class="modal-body item-bg-color">
+            <div id="reader">
 
+            </div>
         </div>
     </div>
-</div>
 {% endblock %}

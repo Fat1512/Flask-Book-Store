@@ -22,6 +22,7 @@ from app.elasticsearch.KafkaAsysnData import create, update_book_document, delet
     add_attribute_value, modify_attribute_value
 from app.exception.CartItemError import CartItemError
 from app.exception.InsufficientError import InsufficientError
+from app.exception.GeneralInsufficientError import GeneralInsufficientError
 from app.exception.NotFoundError import NotFoundError
 from app.model.User import UserRole
 from flask import render_template, request, redirect, url_for, jsonify, flash
@@ -29,17 +30,18 @@ from app.controllers.SearchController import home_bp
 from app.controllers.HomeController import index_bp
 from app.controllers.EmployeeController import employee_bp
 from app.controllers.OrderController import order_bp
-from app.controllers.rest.BookController import book_rest_bp
+from app.controllers.rest.BookAPI import book_rest_bp
 from app.controllers.rest.AccountAPI import account_rest_bp
 from app.controllers.rest.ConfigAPI import config_api_bp
 from app.controllers.rest.UserAPI import user_api_bp
 from app.controllers.rest.OrderAPI import order_api_bp, update
-from app.controllers.rest.BookGerneController import book_gerne_rest_bp
+from app.controllers.rest.BookGerneAPI import book_gerne_rest_bp
 from app.controllers.AccountController import account_bp
 from app.controllers.AdminController import admin_bp, update_book
 from app.controllers.CartController import cart_bp
 from app.controllers.rest.CartAPI import cart_rest_bp
 from app.utils.admin import profile
+
 
 app.register_blueprint(home_bp, url_prefix='/search')
 app.register_blueprint(employee_bp, url_prefix='/employee')
@@ -84,6 +86,13 @@ def handle_insufficient_error(e):
         "status": e.status_code
     })
 
+@app.errorhandler(GeneralInsufficientError)
+def handle_general_insufficient_error(e):
+    return jsonify({
+        'name': type(e).__name__,  # Get the name of the exception
+        "message": e.message,
+        "status": e.status_code
+    })
 
 @app.errorhandler(CartItemError)
 def handle_cart_item_error(e):
@@ -103,23 +112,23 @@ def handle_exception(e):
     })
 
 
-@app.context_processor
-def context():
-    app_context = {
-        "cart_items": None,
-        "total_price": None,
-        'current_year': datetime.now().year,
-        "profile": None
-    }
-    if current_user.is_authenticated:
-        user_data = profile()
-        cart = find_by_cart_id(user_data.user_id)
-        app_context['cart_items'] = cart.cart_items
-        app_context['total_price'] = cart.total_price()
-        app_context['profile'] = user_data
-        return app_context
-
-    return app_context
+# @app.context_processor
+# def context():
+#     app_context = {
+#         "cart_items": None,
+#         "total_price": None,
+#         'current_year': datetime.now().year,
+#         "profile": None
+#     }
+#     if current_user.is_authenticated:
+#         user_data = profile()
+#         cart = find_by_cart_id(user_data.user_id)
+#         app_context['cart_items'] = cart.cart_items
+#         app_context['total_price'] = cart.total_price()
+#         app_context['profile'] = user_data
+#         return app_context
+#
+#     return app_context
 
 
 def consume_kafka(topic):

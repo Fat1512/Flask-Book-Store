@@ -1,4 +1,5 @@
 from app.exception.InsufficientError import InsufficientError
+from app.exception.GeneralInsufficientError import GeneralInsufficientError
 from app.exception.NotFoundError import NotFoundError
 from app.model.Book import Book
 from app.model.Order import Order, PaymentDetail, ShippingMethod, OrderCancellation
@@ -9,13 +10,15 @@ from app.model.Order import OrderStatus, PaymentMethod, OnlineOrder, OfflineOrde
 from decimal import *
 import math
 
-
 # find by id, find by sdt khach hang
 # filter by status, PTTT
 # sort by thoi gian dat, tong tien
 
 def find_by_id(order_id):
     order = Order.query.get(order_id)
+
+    if not order: raise NotFoundError("Không tìm thấy đơn")
+
     order = order.online_order.to_detail_dict() if order.online_order else order.offline_order.to_detail_dict()
     order['total_amount'] = calculate_total_order_amount(order_id)
     return order
@@ -23,8 +26,12 @@ def find_by_id(order_id):
 
 def update_order_status(order_id, status):
     order = Order.query.get(order_id)
+
+    if not order: raise NotFoundError("Không tìm thấy đơn để cập nhật")
+
     order.status = status
     db.session.commit()
+    return order
 
 
 def find_add_by_user_id(user_id, status):
@@ -52,8 +59,9 @@ def create_order_cancellation(data):
 
 
 def find_order_by_id(id):
-    return Order.query.get(id)
-
+    order = Order.query.get(id)
+    if not order: raise NotFoundError("Không tìm thấy đơn để cập nhật")
+    return order
 
 def find_all(**kwargs):
     orders = Order.query
@@ -94,9 +102,8 @@ def find_all(**kwargs):
         end_date = datetime.strptime(end_date, "%Y-%m-%d")
         orders = orders.filter(Order.created_at <= end_date)
 
-    if 'date' == sort_by:
-        orders = orders.order_by(desc(Order.created_at)) if sort_dir.__eq__("desc") else orders.order_by(
-            asc(Order.created_at))
+    orders = orders.order_by(desc(Order.created_at)) if sort_dir.__eq__("desc") else orders.order_by(
+        asc(Order.created_at))
 
     page_size = app.config['ORDER_PAGE_SIZE']
     start = (page - 1) * page_size
@@ -139,7 +146,7 @@ def update_order(order_id, order_list):
         res = book_db.decrease_book(quantity=quantity)
 
         if not res:
-            raise Exception("")
+            raise GeneralInsufficientError("Không đủ sách")
 
         price = order_item['price']
         order_detail = OrderDetail(order_id=order_id, book_id=book_id, quantity=quantity, price=price)
@@ -205,7 +212,7 @@ def create_offline_order(order_list, user=None):
         quantity = int(order_item['quantity'])
         res = book_db.decrease_book(quantity=quantity)
         if not res:
-            raise Exception("")
+            raise GeneralInsufficientError("Không đủ sách")
         price = int(order_item['price'])
         order_detail = OrderDetail(order_id=offline_order.order_id, book_id=book_id, quantity=quantity, price=price)
         offline_order.order_detail.append(order_detail)

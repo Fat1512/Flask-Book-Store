@@ -281,7 +281,7 @@ const renderToast = function (text, background) {
         newWindow: true,
         close: true,
         gravity: "top",
-        position: right,
+        position: "right",
         stopOnFocus: true,
         style: {
             background: background,
@@ -292,6 +292,8 @@ const renderToast = function (text, background) {
 //---------------------------------------------API UTILITY---------------------------------------------
 const fetchBook = async function () {
     try {
+        console.log(url.search);
+
         const res = await fetch(`${BOOK_API}/manage${url.search}`)
         if (!res.ok) throw new Error("Cannot fetch books");
         const data = await res.json();

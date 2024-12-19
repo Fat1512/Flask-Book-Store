@@ -56,21 +56,9 @@ def offline_order():
     order_list = request.json['orderList']
     customer_info = request.json['customerInfo']
 
-    customer_id_ok = bool(customer_info) and customer_info['id'] is not None
-    customer_phone_ok = bool(customer_info) and customer_info['phone_number'] is not None and customer_info[
-        'phone_number'] != "" and customer_info['phone_number'] != 0
-
-    if customer_id_ok and customer_phone_ok:
+    user = None
+    if bool(customer_info):
         user = find_by_customer_id_phone_number(int(customer_info['id']), str(customer_info['phone_number']))
-    elif not customer_id_ok and not customer_phone_ok:
-        user = None
-    elif customer_phone_ok:
-        user = find_by_phone_number(str(customer_info['phone_number']))
-        if user is None:
-            user = add_offline_user("Default", "Default", "Default2", avt_url=None, sex=True,
-                                    phone_number=str(customer_info['phone_number']), isActive=True)
-    else:
-        return False
 
     order = create_offline_order(order_list, user)
     return jsonify({
@@ -100,18 +88,9 @@ def cancel_order():
     data = request.json
     order_cancellation = create_order_cancellation(data)
     return jsonify({
-        'message': 'Successfully Cancelled',
+        'message': 'Hủy thành công',
         'status': 200,
         'data': order_cancellation.to_dict()
-    })
-
-
-@order_api_bp.route("/<order_id>/confirm", methods=['GET'])
-def confirm_order(order_id):
-    update_order_status(order_id, OrderStatus.CHO_GIAO_HANG)
-    return jsonify({
-        'message': 'Successfully Confirmed',
-        'status': 200
     })
 
 
@@ -120,16 +99,15 @@ def update_status(order_id):
     status = request.json.get("orderStatusId")
     status_enum = OrderStatus(int(status))
 
-    update_order_status(order_id, status_enum)
+    order = update_order_status(order_id, status_enum)
 
-    if OrderStatus.DA_HOAN_THANH == status_enum:
-        order = find_by_id(order_id)
+    if OrderStatus.DA_HOAN_THANH == order.status and PaymentMethod.TIEN_MAT == order.payment_method:
         total_amount = calculate_total_order_amount(order_id)
         payment_detail = PaymentDetail(order_id=order.order_id, created_at=datetime.utcnow(), amount=total_amount)
         create_payment(payment_detail)
 
     return jsonify({
-        'message': 'Successfully Updated Status',
+        'message': 'Cập nhật thành công',
         'status': 200
     })
 

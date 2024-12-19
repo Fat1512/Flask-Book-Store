@@ -32,7 +32,10 @@ const Color = {
 
 //---------------------------------------------DOM ELEMENTS & STATES---------------------------------------------
 const modal = document.querySelector(".modal");
-const modalBody = document.querySelector(".modal-body");
+const modalAddPhoneBody = document.querySelector(".modal-add-phone-body")
+const modalScannerBody = document.querySelector(".modal-scanner-body")
+const modalInvoiceBody = document.querySelector(".modal-invoice-body")
+
 const overlay = document.querySelector(".overlay")
 
 const orderContainer = document.querySelector(".order-container");
@@ -44,14 +47,14 @@ const checkoutBtn = document.querySelector(".checkout-btn");
 const barcodeScanner = document.querySelector("#reader");
 const qrBtn = document.querySelector(".qr-code-btn");
 
-const searchPhoneNumBtn = document.querySelector(".search-phone-number-btn");
-const addPhoneNumBtn = document.querySelector(".add-phone-number-btn");
-const searchBtn = document.querySelector(".btn-search");
-const resetBtn = document.querySelector(".btn-reset");
+const openAddPhoneModalBtn = document.querySelector(".open-add-phone-modal");
+const searchBtn = document.querySelector(".search-btn");
+const resetBtn = document.querySelector(".reset-btn");
+const addPhoneBtn = document.querySelector(".add-phone-btn");
 
-const inputGroupSearchPhoneNumber = document.querySelector(".input-group-search-phone-number");
-const inputGroupAddPhoneNumber = document.querySelector(".input-group-add-phone-number");
-const inputSearch = document.querySelector(".input-search");
+const inputPhoneSearch = document.querySelector(".input-phone-search");
+const inputBookSearch = document.querySelector(".input-book-search");
+const inputPhoneAdd = document.querySelector(".input-phone-add");
 
 const phoneNumberDropDown = document.querySelector(".phone-number-dropdown");
 const customerNameContainer = document.querySelector(".customer-name-container");
@@ -69,7 +72,7 @@ const renderToast = function (text, background) {
         newWindow: true,
         close: true,
         gravity: "top", // `top` or `bottom`
-        position: right, // `left`, `center` or `right`
+        position: "right", // `left`, `center` or `right`
         stopOnFocus: true, // Prevents dismissing of toast on hover
         style: {
             background: background,
@@ -79,14 +82,15 @@ const renderToast = function (text, background) {
 
 const renderBookItem = function (books) {
     const html = books.map(book => `
-    <a class="product-item card col-4 cursor-pointer" id="${book['book_id']}">
+    <a class="product-item card col-3 cursor-pointer" id="${book['book_id']}">
         <img class="card-img-top"
-             src="${book['images'][0]['image_url']}"
-             alt="Card image">
+             src="${book.images?.[0]?.image_url}"
+             alt="Card image"
+            style="height: auto !important;">
         <div class="card-body p-0">
             <p class="card-text product-name">${book['title']}</p>
             <p class="text-primary font-weight-bold mb-1 product-price">${vndCurrencyFormat.format(book['price'])}</p>
-            <p class="text-dark font-weight-light mb-1">qty: ${ book['quantity'] }</p>
+            <p class="text-dark font-weight-light mb-1">qty: ${book['quantity']}</p>
         </div>
     </a>`).join('');
 
@@ -224,7 +228,8 @@ const renderInvoice = function (order) {
             </div>
         </div>
     </div>`;
-    modalBody.insertAdjacentHTML("beforeend", html);
+    modalInvoiceBody.innerHTML = '';
+    modalInvoiceBody.insertAdjacentHTML("beforeend", html);
 }
 
 const renderPhoneNumberList = function (info) {
@@ -236,9 +241,9 @@ const renderPhoneNumberList = function (info) {
     phoneNumberDropDown.insertAdjacentHTML("beforeend", html);
 }
 
-const renderCustomerName = function (currentAddress) {
+const renderCustomerName = function (customerInfo) {
     const html = `
-        <span id="${currentAddress['id']}" class="customer-name">Tên khách hàng: ${currentAddress['name']}, Số điện thoại: ${currentAddress['phone_number']}</span>
+        <span id="${customerInfo['id']}" class="customer-name">Tên khách hàng: ${customerInfo['fullname']}, Số điện thoại: ${customerInfo['phone_number']}</span>
         <a class="btn btn-sm btn-icon-only text-light cursor-pointer" role="button">
             <i class="fa fa-window-close" aria-hidden="true"></i>
         </a>`;
@@ -247,9 +252,8 @@ const renderCustomerName = function (currentAddress) {
 }
 
 
-
 //---------------------------------------------API UTILITY---------------------------------------------
-const fetchPhoneNumber = async function(phoneNumber) {
+const fetchPhoneNumber = async function (phoneNumber) {
     try {
         const res = await fetch(`/api/v1/user/phone_number/${phoneNumber}`, {
             method: "GET",
@@ -257,15 +261,19 @@ const fetchPhoneNumber = async function(phoneNumber) {
                 'Content-Type': 'application/json'
             }
         });
-        if (!res.ok) throw new Error("Không có số điện thoại tương ứng");
+        if (!res.ok) throw new Error("Có lỗi xảy ra");
         const data = await res.json();
+
+        if(data['status'] !== 200) {
+            throw new Error(data['message']);
+        }
         return data['data'];
     } catch (err) {
         throw err;
     }
 }
 
-const fetchBooks = async function() {
+const fetchBooks = async function () {
     try {
         const res = await fetch(`/api/v1/book`, {
             method: "GET",
@@ -281,23 +289,7 @@ const fetchBooks = async function() {
     }
 }
 
-const fetchBookById = async function(bookId) {
-    try {
-        const res = await fetch(`/api/v1/book/${bookId}/manage`, {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        if (!res.ok) throw new Error("Sách không tồn tại");
-        const data = await res.json();
-        return data['data'];
-    } catch (err) {
-        throw err;
-    }
-}
-
-const fetchBookByBarcode = async function(barcode) {
+const fetchBookByBarcode = async function (barcode) {
     try {
         const res = await fetch(`/api/v1/book/barcode/${barcode}`, {
             method: "GET",
@@ -305,15 +297,38 @@ const fetchBookByBarcode = async function(barcode) {
                 'Content-Type': 'application/json'
             }
         });
-        if (!res.ok) throw new Error("Barcode không tồn tại")
+        if (!res.ok) throw new Error("Có lỗi xảy ra");
         const data = await res.json();
+        if(data['status'] !== 200) throw new Error(data['message']);
+
         return data['data'];
     } catch (err) {
         throw err;
     }
 }
 
-const postOfflineOrder = async function() {
+const createUser = async function (phoneNumber) {
+    try {
+        const res = await fetch(`/api/v1/user/phone_number/${phoneNumber}`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!res.ok) throw new Error("Có lỗi xảy ra");
+        const data = await res.json();
+
+        if(data['status'] !== 200) {
+            throw new Error(data['message']);
+        }
+        return data['data'];
+    } catch (err) {
+        throw err;
+    }
+}
+
+const postOfflineOrder = async function () {
     let data = {
         'customerInfo': currentCustomerInfoState,
         'orderList': Object.values(currentOrderItemsState)
@@ -326,11 +341,14 @@ const postOfflineOrder = async function() {
         }
     });
 
-    if (!res.ok) throw new Error("Sách không đủ số lượng vui lòng kiểm tra lại");
+    if (!res.ok) throw new Error("Có lỗi xảy ra");
     data = await res.json();
+
+    if(data['status'] !== 200)
+        throw new Error(data['message']);
+
     return data['data'];
 }
-
 
 
 //---------------------------------------------DOM UTILITY---------------------------------------------
@@ -344,10 +362,10 @@ let html5QrcodeScanner = new Html5QrcodeScanner(
 html5QrcodeScanner.render(onScanSuccess, onScanFailure);
 
 async function onScanSuccess(decodedText, decodedResult) {
-
     html5QrcodeScanner.pause(1);
     setTimeout(() => {
         html5QrcodeScanner.resume();
+        modal.classList.remove("d-flex")
         modal.classList.remove("d-flex")
         overlay.classList.remove("d-flex");
     }, 1000);
@@ -362,11 +380,35 @@ async function onScanSuccess(decodedText, decodedResult) {
         }
         renderOrderItem(Object.entries(currentOrderItemsState).map(item => item[1]));
     } catch (err) {
-        renderToast(err.messageColor.ERROR);
+        renderToast(err.message, Color.ERROR);
     }
 }
 
-function onScanFailure(error) {}
+function onScanFailure(error) {
+
+}
+
+const exportPdf = async function() {
+    const {jsPDF} = window.jspdf;
+    html2canvas(document.querySelector("#invoice"), {
+        useCORS: true,
+        allowTaint: false,
+        scale: 2 // Improves image quality
+    }).then(canvas => {
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF("p", "mm", "a4");
+
+        // Add image to PDF
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+        pdf.save(`invoice_${document.querySelector('[order-id]').getAttribute("order-id")}.pdf`);
+
+        renderToast("Đã xuất hóa đơn", Color.SUCCESS)
+    });
+}
 
 const openModal = function () {
     modal.classList.add("d-flex");
@@ -376,11 +418,24 @@ const openModal = function () {
 const closeModal = function () {
     modal.classList.remove("d-flex");
     overlay.classList.remove("d-flex");
-    barcodeScanner.classList.remove("d-none");
+    modalInvoiceBody.classList.add("display-none");
+    modalScannerBody.classList.add("display-none");
+    modalAddPhoneBody.classList.add("display-none");
+}
 
-    Array.from(modalBody.children).forEach(child => {
-        if (child !== barcodeScanner) modalBody.removeChild(child);
-    })
+const openInvoiceModal = function () {
+    openModal();
+    modalInvoiceBody.classList.remove("display-none");
+}
+
+const openScannerModal = function () {
+    openModal();
+    modalScannerBody.classList.remove("display-none");
+}
+
+const openAddPhoneModal = function () {
+    openModal();
+    modalAddPhoneBody.classList.remove("display-none");
 }
 
 const resetState = function () {
@@ -389,7 +444,13 @@ const resetState = function () {
 }
 
 //---------------------------------------------EVENT---------------------------------------------
-qrBtn.addEventListener("click", openModal);
+const resetCustomerInfoState = function () {
+    customerNameContainer.innerHTML = '';
+    currentCustomerInfoState = {};
+    inputPhoneSearch.querySelector("input").value = '';
+};
+
+qrBtn.addEventListener("click", openScannerModal);
 
 overlay.addEventListener("click", closeModal);
 
@@ -411,67 +472,60 @@ customerNameContainer.addEventListener("click", function (e) {
     resetCustomerInfoState();
 });
 
-const resetCustomerInfoState = function () {
-    customerNameContainer.innerHTML = '';
-    currentCustomerInfoState = {};
-    inputGroupAddPhoneNumber.querySelector("input").value = '';
-    inputGroupSearchPhoneNumber.querySelector("input").value = '';
-};
-
-searchPhoneNumBtn.addEventListener("click", function () {
-    inputGroupSearchPhoneNumber.classList.add("d-flex");
-    inputGroupSearchPhoneNumber.classList.remove("d-none");
-    inputGroupAddPhoneNumber.classList.remove("d-flex");
-    inputGroupAddPhoneNumber.classList.add("d-none");
-    resetCustomerInfoState();
-});
-
-addPhoneNumBtn.addEventListener("click", function () {
-    inputGroupSearchPhoneNumber.classList.add("d-none");
-    inputGroupSearchPhoneNumber.classList.remove("d-flex");
-    inputGroupAddPhoneNumber.classList.remove("d-none");
-    inputGroupAddPhoneNumber.classList.add("d-flex");
-    resetCustomerInfoState();
+openAddPhoneModalBtn.addEventListener("click", function () {
+    openAddPhoneModal();
 });
 
 searchBtn.addEventListener("click", async function () {
     try {
-        const bookId = inputSearch.value;
-        const book = await fetchBookById(bookId);
+        const barcode = inputBookSearch.value;
+        const book = await fetchBookByBarcode(barcode);
         renderBookItem([book]);
     } catch (err) {
         renderToast(err.message, Color.ERROR);
     }
 });
 
-
 resetBtn.addEventListener("click", async function () {
     try {
         const books = await fetchBooks();
-        renderBookItem(books['data']['books']);
+        renderBookItem(books['books']);
 
-        inputSearch.value = '';
+        inputBookSearch.value = '';
     } catch (err) {
         renderToast(err.message, Color.ERROR);
     }
 });
 
-inputGroupSearchPhoneNumber.addEventListener("focusout", function (e) {
+addPhoneBtn.addEventListener("click", async function () {
+    try {
+        const phoneNumber = inputPhoneAdd.value.trim();
+        if(isNaN(phoneNumber)){
+            throw new Error("Vui lòng nhập số");
+        } else if(phoneNumber.length < 8)
+            throw new Error("Độ dài phải >= 8");
+
+        const data = await createUser(phoneNumber);
+        currentCustomerInfoState = data;
+        renderCustomerName(currentCustomerInfoState);
+
+        inputPhoneAdd.value = '';
+        closeModal();
+        renderToast("Đã thêm thành công", Color.SUCCESS);
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
+    }
+})
+
+inputPhoneSearch.addEventListener("focusout", function (e) {
     phoneNumberDropDown.classList.add("d-none");
 });
 
-inputGroupSearchPhoneNumber.addEventListener("focusin", function (e) {
+inputPhoneSearch.addEventListener("focusin", function (e) {
     phoneNumberDropDown.classList.remove("d-none");
 });
 
-inputGroupAddPhoneNumber.addEventListener("input", (e) => {
-    currentCustomerInfoState = {
-        'id': null,
-        'phone_number': e.target.value
-    }
-});
-
-inputGroupSearchPhoneNumber.addEventListener("input", async function (e) {
+inputPhoneSearch.addEventListener("input", async function (e) {
     clearTimeout(currentPhoneNumberSearchTimeoutID)
     currentPhoneNumberSearchTimeoutID = setTimeout(async function () {
         try {
@@ -490,33 +544,17 @@ checkoutBtn.addEventListener("click", async function () {
     }
     try {
         const order = await postOfflineOrder();
-        renderToast("Đã xuất hóa đơn", Color.SUCCESS)
-        openModal();
-        resetState();
-        barcodeScanner.classList.add("d-none");
+        const books = await fetchBooks();
 
+        closeModal();
+        openInvoiceModal();
+        resetState();
+
+        renderBookItem(books['books']);
         renderInvoice(order);
         renderToast("Đang tải xuống...", Color.WARNING);
 
-        const {jsPDF} = window.jspdf;
-        html2canvas(document.querySelector("#invoice"), {
-            useCORS: true,
-            allowTaint: false,
-            scale: 2 // Improves image quality
-        }).then(canvas => {
-            const imgData = canvas.toDataURL("image/png");
-            const pdf = new jsPDF("p", "mm", "a4");
-
-            // Add image to PDF
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-            pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-            pdf.save(`invoice_${document.querySelector('[order-id]').getAttribute("order-id")}.pdf`);
-
-            renderToast("Đã tải xuống", Color.SUCCESS)
-        });
+        exportPdf();
     } catch (err) {
         renderToast(err.message, Color.ERROR);
     }

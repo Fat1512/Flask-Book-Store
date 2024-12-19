@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/FormPrint.css') }}">
 {% endblock %}
 {% block js %}
-    <script src="{{ url_for('static', filename='js/employeeImportHistory.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/employee/employeeImportHistory.js') }}"></script>
 {% endblock %}
 {% block content %}
     <div class="header bg-primary pb-6">
@@ -56,7 +56,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-4">
+                        <div class="ml-3 col-3">
                             <div class="form-group mb-0 w-100 d-flex order-id-search-container">
                                 <div class="input-group input-group-alternative input-group-merge w-65 ml-r">
                                     <div class="input-group-prepend">
@@ -172,10 +172,44 @@
 {% block modal %}
 <div class="modal">
     <div class="overlay"></div>
-    <div class="modal-body item-bg-color">
-        <div id="reader">
+    <div class="modal-body modal-body-export">
 
-        </div>
     </div>
 </div>
 {% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

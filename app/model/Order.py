@@ -85,6 +85,11 @@ class Order(db.Model):
         json['order_detail'] = [order_detail.to_dict() for order_detail in self.order_detail]
         if self.payment_detail:
             json['payment']['payment_detail'] = self.payment_detail.to_dict()
+        json['user'] = {}
+        user = self.customer
+        if user:
+            json['user']['id'] = user.user_id
+            json['user']['fullname'] = user.full_name
         return json
 
     def get_shipping_fee(self):

@@ -26,6 +26,12 @@ const timeFormatter = new Intl.DateTimeFormat('vi-VN', {
     // timeZoneName: 'short' // e.g., GMT
 });
 
+const Color = {
+    WARNING: "orange",
+    ERROR: `var(--red)`,
+    SUCCESS: "#6cbf6c"
+}
+
 //---------------------------------------------DOM ELEMENTS & STATES---------------------------------------------
 const modalBodyExport = document.querySelector(".modal-body-export")
 const pagination = document.querySelector(".pagination");
@@ -40,10 +46,7 @@ const importList = document.querySelector(".import-list");
 
 const resetAllBtn = document.querySelector(".btn-reset-all");
 const searchBtn = document.querySelector(".btn-search");
-const printBtn = document.querySelector(".btn-print-import-form");
 let currentSearchParam = {};
-
-
 
 //---------------------------------------------RENDER---------------------------------------------
 const renderPagination = function (total_page, current_page) {
@@ -173,17 +176,6 @@ const renderImportForm = function (form) {
                             </div>
                         </div>
                     </div>
-                    <div class="col-6 pt-5">
-                        <div class="row">
-                            <div class="col-md-12 flex-end">
-                                <p class="text-right">
-                                    <button id="downloadPDF"
-                                            class="btn text-right text-white btn-print btn-download-pdf">Print
-                                    </button>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -199,7 +191,7 @@ const renderToast = function (text, background) {
         newWindow: true,
         close: true,
         gravity: "top",
-        position: right,
+        position: "right",
         stopOnFocus: true,
         style: {
             background: background,
@@ -257,32 +249,6 @@ const deleteUrlParams = (params) => params.forEach(param => url.searchParams.del
 const addUrlParams = (params) => params.forEach(param => url.searchParams.set(param[0], param[1]));
 
 //---------------------------------------------EVENT---------------------------------------------
-modalBodyExport.addEventListener("click", function (e) {
-    const pdfDownloadBtn = e.target.closest(".btn-download-pdf");
-    if (!pdfDownloadBtn) return;
-
-    const {jsPDF} = window.jspdf;
-
-    renderToast('Đang tải xuống...', Color.WARNING);
-    html2canvas(document.querySelector("#invoice"), {
-        useCORS: true,
-        allowTaint: false,
-        scale: 2 // Improves image quality
-    }).then(canvas => {
-        const imgData = canvas.toDataURL("image/png");
-        const pdf = new jsPDF("p", "mm", "a4");
-
-        // Add image to PDF
-        const imgProps = pdf.getImageProperties(imgData);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-
-        pdf.save(`form_import_${document.querySelector('[form-import-id]').getAttribute("form-import-id")}.pdf`);
-        renderToast("Đã tải thành công !", Color.SUCCESS);
-    });
-})
 
 resetAllBtn.addEventListener("click", async function () {
     resetAllState();
@@ -305,6 +271,29 @@ importList.addEventListener("click", async function (e) {
         const form = await fetchImportFormDetail(formImportId);
         openModal();
         renderImportForm(form);
+
+        renderToast("Đang tải...", Color.WARNING)
+
+        const {jsPDF} = window.jspdf;
+        html2canvas(document.querySelector("#invoice"), {
+            useCORS: true,
+            allowTaint: false,
+            scale: 2 // Improves image quality
+        }).then(canvas => {
+            const imgData = canvas.toDataURL("image/png");
+            const pdf = new jsPDF("p", "mm", "a4");
+
+            // Add image to PDF
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+            pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+            pdf.save(`form_import_${document.querySelector('[form-import-id]').getAttribute("form-import-id")}.pdf`);
+
+            renderToast("Đã tải xuống", Color.SUCCESS)
+        });
+
     } catch (err) {
         renderToast(err.message, Color.ERROR);
     }
@@ -388,7 +377,7 @@ pagination.addEventListener("click", async function (e) {
 
         renderImportItems(form['form_imports']);
         renderPagination(form['total_page'], form['current_page']);
-    } catch(err) {
+    } catch (err) {
         renderToast(err.message, Color.ERROR);
     }
 });

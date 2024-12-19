@@ -103,7 +103,8 @@ def get_manage_books():
     gerne_id = request.args.get('gerneId', type=int)
     page = request.args.get('page', 1, type=int)
 
-    data = search_book(keyword, min_price, max_price, order, gerne_id, limit, page, quantity_status)
+    data = search_book(keyword=keyword, min_price=min_price, max_price=max_price, order=order, gerne_id=gerne_id,
+                       limit=limit, page=page, quantity_status=quantity_status)
     book_dto = []
 
     for book in data['books']:
@@ -135,12 +136,7 @@ def get_manage_book(book_id):
 
 @book_rest_bp.route('/barcode/<barcode>', methods=['GET'])
 def get_by_barcode(barcode):
-    barcode = find_by_barcode(barcode).first().to_dict()
-    if not barcode:
-        return jsonify({
-            'message': 'Not Found',
-            'status': 404
-        })
+    barcode = find_by_barcode(barcode).to_dict()
 
     return jsonify({
         'message': 'Success',
@@ -165,6 +161,7 @@ def create_import():
 @book_rest_bp.route('/import/<int:import_id>/detail')
 def get_import_form_detail(import_id):
     form_import = find_form_import_by_id(import_id)
+
     return jsonify({
         'message': 'Success',
         'status': 200,

@@ -40,7 +40,7 @@ const renderToast = function (text, background) {
         newWindow: true,
         close: true,
         gravity: "top", // `top` or `bottom`
-        position: right, // `left`, `center` or `right`
+        position: "right", // `left`, `center` or `right`
         stopOnFocus: true, // Prevents dismissing of toast on hover
         style: {
             background: background,
@@ -52,12 +52,13 @@ const renderBookItem = function (books) {
     const html = books.map(book => `
     <a class="product-item card col-3 cursor-pointer" id="${book['book_id']}">
         <img class="card-img-top"
-             src="${book['images'][0]['image_url']}"
-             alt="Card image">
+             src="${book.images?.[0]?.image_url}"
+             alt="Card image"
+             style="height: auto !important;">
         <div class="card-body p-0">
             <p class="card-text product-name">${book['title']}</p>
             <p class="text-primary font-weight-bold mb-1 product-price">${vndCurrencyFormat.format(book['price'])}</p>
-            <p class="text-dark font-weight-light mb-1">qty: ${ book['quantity'] }</p>
+            <p class="text-dark font-weight-light mb-1">qty: ${book['quantity']}</p>
         </div>
     </a>`).join('');
 
@@ -121,24 +122,28 @@ async function fetchBooks() {
                 'Content-Type': 'application/json'
             }
         });
-        if (!res.ok) throw new Error("Sách không tồn tại");
+        if (!res.ok) throw new Error("Có lỗi xảy ra");
         const data = await res.json();
+        if(data['status'] !== 200) throw new Error(data['message']);
         return data['data'];
     } catch (err) {
         throw err;
     }
 }
 
-async function fetchBookById(bookId) {
+
+const fetchBookByBarcode = async function (barcode) {
     try {
-        const res = await fetch(`/api/v1/book/${bookId}/manage`, {
+        const res = await fetch(`/api/v1/book/barcode/${barcode}`, {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json'
             }
         });
-        if (!res.ok) throw new Error("Sách không tồn tại");
+        if (!res.ok) throw new Error("Có lỗi xảy ra");
         const data = await res.json();
+        if(data['status'] !== 200) throw new Error(data['message']);
+
         return data['data'];
     } catch (err) {
         throw err;
@@ -196,8 +201,8 @@ orderContainer.addEventListener("click", function (e) {
 
 searchBtn.addEventListener("click", async function () {
     try {
-        const bookId = inputSearch.value;
-        const book = await fetchBookById(bookId);
+        const barcode = inputSearch.value;
+        const book = await fetchBookByBarcode(barcode);
         renderBookItem([book]);
     } catch (err) {
         renderToast(err.message, Color.ERROR);
@@ -207,7 +212,7 @@ searchBtn.addEventListener("click", async function () {
 resetBtn.addEventListener("click", async function () {
     try {
         const books = await fetchBooks();
-        renderBookItem(books['data']['books']);
+        renderBookItem(books['books']);
         inputSearch.value = '';
     } catch (err) {
         renderToast(err.message, Color.ERROR);
@@ -245,6 +250,7 @@ updateBtn.addEventListener("click", async function (e) {
                 'Content-Type': 'application/json'
             }
         });
+
         if (!res.ok) throw new Error("Có lỗi xảy ra !");
         initialOrderItemsState = JSON.parse(JSON.stringify(currentOrderItemsState));
         renderToast("Cập nhật thành công !", Color.SUCCESS)
