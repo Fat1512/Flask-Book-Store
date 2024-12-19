@@ -90,6 +90,7 @@ def handle_insufficient_error(e):
         "status": e.status_code
     })
 
+
 @app.errorhandler(GeneralInsufficientError)
 def handle_general_insufficient_error(e):
     return jsonify({
@@ -97,11 +98,6 @@ def handle_general_insufficient_error(e):
         "message": e.message,
         "status": e.status_code
     })
-
-    return {
-        "cart_items": cart_items,
-        "total_price": total_price
-    }
 
 
 def consume_kafka(topic):
@@ -222,6 +218,12 @@ def my_job():
         delete_orders_after_48hrs()
         print('This job is executed every 5 seconds.')
 
+
+@scheduler.task('interval', id='my_job', seconds=5)
+def my_job():
+    with app.app_context():
+        delete_orders_after_48hrs()
+        print('This job is executed every 5 seconds.')
 
 
 @app.route('/status', methods=['GET'])
