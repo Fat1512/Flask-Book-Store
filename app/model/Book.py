@@ -29,7 +29,7 @@ class Book(db.Model):
     publisher_id = Column(Integer, ForeignKey('publisher.publisher_id'), nullable=False)
     book_gerne_id = Column(Integer, ForeignKey('book_gerne.book_gerne_id'))
 
-    book_gerne = db.relationship('BookGerne', back_populates='books', lazy=True)
+    book_gerne = db.relationship('BookGerne', back_populates='books', lazy=True,cascade ="none")
     publisher_info = db.relationship('Publisher', back_populates='publisher_books_relation',
                                      foreign_keys=[publisher_id], lazy=True)
     images = db.relationship('BookImage', backref='book', lazy=True)

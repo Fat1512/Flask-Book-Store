@@ -14,7 +14,7 @@
     <meta name="description" content="GPHUCDEPZAI">
     <meta http-equiv="refresh" content="1800">
     <link href="https://cdn0.fahasa.com/media/favicon/default/favicon4.ico" rel="shortcut icon">
-    <title>Đăng nhập</title>
+    <title>Đăng nhập ADMIN</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
     <script src="wow.min.js"></script>
@@ -44,8 +44,8 @@
                                              alt="">
                                     </a>
                                 </div>
-                                <h2 style="color: #5a5a5a;">Đăng nhập</h2>
-                                <form method="post" action="{{ url_for('account.login_process') }}">
+                                <h2 style="color: #5a5a5a;">Đăng nhập EMPLOYEE</h2>
+                                <form method="post" action="/account/employee-login">
                                     <div class="form-group appoinment-body-1">
                                         <label for="username">
                                             <font>Tên đăng nhập</font>
@@ -71,7 +71,7 @@
                                                 <span class="checkmark"></span>
                                             </label>
                                         </div>
-                                        <a href="/account/forgot">Quên mật khẩu</a>
+                                        <a href="javascript:;">Quên mật khẩu</a>
                                     </div>
                                     {% if err_msg %}
                                     <div class="checkpass" style="margin-bottom: 15px">
@@ -84,17 +84,16 @@
                                     </div>
                                     {% endif %}
                                     <div class="form-group login-btn">
-                                        <a href="{{ url_for('index.index') }}">
+                                        <a href="{{ url_for('employee.checkout') }}">
                                             <button class="btn-primary" type="submit">Đăng nhập</button>
                                         </a>
                                     </div>
-
                                 </form>
 
                                 <div class="next-sign">
                                     <p>
                                         Bạn cần một tài khoản?
-                                        <a href="/account/register">Đăng ký</a>
+                                        <a href="/account/employee-register">Đăng ký</a>
                                     </p>
                                     <div class="social-login row">
                                         <a href="javascript:;">

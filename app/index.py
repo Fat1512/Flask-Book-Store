@@ -10,17 +10,17 @@ from app.controllers.CartController import cart_bp
 from app.controllers.rest.AccountAPI import account_rest_bp
 from app.controllers.rest.CartAPI import cart_rest_bp
 from app.controllers.rest.PaymentAPI import payment_rest_bp
-from app.controllers.rest.SearchAPI import search_res_bp
+# from app.controllers.rest.SearchAPI import search_res_bp
 from app.dao import UserDao
-from app import app, login, consumers
+from app import app, login
 from app.dao.CartDao import find_by_cart_id
-from app.elasticsearch.BookIndexService import create_document, delete_document
-from app.elasticsearch.KafkaAsysnData import create, update_book_document, delete, \
-    add_attribute_value, modify_attribute_value
+# from app.elasticsearch.BookIndexService import create_document, delete_document
+# from app.elasticsearch.KafkaAsysnData import create, update_book_document, delete, \
+#     add_attribute_value, modify_attribute_value
 from app.exception.NotFoundError import NotFoundError
 from app.model.User import UserRole
 from flask import render_template, request, redirect, url_for, jsonify
-from app.controllers.SearchController import home_bp
+# from app.controllers.SearchController import home_bp
 from app.controllers.HomeController import index_bp
 from app.controllers.EmployeeController import employee_bp
 from app.controllers.OrderController import order_bp
@@ -33,8 +33,11 @@ from app.controllers.AccountController import account_bp
 from app.controllers.AdminController import admin_bp, update_book
 from app.controllers.CartController import cart_bp
 from app.controllers.rest.CartAPI import cart_rest_bp
+from datetime import datetime
+from flask_login import current_user
+from app.utils.admin import profile
 
-app.register_blueprint(home_bp, url_prefix='/search')
+# app.register_blueprint(home_bp, url_prefix='/search')
 app.register_blueprint(employee_bp, url_prefix='/employee')
 app.register_blueprint(order_bp, url_prefix='/order')
 
@@ -43,7 +46,7 @@ app.register_blueprint(book_gerne_rest_bp, url_prefix='/api/v1/bookGerne')
 app.register_blueprint(book_rest_bp, url_prefix='/api/v1/book')
 app.register_blueprint(order_api_bp, url_prefix='/api/v1/order')
 app.register_blueprint(cart_rest_bp, url_prefix='/api/v1/cart')
-app.register_blueprint(search_res_bp,url_prefix='/api/v1/search')
+# app.register_blueprint(search_res_bp,url_prefix='/api/v1/search')
 app.register_blueprint(payment_rest_bp, url_prefix='/api/v1/payment')
 
 app.register_blueprint(account_rest_bp, url_prefix='/api/v1/account')
@@ -74,96 +77,108 @@ def cart_context():
     }
 
 
-def consume_kafka(topic):
-    with app.app_context():
-        """Consume messages from Kafka and index them into Elasticsearch."""
-        consumer = consumers[topic]
-        consumer.subscribe([topic])
-        while True:
-            msg = consumer.poll(timeout=1.0)
-            if msg is None:
-                continue
-            elif msg.error():
-                print(msg.error())
-            else:
-                if msg.value():
-                    data = json.loads(msg.value().decode('utf-8'))
-                    handler_message(topic, data)
-        consumer.close()
+@app.context_processor
+def user_context():
+    user_data = None
+    if current_user.is_authenticated:
+        user_data = profile()
+
+    return {
+        "current_year": datetime.now().year,
+        "profile": user_data
+    }
 
 
-def handler_message(topic, data):
-    if topic.__eq__("dbs_.book_store.book"):
-        handle_topic_book(data['payload'])
-    elif topic.__eq__("dbs_.book_store.extended_book"):
-        handle_topic_extended_book(data['payload'])
-    # elif topic.__eq__("dbs_.book_store.attribute"):
-    #     handle_topic_attribute(data['payload'])
-    # elif topic.__eq__("dbs_.book_store.book_gerne"):
-    #     handle_topic_book_gerne(data['payload'])
-
-
-def handle_topic_book(data):
-    try:
-        # Extract necessary information from the message
-        action = data.get('op')  # Assume 'action' field in data determines what to do
-
-        if action == 'c':
-            print("created")
-            # Logic for creating a new record or entity
-            entity_id = data['after']['book_id']
-            create(entity_id)
-
-        elif action == 'u':
-            # Logic for updating an existing record or entity
-            print('update')
-            before_data = data.get('before')
-            after_data = data.get('after')
-            updated_fields = {}
-            for field in before_data.keys():
-                if before_data[field] != after_data[field]:
-                    updated_fields[field] = after_data[field]
-
-            update_book_document(after_data['book_id'], updated_fields)
-
-        elif action == 'd':
-            print("delete")
-            entity_id = data['before']['book_id']
-            delete(entity_id)
-        else:
-            print(f"Unknown action: {action}")
-
-    except Exception as e:
-        print(f"Error handling topic1 message: {e}")
-
-
-def handle_topic_extended_book(data):
-    try:
-        # Extract necessary information from the message
-        action = data.get('op')  # Assume 'action' field in data determines what to do
-        # Assuming there's an 'id' field that identifies the entity
-
-        if action == 'c':
-            print("created")
-            # Logic for creating a new record or entity
-            add_attribute_value(data['after'])
-
-        elif action == 'u':
-            # Logic for updating an existing record or entity
-            print('updated')
-            modify_attribute_value(data['after']['book_id'])
-        elif action == 'd':
-            print("delete")
-            modify_attribute_value(data['before']['book_id'])
-        else:
-            print(f"Unknown action: {action}")
-
-    except Exception as e:
-        print(f"Error handling topic1 message: {e}")
-
-
-def handle_topic_book_gerne(data):
-    pass
+# def consume_kafka(topic):
+#     with app.app_context():
+#         """Consume messages from Kafka and index them into Elasticsearch."""
+#         consumer = consumers[topic]
+#         consumer.subscribe([topic])
+#         while True:
+#             msg = consumer.poll(timeout=1.0)
+#             if msg is None:
+#                 continue
+#             elif msg.error():
+#                 print(msg.error())
+#             else:
+#                 if msg.value():
+#                     data = json.loads(msg.value().decode('utf-8'))
+#                     handler_message(topic, data)
+#         consumer.close()
+#
+#
+# def handler_message(topic, data):
+#     if topic.__eq__("dbs_.book_store.book"):
+#         handle_topic_book(data['payload'])
+#     elif topic.__eq__("dbs_.book_store.extended_book"):
+#         handle_topic_extended_book(data['payload'])
+#     # elif topic.__eq__("dbs_.book_store.attribute"):
+#     #     handle_topic_attribute(data['payload'])
+#     # elif topic.__eq__("dbs_.book_store.book_gerne"):
+#     #     handle_topic_book_gerne(data['payload'])
+#
+#
+# def handle_topic_book(data):
+#     try:
+#         # Extract necessary information from the message
+#         action = data.get('op')  # Assume 'action' field in data determines what to do
+#
+#         if action == 'c':
+#             print("created")
+#             # Logic for creating a new record or entity
+#             entity_id = data['after']['book_id']
+#             create(entity_id)
+#
+#         elif action == 'u':
+#             # Logic for updating an existing record or entity
+#             print('update')
+#             before_data = data.get('before')
+#             after_data = data.get('after')
+#             updated_fields = {}
+#             for field in before_data.keys():
+#                 if before_data[field] != after_data[field]:
+#                     updated_fields[field] = after_data[field]
+#
+#             update_book_document(after_data['book_id'], updated_fields)
+#
+#         elif action == 'd':
+#             print("delete")
+#             entity_id = data['before']['book_id']
+#             delete(entity_id)
+#         else:
+#             print(f"Unknown action: {action}")
+#
+#     except Exception as e:
+#         print(f"Error handling topic1 message: {e}")
+#
+#
+# def handle_topic_extended_book(data):
+#     try:
+#         # Extract necessary information from the message
+#         action = data.get('op')  # Assume 'action' field in data determines what to do
+#         # Assuming there's an 'id' field that identifies the entity
+#
+#         if action == 'c':
+#             print("created")
+#             # Logic for creating a new record or entity
+#             add_attribute_value(data['after'])
+#
+#         elif action == 'u':
+#             # Logic for updating an existing record or entity
+#             print('updated')
+#             modify_attribute_value(data['after']['book_id'])
+#         elif action == 'd':
+#             print("delete")
+#             modify_attribute_value(data['before']['book_id'])
+#         else:
+#             print(f"Unknown action: {action}")
+#
+#     except Exception as e:
+#         print(f"Error handling topic1 message: {e}")
+#
+#
+# def handle_topic_book_gerne(data):
+#     pass
 
 
 # def handle_topic_attribute(data):
@@ -193,9 +208,9 @@ def status():
 
 
 if __name__ == "__main__":
-    KAFKA_TOPICS = app.config["KAFKA_TOPIC"]
-    for topic in KAFKA_TOPICS:
-        consumer_thread = Thread(target=consume_kafka, args=(topic,), daemon=True)
-        consumer_thread.start()
+    # KAFKA_TOPICS = app.config["KAFKA_TOPIC"]
+    # for topic in KAFKA_TOPICS:
+    #     consumer_thread = Thread(target=consume_kafka, args=(topic,), daemon=True)
+    #     consumer_thread.start()
 
     app.run(debug=True)

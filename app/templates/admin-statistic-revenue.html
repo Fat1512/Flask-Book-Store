@@ -350,7 +350,8 @@
 
                     <!-- Div 2: 59% -->
                     <div class="col-lg-6 col-7" style="flex: 0 0 40%; max-width: 40%;padding:0;">
-                        <form class="col-lg-6 col-7" style="display: flex; gap: 10px; align-items: center;padding:0;">
+                        <form class="col-lg-6 col-7" style="display: flex; gap: 10px; align-items: center;padding:0;" id="month-form"
+                              method="GET" action="{{ url_for('admin.admin_statistic_revenue') }}">
 
                             <!--                            <div style="flex: 1;">-->
                             <!--                                <input type="date" name="from_date" style="width: 100%; box-sizing: border-box;">-->
@@ -359,16 +360,25 @@
                             <!--                                <input type="date" name="to_date" style="width: 100%; box-sizing: border-box;">-->
                             <!--                            </div>-->
                             <div style="flex: 1;">
-                                <input type="month" name="selected_month" style="width: 100%; box-sizing: border-box;">
+                                <input type="month" name="selected_month" style="width: 100%; box-sizing: border-box;"
+                                       onchange="this.form.submit()" value="{{ request.args.get('selected_month') }}">
                             </div>
-                            <div>
-                                <input type="submit" value="Xác nhận" class="btn btn-neutral"
-                                       style="cursor: pointer;background-color: #2196F3; color: white">
-                            </div>
+<!--                            <div>-->
+<!--                                <input type="submit" value="Xác nhận" class="btn btn-neutral"-->
+<!--                                       style="cursor: pointer;background-color: #2196F3; color: white">-->
+<!--                            </div>-->
                             <div class="col-lg-6 col-5 text-right" style="flex: 1;padding:0;display:flex;">
                                 <a href="#" class="btn btn-neutral" id="statistic-table-check">Bảng</a>
                                 <a href="#" class="btn btn-neutral" id="statistic-chart-check">Biểu đồ</a>
+                                <button id="exportPDF-1" style="cursor: pointer;background-color: #2196F3; color: white"
+                                        class="btn btn-neutral">PDF
+                                </button>
                             </div>
+<!--                            <div>-->
+<!--                                <button id="exportPDF-2" style="cursor: pointer;background-color: #2196F3; color: white"-->
+<!--                                        class="btn btn-neutral">Xuất PDF-->
+<!--                                </button>-->
+<!--                            </div>-->
                         </form>
                     </div>
 
@@ -378,10 +388,10 @@
                                 <input type="number" min="2000" name="year" placeholder="Nhập năm"
                                        style="box-sizing: border-box;">
                             </div>
-                            <div>
-                                <input type="submit" value="Xác nhận" class="btn btn-neutral"
-                                       style="cursor: pointer;background-color: #2196F3; color: white">
-                            </div>
+<!--                            <div>-->
+<!--                                <input type="submit" value="Xác nhận" class="btn btn-neutral"-->
+<!--                                       style="cursor: pointer;background-color: #2196F3; color: white">-->
+<!--                            </div>-->
                             <!--                            <div style="flex: 1;">-->
                             <!--                                <input type="text" name="kw" placeholder="Nhập từ khóa"-->
                             <!--                                       style="box-sizing: border-box;">-->
@@ -389,7 +399,15 @@
                             <div class="col-lg-6 col-5 text-right" style="flex: 1;padding:0;display:flex;">
                                 <a href="#" class="btn btn-neutral" id="statistic-table-month-check">Bảng</a>
                                 <a href="#" class="btn btn-neutral" id="statistic-chart-month-check">Biểu đồ</a>
+                                <button id="exportPDF-2" style="cursor: pointer;background-color: #2196F3; color: white"
+                                        class="btn btn-neutral">PDF
+                                </button>
                             </div>
+<!--                            <div>-->
+<!--                                <button id="exportPDF-1" style="cursor: pointer;background-color: #2196F3; color: white"-->
+<!--                                        class="btn btn-neutral">Xuất PDF-->
+<!--                                </button>-->
+<!--                            </div>-->
 
 
                         </form>
@@ -466,6 +484,14 @@
                                                 style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
                                                 Doanh thu
                                             </th>
+                                            <th scope="col" class="sort text-center" data-sort="budget"
+                                                style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
+                                                Số lượt bán
+                                            </th>
+                                            <th scope="col" class="sort text-center" data-sort="budget"
+                                                style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
+                                                Tỉ lệ
+                                            </th>
                                         </tr>
                                         </thead>
                                         <tbody class="list">
@@ -485,6 +511,12 @@
                                                         <span class="badge badge-dot mr-4 text-center w-100">
                                                         <span class="status text-center">{{ s[2] if s[2] is not none else 0 }} VNĐ</span>
                                                         </span>
+                                            </td>
+                                            <td class="budget text-center" style="border: 1px solid #adb5bd;">
+                                                {{s[3]}}
+                                            </td>
+                                            <td class="budget text-center" style="border: 1px solid #adb5bd;">
+                                                {{s[4]}}%
                                             </td>
                                         </tr>
                                         {% endfor %}
@@ -546,6 +578,14 @@
                                                 style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
                                                 Doanh thu
                                             </th>
+                                            <th scope="col" class="sort text-center" data-sort=""
+                                                style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
+                                                Số lượt bán
+                                            </th>
+                                            <th scope="col" class="sort text-center" data-sort=""
+                                                style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
+                                                Tỉ lệ
+                                            </th>
                                         </tr>
                                         </thead>
                                         <tbody class="list">
@@ -563,12 +603,24 @@
                                                         <span class="status text-center">{{ s[1] if s[1] is not none else 0 }} VNĐ</span>
                                                         </span>
                                             </td>
+                                            <td style="border: 1px solid #adb5bd;">
+                                                        <span class="badge badge-dot mr-4 text-center w-100">
+                                                        <span class="status text-center">{{ s[2] }}</span>
+                                                        </span>
+                                            </td>
+                                            <td style="border: 1px solid #adb5bd;">
+                                                        <span class="badge badge-dot mr-4 text-center w-100">
+                                                        <span class="status text-center">{{ s[3] }}%</span>
+                                                        </span>
+                                            </td>
                                         </tr>
                                         {% endfor %}
                                         </tbody>
                                     </table>
 
                                 </div>
+
+
                                 <!--                                                                <div class="d-flex px-5 py-4 justify-content-between "-->
                                 <!--                                                                     style="padding-bottom: 5px !important">-->
                                 <!--                                                                    <div class="font-weight-bolder display-4">-->
@@ -600,7 +652,8 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+
 <script>
     // Lấy các phần tử cần thiết từ DOM
     const statisticTableCheck = document.getElementById("statistic-table-check");

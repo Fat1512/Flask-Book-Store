@@ -5,15 +5,18 @@ from enum import Enum as RoleEnum
 from datetime import datetime
 import hashlib
 from app.model.Cart import Cart
-from app.model.Account import Account
+
 
 from app.model.Address import Address
 
 
 class UserRole(RoleEnum):
     ADMIN = 1
-    USER = 2
+    CUSTOMER = 2
     ANONYMOUS = 3
+    EMPLOYEE_SALE = 4
+    EMPLOYEE_MANAGER_WAREHOUSE = 5
+    EMPLOYEE_MANAGER = 6
 
 
 class User(db.Model):
@@ -29,13 +32,13 @@ class User(db.Model):
                      default="https://png.pngtree.com/png-vector/20191101/ourmid/pngtree-cartoon-color-simple-male-avatar-png-image_1934459.jpg")
     isActive = Column(Boolean, default=True)
     last_access = Column(DateTime, default=datetime.utcnow)
-    user_role = Column(Enum(UserRole), default=UserRole.USER)
+    user_role = Column(Enum(UserRole), default=UserRole.CUSTOMER)
     address = relationship('Address', backref='user', lazy=True)
     # order = relationship('Order', backref='user', lazy=True, foreign_keys='Order.user_id')
 
     offline_orders = relationship("OfflineOrder", back_populates="employee", foreign_keys="[OfflineOrder.employee_id]", lazy=True)
     orders = relationship("Order", back_populates="customer", enable_typechecks=False, foreign_keys="[Order.customer_id]", lazy=True)
-    account = relationship('Account', back_populates='user', uselist=False)
+
     online_orders = relationship("OnlineOrder", back_populates="customer", foreign_keys="[Order.customer_id]", lazy=True)
     form_import = relationship("FormImport", back_populates="employee", lazy=True)
     cart = relationship("Cart", back_populates="user")

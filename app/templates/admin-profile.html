@@ -44,6 +44,30 @@
             height: 100%;
             object-fit: cover;
         }
+
+        .upload-box {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #c92127;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.upload-box:hover {
+    background-color: #007bff;
+}
+
+.upload-box:active {
+    background-color: #007bff;
+}
+
+#fileUpload {
+    display: none;
+}
+
     </style>
 </head>
 
@@ -454,7 +478,7 @@
                                             <!-- Username Field -->
                                             <div class="form-group">
                                                 <label for="username">Tên đăng nhập</label>
-                                                <div style="margin-left:18px; width:75%;">
+                                                <div style="margin-left:16px; width:75%;">
                                                     <input type="text" id="username" class="form-control"
                                                            value="{{ profile[0] }}" disabled>
                                                     <!-- Chỉ lấy 1 profile -->
@@ -491,7 +515,7 @@
                                             <!-- Phone Field -->
                                             <div class="form-group">
                                                 <label for="phone">Số điện thoại</label>
-                                                <div style="margin:0 17px; width:62%;">
+                                                <div style="margin:0 15px; width:62%;">
                                                     <input type="text" id="phone" class="form-control"
                                                            value="{{ profile[4] }}" disabled>
                                                 </div>
@@ -571,9 +595,13 @@
                                              class="img-fluid profile-image rounded-circle" id="profileImage">
 
                                     </div>
-                                    <div class="image-upload" style="margin-top: 30px">
+                                    <div class="image-upload" style="margin-top: 30px;">
+                                        <label for="fileUpload" class="upload-box">
+                                            Tải ảnh
+                                        </label>
                                         <input type="file" id="fileUpload" accept="image/*"
-                                               onchange="previewImage(event)">
+                                               onchange="previewImage(event)"
+                                               style="display: none;">
                                     </div>
                                 </div>
 

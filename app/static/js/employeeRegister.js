@@ -3,23 +3,14 @@ const roleList = document.getElementById("roleList");
 const roleSearch = document.getElementById("roleSearch");
 const statsContainer = document.getElementById("statsContainer"); // Element hiển thị kết quả
 
-// Mảng ánh xạ giữa tên vai trò và ID vai trò
-const roleMap = {
-    "admin": 1,
-    "customer": 2,
-    "employee_sale": 4,
-    "employee_manager_warehouse": 5,
-    "employee_manager": 6
-};
-
-// Fetch user roles from backend and populate dropdown list
+// Fetch user roles from backend
 async function fetchUserRoles() {
     try {
-        const response = await fetch('/admin/api/user_roles');
+        const response = await fetch('/employee/api/user_roles');
         if (!response.ok) throw new Error('Failed to fetch user roles');
 
         const userRoles = await response.json();
-        populateRoleList(userRoles); // Populate dropdown
+        populateRoleList(userRoles); // Gửi dữ liệu đến hàm tạo dropdown
     } catch (error) {
         console.error('Error fetching user roles:', error);
     }
@@ -35,22 +26,20 @@ function populateRoleList(userRoles, filter = "") {
     filteredRoles.forEach(role => {
         const item = document.createElement("div");
         item.classList.add("dropdown-item");
-        item.textContent = role.user_role;
+        item.textContent = role.user_role; // Hiển thị tên vai trò
         item.addEventListener("click", () => {
-            roleSearch.value = role.user_role;
-            roleList.style.display = "none";
-
-            // Redirect to the same page but with updated user_role in URL
-            const roleId = roleMap[role.user_role.toLowerCase()]; // Get the role ID from map
-            window.location.href = `/admin/account-manager?user_role=${roleId}`; // Navigate with new URL
+            roleSearch.value = role.user_role;  // Hiển thị tên vai trò trong input
+            document.getElementById("hiddenUserRole").value = role.user_role;  // Gán tên vai trò vào input hidden
+            roleList.style.display = "none";  // Ẩn dropdown
         });
+
         roleList.appendChild(item);
     });
 }
 
 // Fetch user data based on selected role (from URL)
-async function filterUsersByRole(selectedRoleId) {
-    const response = await fetch(`/admin/api/account-manager?user_role=${selectedRoleId}`);
+async function filterUsersByRole(selectedRole) {
+    const response = await fetch(`/account/employee-register?user_role=${encodeURIComponent(selectedRole)}`);
     if (response.ok) {
         const data = await response.json();
         renderUserStats(data); // Render the filtered user stats
@@ -86,7 +75,7 @@ roleSearch.addEventListener("focus", () => {
 
 // Event listener for search input
 roleSearch.addEventListener("input", async () => {
-    const response = await fetch('/admin/api/user_roles');
+    const response = await fetch('/employee/api/user_roles');
     const userRoles = await response.json();
     populateRoleList(userRoles, roleSearch.value); // Filter roles based on search input
 });

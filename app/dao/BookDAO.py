@@ -63,7 +63,7 @@ def find_by_gerne(gerne_id):
     query = Book.query
     gerne = BookGerne.query.get(gerne_id)
     query = query.join(BookGerne)
-    query = query.filter(BookGerne.lft.between(gerne.lft, gerne.rgt))
+    query = query.filter(BookGerne.lft >= gerne.lft,BookGerne.rgt <= gerne.rgt)
     return query.all()
 
 

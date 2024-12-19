@@ -4,13 +4,30 @@ from app.dao.FormImportDAO import get_form_imports
 from app.dao.ConfigDAO import get_config
 from flask import Blueprint
 from datetime import datetime
-from flask import render_template, request
 import json
+from app.model.User import UserRole
+from app.model.User import User
+from flask import jsonify
+from flask import render_template, redirect, url_for, request
+from flask_login import current_user
 
 employee_bp = Blueprint('employee', __name__)
 
 
+def employee_required(f):
+    def wrap(*args, **kwargs):
+        if not current_user.is_authenticated:
+            return redirect(url_for('account.employee_login'))
+        if current_user.user_role not in [UserRole.EMPLOYEE_SALE, UserRole.EMPLOYEE_MANAGER_WAREHOUSE,
+                                          UserRole.EMPLOYEE_MANAGER]:
+            return redirect(url_for('account.employee_login'))
+        return f(*args, **kwargs)
+
+    wrap.__name__ = f.__name__
+    return wrap
+
 @employee_bp.route("/checkout")
+@employee_required
 def checkout():
     books = search_book(limit=8, page=1)
     book_dto = []
@@ -22,6 +39,7 @@ def checkout():
 
 
 @employee_bp.route("/order")
+@employee_required
 def get_order():
     status = request.args.get("status")
     payment_method = request.args.get("paymentMethod")
@@ -45,6 +63,7 @@ def get_order():
 
 
 @employee_bp.route("/order/<order_id>/update")
+@employee_required
 def update_order(order_id):
     order = find_by_id(order_id)
 
@@ -57,12 +76,14 @@ def update_order(order_id):
 
 
 @employee_bp.route("/order/<order_id>/detail")
+@employee_required
 def get_order_detail(order_id):
     order = find_by_id(order_id)
     today = datetime.utcnow()
     return render_template("employee-order-detail.html", order=order, today=today)
 
 @employee_bp.route("/category")
+@employee_required
 def get_category():
     with open('data/category.json', encoding="utf8") as f:
         data = json.load(f)
@@ -71,6 +92,7 @@ def get_category():
 
 
 @employee_bp.route("/import")
+@employee_required
 def import_book():
     books = searchBook(limit=15, page=1)
     book_dto = []
@@ -82,9 +104,25 @@ def import_book():
 
 
 @employee_bp.route("/import/history")
+@employee_required
 def import_book_history():
 
     form_imports = get_form_imports()
     form_imports['form_imports'] = [form_import.to_dict() for form_import in form_imports['form_imports']]
 
     return render_template("employee-import-history.html", form_imports=form_imports)
+
+
+# @employee_bp.route("/api/user_roles", methods=["GET"])
+# def get_user_roles():
+#     try:
+#         employee_roles = [
+#             UserRole.EMPLOYEE_SALE,
+#             UserRole.EMPLOYEE_MANAGER_WAREHOUSE,
+#             UserRole.EMPLOYEE_MANAGER,
+#         ]
+#         result = [{"user_role": role.name, "role_id": role.value} for role in employee_roles]
+#         return jsonify(result)
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 500
+

@@ -1,0 +1,99 @@
+/* Thêm khung cho bảng */
+table {
+    border: 1px solid #ccc;  /* Khung bảng */
+    border-collapse: collapse; /* Xóa khoảng cách giữa các cell */
+    width: 100%;  /* Đảm bảo bảng chiếm đầy chiều rộng */
+}
+
+/* Thêm khung cho các cột */
+th, td {
+    border: 1px solid #ddd;  /* Khung các cột */
+    padding: 10px;
+}
+
+/* Tiêu đề bảng (thead) */
+th {
+    font-weight: bold !important; /* In đậm */
+    color: #f5365c !important;   /* Màu chữ tiêu đề */
+    background-color: #DDDDDD !important; /* Màu nền cho tiêu đề */
+}
+
+/* Canh giữa các cột dữ liệu (ngoại trừ cột Tên) */
+td, th {
+    text-align: center;  /* Canh giữa tất cả các cột */
+    padding: 10px;
+}
+
+/* Canh trái cho cột Tên */
+th.text-left, td.text-left {
+    text-align: left;  /* Canh trái cho cột Tên */
+}
+
+/* Cột Tên có màu nền nhẹ và màu chữ đậm */
+th.text-left {
+    background-color: #f8f9fa;  /* Màu nền nhẹ */
+    color: #343a40;  /* Màu chữ đậm */
+    font-weight: bold;
+}
+
+/* Cột dữ liệu (Lượt bán, Doanh thu, % doanh thu) có màu nền nhẹ */
+th, td {
+    background-color: #ffffff;  /* Màu nền trắng */
+    color: #495057;  /* Màu chữ */
+}
+
+/* Tạo hiệu ứng khi hover vào dòng */
+tbody tr:hover {
+    background-color: #f1f1f1;  /* Màu nền nhẹ khi hover */
+}
+
+/* Cột % doanh thu có màu sắc đặc biệt */
+td:nth-child(4) {
+    color: #2dce89;  /* Màu chữ xanh cho % doanh thu */
+    font-weight: bold;
+}
+
+/* Giới hạn chiều rộng cho cột Tên */
+th, td {
+    max-width: 150px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+/* Canh giữa cột "Lượt bán", "Doanh thu", "% doanh thu" */
+th, td {
+    text-align: center;
+}
+
+/* Các dòng chẵn có màu nền khác biệt */
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9 !important;
+}
+
+/* Thêm màu nền cho cột tên khi hover */
+td.text-left:hover {
+    background-color: #e9ecef !important; /* Màu nền khi hover vào cột Tên */
+}
+
+
+.marquee {
+    display: inline-flex; /* Dùng inline-flex để các phần tử nằm ngang */
+    white-space: nowrap; /* Ngăn chữ xuống dòng */
+    animation: scroll 12s linear infinite; /* Áp dụng animation */
+}
+
+.marquee a {
+    margin-right: 200px; /* Khoảng cách giữa các chữ */
+    text-decoration: none;
+}
+
+/* Keyframes để tạo hiệu ứng chữ chạy từ phải qua trái */
+@keyframes scroll {
+    0% {
+        transform: translateX(100%); /* Bắt đầu từ ngoài màn hình bên phải */
+    }
+    100% {
+        transform: translateX(-70%); /* Di chuyển hết sang bên trái */
+    }
+}

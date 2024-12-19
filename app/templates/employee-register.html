@@ -17,7 +17,7 @@
     <title>Đăng kí</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
-    <script src="wow.min.js"></script>
+<!--    <script src="wow.min.js"></script>-->
 </head>
 
 <body>
@@ -27,7 +27,8 @@
             <div class="login-wrap">
                 <div class="login-sec">
                     <div>
-                        <img src="https://res.cloudinary.com/duk7gxwvc/image/upload/v1732125348/385-3855617_click-here-for-flyer-kids-reading-reading-week-removebg-preview_asryy5.png" alt="Login Image">
+                        <img src="https://res.cloudinary.com/duk7gxwvc/image/upload/v1732125348/385-3855617_click-here-for-flyer-kids-reading-reading-week-removebg-preview_asryy5.png"
+                             alt="Login Image">
                     </div>
                 </div>
             </div>
@@ -43,8 +44,8 @@
                                              alt="">
                                     </a>
                                 </div>
-                                <h2 style="color: #5a5a5a;">Đăng ký</h2>
-                                <form class="row" method="post" action="{{ url_for('account.register_process') }}">
+                                <h2 style="color: #5a5a5a;">Đăng ký EMPLOYEE</h2>
+                                <form class="row" method="post" action="{{ url_for('account.employee_register') }}">
                                     <div class="form-group-1 appoinment-body-1">
                                         <div class="form-group appoinment-body-1">
                                             <label for="first_name">
@@ -119,31 +120,37 @@
                                             <div class="toggle" id="toggle1" onclick="showConfirm()"></div>
                                         </div>
                                     </div>
-
-                                    <div class="container-checkpass">
-<!--                                        <div class="forgotpass">-->
-<!--                                            <div class="remember-me">-->
-<!--                                                <label class="custom_check">-->
-<!--                                                    <input type="checkbox" name="radio">-->
-<!--                                                    <font>Tôi đồng ý với tất cả chính sách</font>-->
-<!--                                                    <span class="checkmark"></span>-->
-<!--                                                </label>-->
-<!--                                            </div>-->
-<!--                                        </div>-->
-                                        {% if err_msg %}
-                                        <div class="checkpass" style="margin-bottom: 15px">
-                                            <div class="remember-me">
-                                                <label class="custom_check">
-                                                    <font style="color: red; font-weight: 600;">{{err_msg}}</font>
-                                                    <span class="checkmark"></span>
-                                                </label>
-                                            </div>
+                                    <div class="form-group-1 appoinment-body-1" style="width:100%">
+                                        <div class="form-group">
+                                            <label for="confirm">
+                                                <font>Chọn loại nhân viên</font>
+                                                <span style="color: red;">*</span>
+                                            </label>
                                         </div>
-                                        {% endif %}
+                                        <div class="dropdown-container box">
+                                            <input type="text" id="roleSearch"
+                                                   class="dropdown-search product-publisher form-control-all"
+                                                   autocomplete="off" placeholder=""
+                                                   style="box-sizing: border-box; margin-bottom: 0;">
+                                            <div class="dropdown-list" id="roleList"
+                                                 style="box-sizing: border-box"></div>
+                                            <input type="hidden" id="hiddenUserRole" name="user_role">
+                                            <!-- Input hidden -->
+                                        </div>
                                     </div>
-
-                                    <div class="form-group login-btn">
-                                        <a href="/account/login">
+                                    {% if err_msg %}
+                                    <div class="checkpass" style="margin-top: 15px">
+                                        <div class="remember-me">
+                                            <label class="custom_check">
+                                                <font style="color: red; font-weight: 600;">{{err_msg}}</font>
+                                                <span class="checkmark"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    <div class="form-group login-btn"
+                                         style="margin-top: 20px; margin-bottom: 0!important;">
+                                        <a href="/account/employee-login">
                                             <button class="btn-primary" type="submit">Đăng ký</button>
                                         </a>
                                     </div>
@@ -157,6 +164,7 @@
     </div>
 </div>
 </body>
+<script src="{{ url_for('static', filename='js/employeeRegister.js') }}"></script>
 <script>
     const pass = document.getElementById('pass');
     const toggle = document.getElementById('toggle');
