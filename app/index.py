@@ -212,12 +212,6 @@ def handle_topic_book_gerne(data):
 #         print(f"Error handling topic1 message: {e}")
 
 
-@scheduler.task('interval', id='my_job', seconds=5)
-def my_job():
-    with app.app_context():
-        delete_orders_after_48hrs()
-        print('This job is executed every 5 seconds.')
-
 
 @scheduler.task('interval', id='my_job', seconds=5)
 def my_job():
