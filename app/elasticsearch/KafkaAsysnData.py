@@ -45,8 +45,11 @@
 # #     book = [ex.book for ex in extended_books]
 # #     update_document_bulk(book, 'extended_books')
 #
-#
-# def delete(book_id):
-#     book = find_by_id(book_id)
-#     if book is None: raise NotFoundError("Khong tim thay sach")
-#     delete_document(book.book_id)
+#     book = [ex.book for ex in extended_books]
+#     update_document_bulk(book, 'extended_books')
+
+
+def delete(book_id):
+    book = find_by_id(book_id)
+    if book is None: raise NotFoundError("Khong tim thay sach")
+    delete_document(book.book_id)

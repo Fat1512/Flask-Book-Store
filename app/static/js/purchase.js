@@ -115,7 +115,6 @@ async function handleReBuy(book_id) {
 const renderOderArea = function (orders) {
     if (orders.length) {
         orderArea.innerHTML = orders.map(order => {
-
             const orderList = order['order_detail']
             const orderDetailHTML = orderList.map(od =>
                 `

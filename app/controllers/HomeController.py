@@ -1,6 +1,12 @@
 from flask import Blueprint
 from flask import render_template, request
 import json
+
+from app.dao.BookDAO import find_by_gerne
+from app.dao.BookGerneDAO import get_depth_gerne
+from app.dao.SearchDAO import search_book
+from app.utils.admin import profile
+from datetime import datetime
 import hashlib
 from flask_login import current_user
 from app.model.User import User
@@ -12,32 +18,30 @@ index_bp = Blueprint('index', __name__)
 
 @index_bp.route("/")
 def index():
-    with open('data/category.json', encoding="utf8") as f:
-        data = json.load(f)
-        category_section = data[4:8]
+    book_gerne = get_depth_gerne(1)
+
+    sub_gerne = book_gerne['sub_gerne'][0:4]
+
     advertised_category_image = [
-        'https://res.cloudinary.com/dq27ted4k/image/upload/v1731746970/tvy6sddbfpmg7y28ny3j.webp',
-        'https://res.cloudinary.com/dq27ted4k/image/upload/v1731746969/yin3pb2nwlk7bqeqcjpx.webp',
-        'https://res.cloudinary.com/dq27ted4k/image/upload/v1731746969/mtfd7avuzgrpuotg7aej.webp',
-        'https://res.cloudinary.com/dq27ted4k/image/upload/v1731746969/rw19jx9s8295npm171bm.webp'
+        'https://cdn0.fahasa.com/media/wysiwyg/Thang-11-2024/catehomepage_vanhoc.jpg',
+        'https://cdn0.fahasa.com/media/wysiwyg/Thang-11-2024/catehomepage_manga.jpg',
+        'https://cdn0.fahasa.com/media/wysiwyg/Thang-11-2024/catehomepage_ngoaingu.jpg',
+        'https://cdn0.fahasa.com/media/wysiwyg/Thang-11-2024/catehomepage_kynang.jpg'
     ]
     idx = 0
-    for category in category_section:
+    for category in sub_gerne:
+        book = search_book(gerne_id=category['id'], limit=3)
         category['advertised_image'] = advertised_category_image[idx]
+        category['books'] = [book.images[0].image_url if len(book.images) else None for book in book['books']]
         idx += 1
 
-    with open('data/new_release.json', encoding="utf8") as f:
-        data = json.load(f)
-        new_release = data[0:8]
-
-    with open('data/bestselling_book.json', encoding="utf8") as f:
-        data = json.load(f)
-        bestselling_books = data[0:5]
+    new_release = search_book(order='created_at', direction='desc', limit=8)['books']
+    bestselling_books = search_book(order='created_at', direction='desc', limit=5)['books']
 
     return render_template("home.html",
                            bestselling_books=bestselling_books,
                            new_release=new_release,
-                           category_section=category_section)
+                           category_section=sub_gerne)
 
 
 @index_bp.route('/update-profile', methods=['POST'])

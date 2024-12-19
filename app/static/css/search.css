@@ -173,30 +173,7 @@ a {
     background-color: var(--red);
 }
 
-.spinner {
-    position: absolute;
-    z-index: 3;
-    left: 50%;
-    top: 35%;
-    z-index: 5;
-    background-color: #ffedd1;
-    padding: 15px 50px;
-    text-align: center;
-    border: 1px solid var(--yellow-color);
-    display: none;
-}
 
-.overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 2;
-    background-color: rgba(0, 0, 0, 0.2);
-    animation: fadein linear 0.2s;
-    display: none;
-}
 
 .filter-item {
     background-color: #fef4e8;
@@ -213,6 +190,7 @@ a {
 }
 
 .card-img-top {
+    height: 186px;
     max-height: 186px;
     max-width: 186px;
 }

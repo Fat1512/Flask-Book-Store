@@ -7,18 +7,14 @@
 {% endblock %}
 {% block js %}
     <script src="{{ url_for('static', filename='js/search.js') }}"></script>
+    <script>
+        const extendBookParams = {{ params|tojson }};
+    </script>
 {% endblock %}
 {% block content %}
     <div class="my-bg-color pt-5">
         <div class="container position-relative">
-            <div class="spinner">
-                <div class="spinner-border text-warning" role="status">
 
-                </div>
-                <p>Loading...</p>
-                <div class="overlay">
-                </div>
-            </div>
             <div class="row">
                 <div class="col-md-3 rounded">
                     <div class="item-bg-color p-3 rounded">
@@ -36,14 +32,12 @@
                                 {#                                {% endfor %}#}
                             </ol>
                         </div>
-                        <div class="price pb-0 pt-3 border-top">
+                        <div id="price" value="Giá" class="group-filter price pb-0 pt-3 border-top">
                             <p class="font-weight-bold mb-0 pb-1">Giá</p>
                             <ul class="text-decoration-none list-unstyled box-filter pl-2">
                                 <li>
-                                    <a class="checkbox {% if minPrice == 0 %}checkbox-checked {% else %} checkbox-unchecked{% endif %}"
-                                       minPrice="0"
-                                       maxPrice="150000"
-
+                                    <a class="checkbox {% if maxPrice == 150000 %}checkbox-checked {% else %} checkbox-unchecked{% endif %}"
+                                       value="0,150000"
                                     > 0đ - 150,000đ</a>
                                 </li>
                                 <li>
@@ -53,9 +47,7 @@
                                         {% else %}
                                         checkbox-unchecked
                                          {% endif %} "
-                                       minPrice="150000"
-                                       maxPrice="300000"
-
+                                       value="150000,300000"
                                             {#                                       href="/search?minPrice=150000&maxPrice=300000">#}
                                     > 150,000đ - 300,000đ
                                     </a>
@@ -66,8 +58,7 @@
                                         {% else %}
                                         checkbox-unchecked
                                          {% endif %} "
-                                       minPrice="300000"
-                                       maxPrice="500000"
+                                       value="300000,500000"
 
                                     >300,000đ - 500,000đ</a>
                                 </li>
@@ -77,8 +68,7 @@
                                         {% else %}
                                         checkbox-unchecked
                                          {% endif %} "
-                                       minPrice="500000"
-                                       maxPrice="700000"
+                                       value="500000,700000"
 
                                     > 500,000đ - 700,000đ</a>
                                 </li>
@@ -88,12 +78,35 @@
                                         {% else %}
                                         checkbox-unchecked
                                          {% endif %} "
-                                       minPrice="700000"
-                                       maxPrice="9000000"
+                                       value="700000,99999999"
                                     > 700,000đ - trở lên</a>
                                 </li>
                             </ul>
                         </div>
+                        <div class="group-filter-extend">
+                            {#                            {% for ex in extended_books %}#}
+                            {#                                <div id="group-filter-{{ loop.index }}" value="{{ ex.attribute_name.buckets[0].key }}"#}
+                            {#                                     class="group-filter price pb-0 pt-3 border-top">#}
+                            {#                                    <p class="font-weight-bold mb-0 pb-1">{{ ex.attribute_name.buckets[0].key }}#}
+                            {#                                        <span class="text-secondary">({{ ex.attribute_name.buckets[0].doc_count }})</span>#}
+                            {#                                    </p>#}
+                            {#                                    <ul class="text-decoration-none list-unstyled box-filter pl-2">#}
+                            {#                                        {% for value in ex.collect_values.buckets %}#}
+                            {#                                            <li>#}
+                            {#                                                <a class="checkbox {% if minPrice == 0 %}checkbox-checked {% else %} checkbox-unchecked{% endif %}"#}
+                            {#                                                   value="{{ value.key }}"#}
+                            {#                                                > {{ value.key }}#}
+                            {#                                                    <span class="text-secondary">({{ value.doc_count }})</span></a>#}
+                            {##}
+                            {#                                            </li>#}
+                            {##}
+                            {#                                        {% endfor %}#}
+                            {##}
+                            {#                                    </ul>#}
+                            {#                                </div>#}
+                            {#                            {% endfor %}#}
+                        </div>
+
                     </div>
                 </div>
                 <div class="col-md-9 rounded">
@@ -105,13 +118,27 @@
                                 {% if minPrice %}
                                     <p class="">Lọc theo: </p>
                                 {% endif %}
-                                <ul class="filter-list ml-3 text-decoration-none list-unstyled">
-                                    {% if maxPrice %}
-                                        <li class="filter-item price-filter">
-                                            <span>Giá {{ minPrice }}-{{ maxPrice }}đ</span>
-                                            <a class="cursor-pointer delete-filter ml-1"><i
-                                                    class="fa-solid fa-x"></i></a>
+                                <ul class="filter-list ml-3 d-flex flex-wrap text-decoration-none list-unstyled">
+                                    {% if maxPrice != 999999999 %}
+                                        <li id="price" class="filter-item mr-3 mb-3 price-filter">
+                                            <span>Giá {{ minPrice }}-{% if maxPrice == 99999999 %}
+                                                trở lên
+                                            {% else %}
+                                                {{ maxPrice }}
+                                            {% endif %} đ</span>
+                                            <span class="cursor-pointer delete-filter ml-1"><i
+                                                    class="fa-solid fa-x"></i></span>
                                         </li>
+                                    {% endif %}
+                                    {% if params %}
+                                        {% for key,value in  params.items() %}
+                                            <li id="{{ key }}" class="filter-item mr-3 mb-3 price-filter">
+                                                <span>{{ value }}</span>
+                                                <span class="cursor-pointer delete-filter ml-1"><i
+                                                        class="fa-solid fa-x"></i></span>
+                                            </li>
+                                        {% endfor %}
+
                                     {% endif %}
                                 </ul>
                             </div>
@@ -124,15 +151,15 @@
                                         {% if order == 'latest' %}
                                             Mới nhất
 
-                                            {% elif order == 'best_sell_week' %}
+                                        {% elif order == 'best_sell_week' %}
                                             Bán chạy nhất tuần
-                                            {% elif order == 'best_sell_month' %}
+                                        {% elif order == 'best_sell_month' %}
                                             Bán chạy nhất tháng
-                                            {% elif order == 'asc' %}
+                                        {% elif order == 'asc' %}
                                             Giá tăng
-                                            {% elif order == 'desc' %}
+                                        {% elif order == 'desc' %}
                                             Giá giảm
-                                            {% else %}
+                                        {% else %}
                                             Độ liên quan
                                         {% endif %}
                                     </button>

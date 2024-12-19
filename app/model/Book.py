@@ -1,4 +1,6 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Double, DATETIME
+from datetime import datetime
+
+from sqlalchemy import Column, Integer, String, ForeignKey, Double, DATETIME, DATE
 from app import db, app
 from sqlalchemy.orm import relationship
 from app.model.BookImage import BookImage
@@ -10,6 +12,12 @@ from app.model.Comment import Comment
 from app.model.CartItem import CartItem
 from app.model.Cart import Cart
 from app.model.FormImportDetail import FormImportDetail
+from enum import Enum as PythonEnum
+
+
+class BookFormat(PythonEnum):
+    BIA_CUNG = 1
+    BIA_MEM = 2
 
 
 class Book(db.Model):
@@ -20,7 +28,8 @@ class Book(db.Model):
     quantity = Column(Integer, default=0)
     price = Column(Double)
     description = Column(String)
-    release_date = Column(DATETIME)
+    release_date = Column(DATE)
+    created_at = Column(DATETIME, default=datetime.now())
     num_page = Column(Integer)
     dimension = Column(String)
     weight = Column(Double)
@@ -29,8 +38,8 @@ class Book(db.Model):
     publisher_id = Column(Integer, ForeignKey('publisher.publisher_id'), nullable=False)
     book_gerne_id = Column(Integer, ForeignKey('book_gerne.book_gerne_id'))
 
-    book_gerne = db.relationship('BookGerne', back_populates='books', lazy=True,cascade ="none")
-    publisher_info = db.relationship('Publisher', back_populates='publisher_books_relation',
+    book_gerne = db.relationship('BookGerne', back_populates='books', lazy=True)
+    publisher_info = db.relationship('Publisher', back_populates='publisher_books_relation', uselist=False,
                                      foreign_keys=[publisher_id], lazy=True)
     images = db.relationship('BookImage', backref='book', lazy=True)
     order_detail = relationship("OrderDetail", back_populates="book", lazy=True)
@@ -46,6 +55,8 @@ class Book(db.Model):
             "book_id": self.book_id,
             "author": self.author,
             "title": self.title,
+            'created_at': self.created_at,
+            'release_date': self.release_date,
             "quantity": self.quantity,
             "price": self.price,
             "description": self.description,
@@ -55,7 +66,7 @@ class Book(db.Model):
             "barcode": self.barcode,
             "images": [image.to_dict() for image in self.images],
             'format': self.format,
-            "publisher": "Kim đồng",
+            "publisher": self.publisher_info.to_dict() if self.publisher_info else None,
             'book_gerne': self.book_gerne.to_dict(),
             'extended_books': [extended.to_dict() for extended in self.extended_books],
         }
@@ -65,6 +76,8 @@ class Book(db.Model):
             "book_id": self.book_id,
             "author": self.author,
             "title": self.title,
+            'created_at': self.created_at,
+            'release_date': self.release_date,
             "quantity": self.quantity,
             "price": self.price,
             "description": self.description,
@@ -95,3 +108,4 @@ class Book(db.Model):
         if self.quantity < quantity:
             return False
         self.quantity -= quantity
+        return True

@@ -91,7 +91,7 @@
         <div class="row">
             {% for category in category_section %}
                 <div class="col-3">
-                    <a class="text-dark" href="{{ category.path }}">
+                    <a class="text-dark" href="/search/?gerneId={{ category.id }}">
                         <div class="home-section pt-2">
                             <div class="home_category_item fs-6 fw-bolder">{{ category.name }}</div>
                             <div class="d-flex flex-column">
@@ -103,11 +103,12 @@
                                     </div>
                                 </div>
                                 <div class="d-flex pb-4">
-                                    {% for product in category.product[0:3] %}
+                                    {% for product in category['books'] %}
                                         <div>
-                                            <img class="img-fluid w-100"
-                                                 src="{{ product.image_src }}"
-                                                 alt="">
+                                            <img class="img-fluid image-advertise"
+                                                 src="{{ product }}"
+
+                                                 alt="ảnh">
                                         </div>
                                     {% endfor %}
                                 </div>
@@ -124,16 +125,17 @@
             </div>
             <div class="row pl-4 pr-4 pb-3">
                 {% for product in bestselling_books %}
-                    <a href="#" class="card col-5th">
-                        <span class="discount text-white">10%</span>
+                    <a href="/search/detail?bookId={{ product.book_id }}" class="card col-5th">
                         <img class="card-img-top"
-                             src="{{ product['image_src'] }}"
+                             src="{% if product.images|length %}
+                                                 	{{ product.images[0].image_url }}
+                                                 	{% else %}
+                                                 	null
+                                                 {% endif %}"
                              alt="Card image">
                         <div class="card-body p-0">
-                            <p class="card-text">{{ product['product_name'] }}</p>
-                            <p class="text-primary font-weight-bold mb-1">{{ product['product_price'] }}đ</p>
-                            <p class="text-secondary text-decoration-line-through mb-1">
-                                {{ product['product_price'] }}đ</p>
+                            <p class="card-text">{{ product['title'] }}</p>
+                            <p class="text-primary font-weight-bold mb-1">{{ product['price']|currency }}</p>
                         </div>
                         <div class="rating">
                             <i class="fa-regular fa-star"></i>
@@ -159,23 +161,26 @@
                                  src="https://res.cloudinary.com/dq27ted4k/image/upload/v1731750144/ydppggyww4sjmxspsfar.png"
                                  alt="">
                         </div>
-                        <div class="h2">Get Extra</div>
-                        <div class="h1 text-red">Sale -25%</div>
+                        <div class="h2">Sách mới</div>
+                        <div class="h1 text-red">Nhanh tay đặt hàng</div>
                     </div>
                 </div>
                 <div class="col-8">
                     <div class="row home_product_container">
                         {% for product in new_release %}
-                            <a href="#" class="card col-3">
+                            <a href="/search/detail?bookId={{ product.book_id }}" class="card col-3">
                                 <span class="discount text-white">10%</span>
                                 <img class="card-img-top"
-                                     src="{{ product['image_src'] }}"
+                                     src="{% if product.images|length %}
+                                            {{ product.images[0].image_url }}
+                                            {% else %}
+                                            null
+                                           {% endif %}"
                                      alt="Card image">
                                 <div class="card-body p-0">
-                                    <p class="card-text">{{ product['product_name'] }}</p>
-                                    <p class="text-primary font-weight-bold mb-1">{{ product['product_price'] }}đ</p>
-                                    <p class="text-secondary text-decoration-line-through mb-1">
-                                        {{ product['product_price'] }}đ</p>
+                                    <p class="card-text">{{ product['title'] }}</p>
+                                    <p class="text-primary font-weight-bold mb-1">{{ product['price']|currency }}</p>
+
                                 </div>
                                 <div class="rating">
                                     <i class="fa-regular fa-star"></i>

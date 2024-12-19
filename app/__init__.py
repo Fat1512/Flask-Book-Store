@@ -53,7 +53,7 @@ app.config['PAGE_SIZE'] = 12
 app.config['ORDER'] = 'desc'
 
 app.config["ORDER_PAGE_SIZE"] = 12
-app.config["IMPORT_PAGE_SIZE"] = 12
+app.config["IMPORT_PAGE_SIZE"] = 20
 app.config["STATISTIC_FRE_PAGE_SIZE"] = 6
 app.config["STATISTIC_REVEN_PAGE_SIZE"] = 5
 app.config["BOOK_PAGE_SIZE"] = 7

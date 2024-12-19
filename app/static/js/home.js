@@ -1,26 +1,49 @@
 const ele = document.querySelector(".home_category_heading");
 const homeProductContainer = document.querySelector('.home_product_container');
-
+const BOOK_GERNE_API = '/api/v1/bookGerne'
+const BOOK_API = '/api/v1/book'
 let all_data;
-async function preLoadCategory() {
-    const res = await fetch('/employee/category');
-    const data = await res.json();
-    const id = data[0].id;
-    data.forEach(category => {
-        renderCategoryHeading(category.name, category.id, id == category.id)
-    })
+const fetchBook = async function (gerneId) {
+    try {
+        const res = await fetch(`${BOOK_API}/?gerneId=${gerneId}&limit=10`)
+        if (!res.ok) throw new Error("Something wrong!!!")
+        return await res.json()
+    } catch (error) {
 
-    all_data = data;
-    homeProductContainer.innerHTML = '';
-    all_data[0]['product'].slice(0, 10).forEach(data => {
-        renderProduct(data);
-    })
+    }
 }
+const VND = new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+});
+
+async function preLoadCategory() {
+    try {
+        const res = await fetch(`${BOOK_GERNE_API}/?gerneId=1`);
+        if (!res.ok) throw new Error("Something wrong!!!")
+        const data = await res.json();
+        const {sub_gerne: subGerne} = data['data']
+        const id = subGerne[0].id;
+        subGerne.slice(0, 5).forEach(category => {
+            renderCategoryHeading(category.name, category.id, id === category.id)
+        })
+        const book = await fetchBook(id)
+
+        all_data = subGerne;
+        homeProductContainer.innerHTML = '';
+        book['data']['books'].forEach(data => {
+            renderProduct(data);
+        })
+    } catch (error) {
+
+    }
+}
+
 preLoadCategory();
 
 ele.addEventListener("click", function (e) {
     const ele = e.target;
-    const id = ele.getAttribute("id");
+    const id = ele.id;
     if (!id) return;
 
     e.currentTarget.innerHTML = '';
@@ -29,10 +52,10 @@ ele.addEventListener("click", function (e) {
     })
 
     homeProductContainer.innerHTML = '';
-    all_data.forEach(category => {
-        if (category.id == id) {
-            category['product'].slice(0, 10).forEach(product => {
-                renderProduct(product);
+    fetchBook(id).then(res => {
+        if (res['status'] === 200) {
+            res['data']['books'].forEach(data => {
+                renderProduct(data);
             })
         }
     })
@@ -43,17 +66,15 @@ const renderCategoryHeading = function (name, id, isActive) {
     ele.insertAdjacentHTML('beforeend', html);
 }
 
-const renderProduct = function(product) {
+const renderProduct = function (product) {
     const html = `
-            <a href="#" class="card col-5th">
-                <span class="discount text-white">10%</span>
+            <a href="/search/detail?bookId=${product['book_id']}" class="card col-5th">      
                 <img class="card-img-top"
-                     src="${product['image_src']}"
+                     src="${product['images'].length && product['images'][0]['image_url']}"
                      alt="Card image">
                 <div class="card-body p-0">
-                    <p class="card-text">${product['product_name']}</p>
-                    <p class="text-primary font-weight-bold mb-1">${product['product_price']}đ</p>
-                    <p class="text-secondary text-decoration-line-through mb-1">${product['product_price']}đ</p>
+                    <p class="card-text">${product['title']}</p>
+                    <p class="text-primary font-weight-bold mb-1">${VND.format(product['price'])}</p>
                 </div>
                 <div class="rating">
                     <i class="fa-regular fa-star"></i>
