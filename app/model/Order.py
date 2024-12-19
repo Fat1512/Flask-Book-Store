@@ -20,7 +20,7 @@ class OrderStatus(PythonEnum):
     DA_HUY = 5
     DANG_CHO_THANH_TOAN = 6
     DA_THANH_TOAN = 7
-    DANG_CHO_NHAN_HANG = 8
+    DANG_CHO_NHAN = 8
 
 class PaymentMethod(PythonEnum):
     THE = 1

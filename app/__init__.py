@@ -4,6 +4,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import os
 from urllib.parse import quote
+from flask_apscheduler import APScheduler
 from dotenv import dotenv_values, load_dotenv
 import cloudinary
 from flask_login import LoginManager
@@ -11,6 +12,7 @@ from app.utils.helper import format_currency_filter, format_datetime_filter, for
 
 app = Flask(__name__)
 load_dotenv()
+scheduler = APScheduler()
 
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 
