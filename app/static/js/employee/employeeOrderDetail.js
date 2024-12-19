@@ -1,13 +1,38 @@
-
+//---------------------------------------------CONSTANTS---------------------------------------------
+const Color = {
+    WARNING: "orange",
+    ERROR: `var(--red)`,
+    SUCCESS: "#6cbf6c"
+}
+//---------------------------------------------DOM ELEMENTS & STATES---------------------------------------------
 const printInvoiceBtn = document.querySelector(".btn-invoice");
 const modal = document.querySelector(".modal");
 const overlay = document.querySelector(".overlay");
 
+//---------------------------------------------RENDER---------------------------------------------
+const renderToast = function (text, background) {
+    Toastify({
+        text: text,
+        duration: 3000,
+        newWindow: true,
+        close: true,
+        gravity: "top",
+        position: "right",
+        stopOnFocus: true,
+        style: {
+            background: background,
+        }
+    }).showToast();
+}
+//---------------------------------------------DOM UTILITY---------------------------------------------
 const toggleModal = function() {
     modal.classList.toggle("d-flex");
     overlay.classList.toggle("d-flex");
 }
+
+//---------------------------------------------EVENTS---------------------------------------------
 overlay.addEventListener("click", toggleModal);
+
 printInvoiceBtn.addEventListener("click", toggleModal)
 
 modal.addEventListener("click", function(e) {
@@ -16,18 +41,7 @@ modal.addEventListener("click", function(e) {
 
     const {jsPDF} = window.jspdf;
 
-    Toastify({
-        text: "Đang tải xuống...",
-        duration: 3000,
-        newWindow: true,
-        close: true,
-        gravity: "top", // `top` or `bottom`
-        position: "right", // `left`, `center` or `right`
-        stopOnFocus: true, // Prevents dismissing of toast on hover
-        style: {
-            background: "orange",
-        }
-    }).showToast();
+    renderToast("Đang tải xuống...", Color.WARNING);
 
     html2canvas(document.querySelector("#invoice"), {
         useCORS: true,
@@ -45,17 +59,6 @@ modal.addEventListener("click", function(e) {
         pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
 
         pdf.save(`invoice_${document.querySelector('[order-id]').getAttribute("order-id")}.pdf`);
-        Toastify({
-            text: "Đã tải thành công !",
-            duration: 3000,
-            newWindow: true,
-            close: true,
-            gravity: "top", // `top` or `bottom`
-            position: "right", // `left`, `center` or `right`
-            stopOnFocus: true, // Prevents dismissing of toast on hover
-            style: {
-                background: "#6cbf6c",
-            }
-        }).showToast();
+        renderToast("Đã tải thành công !", Color.SUCCESS);
     });
 });

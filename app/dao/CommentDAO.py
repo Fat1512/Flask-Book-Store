@@ -2,13 +2,14 @@ from app import db
 from app.model.Comment import Comment
 
 
-def create_comment(data):
+def create_comment(user_id,data):
+    print('test', data)
     comment = data['comment']
     book_id = data.get('bookId')
     star_count = data.get('starCount')
 
     comment_product_db = Comment(book_id=book_id, star_count=star_count
-                                 , content=comment, user_id=2)
+                                 , content=comment, user_id=user_id)
     db.session.add(comment_product_db)
     db.session.commit()
 

@@ -1,0 +1,215 @@
+{% extends 'admin/layout/base.html' %}
+{% block css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/employeeImport.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/FormPrint.css') }}">
+{% endblock %}
+{% block js %}
+    <script src="{{ url_for('static', filename='js/employee/employeeImportHistory.js') }}"></script>
+{% endblock %}
+{% block content %}
+    <div class="header bg-primary pb-6">
+        <div class="container-fluid">
+            <div class="header-body">
+                <div class="row align-items-center py-4">
+                    <div class="col-3">
+                        <h6 class="h2 text-white d-inline-block mb-0"></h6>
+                        <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                            <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                                <li class="breadcrumb-item"><a href="#">Quản lý nhập sách</a></li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <form class="col-8 navbar-search navbar-search-light form-inline mr-sm-3" id="navbar-search-main">
+                        <div class="form-group mb-0 w-100">
+                            <div class="input-group input-group-alternative input-group-merge w-50">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                </div>
+                                <input class="form-control" placeholder="Nhập mã sách" type="text">
+                            </div>
+                        </div>
+                        <button type="button" class="close" data-action="search-close" data-target="#navbar-search-main"
+                                aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </form>
+                    {#                    <div class="col-4 text-right">#}
+                    {#                        <a href="#" class="btn btn-sm btn-neutral">Tìm kiếm mã đơn</a>#}
+                    {#                        <a href="#" class="btn btn-sm btn-neutral">Tìm kiếm số điện thoại khách hàng</a>#}
+                    {#                    </div>#}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid mt--6">
+        <div class="row order-table">
+            <div class="col">
+                <div class="card">
+                    <!-- Card header -->
+                    <div class="card-header border-0 pb-3">
+                        <h3 class="mb-0">Quản lý nhập sách</h3>
+                        <div class="d-flex justify-content-end">
+                            <div class="pt-2">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="ml-3 col-3">
+                            <div class="form-group mb-0 w-100 d-flex order-id-search-container">
+                                <div class="input-group input-group-alternative input-group-merge w-65 ml-r">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                    </div>
+                                    <input class="form-control input-search" placeholder="Nhập mã phiếu" type="text">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex date-search-container">
+                                <div class="form-group w-100 d-flex pr-3">
+                                    <label for="email">Bắt đầu</label>
+                                    <input type="date" class="form-control input-start-date"
+                                           placeholder="Enter email" id="email" value="{{ start_date }}">
+                                </div>
+                                <div class="form-group w-100 d-flex">
+                                    <label for="email">Kết thúc</label>
+                                    <input type="date" class="form-control input-end-date"
+                                           placeholder="Enter email"
+                                           id="email" value="{{ end_date }}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <div class="btn btn-reset-all border border-1">Reset</div>
+                        </div>
+                        <div class="col-1">
+                            <div class="btn btn-search btn-primary">Tìm kiếm</div>
+                        </div>
+                    </div>
+                    <!-- Light table -->
+                    <div class="table-responsive">
+                        <table class="import-container table align-items-center table-flush">
+                            <thead class="thead-light">
+                            <tr>
+                                <th scope="col" class="sort text-center table-header" data-sort="name">Số phiếu</th>
+                                <th scope="col" class="sort text-center table-header" data-sort="name">Nhân viên nhập
+                                </th>
+                                <th scope="col" class="sort text-center table-header w-25" data-sort="name">Ngày nhập
+                                </th>
+                                <th scope="col"></th>
+                            </tr>
+                            </thead>
+                            <tbody class="list import-list">
+                            {% for form_import in form_imports['form_imports'] %}
+                                <tr class="import-item" id="{{ form_import['form_import_id'] }}">
+                                    <th scope="row">
+                                        <div class="media align-items-center">
+                                            <div class="media-body text-center">
+                                                <span class="name mb-0 text-sm text-center w-100">{{ form_import['form_import_id'] }}</span>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <td scope="row">
+                                        <div class="media align-items-center">
+                                            <div class="media-body text-left text-truncate book-item"
+                                                 style="width:100px!important;">
+                                                <span class="order-item-name mb-0 text-sm text-center w-100">{{ form_import['employee']['name'] }}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center w-100 justify-content-center">
+                                            <span class="completion mr-2">{{ form_import['created_at']|datetime() }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-right">
+                                        <div class="">
+                                            <a class="btn btn-sm btn-icon-only text-light btn-print-import-form"
+                                               role="button"
+                                               aria-expanded="false">
+                                                <i class="fa-solid fa-print"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer py-4">
+                        <nav aria-label="...">
+                            <ul class="pagination justify-content-end mb-0">
+                                <li class="page-item{% if form_imports['current_page'] == 1 %} disabled {% endif %}"
+                                    page={{ form_imports['current_page'] - 1 }}>
+                                    <a class="page-link" tabindex="-1">
+                                        <i class="fas fa-angle-left "></i>
+                                        <span class="sr-only">Previous</span>
+                                    </a>
+                                </li>
+                                {% for page in range(form_imports['total_page']) %}
+                                    <li class="page-item{% if page + 1 == form_imports['current_page'] %} active {% endif %}"
+                                        page={{ page + 1 }}>
+                                        <div class="page-link">{{ page + 1 }}</div>
+                                    </li>
+                                {% endfor %}
+                                <li class="page-item {% if form_imports['current_page'] == form_imports['total_page'] %} disabled {% endif %}"
+                                    page={{ form_imports['current_page'] + 1 }}>
+                                    <a class="page-link">
+                                        <i class="fas fa-angle-right"></i>
+                                        <span class="sr-only">Next</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block modal %}
+<div class="modal">
+    <div class="overlay"></div>
+    <div class="modal-body modal-body-export">
+
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

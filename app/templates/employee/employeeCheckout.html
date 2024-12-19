@@ -1,0 +1,202 @@
+{% extends 'admin/layout/base.html' %}
+{% block css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/employee.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/FormPrint.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/employeeCheckout.css') }}">
+{% endblock %}
+{% block js %}
+    <script type="module" src="{{ url_for('static', filename='js/employee/employeeCheckout.js') }}"></script>
+{% endblock %}
+{% block content %}
+    <div class="header bg-primary pb-6">
+        <div class="container-fluid">
+            <div class="header-body">
+                <div class="row align-items-center py-4">
+                    <div class="col-3">
+                        <h6 class="h2 text-white d-inline-block mb-0"></h6>
+                        <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                            <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                                <li class="breadcrumb-item"><a href="#">Quản lý đơn đặt</a></li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <form class="col-4 navbar-search navbar-search-light form-inline mr-sm-3" id="navbar-search-main">
+                        <div class="form-group mb-0">
+
+                        </div>
+                        <button type="button" class="close" data-action="search-close" data-target="#navbar-search-main"
+                                aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid mt--6">
+        <div class="row product-detail">
+            <div class="col-8">
+                <div class="card">
+                    <div class="d-flex">
+                        <div class="col-8 d-flex pb-3">
+                            <div class="">
+                                <button type="button"
+                                        class="open-add-phone-modal w-100 btn btn-primary text-white border border-0">
+                                    Thêm số điện thoại
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-4 justify-content-end form-group mb-0">
+                            <div class="input-group input-phone-search border border-1 input-group-alternative input-group-merge  position-relative">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                </div>
+                                <input class="form-control" placeholder="Nhập số điện thoại tìm kiếm" type="text">
+                                <ul class="phone-number-dropdown d-none">
+                                    {#                                    <li>0908785189</li>#}
+                                    {#                                    <li>0908785189</li>#}
+                                    {#                                    <li>0908785189</li>#}
+                                    {#                                    <li>0908785189</li>#}
+                                    {#                                    <li>0908785189</li>#}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pl-4 customer-name-container">
+                        {#                        <span class="customer-name">Họ tên khách hàng:  Lê TẤn phét</span>#}
+                        {#                        <a class="btn btn-sm btn-icon-only text-light cursor-pointer" role="button">#}
+                        {#                            <i class="fa fa-window-close" aria-hidden="true"></i>#}
+                        {#                        </a>#}
+                    </div>
+                    <div class="card-header bg-transparent border-0 d-flex justify-content-between align-content-center">
+                        <h3 class="mb- display-4">Sản phẩm</h3>
+                        <button type="button"
+                                class="btn btn-primary qr-code-btn dropdown-btn-change justify-content-end">
+                            Hiển thị máy quét
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="order-container table align-items-center table-flush">
+                            <thead class="thead-light">
+                            <tr>
+                                <th scope="col" class="sort text-center w-25" data-sort="name">Ten san pham</th>
+                                <th scope="col" class="sort text-center" data-sort="budget">Gia</th>
+                                <th scope="col" class="text-center">So luong</th>
+                                <th scope="col" class="sort text-center" data-sort="completion">Tong tien</th>
+                                <th scope="col"></th>
+                            </tr>
+                            </thead>
+                            <tbody class="list order-list">
+                            </tbody>
+                        </table>
+                        <div class="d-flex px-5 pt-4 justify-content-between ">
+
+                        </div>
+                        <div class="d-flex px-5 pb-4 justify-content-between ">
+                            <div class="font-weight-bolder display-4">
+                                Tổng tiền:
+                            </div>
+                            <div class="font-weight-bolder display-4 total-amount">{{ 0 | currency('VND') }}</div>
+                        </div>
+                        <div class="d-flex py-3">
+                            <div class="w-50 px-3">
+                                <button type="button"
+                                        class="delete-all-btn w-100 btn btn-primary bg-white text-black border border-0"
+                                        style="color: var(--black-color) !important">
+                                    Xóa hết
+                                </button>
+                            </div>
+                            <div class="w-50 px-3">
+                                <button type="button"
+                                        class="checkout-btn w-100 btn btn-primary border border-0"
+                                        style="color: var(--white-color) !important; background-color: var(--red)">
+                                    Xuất hóa đơn
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4 ">
+                <div class="card pb-3">
+                    <div class="d-flex justify-content-between align-content-center">
+                        <form class="col-6 navbar-search-light form-inline mr-sm-3 p-3" id="navbar-search-main">
+                            <div class="form-group mb-0 w-100">
+                                <div class="input-group input-group-alternative input-group-merge w-100 border border-1">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                    </div>
+                                    <input class="form-control search-box input-book-search" placeholder="Nhập barcode"
+                                           type="text">
+                                </div>
+                            </div>
+                        </form>
+                        <div class="dropdown col-6 dropdown-btn align-content-center text-right">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="btn reset-btn border border-1">Về mặc định</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="btn search-btn btn-primary">Tìm kiếm</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row px-5 product-container">
+                        {% for book in books['books'] %}
+                            <a class="product-item card col-3 cursor-pointer" id="{{ book['book_id'] }}">
+                                <img class="card-img-top"
+                                     src="
+
+
+
+
+
+
+
+                                             {% if  book['images'] %}{{ book['images'][0]['image_url'] }} {% else %}null{% endif %}"
+                                     alt="Card image"
+                                     style="height: auto !important;">
+                                <div class="card-body p-0">
+                                    <p class="card-text product-name">{{ book['title'] }}</p>
+                                    <p class="text-primary font-weight-bold mb-1 product-price">{{ book['price']|currency('VND') }}</p>
+                                    <p class="text-dark font-weight-light mb-1">qty: {{ book['quantity'] }}</p>
+                                </div>
+                            </a>
+                        {% endfor %}
+                    </div>
+                    <nav aria-label="Page navigation example" class="d-flex justify-content-center">
+                        <ul class="pagination">
+
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block modal %}
+    <div class="modal">
+        <div class="overlay"></div>
+        <div class="modal-body modal-scanner-body item-bg-color justify-content-center d-flex display-none">
+            <div id="reader" style="width: 500px"></div>
+        </div>
+        <div class="modal-body modal-invoice-body item-bg-color justify-content-center d-flex display-none">
+
+        </div>
+        <div class="modal-body modal-add-phone-body item-bg-color justify-content-center d-flex display-none">
+            <div class="card">
+                <input class="form-control search-box input-phone-add" placeholder="Nhập số điện thoại"
+                       type="text">
+                <div class="w-100 px-3 py-3">
+                    <button type="button"
+                            class="delete-all-btn add-phone-btn w-100 btn btn-primary bg-red text-white border border-0">
+                        Thêm
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

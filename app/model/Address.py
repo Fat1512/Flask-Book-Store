@@ -11,7 +11,8 @@ class Address(db.Model):
     last_name = Column('lastName', String, nullable=False)
     phone_number = Column('phoneNumber', String)
     city = Column(String)
-    country = Column(String)
+    district = Column(String)
+    ward = Column(String)
     address = Column(String)
 
     user_id = Column(Integer, ForeignKey('user.user_id'))
@@ -20,16 +21,14 @@ class Address(db.Model):
     def to_dict(self):
         return {
             'address_id': self.address_id,
-            'first_name': self.first_name,
-            'last_name': self.last_name,
+            'fullname': self.get_fullname(),
             'phone_number': self.phone_number,
-            'city': self.city,
-            'country': self.country,
-            'address': self.address
+            'address': self.address,
+            'province': self.to_string_without_user()
         }
 
     def to_string_without_user(self):
-        return self.address + ', ' + self.city + ', ' + self.country
+        return self.ward + ', ' + self.district + ', ' + self.city
 
     def get_fullname(self):
         return self.last_name + ' ' + self.first_name

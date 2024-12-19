@@ -14,8 +14,8 @@ def get_order_by_id(order_id):
 def filter_orders():
     status = request.args.get("status")
     paymentMethod = request.args.get("paymentMethod")
-    sortBy = request.args.get("sortBy")
-    sortDir = request.args.get("sortDir")
+    sortBy = request.args.get("sortBy", default="date")
+    sortDir = request.args.get("sortDir", default="asc")
     page = request.args.get("page", 1)
     orders = find_all(status=status,
              paymentMethod=paymentMethod,
