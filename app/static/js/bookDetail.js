@@ -34,6 +34,9 @@ buttonBuy.addEventListener('click', () => {
     addCartItem(CURRENT_URL.searchParams.get("bookId")).then(res => {
         if (res['status'] === 200)
             window.location.href = "http://127.0.0.1:5000/cart"
+        else if (res['status'] === 507) {
+            showToast(res['message'], true)
+        }
     })
 
 })
@@ -42,6 +45,8 @@ buttonAddCart.addEventListener('click', () =>
         if (res['status'] === 200) {
             renderTotalCartItem(res['data'])
             showToast("Thêm sản phẩm vào giỏ hàng thành công", false)
+        } else if (res['status'] === 507) {
+            showToast(res['message'], true)
         }
     }))
 const addCartItem = async function (id) {
@@ -80,7 +85,7 @@ const postComment = async function (data, url) {
 }
 
 const buttonOpenFormComment = document.querySelector('.form-comment-open')
-const modal = document.querySelector(".modal")
+const modal = document.querySelector(".modal-comment")
 const commentForm = modal.querySelector('.comment-area')
 const buttonModalComment = modal.querySelector('.btn-modal-comment')
 buttonOpenFormComment.addEventListener('click', () =>
@@ -218,10 +223,12 @@ const renderStar = function (index) {
 const renderTotalCartItem = function (data) {
     const labelTotal = document.querySelector('.label-total')
     const subCartList = document.querySelector('.sub-cart')
+    console.log(data)
     if (subCartList) {
         const childrent = subCartList.children
         let isPresent = true
         for (let i = 0; i < childrent.length; i++) {
+            console.log(childrent[i])
             if (parseInt(childrent[i].id) === data.cartItem.book.bookId) {
                 childrent[i].querySelector('.quantity').innerHTML = data.cartItem.quantity
                 isPresent = false;
@@ -241,8 +248,9 @@ const renderTotalCartItem = function (data) {
                 </li>
 
             `)
+
             document.querySelector('.sub-total-price').innerHTML = VND.format(data.totalPrice)
-            document.querySelector('.sub-total').innerHTML = data.current_cart
+            document.querySelector('.sub-total').innerHTML = `Giỏ hàng (${data.current_cart})`
             labelTotal.innerHTML = data.current_cart
         }
     } else {
@@ -277,3 +285,8 @@ const renderTotalCartItem = function (data) {
          `)
     }
 }
+const imageItem = document.querySelectorAll('.image-item')
+imageItem && imageItem.forEach(item => item.addEventListener('click', () => {
+    document.body.insertAdjacentHTML('beforeend', ``)
+}))
+

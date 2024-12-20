@@ -4,6 +4,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import os
 from urllib.parse import quote
+from flask_apscheduler import APScheduler
 from dotenv import dotenv_values, load_dotenv
 import cloudinary
 from flask_login import LoginManager
@@ -11,6 +12,7 @@ from app.utils.helper import format_currency_filter, format_datetime_filter, for
 
 app = Flask(__name__)
 load_dotenv()
+scheduler = APScheduler()
 
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 
@@ -25,21 +27,19 @@ app.config["VNPAY_RETURN_URL"] = 'http://127.0.0.1:5000/account/purchase'
 app.config['KAFKA_BROKER'] = ['127.0.0.1:9091', '127.0.0.1:9092', '127.0.0.1:9093']
 app.config['KAFKA_TOPIC'] = ['dbs_.book_store.book','dbs_.book_store.extended_book', 'schema-changes.mysql']
 
-# es = Elasticsearch(
-#     hosts=[{'host': 'localhost', 'port': 9200, 'scheme': 'http'}],
-#     http_auth=('docker-cluster', '090224T@n')
-# )
-#
-#
-# consumers = {
-#     topic: confluent_kafka.Consumer({
-#         'bootstrap.servers': ','.join(app.config['KAFKA_BROKER']),
-#         'group.id': 'my-group',
-#         'auto.offset.reset': 'earliest'
-#     }) for topic in app.config['KAFKA_TOPIC']
-# }
+es = Elasticsearch(
+    hosts=[{'host': 'localhost', 'port': 9200, 'scheme': 'http'}],
+    http_auth=('docker-cluster', '090224T@n')
+)
 
 
+consumers = {
+    topic: confluent_kafka.Consumer({
+        'bootstrap.servers': ','.join(app.config['KAFKA_BROKER']),
+        'group.id': 'my-group',
+        'auto.offset.reset': 'earliest'
+    }) for topic in app.config['KAFKA_TOPIC']
+}
 
 cloudinary.config(
     cloud_name="duk7gxwvc",
@@ -53,7 +53,7 @@ app.config['PAGE_SIZE'] = 12
 app.config['ORDER'] = 'desc'
 
 app.config["ORDER_PAGE_SIZE"] = 12
-app.config["IMPORT_PAGE_SIZE"] = 12
+app.config["IMPORT_PAGE_SIZE"] = 20
 app.config["STATISTIC_FRE_PAGE_SIZE"] = 6
 app.config["STATISTIC_REVEN_PAGE_SIZE"] = 5
 app.config["BOOK_PAGE_SIZE"] = 7

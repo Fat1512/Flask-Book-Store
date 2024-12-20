@@ -4,6 +4,15 @@
 {% endblock %}
 {% block js %}
     <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+    <script>
+        const flashedMessages = {{ get_flashed_messages(with_categories=true) | tojson }};
+
+        // Example: Display messages dynamically
+        flashedMessages.forEach(([category, message]) => {
+            
+            showToast(message, true)
+        });
+    </script>
 {% endblock %}
 {% block content %}
     <div class="my-bg-color pt-3 pb-3">

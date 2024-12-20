@@ -37,6 +37,17 @@ function extractCurrencyNumber(currencyString) {
     return parseFloat(numericValue.replace(',', '.')); // Convert to float, replace comma with dot
 }
 
+function showSpinner() {
+    document.querySelector('.spinner').style.display = 'block';
+    document.querySelector('.overlay-spinner').style.display = 'block';
+}
+
+// HIDE SPINNER
+function hideSpinner() {
+    document.querySelector('.spinner').style.display = 'none';
+    document.querySelector('.overlay-spinner').style.display = 'none';
+}
+
 const showToast = function (message, isError) {
     const color = isError ? 'var(--red)' : "#6cbf6c"
     Toastify({
@@ -117,6 +128,7 @@ const deleteCartItem = async function (id) {
 }
 const updateCart = async function (data) {
     try {
+        showSpinner()
         const response = await fetch(CART_API, {
             method: 'PUT', // HTTP PUT method
             headers: {
@@ -132,6 +144,8 @@ const updateCart = async function (data) {
         return await response.json()
     } catch (error) {
         showToast(error.message, true)
+    } finally {
+        hideSpinner()
     }
 
 }
@@ -172,17 +186,15 @@ groupControll.forEach(el => {
     })
     buttonIncrease.addEventListener('click', () => {
         const data = {
-            "cartId": 2,
-            "cartItems": [
+            "cartItems":
                 {
                     "bookId": el.id,
                     "quantity": parseInt(quantityEl.textContent) + 1
                 }
-            ]
+
         }
         updateCart(data).then(res => {
                 if (res['status'] === 200) {
-                    console.log(res)
                     quantityEl.innerHTML = res['data'].quantity
                     totalprice.innerHTML = VND.format(res['data'].quantity * res['data'].book.price)
                     if (checkButon.checked) {
@@ -191,23 +203,31 @@ groupControll.forEach(el => {
                         totalPrice.innerHTML = VND.format(numTotalPrice + itemPrice)
                     }
                     showToast("Tăng sản phẩm thành công", false)
+                } else if (res['status'] === 507) {
+                    if (el.querySelector('.cart-item-detail > .item-msg-error')) return
+                    el.querySelector('.cart-item-detail').insertAdjacentHTML('beforeend', `
+                        <p class="item-msg-error font-weight-bold text-primary">* ${res['message']}</p>
+                    `)
                 }
             }
         )
     })
     buttonDescrease.addEventListener('click', () => {
-        if (quantityEl.textContent === "1") return
+        if (quantityEl.textContent === "1") {
+            showToast("Số lượng không được nhỏ hơn 1", true)
+            return
+        }
         const data = {
-            "cartId": 2,
-            "cartItems": [
+            "cartItems":
                 {
                     "bookId": el.id,
                     "quantity": parseInt(quantityEl.textContent) - 1
                 }
-            ]
+
         }
         updateCart(data).then(res => {
                 if (res['status'] === 200) {
+                    el.querySelector('.cart-item-detail > .item-msg-error')?.remove()
                     quantityEl.innerHTML = res['data'].quantity
                     totalprice.innerHTML = VND.format(res['data'].quantity * res['data'].book.price)
                     if (checkButon.checked) {

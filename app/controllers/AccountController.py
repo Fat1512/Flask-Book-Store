@@ -1,14 +1,15 @@
 from app.dao import UserDao
 from app import login
 from app.dao.OrderDAO import find_all, find_add_by_user_id
+from app.dao.UserDao import find_user_address
 from app.model.User import UserRole
 from flask import render_template, request, redirect, url_for
-from flask_login import login_user, logout_user
+from flask_login import login_user, logout_user, current_user
 from flask import Blueprint
 from app import db
 from app.model.User import User
 from app.model.Account import Account
-from flask_login import current_user
+
 account_bp = Blueprint('account', __name__)
 
 
@@ -20,8 +21,10 @@ def purchase():
         return redirect(f'http://127.0.0.1:5000/account/purchase?payment={payment_status}')
 
     status = request.args.get('type', type=int)
-    order = find_add_by_user_id(status)
-    order_to_dict = [order.to_dict() for order in order]
+
+    order = find_add_by_user_id(current_user.get_id(), status)
+
+    order_to_dict = [order.to_detail_dict() for order in order]
     is_success = request.args.get('payment', default=None)
 
     return render_template("purchase.html", is_success=is_success, order=order_to_dict)
@@ -35,8 +38,6 @@ def admin_login():
         password = request.form.get('password')
 
         user = UserDao.auth_user(username=username, password=password)
-        print("test", current_user)
-
         if user:
             if user.user_role == UserRole.ADMIN:
                 login_user(user=user)
@@ -66,7 +67,7 @@ def employee_login():
         user = UserDao.auth_user(username=username, password=password)
         if user:
             login_user(user=user)
-            print("test", current_user)
+
             if user.user_role == UserRole.EMPLOYEE_SALE:
                 return redirect(url_for('employee.checkout'))
             elif user.user_role == UserRole.EMPLOYEE_MANAGER_WAREHOUSE:
@@ -145,7 +146,6 @@ def login_process():
 
         if u:
             login_user(u)
-
             return redirect(url_for('index.index'))
         else:
             err_msg = "Tên đăng nhập hoặc mật khẩu không đúng!"
@@ -153,7 +153,13 @@ def login_process():
     return render_template("login.html", err_msg=err_msg)
 
 
-@account_bp.route("/register", methods=['GET', 'POST'])
+@account_bp.route('/address')
+def address():
+    address_list = find_user_address(current_user.get_id())
+    return render_template('address.html', address_list=address_list)
+
+
+@account_bp.route("/register", methods=['get', 'post'])
 def register_process():
     err_msg = ''
     if request.method == 'POST':

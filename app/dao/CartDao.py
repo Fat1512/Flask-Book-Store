@@ -1,5 +1,9 @@
+from flask_login import current_user
 from sqlalchemy.testing.config import db_url
 from app import db
+from app.exception.CartItemError import CartItemError
+from app.exception.InsufficientError import InsufficientError
+from app.model.Book import Book
 from app.model.Cart import Cart
 from app.model.CartItem import CartItem
 
@@ -12,23 +16,23 @@ def find_by_cart_id(cart_id):
     return Cart.query.get(cart_id)
 
 
-def update_cart(request):
-    cart = Cart.query.filter(Cart.cart_id == request.get('cartId')).first()
+def update_cart(user_id, cart_item):
+    cart = Cart.query.filter(Cart.user_id == user_id).first()
     respone = None
-    for cart_item in request.get('cartItems'):
-        for item in cart.cart_items:
-            if item.book_id == int(cart_item.get('bookId')):
-                if item.book.quantity < int(cart_item.get('quantity')):
-                    return None
-                item.quantity = int(cart_item.get('quantity'))
-                respone = item
+
+    for item in cart.cart_items:
+        if item.book_id == int(cart_item.get('bookId')):
+            if item.book.quantity < int(cart_item.get('quantity')):
+                raise CartItemError(f"{item.book.title} chỉ còn {item.book.quantity}")
+            item.quantity = int(cart_item.get('quantity'))
+            respone = item
 
     db.session.commit()
     return respone
 
 
-def delete_cart_item(book_id):
-    cart = Cart.query.filter(Cart.cart_id == 2).first()
+def delete_cart_item(user_id, book_id):
+    cart = Cart.query.filter(Cart.cart_id == user_id).first()
     for item in cart.cart_items:
         if item.book_id == book_id:
             cart.cart_items.remove(item)
@@ -38,9 +42,12 @@ def delete_cart_item(book_id):
 
 
 def add_cart_item(book_id):
-    cart = Cart.query.filter(Cart.cart_id == 2).first()
+    cart = Cart.query.filter(Cart.cart_id == current_user.get_id()).first()
+    book = Book.query.get(book_id)
     for item in cart.cart_items:
         if item.book_id == book_id:
+            if item.book.quantity < (item.quantity + 1):
+                raise CartItemError(f"{item.book.title} chỉ còn {item.book.quantity} sản phẩm")
             item.quantity += 1
             db.session.commit()
             return item

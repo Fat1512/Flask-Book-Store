@@ -1,3 +1,4 @@
+//---------------------------------------------CONSTANTS---------------------------------------------
 const vndCurrencyFormat = new Intl.NumberFormat('vi-VN', {
     style: 'currency',
     currency: 'VND',
@@ -23,74 +24,92 @@ const timeFormatter = new Intl.DateTimeFormat('vi-VN', {
     // timeZoneName: 'short' // e.g., GMT
 });
 
-const ORDER_API = `/api/v1/order`;
+const Color = {
+    WARNING: "orange",
+    ERROR: `var(--red)`,
+    SUCCESS: "#6cbf6c"
+}
 
+const ORDER_API = `/api/v1/order`;
 const url = new URL(window.location);
 
-const orderParams = [
-    {
+const orderParams = {
+    DAT_ONLINE: {
         "orderType": 1 //Dat online
     },
-    {
+    MUA_TRUC_TIEP: {
         "orderType": 2 //Mua truc tiep
     }
-];
-const sortParams = [
-    {
+};
+
+const sortParams = {
+    NGAY_DAT_MOI: {
         "sortBy": "date",
         "dir": "desc"
     },
-    {
+    NGAY_DAT_CU: {
         "sortBy": "date",
         "dir": "asc"
     },
-    {
+    TONG_TIEN_TANG: {
         "sortBy": "total-amount",
         "dir": "asc"
     },
-    {
+    TONG_TIEN_GIAM: {
         "sortBy": "total-amount",
         "dir": "desc"
     }
-];
-const statusParams = [
-    {
-        "status": 1 //Dang xu ly
+};
+const statusParams = {
+    DANG_XU_LY: {
+        "status": 1
     },
-    {
-        "status": 2 //Cho giao hang
+    CHO_GIAO_HANG: {
+        "status": 2
     },
-    {
-        "status": 3 //Dang giao hang
+    DANG_GIAO_HANG: {
+        "status": 3
     },
-    {
-        "status": 4 //Da hoan thanh
+    DA_HOAN_THANH: {
+        "status": 4
     },
-    {
-        "status": 5 //Da huy
+    DA_HUY: {
+        "status": 5
+    },
+    DANG_CHO_THANH_TOAN: {
+        "status": 6
+    },
+    DA_THANH_TOAN: {
+        "status": 7
+    },
+    DANG_CHO_NHAN_HANG: {
+        "status": 8
     }
-];
-const paymentMethodParams = [
-    {
+};
+
+const paymentMethodParams = {
+    THE: {
         "paymentMethod": 1 //The
     },
-    {
+    TIEN_MAT: {
         "paymentMethod": 2 //Tien mat
     }
-];
+};
+
 
 //shipping method = 1: ship ve nha
+//shipping method = 2: cua hang
 const shippingStatus = {
     "1": {//shipping id
         "1": "Đang xử lý", //order status id
         "2": "Chờ giao hàng",
         "3": "Đang giao hàng",
-        "7": "Đã hoàn thành"
+        "4": "Đã hoàn thành"
     },
     "2": {
         "1": "Đang xử lý",
         "8": "Đang chờ nhận",
-        "7": "Đã hoàn thành"
+        "4": "Đã hoàn thành"
     }
 };
 
@@ -100,9 +119,9 @@ const initialTabState = [
         "orderType": 1,
         "paymentMethod": 2,
         "status": "1,2,8"
-    }, {
+    },
+    {
         "orderType": 1,
-        "paymentMethod": 2,
         "status": "1,2,3,8"
     },
     {
@@ -111,37 +130,31 @@ const initialTabState = [
         "status": "1,2,8"
     }
 ]
-//shipping method = 2: cua hang
+
 
 /**
  *     DANG_XU_LY = 1
  *     CHO_GIAO_HANG = 2
  *     DANG_GIAO_HANG = 3
- *
  *     DA_HOAN_THANH = 4
  *     DA_HUY = 5
- *
  *     DANG_CHO_THANH_TOAN = 6
  *     DA_THANH_TOAN = 7
- *
- *     DANG_CHO_NHAN = 8
- * @type {Element}
+ *     DANG_CHO_NHAN_HANG = 8
  */
 
 
-//---------------------------------------------CONTAINER---------------------------------------------
-const productSearchBox = document.querySelector('.product-search-box');
-const orderTable = document.querySelector(".order-table");
+//---------------------------------------------DOM ELEMENTS & STATES---------------------------------------------
 const orderList = document.querySelector(".order-list");
 const pagination = document.querySelector(".pagination");
 const filterLabelContainer = document.querySelector(".filter-label-container");
-//---------------------------------------------FILTER---------------------------------------------
+
 const orderType = document.querySelector(".order-type");
 const sortType = document.querySelector(".sort-type");
 const statusType = document.querySelector(".status-type");
 const paymentMethodType = document.querySelector(".payment-method-type");
 
-//=======================================
+
 const orderTab = document.querySelector(".order-tab");
 const dateSearchContainer = document.querySelector(".date-search-container");
 const filterDropListContainer = document.querySelector(".filter-droplist-container");
@@ -150,10 +163,8 @@ const modalUpdateOrderStatusBody = document.querySelector(".modal-update-order-s
 const modalCancelOrder = document.querySelector(".modal-cancel-order");
 const overlay = document.querySelector(".overlay");
 
-const btnDeleteAll = document.querySelector(".btn-delete-all");
+const btnResetAll = document.querySelector(".btn-reset-all");
 const btnSearch = document.querySelector(".btn-search");
-//---------------------------------------------FUNCTION---------------------------------------------
-
 const inputStartDate = document.querySelector(".input-start-date");
 const inputEndDate = document.querySelector(".input-end-date");
 const inputSearch = document.querySelector(".input-search");
@@ -162,39 +173,9 @@ let currentLabel = {};
 let currentSearchParam = {};
 let currentOrderItemsState = {};
 let currentTab = 0;
-
-const resetAllState = function () {
-    currentLabel = {};
-    currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
-    inputStartDate.value = '';
-    inputEndDate.value = '';
-    inputSearch.value = '';
-
-    renderLabel()
-    document.querySelectorAll("input:checked").forEach(input => input.checked = false);
-
-    url.search = "";
-    window.history.pushState({}, '', url);
-}
-
-const hideFilter = function () {
-    filterDropListContainer.classList.add("hide");
-    dateSearchContainer.classList.add("hide");
-}
-const unhideFilter = function () {
-    filterDropListContainer.classList.remove("hide");
-    dateSearchContainer.classList.remove("hide");
-};
-const deleteCurrentParams = (params) => params.forEach(param => delete currentSearchParam[param]);
-const addCurrentParams = (params) => params.forEach(param => currentSearchParam[param[0]] = param[1]);
-
-const deleteUrlParams = (params) => params.forEach(param => url.searchParams.delete(param));
-const addUrlParams = (params) => params.forEach(param => url.searchParams.set(param[0], param[1]));
-
+//---------------------------------------------RENDER---------------------------------------------
 const renderOrder = function (orders, tab = 0) {
-    orderList.innerHTML = '';
-    currentOrderItemsState = {};
-    const html = orders.map(order => {
+    let html = orders.map(order => {
         currentOrderItemsState[order['order_id']] = order;
         return `
             <tr class="order-id" id="${order['order_id']}">
@@ -240,12 +221,23 @@ const renderOrder = function (orders, tab = 0) {
                     </div>
                 </td>
             </tr>`
-    }).join("");
+    }).join('');
+    orderList.innerHTML = '';
+
+    if (orders.length === 0) {
+        html = `
+        <tr>
+            <td colspan="6">
+                <div class="text-center w-100 display-4">Không có đơn</div>
+            </td>
+        </tr>`;
+    }
     orderList.insertAdjacentHTML('beforeend', html);
-}
+};
+
 const renderPagination = function (total_page, current_page) {
     const prev = `
-        <li class="page-item ${current_page == 1 ? "disabled" : ""}" page=${current_page - 1}>
+        <li class="page-item ${current_page == 1 || total_page == 0 ? "disabled" : ""}" page=${current_page - 1}>
             <div class="page-link" tabindex="-1">
                 <i class="fas fa-angle-left "></i>
                 <span class="sr-only">Previous</span>
@@ -258,7 +250,7 @@ const renderPagination = function (total_page, current_page) {
             </li>`;
     }).join('');
     const next = `
-        <li class="page-item ${current_page == total_page ? "disabled" : ""}" page=${current_page + 1}>
+        <li class="page-item ${current_page == total_page || total_page == 0 ? "disabled" : ""}" page=${current_page + 1}>
             <div class="page-link" >
                 <i class="fas fa-angle-right"></i>
                 <span class="sr-only">Next</span>
@@ -269,6 +261,7 @@ const renderPagination = function (total_page, current_page) {
     pagination.insertAdjacentHTML('beforeend', content)
     pagination.insertAdjacentHTML('beforeend', next)
 }
+
 const renderLabel = function () {
     filterLabelContainer.innerHTML = '';
     const html = Object.entries(currentLabel).map(label =>
@@ -276,6 +269,7 @@ const renderLabel = function () {
 
     filterLabelContainer.insertAdjacentHTML('beforeend', html);
 }
+
 const renderStatusUpdateForm = function (order, statusArray) {
     const html = `
     <div class="card p-5 order-update-modal" id="${order['order_id']}">
@@ -301,7 +295,7 @@ const renderStatusUpdateForm = function (order, statusArray) {
                 </div>
                 <div class="d-flex">
                     <h2 class="pr-3">Ngày tạo: </h2>
-                    <h2 class="font-weight-400"> ${order['created_at']} </h2>
+                    <h2 class="font-weight-400"> ${dateFormatter.format(new Date(order['created_at']))} </h2>
                 </div>
             </div>
             <div class="col-6">
@@ -333,20 +327,12 @@ const renderStatusUpdateForm = function (order, statusArray) {
                                 <div class="col-lg-12">
                                         <span class="form-control-label"
                                               for="input-address">Họ và tên: </span>
-                                    <span>${order['address']['first_name']} ${order['address']['last_name']}</span>
+                                    <span>${order['address']['fullname']}</span>
                                 </div>
                                 <div class="col-lg-12">
                                         <span class="form-control-label"
                                               for="input-address">Địa chỉ: </span>
-                                    <span>${order['address']['address']}</span>
-                                </div>
-                                <div class="col-lg-12">
-                                    <span class="form-control-label" for="input-city">Thành phố: </span>
-                                    <span>${order['address']['city']}</span>
-                                </div>
-                                <div class="col-lg-12">
-                                    <span class="form-control-label" for="input-city">Nước: </span>
-                                    <span>${order['address']['country']}</span>
+                                    <span>${order['address']['address']} ${order['address']['province']}</span>
                                 </div>
                                 <div class="col-lg-12">
                                         <span class="form-control-label"
@@ -382,7 +368,8 @@ const renderStatusUpdateForm = function (order, statusArray) {
     </div>`;
     modalUpdateOrderStatusBody.innerHTML = '';
     modalUpdateOrderStatusBody.insertAdjacentHTML("beforeend", html);
-}
+};
+
 const renderCancelForm = function (order) {
     const html = `
         <div class="w-100 d-flex justify-content-center align-content-center flex-column order-cancel-modal" id="${order['order_id']}">
@@ -406,15 +393,35 @@ const renderCancelForm = function (order) {
         </div>`;
     modalCancelOrder.innerHTML = '';
     modalCancelOrder.insertAdjacentHTML("beforeend", html);
+};
+
+const renderToast = function (text, background) {
+    Toastify({
+        text: text,
+        duration: 3000,
+        newWindow: true,
+        close: true,
+        gravity: "top",
+        position: "right",
+        stopOnFocus: true,
+        style: {
+            background: background,
+        }
+    }).showToast();
 }
+//---------------------------------------------API UTILITY---------------------------------------------
 const fetchOrder = async function () {
     try {
         const param = '?' + Object.entries(currentSearchParam).map(pr => pr[0] + '=' + pr[1]).join("&");
         const res = await fetch(`${ORDER_API}${param}`);
-        if (!res.ok) throw new Error("Cannot fetch order");
-        return await res.json();
+        if (!res.ok) throw new Error("Có lỗi khi lấy đơn");
+
+        const data = await res.json();
+        if (data['status'] !== 200) throw new Error(data['message']);
+
+        return data['data'];
     } catch (err) {
-        alert(err.message);
+        throw err;
     }
 };
 
@@ -427,14 +434,18 @@ const modifyOrderStatus = async function (orderId, orderStatusId) {
                 'Content-Type': 'application/json'
             }
         });
-        if (!res.ok) throw new Error("update order status");
-        return await res.json();
-    } catch (err) {
-        alert(err.message);
-    }
-}
+        if (!res.ok) throw new Error("Có lỗi khi cập nhật trạng thái");
 
-const cancelOrder = async function(orderId) {
+        const data = await res.json();
+        if (data['status'] !== 200) throw new Error(data['message']);
+
+        return data['data'];
+    } catch (err) {
+        throw err;
+    }
+};
+
+const cancelOrder = async function (orderId) {
     try {
         const res = await fetch(`${ORDER_API}/orderCancellation`, {
             method: "POST",
@@ -446,14 +457,18 @@ const cancelOrder = async function(orderId) {
                 'Content-Type': 'application/json'
             }
         });
-        if (!res.ok) throw new Error("update order status");
-        alert("huy thanh cong")
-        return await res.json();
+        if (!res.ok) throw new Error("Có lỗi khi hủy");
+
+        const data = await res.json();
+        if (data['status'] !== 200) throw new Error(data['message']);
+
+        return data['data'];
     } catch (err) {
-        alert(err.message);
+        throw err;
     }
 }
 
+//---------------------------------------------DOM UTILITY---------------------------------------------
 const openModal = function () {
     overlay.classList.add("d-flex");
     modal.classList.add("d-flex");
@@ -476,143 +491,233 @@ const openCancelOrderModal = function () {
     modalCancelOrder.classList.remove("d-none");
 }
 
+const resetAllState = function () {
+    currentLabel = {};
+    currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
+    inputStartDate.value = '';
+    inputEndDate.value = '';
+    inputSearch.value = '';
+
+    renderLabel()
+    document.querySelectorAll("input:checked").forEach(input => input.checked = false);
+
+    url.search = "";
+    window.history.pushState({}, '', url);
+}
+
+const hideFilter = function () {
+    filterDropListContainer.classList.add("hide");
+    dateSearchContainer.classList.add("hide");
+}
+
+const unhideFilter = function () {
+    filterDropListContainer.classList.remove("hide");
+    dateSearchContainer.classList.remove("hide");
+};
+
+const deleteCurrentParams = (params) => params.forEach(param => delete currentSearchParam[param]);
+
+const addCurrentParams = (params) => params.forEach(param => currentSearchParam[param[0]] = param[1]);
+
+const deleteUrlParams = (params) => params.forEach(param => url.searchParams.delete(param));
+
+const addUrlParams = (params) => params.forEach(param => url.searchParams.set(param[0], param[1]));
+
+const handleFilterChange = async function (parent, setParams, deletedParams, toggleId) {
+    try {
+        deleteUrlParams(deletedParams);
+        deleteCurrentParams(deletedParams);
+
+        let isToggle = false;
+        parent.querySelectorAll(".filter-type-item").forEach(item => {
+            const itemId = +item.getAttribute("id");
+            const input = item.querySelector("input")
+            const label = item.querySelector(".dropdown-item")
+            input.checked = itemId === toggleId ? !input.checked : false;
+            if (input.checked) {
+                currentLabel[label.textContent] = true;
+            } else {
+                delete currentLabel[label.textContent];
+            }
+            isToggle ||= input.checked;
+        })
+
+        if (isToggle) {
+            addCurrentParams(setParams)
+            addUrlParams(setParams);
+        }
+
+        window.history.pushState({}, '', url);
+
+        const data = await fetchOrder();
+        renderOrder(data['orders'])
+        renderPagination(data['total_page'], data['current_page']);
+        renderLabel();
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
+    }
+};
+
 
 //---------------------------------------------EVENT---------------------------------------------
+inputStartDate.addEventListener("change", async function (e) {
+    try {
+        const value = inputStartDate.value;
+        if (!value) {
+            deleteCurrentParams(["startDate"])
+            deleteUrlParams(["startDate"]);
+        } else {
+            addCurrentParams([["startDate", value]]);
+            addUrlParams([["startDate", value]]);
+        }
+        window.history.pushState({}, '', url);
 
-inputStartDate.addEventListener("change", async function(e) {
-    const value = inputStartDate.value;
-    if(!value) {
-        deleteCurrentParams(["startDate"])
-        deleteUrlParams(["startDate"]);
-    } else {
-        addCurrentParams([["startDate", value]]);
-        addUrlParams([["startDate", value]]);
+        const data = await fetchOrder();
+
+        renderOrder(data['orders']);
+        renderPagination(data['total_page'], data['current_page']);
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
     }
-
-    const data = await fetchOrder();
-
-    renderOrder(data['orders']);
-    renderPagination(data['total_page'], data['current_page']);
 });
 
-inputEndDate.addEventListener("change", async function(e) {
-    const value = inputEndDate.value;
-    if(!value) {
-        deleteCurrentParams(["endDate"])
-        deleteUrlParams(["endDate"]);
-    } else {
-        addCurrentParams([["endDate", value]]);
-        addUrlParams([["endDate", value]]);
+inputEndDate.addEventListener("change", async function (e) {
+    try {
+        const value = inputEndDate.value;
+        if (!value) {
+            deleteCurrentParams(["endDate"])
+            deleteUrlParams(["endDate"]);
+        } else {
+            addCurrentParams([["endDate", value]]);
+            addUrlParams([["endDate", value]]);
+        }
+        window.history.pushState({}, '', url);
+
+        const data = await fetchOrder();
+
+        renderOrder(data['orders']);
+        renderPagination(data['total_page'], data['current_page']);
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
     }
-
-    const data = await fetchOrder();
-
-    renderOrder(data['orders']);
-    renderPagination(data['total_page'], data['current_page']);
 });
 
-btnDeleteAll.addEventListener("click", async function () {
-    resetAllState();
-    const data = await fetchOrder();
-    renderOrder(data['orders']);
-    renderPagination(data['total_page'], data['current_page']);
+btnResetAll.addEventListener("click", async function () {
+    try {
+        resetAllState();
+
+        const data = await fetchOrder();
+
+        renderOrder(data['orders']);
+        renderPagination(data['total_page'], data['current_page']);
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
+    }
 });
 
 btnSearch.addEventListener("click", async function () {
-    const orderId = inputSearch.value;
-    if (orderId.trim() === '') return;
+    try {
+        const orderId = inputSearch.value;
+        if (orderId.trim() === '') return;
 
-    resetAllState();
-    currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
+        resetAllState();
+        currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
 
-    currentSearchParam['orderId'] = orderId;
-    const data = await fetchOrder();
-    renderOrder(data['orders'], currentTab);
-    renderPagination(data['total_page'], data['current_page']);
+        currentSearchParam['orderId'] = orderId;
+        const data = await fetchOrder();
+
+        renderOrder(data['orders'], currentTab);
+        renderPagination(data['total_page'], data['current_page']);
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
+    }
 })
 
-modalUpdateOrderStatusBody.addEventListener("click", function (e) {
-    const input = e.target.closest("input");
-    const confirmBtn = e.target.closest(".btn-confirm-change-status");
-    if (input) {
-        const currentState = input.checked;
-        modalUpdateOrderStatusBody.querySelectorAll("input").forEach(inp => inp.checked = false);
-        input.checked = currentState;
-    }
-    if (confirmBtn) {
-        const orderId = modalUpdateOrderStatusBody.querySelector(".order-update-modal").getAttribute("id");
-        const selectedStatusId = modalUpdateOrderStatusBody.querySelector("input:checked").getAttribute("id");
-        modifyOrderStatus(orderId, selectedStatusId);
+modalUpdateOrderStatusBody.addEventListener("click", async function (e) {
+    try {
+        const input = e.target.closest("input");
+        const confirmBtn = e.target.closest(".btn-confirm-change-status");
+        if (input) {
+            const currentState = input.checked;
+            modalUpdateOrderStatusBody.querySelectorAll("input").forEach(inp => inp.checked = false);
+            input.checked = currentState;
+        }
+        if (confirmBtn) {
+            const orderId = modalUpdateOrderStatusBody.querySelector(".order-update-modal").getAttribute("id");
+            const selectedStatusId = modalUpdateOrderStatusBody.querySelector("input:checked").getAttribute("id");
+            await modifyOrderStatus(orderId, selectedStatusId);
+            renderToast("Cập nhật thành công", Color.SUCCESS);
+
+            const data = await fetchOrder();
+            renderOrder(data['orders'], currentTab)
+            renderPagination(data['total_page'], data['current_page']);
+            closeModal();
+        }
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
     }
 });
 
 modalCancelOrder.addEventListener("click", async function (e) {
-    const cancelBtn = e.target.closest(".cancel-btn");
-    const backCancelBtn = e.target.closest(".cancel-back-btn");
-    if (cancelBtn) {
-        const orderId = modalCancelOrder.querySelector(".order-cancel-modal").getAttribute("id");
-        cancelOrder(orderId);
-    }
-    if (backCancelBtn) {
-        closeModal();
+    try {
+        const cancelBtn = e.target.closest(".cancel-btn");
+        const backCancelBtn = e.target.closest(".cancel-back-btn");
+        if (cancelBtn) {
+            const orderId = modalCancelOrder.querySelector(".order-cancel-modal").getAttribute("id");
+            await cancelOrder(orderId);
+            renderToast("Đã hủy thành công", Color.SUCCESS);
+
+            const data = await fetchOrder();
+            renderOrder(data['orders'])
+            renderPagination(data['total_page'], data['current_page']);
+            closeModal();
+        }
+        if (backCancelBtn) {
+            closeModal();
+        }
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
     }
 });
 
 orderTab.addEventListener("click", async function (e) {
-    const allOrder = e.target.closest(".all-order");
-    const updateOrderInfo = e.target.closest(".update-order-info");
-    const updateOrderStatus = e.target.closest(".update-order-status");
-    const cancelOrder = e.target.closest(".cancel-order");
+    try {
+        const allOrder = e.target.closest(".all-order");
+        const updateOrderInfo = e.target.closest(".update-order-info");
+        const updateOrderStatus = e.target.closest(".update-order-status");
+        const cancelOrder = e.target.closest(".cancel-order");
 
-    let data;
-    if (allOrder) {
-        currentTab = 0;
-        currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
+        let data;
+        if (allOrder) {
+            currentTab = 0;
+            currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
+            unhideFilter();
+        } else {
+            if (updateOrderInfo) {
+                currentTab = 1;
+                currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
+            }
+            if (updateOrderStatus) {
+                currentTab = 2;
+                currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
+            }
+            if (cancelOrder) {
+                currentTab = 3;
+                currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
+            }
+            hideFilter()
+        }
+
         data = await fetchOrder();
-        unhideFilter();
+        renderOrder(data['orders'], currentTab);
+        console.log(data);
+        renderPagination(data['total_page'], data['current_page']);
+        resetAllState();
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
     }
-    if (updateOrderInfo) {
-        currentTab = 1;
-        currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
-        data = await fetchOrder();
-        hideFilter()
-    }
-    if (updateOrderStatus) {
-        currentTab = 2;
-        currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
-        data = await fetchOrder();
-        hideFilter()
-    }
-    if (cancelOrder) {
-        currentTab = 3;
-        currentSearchParam = JSON.parse(JSON.stringify(initialTabState[currentTab]));
-        data = await fetchOrder();
-        hideFilter()
-    }
-    console.log(data);
-    renderOrder(data['orders'], currentTab);
-    renderPagination(data['total_page'], data['current_page']);
-    resetAllState()
 });
-/**
- * tab = 0: view order detail
- * tab = 1: update order info
- * tab = 2: update order status
- * tab = 4: cancel order
- */
-// const shippingStatus = {
-//     "1": {//shipping id
-//         "1": "Đang xử lý", //order status id
-//         "2": "Chờ giao hàng",
-//         "3": "Đang giao hàng",
-//         "7": "Đã hoàn thành"
-//     },
-//     "2": {
-//         "1": "Đang xử lý",
-//         "8": "Đang chờ nhận",
-//         "7": "Đã hoàn thành"
-//     }
-// };
+
 orderList.addEventListener("click", async function (e) {
     const target = e.target.closest(".dropdown-item");
     if (!target) return;
@@ -652,12 +757,13 @@ orderList.addEventListener("click", async function (e) {
 });
 
 overlay.addEventListener("click", closeModal)
+
 sortType.addEventListener("click", (e) => {
     const item = e.target.closest(".filter-type-item");
     if (!item) return;
 
     const toggleId = +item.getAttribute("id");
-    handleFilterChange(sortType, Object.entries(sortParams[toggleId - 1]), ["sortBy", "dir"], toggleId);
+    handleFilterChange(sortType, Object.entries(sortParams[Object.keys(sortParams)[toggleId - 1]]), ["sortBy", "dir", "orderId"], toggleId);
 });
 
 statusType.addEventListener("click", (e) => {
@@ -665,7 +771,7 @@ statusType.addEventListener("click", (e) => {
     if (!item) return;
 
     const toggleId = +item.getAttribute("id");
-    handleFilterChange(statusType, Object.entries(statusParams[toggleId - 1]), ["status", "page"], toggleId);
+    handleFilterChange(statusType, Object.entries(statusParams[Object.keys(statusParams)[toggleId - 1]]), ["status", "page", "orderId"], toggleId);
 });
 
 paymentMethodType.addEventListener("click", (e) => {
@@ -673,7 +779,8 @@ paymentMethodType.addEventListener("click", (e) => {
     if (!item) return;
 
     const toggleId = +item.getAttribute("id");
-    handleFilterChange(paymentMethodType, Object.entries(paymentMethodParams[toggleId - 1]), ["paymentMethod", "page"], toggleId);
+
+    handleFilterChange(paymentMethodType, Object.entries(paymentMethodParams[Object.keys(paymentMethodParams)[toggleId - 1]]), ["paymentMethod", "page", "orderId"], toggleId);
 });
 
 orderType.addEventListener("click", (e) => {
@@ -681,56 +788,29 @@ orderType.addEventListener("click", (e) => {
     if (!item) return;
 
     const toggleId = +item.getAttribute("id");
-    handleFilterChange(orderType, Object.entries(orderParams[toggleId - 1]), ["orderType", "page"], toggleId);
+    handleFilterChange(orderType, Object.entries(orderParams[Object.keys(orderParams)[toggleId - 1]]), ["orderType", "page", "orderId"], toggleId);
 });
 
 pagination.addEventListener("click", async function (e) {
-    const item = e.target.closest(".page-item");
-    if (!item || item.classList.contains("disabled") || item.classList.contains("active")) return;
+    try {
+        const item = e.target.closest(".page-item");
+        if (!item || item.classList.contains("disabled") || item.classList.contains("active")) return;
 
-    deleteUrlParams(["page"]);
-    deleteCurrentParams(["page"]);
+        deleteUrlParams(["page"]);
+        deleteCurrentParams(["page"]);
 
-    addUrlParams([["page", item.getAttribute("page")]]);
-    addCurrentParams([["page", item.getAttribute("page")]]);
+        addUrlParams([["page", item.getAttribute("page")]]);
+        addCurrentParams([["page", item.getAttribute("page")]]);
 
-    window.history.pushState({}, '', url);
+        window.history.pushState({}, '', url);
 
-    const data = await fetchOrder();
-    renderOrder(data['orders'])
-    renderPagination(data['total_page'], data['current_page']);
-})
-
-const handleFilterChange = async function (parent, setParams, deletedParams, toggleId) {
-    deleteUrlParams(deletedParams);
-    deleteCurrentParams(deletedParams);
-
-    let isToggle = false;
-    parent.querySelectorAll(".filter-type-item").forEach(item => {
-        const itemId = +item.getAttribute("id");
-        const input = item.querySelector("input")
-        const label = item.querySelector(".dropdown-item")
-        input.checked = itemId === toggleId ? !input.checked : false;
-        if (input.checked) {
-            currentLabel[label.textContent] = true;
-        } else {
-            delete currentLabel[label.textContent];
-        }
-        isToggle ||= input.checked;
-    })
-
-    if (isToggle) {
-        addCurrentParams(setParams)
-        addUrlParams(setParams);
+        const data = await fetchOrder();
+        renderOrder(data['orders'])
+        renderPagination(data['total_page'], data['current_page']);
+    } catch (err) {
+        renderToast(err.message, Color.ERROR);
     }
-
-    window.history.pushState({}, '', url);
-
-    const data = await fetchOrder();
-    renderOrder(data['orders'])
-    renderPagination(data['total_page'], data['current_page']);
-    renderLabel();
-};
+})
 
 window.addEventListener("load", function () {
     document.querySelectorAll(".filter-type-item").forEach(item => {
@@ -743,5 +823,4 @@ window.addEventListener("load", function () {
         }
     })
     renderLabel();
-
 })

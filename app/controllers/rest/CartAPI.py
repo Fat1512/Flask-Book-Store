@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from flask_login import current_user
 
 from app.dao.CartDao import find_by_user_id, update_cart as update, delete_cart_item, add_cart_item as add, \
     add_multiple_cart_item
@@ -20,7 +21,7 @@ def get_cart():
 @cart_rest_bp.route('/', methods=['PUT'])
 def update_cart():
     request_data = request.json
-    cart_item = update(request_data)
+    cart_item = update(current_user.get_id(), request_data['cartItems'])
     return jsonify({
         "status": 200,
         "message": "Update cart successfully",
@@ -30,7 +31,7 @@ def update_cart():
 
 @cart_rest_bp.route('/<int:bookId>', methods=['DELETE'])
 def delete_cart(bookId):
-    cart = delete_cart_item(bookId)
+    cart = delete_cart_item(current_user.get_id(), bookId)
     print('test', cart)
     return jsonify({
         "status": 200,

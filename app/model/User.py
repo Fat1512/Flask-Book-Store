@@ -5,7 +5,7 @@ from enum import Enum as RoleEnum
 from datetime import datetime
 import hashlib
 from app.model.Cart import Cart
-
+from app.model.Account import Account
 
 from app.model.Address import Address
 
@@ -36,12 +36,19 @@ class User(db.Model):
     address = relationship('Address', backref='user', lazy=True)
     # order = relationship('Order', backref='user', lazy=True, foreign_keys='Order.user_id')
 
+    account = relationship('Account', back_populates='user', uselist=False)
+    # online_orders = relationship("OnlineOrder", backref="customer", foreign_keys="[Order.customer_id]", lazy=True)
     offline_orders = relationship("OfflineOrder", back_populates="employee", foreign_keys="[OfflineOrder.employee_id]", lazy=True)
     orders = relationship("Order", back_populates="customer", enable_typechecks=False, foreign_keys="[Order.customer_id]", lazy=True)
 
     online_orders = relationship("OnlineOrder", back_populates="customer", foreign_keys="[Order.customer_id]", lazy=True)
     form_import = relationship("FormImport", back_populates="employee", lazy=True)
     cart = relationship("Cart", back_populates="user")
+
+    def to_local_storge(self):
+        return {
+            "user_id": self.user_id,
+        }
 
     @property
     def full_name(self):

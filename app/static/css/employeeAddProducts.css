@@ -3,6 +3,58 @@
     width: 100%;
 }
 
+.dropdown-publisher {
+    max-height: 200px;
+    overflow-y: scroll;
+    width: 340px;
+
+}
+.message-error {
+    color: transparent;
+}
+.dropdown-toggle:hover {
+    background-color: transparent !important;
+    color: inherit;
+}
+
+label {
+    align-content: unset !important;
+}
+
+.dropdown-toggle {
+    margin: 0 !important;
+    color: var(--black-color);
+    border: 1px solid #DDD;
+    position: relative;
+    height: 46px;
+}
+
+.input-outline {
+    padding: 10px 0;
+}
+
+.dropdown-toggle::after {
+    position: absolute;
+    margin-left: 3.255em;
+    right: 10px;
+    top: 45%;
+}
+
+.form-group-title {
+    flex: 1;
+}
+
+.form-group-input > input {
+    margin: 0px 10px 10px 0px;
+}
+
+.dropdown-format {
+    width: 340px;
+}
+
+#release-date {
+    border: 1px solid #DDD;
+}
 
 h2 {
     text-align: center;
@@ -77,6 +129,9 @@ textarea {
 .image-list {
     display: flex;
     margin-right: 20px;
+    max-width: 475px;
+
+    overflow-x: scroll;
 }
 
 .image-item {
@@ -96,10 +151,7 @@ textarea {
     min-width: 120px;
 }
 
-.upload-box p {
-    font-size: 12px;
-    color: #777;
-}
+
 
 .description-upload {
     display: flex;
@@ -251,6 +303,11 @@ textarea {
 
 .btn-confirm:hover {
     background-color: #c92127;
+}
+
+.btn-delete-image {
+    position: absolute;
+    left: 20px;
 }
 
 .btn-cancel:hover {

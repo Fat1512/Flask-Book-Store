@@ -1,10 +1,15 @@
+import pdb
+
+from app.exception.InsufficientError import InsufficientError
+from app.exception.GeneralInsufficientError import GeneralInsufficientError
 from app.exception.NotFoundError import NotFoundError
 from app.model.Book import Book
 from app.model.Order import Order, PaymentDetail, ShippingMethod, OrderCancellation
 from sqlalchemy import desc, asc, func
-from datetime import datetime
+from datetime import datetime, timedelta
 from app import app, db
 from app.model.Order import OrderStatus, PaymentMethod, OnlineOrder, OfflineOrder, OrderDetail
+from decimal import *
 import math
 
 
@@ -14,6 +19,9 @@ import math
 
 def find_by_id(order_id):
     order = Order.query.get(order_id)
+
+    if not order: raise NotFoundError("Không tìm thấy đơn")
+
     order = order.online_order.to_detail_dict() if order.online_order else order.offline_order.to_detail_dict()
     order['total_amount'] = calculate_total_order_amount(order_id)
     return order
@@ -21,13 +29,17 @@ def find_by_id(order_id):
 
 def update_order_status(order_id, status):
     order = Order.query.get(order_id)
+
+    if not order: raise NotFoundError("Không tìm thấy đơn để cập nhật")
+
     order.status = status
     db.session.commit()
+    return order
 
 
-def find_add_by_user_id(status):
+def find_add_by_user_id(user_id, status):
     order = Order.query
-    order = order.filter(Order.customer_id == 2)
+    order = order.filter(Order.customer_id == user_id)
     if status and status != 8:
         order = order.filter(Order.status == OrderStatus(int(status)))
     order = order.order_by(desc(Order.created_at))
@@ -50,7 +62,9 @@ def create_order_cancellation(data):
 
 
 def find_order_by_id(id):
-    return Order.query.get(id)
+    order = Order.query.get(id)
+    if not order: raise NotFoundError("Không tìm thấy đơn để cập nhật")
+    return order
 
 
 def find_all(**kwargs):
@@ -92,9 +106,8 @@ def find_all(**kwargs):
         end_date = datetime.strptime(end_date, "%Y-%m-%d")
         orders = orders.filter(Order.created_at <= end_date)
 
-    if 'date' == sort_by:
-        orders = orders.order_by(desc(Order.created_at)) if sort_dir.__eq__("desc") else orders.order_by(
-            asc(Order.created_at))
+    orders = orders.order_by(desc(Order.created_at)) if sort_dir.__eq__("desc") else orders.order_by(
+        asc(Order.created_at))
 
     page_size = app.config['ORDER_PAGE_SIZE']
     start = (page - 1) * page_size
@@ -121,11 +134,24 @@ def find_all(**kwargs):
 
 def update_order(order_id, order_list):
     query = OrderDetail.query
-    query.filter(OrderDetail.order_id == order_id).delete()
+    order_details = query.filter(OrderDetail.order_id == order_id).all()
 
+    for order_detail in order_details:
+        order_detail.book.increase_book(order_detail.quantity)
+        db.session.delete(order_detail)
+    db.session.flush()
     for order_item in order_list:
         book_id = order_item['book_id']
-        quantity = order_item['quantity']
+
+        book_db = Book.query.get(book_id)
+        if book_db is None: raise NotFoundError('Không tìm thấy sách')
+
+        quantity = int(order_item['quantity'])
+        res = book_db.decrease_book(quantity=quantity)
+
+        if not res:
+            raise GeneralInsufficientError("Không đủ sách")
+
         price = order_item['price']
         order_detail = OrderDetail(order_id=order_id, book_id=book_id, quantity=quantity, price=price)
         db.session.add(order_detail)
@@ -133,7 +159,7 @@ def update_order(order_id, order_list):
     db.session.commit()
 
 
-def create_online_order(request):
+def create_online_order(user_id, request):
     payment_method = PaymentMethod.THE if request.get('paymentMethod').__eq__('VNPay') else PaymentMethod.TIEN_MAT
     status = OrderStatus.DANG_CHO_THANH_TOAN if request.get('paymentMethod').__eq__('VNPay') else OrderStatus.DANG_XU_LY
     shipping_method = ShippingMethod.GIAO_HANG if request.get('shippingMethod').__eq__(
@@ -146,19 +172,23 @@ def create_online_order(request):
                                address_id=request['addressId'],
                                shipping_method=shipping_method,
                                shipping_fee=shipping_fee,
-                               customer_id=2
+                               customer_id=user_id
                                )
-    db.session.add(online_order)
-    db.session.flush()
-    # order_detail_list = []
+
     for book in request['books']:
         book_db = Book.query.get(book['bookId'])
         if book_db is None: raise NotFoundError('Không tìm thấy sách')
 
-        book_db.decrease_book(quantity=book['quantity'])
+        if not book_db.decrease_book(quantity=book['quantity']):
+            raise InsufficientError(f"{book_db.title} không đủ số lượng", {
+                'book_id': book_db.book_id,
+                "current_quantity": book_db.quantity
+            })
+
         order_detail = OrderDetail(book_id=book['bookId'], quantity=book['quantity'], price=book['finalPrice'])
         online_order.order_detail.append(order_detail)
 
+    db.session.add(online_order)
     db.session.commit()
     return online_order
 
@@ -166,7 +196,7 @@ def create_online_order(request):
 def create_offline_order(order_list, user=None):
     offline_order = OfflineOrder(status=OrderStatus.DA_HOAN_THANH,
                                  payment_method=PaymentMethod.TIEN_MAT,
-                                 created_at=datetime.utcnow(),
+                                 created_at=datetime.utcnow() + timedelta(hours=7),
                                  address_id=1,
                                  employee_id=2,
                                  customer=user)
@@ -179,13 +209,21 @@ def create_offline_order(order_list, user=None):
 
     for order_item in order_list:
         book_id = order_item['book_id']
+        book_db = Book.query.get(book_id)
+
+        if book_db is None: raise NotFoundError('Không tìm thấy sách')
+
         quantity = int(order_item['quantity'])
+        res = book_db.decrease_book(quantity=quantity)
+        if not res:
+            raise GeneralInsufficientError("Không đủ sách")
         price = int(order_item['price'])
         order_detail = OrderDetail(order_id=offline_order.order_id, book_id=book_id, quantity=quantity, price=price)
         offline_order.order_detail.append(order_detail)
         total_amount = total_amount + quantity * price
 
-    payment_detail = PaymentDetail(order_id=offline_order.order_id, created_at=datetime.utcnow(), amount=total_amount)
+    payment_detail = PaymentDetail(order_id=offline_order.order_id, created_at=datetime.utcnow() + timedelta(hours=7),
+                                   amount=total_amount)
     offline_order.payment_detail = payment_detail
 
     db.session.commit()
@@ -197,7 +235,25 @@ def calculate_total_order_amount(order_id):
         OrderDetail.order_id == order_id).first()[0]
     shipping_fee = db.session.query(OnlineOrder.shipping_fee).filter(OnlineOrder.order_id == order_id).first()
     total_amount = total_amount + shipping_fee[0] if shipping_fee is not None else total_amount
-    return total_amount
+    return Decimal(total_amount)
+
+
+def delete_orders_after_48hrs():
+    expired_time = datetime.utcnow() + timedelta(hours=7) - timedelta(hours=48)
+    orders = Order.query.filter(Order.created_at < expired_time,
+                                Order.online_order is not None,
+                                Order.payment_method == PaymentMethod.TIEN_MAT,
+                                Order.status == OrderStatus.DANG_CHO_NHAN)
+    orders = orders.join(OnlineOrder).filter(Order.created_at < expired_time,
+                                             Order.payment_method == PaymentMethod.TIEN_MAT,
+                                             Order.status == OrderStatus.DANG_CHO_NHAN,
+                                             OnlineOrder.shipping_method == ShippingMethod.CUA_HANG).all()
+
+    for order in orders:
+        create_order_cancellation({
+            "orderId": order.order_id,
+            "reason": "Đơn quá 48h"
+        })
 
 
 def count_order():

@@ -81,6 +81,62 @@ const genreSearch = document.getElementById("genreSearch");
 const newGenreContainer = document.getElementById("newGenreContainer");
 const newGenreInput = document.getElementById("newGenre");
 let fileImage = []
+const publisherItem = document.querySelectorAll('.dropdown-publisher > .dropdown-item')
+const formatItem = document.querySelectorAll('.dropdown-format > .dropdown-item')
+const dropdownPublisher = document.querySelector('.dropdown-toggle-publisher')
+const dropdownFormat = document.querySelector('.dropdown-toggle-format')
+document.getElementById('release-date').addEventListener('input', function (e) {
+    const input = e.target;
+    const value = input.value;
+
+    // Remove all non-numeric characters except '/'
+    const sanitizedValue = value.replace(/[^0-9/]/g, '');
+
+    // Automatically insert slashes for formatting
+    if (sanitizedValue.length === 2 || sanitizedValue.length === 5) {
+        input.value = sanitizedValue + '/';
+    } else {
+        input.value = sanitizedValue;
+    }
+    // Limit length to 10 characters (dd/mm/yyyy)
+    if (sanitizedValue.length > 10) {
+        input.value = sanitizedValue.slice(0, 10);
+    }
+});
+
+document.getElementById('release-date').addEventListener('blur', function (e) {
+    const input = e.target;
+    const value = input.value;
+
+    // Regular expression for dd/mm/yyyy format
+    const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+
+    if (!dateRegex.test(value)) {
+        document.getElementById('errorMessage').style.display = 'block';
+    } else {
+        document.getElementById('errorMessage').innerText = ''
+
+        // Optional: Additional validation for actual date
+        const [_, day, month, year] = value.match(dateRegex);
+
+        const date = new Date(`${year}-${month}-${day}`);
+        if (
+            date.getFullYear() !== parseInt(year) ||
+            date.getMonth() + 1 !== parseInt(month) || // Month is zero-indexed in JavaScript
+            date.getDate() !== parseInt(day)
+        ) {
+            document.getElementById('errorMessage').innerText = 'Invalid date!';
+        }
+    }
+});
+publisherItem.forEach(el => el.addEventListener('click', () => {
+    dropdownPublisher.id = el.getAttribute('value')
+    dropdownPublisher.innerHTML = ` <span class="ml-2">${el.textContent}</span>`
+}))
+formatItem.forEach(el => el.addEventListener('click', () => {
+    dropdownFormat.id = el.getAttribute('value')
+    dropdownFormat.innerHTML = ` <span class="ml-2">${el.textContent}</span>`
+}))
 
 function openModal() {
     document.getElementById("modalOverlay").classList.add("active");
@@ -275,6 +331,13 @@ function handlerRemoveAttribute(event, id, name, el) {
         if (parseInt(el.id) === id)
             el.style = 'display:flex'
     })
+
+    if (genres) {
+        document.querySelector('input[name ="dropdown-search"]').disabled = false
+        if (document.querySelector('.error-message')) {
+            document.querySelector('.error-message').remove()
+        }
+    }
     el.remove()
 }
 
@@ -287,33 +350,29 @@ function addExtendAttribute(id, name) {
                         <input type="text" id="${id}"
                                class="m-0 dropdown-search product-publisher" autocomplete="off">
                     </div>
-                     <button class="btn btn-delete">
+                     <button class="btn ml-1 p-0 btn-delete">
                         <i class="fa-solid fa-x"></i>
                     </button>
                 </div>
             `
     groupExtendAttriubte.insertAdjacentHTML('beforeend', html)
     const formGroup = groupExtendAttriubte.querySelectorAll('.form-group')
-    for (let i = 1; i < formGroup.length; i++) {
-        formGroup[i].querySelector('.btn-delete').addEventListener('click',
-            e => {
-                handlerRemoveAttribute(e, id, name, formGroup[i])
-            })
-    }
+    formGroup[formGroup.length - 1].querySelector('.btn-delete').addEventListener('click',
+        e => handlerRemoveAttribute(e, id, name, formGroup[formGroup.length - 1]))
+
 
     genreList.style.display = "none";
     genres = genres.filter(gerne => gerne.attribute_id !== id)
+
     genreList.querySelectorAll('.dropdown-item').forEach(el => {
         if (parseInt(el.id) === id)
-
             el.style = 'display:none'
     })
     if (!genres.length) {
         document.querySelector('input[name ="dropdown-search"]').disabled = true
         document.querySelector('input[name ="dropdown-search"]').insertAdjacentHTML('afterend', `
-             <span class="text-primary">Không còn thuộc tính để thêm</span>
+             <span class="error-message text-primary">Không còn thuộc tính để thêm</span>
         `)
-
     }
 }
 
@@ -353,22 +412,33 @@ document.addEventListener("click", (event) => {
     }
 });
 
+function handleRemoveImage(e, name) {
+    e.preventDefault()
+    const container = document.querySelector('.image-list')
+    fileImage.splice(parseInt(name.split('-')), 1)
+    container.querySelector(`#${name}`).remove()
+}
+
 const uploadImage = document.getElementById('book-image')
 uploadImage.addEventListener('change', () => {
     const container = document.querySelector('.image-list')
     const files = Array.from(uploadImage.files) // Get file names
-    fileImage.push(...files)
-    files.forEach(file => {
+
+
+    files.forEach((file, index) => {
         if (file.type.startsWith('image/')) {
             const reader = new FileReader(); // Create a FileReader
             reader.onload = e => {
                 const html = `
-                      <div class="image-item">
+                      <div id='image-${index + fileImage.length}' class="image-item position-relative">
                         <img class="w-100 h-100"
                              src="${e.target.result}">
+                        <button onclick="handleRemoveImage(event,'image-${index + fileImage.length}')" class="btn text-primary btn-delete-image">
+                            <i class="fa-solid fa-x"></i>
+                        </button>
                       </div>
                 `
-                container.insertAdjacentHTML('afterbegin', html); // Add the image to the preview container
+                container.insertAdjacentHTML('beforeend', html); // Add the image to the preview container
             };
 
             reader.readAsDataURL(file); // Read the file as a data URL
@@ -377,22 +447,45 @@ uploadImage.addEventListener('change', () => {
             msg.textContent = `${file.name} is not an image file.`;
         }
     });
+    fileImage.push(...files)
 })
+
+function clearValue() {
+    document.querySelector('input[name="title"]').value = '';
+    document.querySelector('input[name="input-gerne"]').id = '';
+    document.getElementById("product-description").value = '';
+    document.querySelector('input[name="product-author"]').value = '';
+    document.querySelector('input[name="product-num-page"]').value = '';
+    document.querySelector('.dropdown-toggle-publisher').id = '';
+    document.querySelector('.dropdown-toggle-format').id = '';
+    document.querySelector('.dropdown-toggle-publisher').textContent = '';
+    document.querySelector('.dropdown-toggle-format').textContent = '';
+    document.querySelector('input[name="release-date"]').value = '';
+    document.querySelector('input[name="product-price"]').value = '';
+    document.querySelector('input[name="product-weight"]').value = '';
+    document.querySelector('input[name="product-dimension-r"]').value = '';
+    document.querySelector('input[name="product-dimension-d"]').value = '';
+    document.querySelector('input[name="product-dimension-c"]').value = '';
+    document.querySelector('.group-extend-atrtribute').innerHTML = ''
+    fileImage = []
+}
 
 //Form submission handler
 function handleCreateBook(e) {
     try {
         const title = document.querySelector('input[name ="title"]').value.trim()
         const gerneId = document.querySelector('input[name="input-gerne"]').id
-        const description = document.getElementById("product-description").value.trim()
-        const author = document.querySelector('input[name ="product-author"]').value.trim()
-        const num_page = document.querySelector('input[name="product-num-page"]').value.trim()
-        const format = document.querySelector('input[name="product-format"]').value.trim()
-        const price = document.querySelector('input[name="product-price"]').value.trim()
-        const weight = document.querySelector('input[name="product-weight"]').value.trim()
-        const r = document.querySelector('input[name="product-dimension-r"]').value.trim()
-        const d = document.querySelector('input[name="product-dimension-d"]').value.trim()
-        const c = document.querySelector('input[name="product-dimension-c"]').value.trim()
+        const description = document.getElementById("product-description").value?.trim()
+        const author = document.querySelector('input[name ="product-author"]').value?.trim()
+        const num_page = document.querySelector('input[name="product-num-page"]').value
+        const publisher = document.querySelector('.dropdown-toggle-publisher').id
+        const format = document.querySelector('.dropdown-toggle-format').id
+        const releaseDate = document.querySelector('input[name="release-date"]').value
+        const price = document.querySelector('input[name="product-price"]').value
+        const weight = document.querySelector('input[name="product-weight"]').value
+        const r = document.querySelector('input[name="product-dimension-r"]').value
+        const d = document.querySelector('input[name="product-dimension-d"]').value
+        const c = document.querySelector('input[name="product-dimension-c"]').value
         const extendAttriubte = document.querySelector('.group-extend-atrtribute').children
         let extendAttributes = []
         if (extendAttriubte.length > 1) {
@@ -407,30 +500,62 @@ function handleCreateBook(e) {
             }
 
         }
-        if (!fileImage.length)
-            throw new Error("Vui lòng tải lên ít nhất 1 ảnh")
-        if (title === '')
-            throw new Error("Vui lòng nhập tên sản phẩm")
-        if (!gerneId)
-            throw new Error("Vui lòng chọn thể loại sách")
-        if (description === '')
-            throw new Error("Vui lòng nhập mô tả")
-        if (author === '')
-            throw new Error("Vui lòng nhập tên tác giả ")
-        if (num_page === '')
-            throw new Error("Vui lòng chọn số trang")
-        if (format === '')
-            throw new Error("Vui lòng nhập hình thức sách")
-        if (price === '')
-            throw new Error("Vui lòng chọn giá")
-        if (weight === '')
-            throw new Error("Vui lòng nhập cân nặng của sách ")
-        if (r === '')
-            throw new Error("Vui lòng nhập chiều rộng")
-        if (d === '')
-            throw new Error("Vui lòng nhập chiều dài")
-        if (c === '')
-            throw new Error("Vui lòng nhập chiều cao")
+        let flag = false
+        if (!fileImage.length) {
+            flag = true
+            document.getElementById('error-image').classList.add('text-primary')
+        } else {
+            document.getElementById('error-image').classList.remove('text-primary')
+        }
+        if (title === '') {
+            flag = true
+            document.getElementById('error-title').classList.add('text-primary')
+        } else {
+            document.getElementById('error-title').classList.remove('text-primary')
+        }
+        if (!gerneId) {
+            flag = true
+            document.getElementById('error-gerne').classList.add('text-primary')
+        } else {
+            document.getElementById('error-gerne').classList.remove('text-primary')
+        }
+        if (description === '') {
+            flag = true
+            document.getElementById('error-description').classList.add('text-primary')
+        } else {
+            document.getElementById('error-dimessions').classList.remove('text-primary')
+        }
+        if (author === '') {
+            flag = true
+            document.getElementById('error-author').classList.add('text-primary')
+        } else {
+            document.getElementById('error-author').classList.remove('text-primary')
+        }
+        if (num_page === '') {
+            flag = true
+            document.getElementById('error-num-pages').classList.add('text-primary')
+        } else {
+            document.getElementById('error-num-pages').classList.remove('text-primary')
+        }
+        if (price === '') {
+            flag = true
+            document.getElementById('error-price').classList.add('text-primary')
+        } else {
+            document.getElementById('error-price').classList.remove('text-primary')
+        }
+        if (weight === '') {
+            flag = true
+            document.getElementById('error-weight').classList.add('text-primary')
+        } else {
+            document.getElementById('error-weight').classList.remove('text-primary')
+        }
+        if (r === '' || d === '' || c === '') {
+            flag = true
+            document.getElementById('error-dimessions').classList.add('text-primary')
+        } else {
+            document.getElementById('error-dimessions').classList.remove('text-primary')
+        }
+        if (flag) throw Error("Vui lòng nhập các trường cần thiết")
 
         const data = {
             'title': title,
@@ -441,6 +566,8 @@ function handleCreateBook(e) {
             'description': description,
             'format': format,
             'weight': weight,
+            'publisher': publisher,
+            'release_date': releaseDate,
             'dimension': r + 'x' + d + 'x' + c + ' cm',
             'book_images': fileImage,
             'extend_attributes': extendAttributes
@@ -464,12 +591,17 @@ function handleCreateBook(e) {
         }
         e.preventDefault()
         createBook(formData).then(res => {
-            if (res['status'] === 200)
+            if (res['status'] === 200) {
                 showToast("Tạo sách thành công ", false)
+                clearValue()
+                window.scrollTo({
+                    top: 0,        // Scroll to the top
+                    behavior: 'smooth' // Smooth scrolling
+                });
+            }
         })
 
-    } catch
-        (error) {
+    } catch (error) {
         showToast(error.message, true)
     }
 }
