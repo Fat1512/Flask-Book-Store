@@ -1,3 +1,4 @@
+import pdb
 from datetime import datetime
 from email.policy import default
 from re import findall
@@ -27,7 +28,7 @@ def search_main():
     limit = int(all_query_params.pop('limit', app.config['ORDER_PAGE_SIZE']))
     page = int(all_query_params.pop('page', 1))
     gerne_id = int(all_query_params.pop('gerneId', 1))
-
+    pdb
     book_gerne = get_depth_gerne(gerne_id)
 
     book = search_book_es(keyword=keyword, min_price=min_price, max_price=max_price, order=order_type[order]
