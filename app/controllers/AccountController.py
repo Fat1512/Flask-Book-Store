@@ -66,8 +66,8 @@ def employee_login():
 
         user = UserDao.auth_user(username=username, password=password)
         if user:
-            login_user(user=user)
-
+            login_user(user=user, remember=True)
+            print("current user day ne", current_user.user_role)
             if user.user_role == UserRole.EMPLOYEE_SALE:
                 return redirect(url_for('employee.checkout'))
             elif user.user_role == UserRole.EMPLOYEE_MANAGER_WAREHOUSE:

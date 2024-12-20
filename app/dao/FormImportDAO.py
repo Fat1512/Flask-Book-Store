@@ -4,7 +4,7 @@ from app import app, db
 from app.dao.BookDAO import increase_book_quantity
 from datetime import datetime
 import math
-
+from sqlalchemy import asc, desc
 
 def find_form_import_by_id(form_import_id):
     form_import = FormImport.query.get(form_import_id)
@@ -31,6 +31,7 @@ def find_form_imports(**kwargs):
         end_date = datetime.strptime(end_date, "%Y-%m-%d")
         form_imports = form_imports.filter(FormImport.created_at <= end_date)
 
+    form_imports = form_imports.order_by(desc(FormImport.created_at))
 
     page_size = app.config['IMPORT_PAGE_SIZE']
     start = (page - 1) * page_size

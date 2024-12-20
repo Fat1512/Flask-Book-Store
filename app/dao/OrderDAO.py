@@ -193,12 +193,12 @@ def create_online_order(user_id, request):
     return online_order
 
 
-def create_offline_order(order_list, user=None):
+def create_offline_order(order_list, employee_id, user=None):
     offline_order = OfflineOrder(status=OrderStatus.DA_HOAN_THANH,
                                  payment_method=PaymentMethod.TIEN_MAT,
                                  created_at=datetime.utcnow() + timedelta(hours=7),
                                  address_id=1,
-                                 employee_id=2,
+                                 employee_id=employee_id,
                                  customer=user)
     if user is not None:
         user.orders.append(offline_order)
@@ -233,6 +233,7 @@ def create_offline_order(order_list, user=None):
 def calculate_total_order_amount(order_id):
     total_amount = db.session.query(func.sum(OrderDetail.quantity * OrderDetail.price)).filter(
         OrderDetail.order_id == order_id).first()[0]
+
     shipping_fee = db.session.query(OnlineOrder.shipping_fee).filter(OnlineOrder.order_id == order_id).first()
     total_amount = total_amount + shipping_fee[0] if shipping_fee is not None else total_amount
     return Decimal(total_amount)
@@ -241,7 +242,6 @@ def calculate_total_order_amount(order_id):
 def delete_orders_after_48hrs():
     expired_time = datetime.utcnow() + timedelta(hours=7) - timedelta(hours=48)
     orders = Order.query.filter(Order.created_at < expired_time,
-                                Order.online_order is not None,
                                 Order.payment_method == PaymentMethod.TIEN_MAT,
                                 Order.status == OrderStatus.DANG_CHO_NHAN)
     orders = orders.join(OnlineOrder).filter(Order.created_at < expired_time,

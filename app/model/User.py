@@ -17,7 +17,7 @@ class UserRole(RoleEnum):
     EMPLOYEE_MANAGER = 6
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = 'user'
     user_id = Column(Integer, primary_key=True, autoincrement=True)
     first_name = Column(String(20), nullable=False)
@@ -32,6 +32,8 @@ class User(db.Model):
     last_access = Column(DateTime, default=datetime.utcnow)
     user_role = Column(Enum(UserRole), default=UserRole.CUSTOMER)
     address = relationship('Address', backref='user', lazy=True)
+
+    account = relationship('Account', back_populates='user', uselist=False)
 
     offline_orders = relationship("OfflineOrder", back_populates="employee", foreign_keys="[OfflineOrder.employee_id]", lazy=True)
     orders = relationship("Order", back_populates="customer", enable_typechecks=False, foreign_keys="[Order.customer_id]", lazy=True)

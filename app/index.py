@@ -85,7 +85,7 @@ def context():
         "profile": None
     }
 
-    if current_user.is_authenticated:
+    if current_user.is_authenticated and current_user.user_role == UserRole.CUSTOMER:
         user_data = profile()
 
         cart = find_by_cart_id(user_data.user_id)
@@ -246,7 +246,7 @@ def handle_topic_book_gerne(data):
 
 
 
-@scheduler.task('interval', id='my_job', seconds=5)
+@scheduler.task('interval', id='my_job', seconds=3600)
 def my_job():
     with app.app_context():
         delete_orders_after_48hrs()
@@ -261,7 +261,7 @@ def status():
 
 @login.user_loader
 def get_by_id(user_id):
-    return get_user_by_id(int(user_id))
+    return get_user_by_id(user_id)
 
 
 if __name__ == "__main__":

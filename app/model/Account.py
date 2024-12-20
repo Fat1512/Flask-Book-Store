@@ -11,7 +11,7 @@ class Account(db.Model):
     password = Column(String(120), nullable=False)
     user_id = Column(Integer, ForeignKey('user.user_id'), nullable=False, unique=True)
 
-    user = relationship('User',backref='account',uselist=False)
+    user = relationship('User', back_populates='account', uselist=False)
 
     # offline_orders = relationship("OfflineOrder", back_populates="employee", lazy=True)
     # online_orders = relationship("OnlineOrder", back_populates="customer", lazy=True)

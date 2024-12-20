@@ -28,6 +28,7 @@ def employee_required(f):
     wrap.__name__ = f.__name__
     return wrap
 
+
 @employee_bp.route("/checkout")
 @employee_required
 def checkout():
@@ -61,7 +62,8 @@ def get_order():
                       start_date=start_date,
                       end_date=end_date)
     return render_template("employee/employeeOrder.html", orders=orders, status=status, payment_method=payment_method,
-                           sort_by=sort_by, sort_dir=sort_dir, order_type=order_type, start_date=start_date, end_date=end_date)
+                           sort_by=sort_by, sort_dir=sort_dir, order_type=order_type, start_date=start_date,
+                           end_date=end_date)
 
 
 @employee_bp.route("/order/<order_id>/update")
@@ -83,13 +85,6 @@ def get_order_detail(order_id):
     order = find_by_id(order_id)
     today = datetime.utcnow()
     return render_template("employee/employeeOrderDetail.html", order=order, today=today)
-
-# @employee_bp.route("/category")
-# def get_category():
-#     with open('data/category.json', encoding="utf8") as f:
-#         data = json.load(f)
-#         categories = data[0:4]
-#     return categories
 
 
 @employee_bp.route("/import")

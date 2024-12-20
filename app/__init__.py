@@ -16,7 +16,7 @@ scheduler = APScheduler()
 
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 
-app.secret_key = "8923yhr9fuwnsejksnpok@$I_I@$)opfk"
+app.secret_key = "8923yhr9fuwnsejksnpokff@$I_I@$)opfk"
 app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql+pymysql://root:%s@localhost/book_store' % quote(DB_PASSWORD)
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 
@@ -60,6 +60,7 @@ app.config["BOOK_PAGE_SIZE"] = 7
 
 db = SQLAlchemy(app=app)
 login = LoginManager(app)
+
 # Register the custom filter in Jinja2
 app.jinja_env.filters['currency'] = format_currency_filter
 app.jinja_env.filters['datetime'] = format_datetime_filter
