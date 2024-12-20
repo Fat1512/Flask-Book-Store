@@ -7,8 +7,7 @@ from app.dao.UserDao import *
 from app.dao.FormImportDAO import *
 from flask import Blueprint, jsonify
 from flask import render_template, request
-import json
-
+from app.controllers.EmployeeController import employee_required
 order_api_bp = Blueprint('/api/v1/order', __name__)
 
 
@@ -34,39 +33,42 @@ def get_order():
                       page=int(page),
                       start_date=start_date,
                       end_date=end_date)
-    return orders
+    return jsonify({
+        "message": "Success",
+        "status": 200,
+        "data": orders
+    })
 
 
 @order_api_bp.route("/<int:order_id>/update", methods=['POST'])
+@employee_required
 def update(order_id):
     update_order(order_id, request.json)
-    return request.json
+    return jsonify({
+        "message": "Success",
+        "status": 200,
+        "data": request.json
+    })
 
 
 @order_api_bp.route("/add", methods=['POST'], endpoint='test_add')
+@employee_required
 def offline_order():
     order_list = request.json['orderList']
     customer_info = request.json['customerInfo']
 
-    customer_id_ok = bool(customer_info) and customer_info['id'] is not None
-    customer_phone_ok = bool(customer_info) and customer_info['phone_number'] is not None and customer_info[
-        'phone_number'] != "" and customer_info['phone_number'] != 0
-
-    if customer_id_ok and customer_phone_ok:
+    user = None
+    if bool(customer_info):
         user = find_by_customer_id_phone_number(int(customer_info['id']), str(customer_info['phone_number']))
-    elif not customer_id_ok and not customer_phone_ok:
-        user = None
-    elif customer_phone_ok:
-        user = find_by_phone_number(str(customer_info['phone_number']))
-        if user is None:
-            user = add_offline_user("Default", "Default", "Default2", avt_url=None, sex=True,
-                                    phone_number=str(customer_info['phone_number']), isActive=True)
-    else:
-        return False
 
-    order = create_offline_order(order_list, user)
+    employee_id = current_user.get_id()
+    order = create_offline_order(order_list=order_list, user=user, employee_id=employee_id)
 
-    return order
+    return jsonify({
+        "message": "Successfully Created",
+        "status": 200,
+        "data": order
+    })
 
 
 @order_api_bp.route('/onlineOrder', methods=['POST'])
@@ -75,10 +77,10 @@ def online_order():
     order = create_online_order(current_user.get_id(), data)
 
     for book in data['books']:
-        delete_cart_item(current_user.get_id(),book['bookId'])
+        delete_cart_item(current_user.get_id(), book['bookId'])
 
     return jsonify({
-        "message": "SUCCESS",
+        "message": "Success",
         "status": 200,
         "orderId": order.order_id
     })
@@ -89,44 +91,37 @@ def cancel_order():
     data = request.json
     order_cancellation = create_order_cancellation(data)
     return jsonify({
-        'message': 'SUCCESS',
+        'message': 'Hủy thành công',
         'status': 200,
         'data': order_cancellation.to_dict()
     })
 
 
-@order_api_bp.route("/<order_id>/confirm", methods=['GET'])
-def confirm_order(order_id):
-    update_order_status(order_id, OrderStatus.CHO_GIAO_HANG)
-    return {
-        "ok": "ok"
-    }
-
-
 @order_api_bp.route("/<order_id>/status", methods=['POST'])
+@employee_required
 def update_status(order_id):
     status = request.json.get("orderStatusId")
     status_enum = OrderStatus(int(status))
 
-    update_order_status(order_id, status_enum)
+    order = update_order_status(order_id, status_enum)
 
-    if OrderStatus.DA_HOAN_THANH == status_enum:
-        order = find_by_id(order_id)
+    if OrderStatus.DA_HOAN_THANH == order.status and PaymentMethod.TIEN_MAT == order.payment_method:
         total_amount = calculate_total_order_amount(order_id)
         payment_detail = PaymentDetail(order_id=order.order_id, created_at=datetime.utcnow(), amount=total_amount)
         create_payment(payment_detail)
-    return {
-        "messi": "ronaldo"
-    }
+
+    return jsonify({
+        'message': 'Cập nhật thành công',
+        'status': 200
+    })
 
 
 @order_api_bp.route("/<order_id>/detail", methods=['GET', 'POST'])
 def find(order_id):
     order = find_by_id(order_id)
-    return order
 
-
-@order_api_bp.route("/test/<int:order_id>", methods=["GET"])
-def test_order(order_id):
-    return get_form_imports()
-    # calculate_total_order_amount(order_id)
+    return jsonify({
+        'message': 'Success',
+        'status': 200,
+        'data': order
+    })

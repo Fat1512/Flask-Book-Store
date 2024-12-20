@@ -418,10 +418,10 @@ var Charts = (function() {
 				var content = '';
 
 				if (data.datasets.length > 1) {
-					content += '<span class="popover-body-label mr-auto">' + label + '</span>';
+					content += ' ' + label ;
 				}
 
-				content += '<span class="popover-body-value">' + prefix + yLabel + suffix + '</span>';
+				content += ' ' + prefix + yLabel + suffix ;
 				return content;
 			}
 
@@ -822,46 +822,101 @@ if($map.length) {
 // Bars chart
 //
 
-var BarsChart = (function() {
+var BarsChart = (function () {
+  //
+  // Variables
+  //
+  var $chart = $('#chart-bars');
 
-	//
-	// Variables
-	//
+  // Lấy tên 6 tháng gần nhất
+  function getLast6Months() {
+    var months = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'];
+    var date = new Date();
+    var currentMonth = date.getMonth(); // Tháng hiện tại (0-11)
+    var result = [];
 
-	var $chart = $('#chart-bars');
+    // Duyệt qua 6 tháng gần nhất, từ tháng hiện tại lùi lại
+    for (var i = 0; i < 6; i++) {
+      var monthIndex = (currentMonth - i + 12) % 12; // Tính chỉ số tháng, quay lại từ T12 nếu cần
+      result.push(months[monthIndex]);
+    }
+    result.reverse(); // Đảo ngược để hiển thị từ xa nhất đến gần nhất
+    console.log("6 tháng gần nhất:", result); // Kiểm tra kết quả
+    return result;
+  }
 
+  // Lấy dữ liệu số lượng bán ra từ API
+  function fetchSalesData() {
+    return fetch(`/admin/api/sales_count`) // Lấy dữ liệu từ API
+      .then(response => response.json())
+      .then(data => {
+        console.log('Dữ liệu số lượng nhận được:', data); // Kiểm tra dữ liệu nhận được từ API
 
-	//
-	// Methods
-	//
+        // Mảng số lượng bán theo 12 tháng, mặc định là 0
+        var salesByMonth = Array(12).fill(0);
 
-	// Init chart
-	function initChart($chart) {
+        // Duyệt qua dữ liệu API và gán số lượng vào đúng tháng
+        data.forEach(item => {
+          const month = item[0] - 1; // item[0] là tháng (1-12), ta phải giảm 1 để ánh xạ đúng vào mảng 0-11
+          salesByMonth[month] = item[1]; // Gán số lượng vào tháng tương ứng
+        });
 
-		// Create chart
-		var ordersChart = new Chart($chart, {
-			type: 'bar',
-			data: {
-				labels: ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-				datasets: [{
-					label: 'Sales',
-					data: [25, 20, 30, 22, 17, 29]
-				}]
-			}
-		});
+        console.log("Dữ liệu số lượng theo tháng:", salesByMonth);
 
-		// Save to jQuery object
-		$chart.data('chart', ordersChart);
-	}
+        // Lấy số lượng từ các tháng gần nhất
+        var currentMonth = new Date().getMonth(); // Tháng hiện tại (0-11)
+        var result = [];
+        for (var i = 5; i >= 0; i--) {
+          result.push(salesByMonth[(currentMonth - i + 12) % 12]); // Lùi qua các tháng
+        }
 
+        return result; // Trả về dữ liệu cho 6 tháng gần nhất
+      })
+      .catch(err => {
+        console.error("Không thể lấy dữ liệu số lượng:", err);
+        return Array(6).fill(0); // Dữ liệu mặc định nếu có lỗi
+      });
+  }
 
-	// Init chart
-	if ($chart.length) {
-		initChart($chart);
-	}
+  // Khởi tạo biểu đồ
+  function initChart($chart, salesData) {
+    var ordersChart = new Chart($chart, {
+      type: 'bar',
+      data: {
+        labels: getLast6Months(),
+        datasets: [
+          {
+            label: 'Số lượng',
+            data: salesData,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
 
+    // Save to jQuery object
+    $chart.data('chart', ordersChart);
+  }
+
+  // Kiểm tra và khởi tạo biểu đồ
+  if ($chart.length) {
+    fetchSalesData().then(salesData => {
+      initChart($chart, salesData);
+    });
+  }
 })();
 
+var currentYear = new Date().getFullYear();
+
+// Gán năm hiện tại vào phần tử có id "current-year"
+document.getElementById('current-year').textContent = currentYear;
 'use strict';
 
 //
@@ -869,75 +924,113 @@ var BarsChart = (function() {
 //
 
 var SalesChart = (function() {
-
-  // Variables
-
   var $chart = $('#chart-sales-dark');
+  var chartInstance = null;
 
+  // Fetch revenue data from the API
+  function fetchRevenueData(url) {
+    return fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        var revenueByMonth = Array(12).fill(0); // Khởi tạo mảng doanh thu 12 tháng, mặc định là 0
 
-  // Methods
+        data.forEach(item => {
+          const month = item[0] - 1;  // item[0] là tháng (1-12), ta phải giảm 1 để ánh xạ đúng vào mảng 0-11
+          revenueByMonth[month] = item[1];  // Gán doanh thu vào tháng tương ứng
+        });
 
-  function init($chart) {
+        return revenueByMonth;
+      })
+      .catch(err => {
+        console.error("Không thể lấy dữ liệu doanh thu:", err);
+        return Array(12).fill(0); // Dữ liệu mặc định nếu có lỗi
+      });
+  }
 
-    var salesChart = new Chart($chart, {
+  // Tạo biểu đồ
+  function createChart($chart, revenueData) {
+    return new Chart($chart, {
       type: 'line',
       options: {
+        responsive: true,
+        maintainAspectRatio: false,
         scales: {
-          yAxes: [{
-            gridLines: {
-              lineWidth: 1,
-              color: Charts.colors.gray[900],
-              zeroLineColor: Charts.colors.gray[900]
+          y: {
+            grid: {
+              lineWidth: 0.05,
+              color: '#9e9e9e',
+              zeroLineColor: '#9e9e9e'
             },
             ticks: {
               callback: function(value) {
-                if (!(value % 10)) {
-                  return '$' + value + 'k';
+                if (value % 1000000 === 0) {
+                  return value + ' VNĐ';
                 }
               }
             }
-          }]
+          }
         },
         tooltips: {
           callbacks: {
             label: function(item, data) {
               var label = data.datasets[item.datasetIndex].label || '';
               var yLabel = item.yLabel;
-              var content = '';
-
-              if (data.datasets.length > 1) {
-                content += '<span class="popover-body-label mr-auto">' + label + '</span>';
-              }
-
-              content += '<span class="popover-body-value">$' + yLabel + 'k</span>';
+              var content = label + ': ' + yLabel + ' VNĐ';
               return content;
             }
           }
         }
       },
       data: {
-        labels: ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'],
         datasets: [{
-          label: 'Performance',
-          data: [0, 20, 10, 30, 15, 40, 20, 60, 60]
+          label: 'Doanh thu',
+          data: revenueData,
+          backgroundColor: 'rgba(0,123,255,0.1)',
+          borderColor: '#007bff',
+          fill: true
         }]
       }
     });
+  }
 
-    // Save to jQuery object
+  // Cập nhật biểu đồ với dữ liệu mới
+  function updateChartData(newData) {
+    if (chartInstance) {
+      chartInstance.data.datasets[0].data = newData;  // Cập nhật dữ liệu
+      chartInstance.update();  // Cập nhật biểu đồ
+    }
+  }
 
-    $chart.data('chart', salesChart);
+  // Khởi tạo biểu đồ và lắng nghe sự kiện click vào tab
+  function init($chart) {
+    // Tạo biểu đồ mặc định với dữ liệu online
+    fetchRevenueData('/admin/api/revenue-online').then(revenueData => {
+      chartInstance = createChart($chart, revenueData);
+    });
 
-  };
+    // Lắng nghe sự kiện click vào tab
+    $('#online-tab').on('click', function() {
+      fetchRevenueData('/admin/api/revenue-online').then(revenueData => {
+        updateChartData(revenueData);  // Cập nhật dữ liệu cho tab Online
+      });
+    });
 
+    $('#offline-tab').on('click', function() {
+      fetchRevenueData('/admin/api/revenue-offline').then(revenueData => {
+        updateChartData(revenueData);  // Cập nhật dữ liệu cho tab Offline
+      });
+    });
+  }
 
-  // Events
-
+  // Kiểm tra và khởi tạo biểu đồ nếu tồn tại phần tử
   if ($chart.length) {
     init($chart);
   }
 
 })();
+
+
 
 //
 // Bootstrap Datepicker
@@ -1065,24 +1158,4 @@ var noUiSlider = (function() {
 
 'use strict';
 
-var Scrollbar = (function() {
 
-	// Variables
-
-	var $scrollbar = $('.scrollbar-inner');
-
-
-	// Methods
-
-	function init() {
-		$scrollbar.scrollbar().scrollLock()
-	}
-
-
-	// Events
-
-	if ($scrollbar.length) {
-		init();
-	}
-
-})();

@@ -1,0 +1,265 @@
+{% extends 'layout/base.html' %}
+
+{% block css %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+{% endblock %}
+{% block js %}
+<script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="modal-content">
+        <div class="card" style="border: 0 !important;">
+            <div class="card-header bg-transparent menu">
+                <ul>
+                    <li>
+                        <a id="toggle-menu">
+                            <div class="icon"></div>
+                            <i class="fa-solid fa-user"></i>
+                            <span>Tài Khoản Của Tôi</span>
+                        </a>
+                        <ul class="submenu">
+                            <li>
+                                <a href="/profile" class="active"><i class="fa-regular fa-user"></i>
+                                    <span>Hồ sơ</span></a>
+                            </li>
+                            <li>
+                                <a href="#"><i class="fa-solid fa-location-dot"></i>
+                                    <span>Địa chỉ</span></a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><a href="#">
+                        <div class="icon"></div>
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span>Đơn Mua</span></a></li>
+                </ul>
+            </div>
+
+            <div class="card-body">
+                <div class="card-header bg-transparent">
+                    <h3 class="mb-0">Thông tin hồ sơ</h3>
+                </div>
+                <div class="row icon-examples">
+                    <div class="col-12 d-flex">
+                        <!-- Left Side: Form to Edit Information -->
+                        <div class="col-6 text-left">
+                            <div class="profile-form">
+                                <form>
+                                    <!-- Username Field -->
+                                    <div class="form-group">
+                                        <label for="username">Tên đăng nhập</label>
+                                        <div style="margin-left:18px; width:73%;">
+                                            <input type="text" id="username" class="form-control"
+                                                   value="{{ profile[0] }}" disabled>
+                                            <!-- Chỉ lấy 1 profile -->
+                                        </div>
+                                    </div>
+
+                                    <!-- Name Field -->
+                                    <div class="form-group">
+                                        <label for="first_name">Họ</label>
+                                        <div style="margin-left:17px; width:40%;">
+                                            <input type="text" id="first_name" class="form-control"
+                                                   value="{{ profile[1] }}">
+                                        </div>
+                                        <label for="last_name" style="margin-left: 25px;">Tên</label>
+                                        <div style="margin-left:17px; width:40%;">
+                                            <input type="text" id="last_name" class="form-control"
+                                                   value="{{ profile[2] }}">
+                                        </div>
+                                    </div>
+                                    <!--                                        <div class="form-group">-->
+
+                                    <!--                                        </div>-->
+
+                                    <!-- Email Field -->
+                                    <div class="form-group">
+                                        <label for="email">Email</label>
+                                        <div style="margin:0 17px; width:79%;">
+                                            <input type="email" id="email" class="form-control"
+                                                   value="{{ profile[3] }}" disabled>
+                                        </div>
+                                        <div>
+                                            <button type="button" class="btn btn-primary edit-btn-email">Sửa
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Phone Field -->
+                                    <div class="form-group">
+                                        <label for="phone">Số điện thoại</label>
+                                        <div style="margin:0 15px; width:62%;">
+                                            <input type="text" id="phone" class="form-control"
+                                                   value="{{ profile[4] }}" disabled>
+                                        </div>
+                                        <div>
+                                            <button type="button" class="btn btn-primary edit-btn-phone">Sửa
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Gender Selection -->
+                                    <div class="form-group">
+                                        <label>Giới tính</label><br>
+                                        <div style="display:flex;margin:0 40px;">
+                                            <input type="radio" id="male" name="gender" value="Nam"
+                                                   {% if profile.is_male %}checked{% endif %}>
+                                            <label for="male">Nam</label>
+                                        </div>
+                                        <div style="display:flex;margin:0 40px;">
+                                            <input type="radio" id="female" name="gender" value="Nữ"
+                                                   {% if profile.is_female %}checked{% endif %}>
+                                            <label for="female">Nữ</label>
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Date of Birth Fields -->
+                                    <div class="form-group">
+                                        <label for="dob">Ngày sinh</label><br>
+                                        <div style="display:flex; margin:0 36px;">
+                                            <!-- Select for Day -->
+                                            <select id="day" class="form-control d-inline"
+                                                    style="width: 120px; max-height: 100px; overflow-y: auto;">
+                                                <option value="" disabled>Ngày</option>
+                                                {% for i in range(1, 32) %}
+                                                <option value="{{ i }}" {% if i== profile.day %}selected{% endif %}>{{ i
+                                                    }}
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+
+                                            <!-- Select for Month -->
+                                            <select id="month" class="form-control d-inline"
+                                                    style="width: 120px; max-height: 100px; overflow-y: auto;">
+                                                <option value="" disabled>Tháng</option>
+                                                {% for i in range(1, 13) %}
+                                                <option value="{{ i }}" {% if i== profile.month %}selected{%
+                                                        endif %}>{{ i }}
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+
+                                            <!-- Select for Year -->
+                                            <select id="year" class="form-control d-inline"
+                                                    style="width: 120px; max-height: 100px; overflow-y: auto;">
+                                                <option value="" disabled>Năm</option>
+                                                {% for i in range(1900, current_year + 1) %}
+                                                <option value="{{ i }}" {% if i== profile.year %}selected{%
+                                                        endif %}>{{ i }}
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group change-pass-1">
+                                        <label for="password">Mật khẩu hiện tại</label>
+                                        <div style="margin:0 15px;">
+                                            <input type="password" id="password" class="form-control"
+                                                   value="">
+                                        </div>
+                                        <p id="passwordError" class="text-danger" style="display: none;margin: 10px; padding-left: 20px">Mật khẩu hiện tại không chính xác</p>
+                                    </div>
+
+                                    <div class="form-group change-pass-2">
+                                        <label for="newpassword">Mật khẩu mới</label>
+                                        <div style="margin:0 15px;">
+                                            <input type="password" id="newpassword" class="form-control"
+                                                   value="">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group change-pass-3">
+                                        <label for="confirm">Xác nhận mật khẩu</label>
+                                        <div style="margin:0 15px;">
+                                            <input type="password" id="confirm" class="form-control"
+                                                   value="">
+                                        </div>
+                                        <p id="confirmError" class="text-danger" style="display: none;margin: 10px; padding-left: 20px">Mật khẩu không trùng khớp</p>
+                                    </div>
+
+
+                                    <!-- Save Button -->
+                                    <div class="form-group">
+                                        <button type="button" class="btn btn-primary btn-save"
+                                                style="padding:10px 50px; margin-right:30px;">Lưu
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-save" id="change-pass"
+                                                style="padding:10px 20px">Đổi mật khẩu
+                                        </button>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+
+                        <!-- Right Side: Profile Picture and Edit -->
+                        <div class="col-6 text-right">
+                            <div class="profile-picture">
+                                <img src="{{ profile[5] }}" alt="Profile Picture"
+                                     class="img-fluid profile-image rounded-circle" id="profileImage">
+
+                            </div>
+                            <div class="image-upload" style="margin-top: 30px;">
+                                <label for="fileUpload" class="upload-box">
+                                    Tải ảnh
+                                </label>
+                                <input type="file" id="fileUpload" accept="image/*" onchange="previewImage(event)"
+                                       style="display: none;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    // JavaScript để xử lý hiển thị submenu
+    const toggleMenu = document.getElementById('toggle-menu');
+    const submenu = document.querySelector('.submenu');
+
+    toggleMenu.addEventListener('click', () => {
+        // Toggle hiển thị submenu
+        if (submenu.style.display === 'none') {
+            submenu.style.display = 'block';
+        } else {
+            submenu.style.display = 'none';
+        }
+    });
+
+    const changePass = document.getElementById('change-pass');
+    const changeInputPass1 = document.querySelector('.change-pass-1');
+    const changeInputPass2 = document.querySelector('.change-pass-2');
+    const changeInputPass3 = document.querySelector('.change-pass-3');
+    const value1 = document.getElementById('password');
+    const value2 = document.getElementById('newpassword');
+    const value3 = document.getElementById('confirm');
+
+    changePass.addEventListener('click', () => {
+        if (changeInputPass1.style.display === 'block') {
+            changeInputPass1.style.display = 'none';
+            changeInputPass2.style.display = 'none';
+            changeInputPass3.style.display = 'none';
+            changePass.textContent = 'Đổi mật khẩu';
+            value1.value = '';
+            value2.value = '';
+            value3.value = '';
+        } else {
+            changeInputPass1.style.display = 'block';
+            changeInputPass2.style.display = 'block';
+            changeInputPass3.style.display = 'block';
+            changePass.textContent = 'Đóng';
+        }
+    });
+
+</script>
+{% endblock %}

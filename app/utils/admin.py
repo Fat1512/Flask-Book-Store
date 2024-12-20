@@ -2,7 +2,7 @@ from app import db, app
 from app.model.BookGerne import BookGerne
 from app.model.Book import Book
 from app.model.Order import Order
-from app.model.Order import OrderDetail
+from app.model.Order import OrderDetail, OnlineOrder, OfflineOrder
 from app.model.User import User
 from app.model.Account import Account
 from app.model.Publisher import Publisher
@@ -10,13 +10,217 @@ from sqlalchemy import or_, func, case
 from datetime import datetime, timedelta, date
 from sqlalchemy.sql import extract
 from flask_login import current_user
+from sqlalchemy.orm import joinedload
+from sqlalchemy.sql import join
+
+
+def count_book():
+    books = db.session.query(Book).all()
+    return len(books)
+
+
+def count_book_gerne():
+    books = db.session.query(BookGerne).all()
+    return len(books)
+
+
+def count_account():
+    books = db.session.query(Account).all()
+    return len(books)
+
+
+def stats_revenue_online_by_month(year=None):
+    """
+    Thống kê doanh thu từ các đơn hàng online và sách theo tháng của năm.
+    Bao gồm cả các tháng không có doanh thu.
+
+    :param year: Năm cần thống kê doanh thu (mặc định là None, sẽ lấy năm hiện tại).
+    :return: Danh sách tuple gồm (tháng, tổng doanh thu), sắp xếp từ tháng 1 đến 12.
+    """
+    if year is None:
+        year = datetime.now().year
+
+    # Truy vấn doanh thu từ các đơn hàng online (OrderDetail * OnlineOrder)
+    online_revenue = db.session.query(
+        extract('month', Order.created_at).label('month'),
+        func.coalesce(func.sum(OrderDetail.quantity * OrderDetail.price), 0).label('total_online_revenue')
+    ).join(
+        OrderDetail, OrderDetail.order_id == Order.order_id  # JOIN giữa OrderDetail và Order
+    ).join(
+        OnlineOrder, OnlineOrder.order_id == Order.order_id  # JOIN với OnlineOrder (bắt buộc có sự kết nối với OnlineOrder)
+    ).filter(
+        Order.status == 'DA_HOAN_THANH'  # Chỉ tính các đơn hàng đã hoàn thành
+    ).filter(
+        extract('year', Order.created_at) == year  # Lọc theo năm
+    ).group_by(
+        extract('month', Order.created_at)  # Nhóm theo tháng
+    ).all()
+
+    # Truy vấn doanh thu từ các đơn hàng sách (OrderDetail * Book)
+    book_revenue = db.session.query(
+        extract('month', Order.created_at).label('month'),
+        func.coalesce(func.sum(Book.price * OrderDetail.quantity), 0).label('total_book_revenue')
+    ).join(
+        OrderDetail, OrderDetail.order_id == Order.order_id, isouter=True  # LEFT JOIN với OrderDetail
+    ).join(
+        Book, Book.book_id == OrderDetail.book_id, isouter=True  # LEFT JOIN với Book
+    ).join(
+        OnlineOrder, OnlineOrder.order_id == OrderDetail.order_id  # JOIN với OnlineOrder để lấy doanh thu từ đơn hàng online
+    ).filter(
+        Order.status == 'DA_HOAN_THANH'  # Chỉ tính các đơn hàng đã hoàn thành
+    ).filter(
+        extract('year', Order.created_at) == year  # Lọc theo năm
+    ).group_by(
+        extract('month', Order.created_at)  # Nhóm theo tháng
+    ).all()
+
+    # Chuyển kết quả thành dictionary để dễ tra cứu
+    online_revenue_by_month = {int(month): revenue for month, revenue in online_revenue}
+    book_revenue_by_month = {int(month): revenue for month, revenue in book_revenue}
+
+    # Tạo danh sách đầy đủ từ tháng 1 đến 12
+    full_result = [
+        (month,
+         online_revenue_by_month.get(month, 0) + book_revenue_by_month.get(month, 0))  # Tổng doanh thu từ online và sách
+        for month in range(1, 13)
+    ]
+
+    return full_result
+
+
+
+def stats_revenue_offline_by_month(year=None):
+    if year is None:
+        year = datetime.now().year
+
+    offline_revenue = db.session.query(
+        extract('month', Order.created_at).label('month'),
+        func.coalesce(func.sum(OrderDetail.quantity * OrderDetail.price), 0).label('total_offline_revenue')
+    ).join(
+        OrderDetail, OrderDetail.order_id == Order.order_id, isouter=True
+    ).join(
+        OfflineOrder, OfflineOrder.order_id == Order.order_id, isouter=True
+    ).filter(
+        Order.status == 'DA_HOAN_THANH'
+    ).filter(
+        extract('year', Order.created_at) == year
+    ).group_by(
+        extract('month', Order.created_at)
+    ).all()
+
+    book_revenue = db.session.query(
+        extract('month', Order.created_at).label('month'),
+        func.coalesce(func.sum(Book.price * OrderDetail.quantity), 0).label('total_book_revenue')
+    ).join(
+        OrderDetail, OrderDetail.order_id == Order.order_id, isouter=True
+    ).join(
+        Book, Book.book_id == OrderDetail.book_id, isouter=True
+    ).join(
+        OfflineOrder, OfflineOrder.order_id == OrderDetail.order_id, isouter=True
+    ).filter(
+        Order.status == 'DA_HOAN_THANH'
+    ).filter(
+        extract('year', Order.created_at) == year  # Lọc theo năm
+    ).group_by(
+        extract('month', Order.created_at)  # Nhóm theo tháng
+    ).all()
+
+    # Chuyển kết quả thành dictionary để dễ tra cứu
+    offline_revenue_by_month = {int(month): revenue for month, revenue in offline_revenue}
+    book_revenue_by_month = {int(month): revenue for month, revenue in book_revenue}
+
+    # Tạo danh sách đầy đủ từ tháng 1 đến 12
+    full_result = [
+        (month,
+         offline_revenue_by_month.get(month, 0) + book_revenue_by_month.get(month, 0))
+        # Tổng doanh thu từ offline và sách
+        for month in range(1, 13)
+    ]
+
+    return full_result
+
+
+def stats_sales_count_by_month(year=None):
+    if year is None:
+        year = datetime.now().year
+
+    # Truy vấn số lượng sản phẩm bán ra từ OrderDetail
+    sales_count = db.session.query(
+        extract('month', Order.created_at).label('month'),
+        func.coalesce(func.sum(OrderDetail.quantity), 0).label('total_sales')
+    ).join(
+        OrderDetail, OrderDetail.order_id == Order.order_id, isouter=True
+    ).filter(
+        Order.status == 'DA_HOAN_THANH'  # Chỉ tính các đơn hàng đã hoàn thành
+    ).filter(
+        extract('year', Order.created_at) == year  # Lọc theo năm
+    ).group_by(
+        extract('month', Order.created_at)  # Nhóm theo tháng
+    ).all()
+
+    # Chuyển kết quả thành dictionary để dễ tra cứu
+    sales_by_month = {int(month): sales for month, sales in sales_count}
+
+    # Tạo danh sách đầy đủ từ tháng 1 đến 12
+    full_result = [
+        (month, sales_by_month.get(month, 0))  # Số lượng bán ra hoặc 0 nếu không có
+        for month in range(1, 13)
+    ]
+
+    return full_result
+
+
+def top_5_best_selling_books(year=None):
+    if year is None:
+        year = datetime.now().year
+
+    # Truy vấn dữ liệu các sách bán chạy nhất
+    book_stats = db.session.query(
+        Book.title.label('book_title'),  # Tên sách
+        func.sum(OrderDetail.quantity).label('total_sales'),  # Tổng số lượng bán
+        func.sum(OrderDetail.quantity * Book.price).label('total_revenue')  # Tổng doanh thu
+    ).select_from(OrderDetail).join(Book, Book.book_id == OrderDetail.book_id).join(Order, OrderDetail.order_id == Order.order_id).filter(
+        Order.status == 'DA_HOAN_THANH'  # Chỉ tính các đơn hàng đã hoàn thành
+    ).filter(
+        extract('year', Order.created_at) == year  # Lọc theo năm
+    ).group_by(
+        Book.title
+    ).order_by(
+        func.sum(OrderDetail.quantity).desc()  # Sắp xếp theo số lượng bán giảm dần
+    ).limit(5).all()  # Lấy 5 sách bán chạy nhất
+
+    # Tổng doanh thu của tất cả các sách
+    total_revenue = db.session.query(
+        func.sum(OrderDetail.quantity * Book.price).label('total_revenue')
+    ).select_from(OrderDetail).join(Book, Book.book_id == OrderDetail.book_id).join(Order, OrderDetail.order_id == Order.order_id).filter(
+        Order.status == 'DA_HOAN_THANH'
+    ).filter(
+        extract('year', Order.created_at) == year
+    ).scalar() or 0
+
+    # Tính phần trăm doanh thu từng sách so với tổng doanh thu
+    result = [
+        {
+            "book_title": book.book_title,
+            "total_sales": int(book.total_sales) if book.total_sales else 0,
+            "total_revenue": float(book.total_revenue) if book.total_revenue else 0.0,
+            "revenue_percentage": round((book.total_revenue / total_revenue * 100) if total_revenue > 0 else 0, 2)
+        }
+        for book in book_stats
+    ]
+
+    return result
 
 
 def book_gerne_statistic(kw=None, selected_month=None):
     g = db.session.query(
         BookGerne.book_gerne_id,
         BookGerne.name,
-        func.coalesce(func.sum(Book.price * OrderDetail.quantity), 0).label('total_revenue')
+        func.coalesce(func.sum(Book.price * OrderDetail.quantity), 0).label('total_revenue'),
+        func.coalesce(func.sum(OrderDetail.quantity), 0).label('total_quantity'),
+        func.round(
+            func.coalesce(func.sum(Book.price * OrderDetail.quantity) / total_revenue_per_gerne() * 100, 0), 2
+        ).label('revenue_percentage')
     ).join(
         Book, BookGerne.book_gerne_id == Book.book_gerne_id, isouter=True
     ).join(
@@ -24,7 +228,7 @@ def book_gerne_statistic(kw=None, selected_month=None):
     ).join(
         Order, OrderDetail.order_id == Order.order_id, isouter=True
     ).filter(
-        or_(Order.status == 'completed', Order.status.is_(None))  # Bao gồm những đơn đã hoàn tất hoặc không có đơn
+        or_(Order.status == 'DA_HOAN_THANH', Order.status.is_(None))  # Bao gồm những đơn đã hoàn tất hoặc không có đơn
     )
 
     if kw:
@@ -53,30 +257,24 @@ def book_gerne_statistic(kw=None, selected_month=None):
     return g.all()
 
 
-from sqlalchemy.sql import func, extract
-from datetime import datetime
-
-
 def stats_revenue_by_month(year=None):
-    """
-    Thống kê doanh thu theo tháng của năm. Bao gồm cả các tháng không có doanh thu.
-
-    :param year: Năm cần thống kê doanh thu (mặc định là None, sẽ lấy năm hiện tại).
-    :return: Danh sách tuple gồm (tháng, tổng doanh thu), sắp xếp từ tháng 1 đến 12.
-    """
     if year is None:
         year = datetime.now().year
 
-    # Truy vấn doanh thu thực tế từ cơ sở dữ liệu
     result = db.session.query(
         extract('month', Order.created_at).label('month'),
-        func.coalesce(func.sum(Book.price * OrderDetail.quantity), 0).label('total_revenue')
+        func.coalesce(func.sum(Book.price * OrderDetail.quantity), 0).label('total_revenue'),
+        func.coalesce(func.sum(OrderDetail.quantity), 0).label('total_quantity'),
+        func.round(
+            func.coalesce(func.sum(Book.price * OrderDetail.quantity) / total_revenue_per_gerne() * 100, 0), 2
+        ).label('revenue_percentage')
+
     ).join(
         OrderDetail, OrderDetail.order_id == Order.order_id, isouter=True
     ).join(
         Book, Book.book_id == OrderDetail.book_id, isouter=True
     ).filter(
-        Order.status == 'completed'
+        Order.status == 'DA_HOAN_THANH'
     ).filter(
         extract('year', Order.created_at) == year
     ).group_by(
@@ -84,17 +282,24 @@ def stats_revenue_by_month(year=None):
     ).all()
 
     # Chuyển kết quả thành dictionary để dễ tra cứu
-    revenue_by_month = {int(month): revenue for month, revenue in result}
+    revenue_by_month = {
+        int(month): {
+            'total_revenue': total_revenue,
+            'total_quantity': total_quantity,
+            'revenue_percentage': revenue_percentage
+        }
+        for month, total_revenue, total_quantity, revenue_percentage in result
+    }
 
     # Tạo danh sách đầy đủ từ tháng 1 đến 12
     full_result = [
-        (month, revenue_by_month.get(month, 0))  # Nếu không có dữ liệu cho tháng, trả về 0
+        (month, revenue_by_month.get(month, {'total_revenue': 0, 'total_quantity': 0, 'revenue_percentage': 0})['total_revenue'],
+         revenue_by_month.get(month, {'total_revenue': 0, 'total_quantity': 0, 'revenue_percentage': 0})['total_quantity'],
+         revenue_by_month.get(month, {'total_revenue': 0, 'total_quantity': 0, 'revenue_percentage': 0})['revenue_percentage'])
         for month in range(1, 13)
     ]
 
     return full_result
-
-
 
 
 
@@ -109,7 +314,7 @@ def total_revenue_per_gerne(kw=None, selected_month=None):
     ).join(
         Order, OrderDetail.order_id == Order.order_id, isouter=True
     ).filter(
-        Order.status == 'completed'
+        Order.status == 'DA_HOAN_THANH'
     )
 
     if kw:
@@ -139,189 +344,105 @@ def total_revenue_per_gerne(kw=None, selected_month=None):
     return total_revenue
 
 
-# def book_gerne_statistic(kw=None, from_date=None, to_date=None):
-#     g = db.session.query(
-#         BookGerne.book_gerne_id,
-#         BookGerne.name,
-#         func.coalesce(func.sum(Book.price * OrderDetail.quantity), 0).label('total_revenue')
-#     ).join(
-#         Book, BookGerne.book_gerne_id == Book.book_gerne_id, isouter=True
-#     ).join(
-#         OrderDetail, Book.book_id == OrderDetail.book_id, isouter=True
-#     ).join(
-#         Order, OrderDetail.order_id == Order.order_id, isouter=True
-#     ).filter(
-#         or_(Order.status == 'completed', Order.status.is_(None))
-#     ).group_by(
-#         BookGerne.book_gerne_id, BookGerne.name
-#     ).order_by(
-#         BookGerne.book_gerne_id
-#     )
-#
-#     # Lọc theo từ khóa (kw)
-#     if kw:
-#         g = g.filter(BookGerne.name.contains(kw))
-#
-#     # Lọc theo khoảng thời gian (from_date, to_date)
-#     if from_date:
-#         # Nếu from_date là chuỗi, chuyển đổi thành datetime.date
-#         if isinstance(from_date, str):
-#             from_date = datetime.strptime(from_date, "%Y-%m-%d").date()
-#         g = g.filter(Order.created_at >= from_date)
-#
-#     if to_date:
-#         # Nếu to_date là chuỗi, chuyển đổi thành datetime.date
-#         if isinstance(to_date, str):
-#             to_date = datetime.strptime(to_date, "%Y-%m-%d").date()
-#
-#         # Thêm thời gian tối đa (23:59:59) để bao gồm toàn bộ ngày
-#         to_date = datetime.combine(to_date, datetime.max.time())
-#         g = g.filter(Order.created_at <= to_date)
-#
-#     return g.all()
-
-
-# def total_revenue_per_gerne(kw=None, from_date=None, to_date=None):
-#     result = db.session.query(
-#         BookGerne.name.label('gerne_name'),
-#         func.sum(Book.price * OrderDetail.quantity).label('total_revenue')
-#     ).join(
-#         Book, BookGerne.book_gerne_id == Book.book_gerne_id, isouter=True
-#     ).join(
-#         OrderDetail, Book.book_id == OrderDetail.book_id, isouter=True
-#     ).join(
-#         Order, OrderDetail.order_id == Order.order_id, isouter=True
-#     ).filter(
-#         Order.status == 'completed'  # Chỉ tính doanh thu từ các đơn hàng đã hoàn tất
-#     )
-#
-#     # Lọc theo từ khóa nếu có
-#     if kw:
-#         result = result.filter(BookGerne.name.contains(kw))
-#
-#     # Lọc theo khoảng thời gian nếu có
-#     if from_date:
-#         # Nếu from_date là chuỗi, chuyển nó thành datetime.date
-#         if isinstance(from_date, str):
-#             from_date = datetime.strptime(from_date, "%Y-%m-%d").date()
-#         result = result.filter(Order.created_at >= from_date)
-#
-#     if to_date:
-#         # Nếu to_date là chuỗi, chuyển nó thành datetime.date
-#         if isinstance(to_date, str):
-#             to_date = datetime.strptime(to_date, "%Y-%m-%d").date()
-#         # Đảm bảo tính toàn bộ ngày (bao gồm giờ cuối cùng của ngày)
-#         to_date = datetime.combine(to_date, datetime.max.time())
-#         result = result.filter(Order.created_at <= to_date)
-#
-#     # Nhóm theo thể loại và tính tổng doanh thu
-#     result = result.group_by(BookGerne.name)
-#
-#     # Tính tổng doanh thu từ kết quả truy vấn
-#     total_revenue = sum(
-#         item.total_revenue if item.total_revenue is not None else 0 for item in result
-#     )
-#
-#     return total_revenue
-
-# def book_gerne_statistic(kw=None, from_date=None, to_date=None):
-#     g = db.session.query(
-#         BookGerne.book_gerne_id,
-#         BookGerne.name,
-#         func.sum(Book.price * CartItem.quantity).label('total_revenue')
-#     ).join(Book, BookGerne.book_gerne_id == Book.book_gerne_id, isouter=True
-#            ).join(CartItem, Book.book_id == CartItem.book_id, isouter=True
-#                   ).group_by(BookGerne.book_gerne_id, BookGerne.name
-#                              ).order_by(BookGerne.book_gerne_id, func.sum(Book.price * CartItem.quantity).desc()
-#                                         )
-#
-#     if kw:
-#         g = g.filter(BookGerne.name.contains(kw))
-#     return g.all()
-
-# return db.session.query(BookGerne.book_gerne_id, BookGerne.name, func.count(Book.book_id)) \
-#     .join(Book, BookGerne.book_gerne_id.__eq__(Book.book_gerne_id), isouter=True) \
-#     .group_by(BookGerne.book_gerne_id, BookGerne.name).all()
-
-
-# def total_revenue_per_gerne():
-#     result = db.session.query(
-#         BookGerne.name.label('gerne_name'),
-#         func.sum(Book.price * CartItem.quantity).label('total_revenue')
-#     ).join(Book, BookGerne.book_gerne_id == Book.book_gerne_id, isouter=True) \
-#         .join(CartItem, Book.book_id == CartItem.book_id, isouter=True) \
-#         .group_by(BookGerne.name)
-#
-#     total_revenue = sum(item.total_revenue if item.total_revenue is not None else 0 for item in result)
-#
-#     return total_revenue
-
-
-# with app.app_context():
-#     stats = book_gerne_statistic()
-#     print(stats)
-
-
 # def get_books_by_gerne(gerne_id=None):
-#     return db.session.query(Book.book_id, Book.title, Book.quantity) \
-#         .filter(Book.book_gerne_id == gerne_id).all()
-
-def get_books_by_gerne(gerne_id=None):
-    query = db.session.query(
-        Book.book_id,
-        Book.title,
-        BookGerne.name.label("gerne_name"),
-        Book.quantity.label("total_quantity"),
-        func.coalesce(func.sum(OrderDetail.quantity), 0).label("ordered_quantity"),
-        (Book.quantity - func.coalesce(func.sum(OrderDetail.quantity), 0)).label("remaining_quantity")
-    ).outerjoin(BookGerne, BookGerne.book_gerne_id == Book.book_gerne_id) \
-        .outerjoin(OrderDetail, OrderDetail.book_id == Book.book_id) \
-        .group_by(Book.book_id, Book.title, BookGerne.name, Book.quantity)
-
-    if gerne_id is not None:
-        query = query.filter(Book.book_gerne_id == gerne_id)
-
-    return query.all()
-
-
-
-
-
-# def book_statistic_frequency():
-#     return db.session.query(
+#     query = db.session.query(
 #         Book.book_id,
 #         Book.title,
 #         BookGerne.name.label("gerne_name"),
 #         Book.quantity.label("total_quantity"),
 #         func.coalesce(func.sum(OrderDetail.quantity), 0).label("ordered_quantity"),
 #         (Book.quantity - func.coalesce(func.sum(OrderDetail.quantity), 0)).label("remaining_quantity")
-#     ) \
-#         .outerjoin(BookGerne, BookGerne.book_gerne_id == Book.book_gerne_id) \
+#     ).outerjoin(BookGerne, BookGerne.book_gerne_id == Book.book_gerne_id) \
 #         .outerjoin(OrderDetail, OrderDetail.book_id == Book.book_id) \
-#         .group_by(Book.book_id, Book.title, BookGerne.name, Book.quantity) \
-#         .all()
+#         .group_by(Book.book_id, Book.title, BookGerne.name, Book.quantity)
+#
+#     if gerne_id is not None:
+#         query = query.filter(Book.book_gerne_id == gerne_id)
+#
+#     return query.all()
 
-def book_statistic_frequency(gerne_id=None):
+
+def book_statistic_frequency(gerne_id=None, selected_month=None):
     query = db.session.query(
         Book.book_id,
         Book.title,
         BookGerne.name.label("gerne_name"),
-        Book.quantity.label("total_quantity"),
         func.coalesce(func.sum(OrderDetail.quantity), 0).label("ordered_quantity"),
-        (Book.quantity - func.coalesce(func.sum(OrderDetail.quantity), 0)).label("remaining_quantity")
-    ).outerjoin(BookGerne, BookGerne.book_gerne_id == Book.book_gerne_id) \
-        .outerjoin(OrderDetail, OrderDetail.book_id == Book.book_id) \
-        .group_by(Book.book_id, Book.title, BookGerne.name, Book.quantity)
+        func.round(
+            func.coalesce(func.sum(OrderDetail.quantity), 0) / total_quantity_all_books(
+                selected_month=selected_month) * 100, 2
+        ).label('revenue_percentage')
+    ).outerjoin(
+        BookGerne, BookGerne.book_gerne_id == Book.book_gerne_id
+    ).outerjoin(
+        OrderDetail, OrderDetail.book_id == Book.book_id
+    ).outerjoin(
+        Order, OrderDetail.order_id == Order.order_id
+    )
 
+    # Nếu có filtre thể loại sách
     if gerne_id is not None:
         query = query.filter(Book.book_gerne_id == gerne_id)
 
+    # Nếu có tháng được chọn, lọc theo tháng
+    if selected_month:
+        # Nếu selected_month là chuỗi (định dạng "YYYY-MM"), chuyển nó thành datetime
+        if isinstance(selected_month, str):
+            selected_month = datetime.strptime(selected_month, "%Y-%m").date()
+
+        # Xác định ngày đầu tiên và ngày cuối cùng của tháng
+        first_day_of_month = date(selected_month.year, selected_month.month, 1)
+        if selected_month.month == 12:
+            last_day_of_month = date(selected_month.year, 12, 31)
+        else:
+            next_month = date(selected_month.year, selected_month.month + 1, 1)
+            last_day_of_month = next_month - timedelta(days=1)
+
+        # Thêm điều kiện lọc cho ngày trong tháng đã chọn
+        query = query.filter(Order.created_at >= first_day_of_month)
+        query = query.filter(Order.created_at <= last_day_of_month)
+
+    query = query.group_by(Book.book_id, Book.title, BookGerne.name).order_by(Book.book_id)
+
+    # Trả về kết quả
     return query.all()
 
 
+def total_quantity_all_books(kw=None, selected_month=None):
+    result = db.session.query(
+        func.coalesce(func.sum(OrderDetail.quantity), 0).label('total_quantity')
+    ).join(
+        Order, OrderDetail.order_id == Order.order_id
+    ).filter(
+        Order.status == 'DA_HOAN_THANH'  # Lọc theo đơn hàng đã hoàn thành
+    )
+
+    if kw:
+        # Nếu có từ khóa tìm kiếm, có thể lọc theo tên sách
+        result = result.join(Book, OrderDetail.book_id == Book.book_id).filter(Book.title.contains(kw))
+
+    if selected_month:
+        if isinstance(selected_month, str):
+            selected_month = datetime.strptime(selected_month, "%Y-%m").date()
+
+        first_day_of_month = date(selected_month.year, selected_month.month, 1)
+
+        if selected_month.month == 12:
+            last_day_of_month = date(selected_month.year, 12, 31)
+        else:
+            next_month = date(selected_month.year, selected_month.month + 1, 1)
+            last_day_of_month = next_month - timedelta(days=1)
+
+        result = result.filter(Order.created_at >= first_day_of_month)
+        result = result.filter(Order.created_at <= last_day_of_month)
+
+    total_quantity = result.scalar()  # Lấy tổng số lượng sách bán ra
+
+    return total_quantity
 
 
-def account_management(user_role=None):
+
+def account_management(user_role=None, first_name=None, last_name=None):
     query = (db.session.query(
         User.user_id,
         User.first_name,
@@ -334,11 +455,16 @@ def account_management(user_role=None):
     if user_role is not None:
         query = query.filter(User.user_role == user_role)
 
+    if first_name:
+        query = query.filter(User.first_name.contains(first_name))
+
+    if last_name:
+        query = query.filter(User.last_name.contains(last_name))
+
     return query.all()
 
 
-
-def book_management(gerne_id=None):
+def book_management(gerne_id=None, kw=None, price_start=None, price_end=None):
     query = db.session.query(
         Book.book_id,
         Book.title,
@@ -358,18 +484,22 @@ def book_management(gerne_id=None):
     if gerne_id is not None:
         query = query.filter(Book.book_gerne_id == gerne_id)
 
+    if kw:
+        query = query.filter(Book.title.contains(kw))
+
+    if price_start is not None:
+        query = query.filter(Book.price >= price_start)
+
+    if price_end is not None:
+        query = query.filter(Book.price <= price_end)
+
     return query.all()
-
-
-
 
 
 def bookgerne_management(kw=None):
     query = db.session.query(
         BookGerne.book_gerne_id,
-        BookGerne.name,
-        BookGerne.lft,
-        BookGerne.rgt
+        BookGerne.name
     ).group_by(BookGerne.book_gerne_id, BookGerne.name)
 
     if kw:
@@ -401,7 +531,7 @@ def profile():
         extract('month', User.date_of_birth).label('month'),
         extract('year', User.date_of_birth).label('year')
     ).join(Account, Account.user_id == User.user_id
-    ).filter(User.user_id == current_user.user_id)
+           ).filter(User.user_id == current_user.user_id)
 
     # Trả về kết quả của truy vấn hoặc None nếu không tìm thấy kết quả
     return query.first()  # Trả về một hàng kết quả hoặc None nếu không có dữ liệu

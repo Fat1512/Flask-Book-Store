@@ -1,4 +1,8 @@
+import pdb
+
 from sqlalchemy import text
+
+import app.dao.BookDAO
 from app import db
 from app.model.BookGerne import BookGerne
 import json
@@ -11,6 +15,45 @@ def find_by_id(book_gerne_id):
 def find_all_extend_attribute(gerne_id):
     book_gerne = BookGerne.query.get(gerne_id)
     return book_gerne.attributes
+
+def add_gerne(name,parent_id):
+    parent_gerne = BookGerne.query.get(parent_id)
+
+    new_gerne = BookGerne(name = name, lft= parent_gerne.rgt, rgt=parent_gerne.rgt+1)
+    update_left = BookGerne.query.filter(BookGerne.lft >= parent_gerne.rgt).all()
+    for item in update_left:
+        item.lft += 2
+
+    update_right = BookGerne.query.filter(BookGerne.rgt >= parent_gerne.rgt).all()
+    for item in update_right:
+        item.rgt += 2
+
+
+
+    db.session.add(new_gerne)
+    db.session.commit()
+
+def remove_gerne(gerne_id):
+    gerne = BookGerne.query.get(gerne_id)
+
+    step = gerne.rgt - gerne.lft +1
+
+    update_left = BookGerne.query.filter(BookGerne.lft >= gerne.rgt).all()
+    for item in update_left:
+        item.lft -=step
+
+    update_right = BookGerne.query.filter(BookGerne.rgt >= gerne.rgt).all()
+    for item in update_right:
+        item.rgt -=step
+
+    books = app.dao.BookDAO.find_by_gerne(gerne_id)
+
+    for b in books:
+        b.book_gerne = BookGerne.query.get(1)
+
+
+    db.session.delete(gerne)
+    db.session.commit()
 
 
 def get_depth_gerne(id):

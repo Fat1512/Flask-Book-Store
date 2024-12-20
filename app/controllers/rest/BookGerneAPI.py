@@ -16,7 +16,6 @@ def get_book_gerne():
     })
 
 
-
 @book_gerne_rest_bp.route('/<book_gerne_id>/attributes', methods=['GET'])
 def get_attributes(book_gerne_id):
     attributes = find_all_extend_attribute(book_gerne_id)

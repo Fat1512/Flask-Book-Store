@@ -1,0 +1,326 @@
+{% extends 'admin/layout/base.html' %}
+{% block css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/employee.css') }}">
+{% endblock %}
+{% block js %}
+    <script src="{{ url_for('static', filename='js/employee/employeeOrderUpdate.js') }}"></script>
+{% endblock %}
+{% block content %}
+    <div class="header bg-primary pb-6">
+        <div class="container-fluid">
+            <div class="header-body">
+                <div class="row align-items-center py-4">
+                    <div class="col-3">
+                        <h6 class="h2 text-white d-inline-block mb-0"></h6>
+                        <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                            <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                                <li class="breadcrumb-item"><a href="#">Quản lý đơn đặt</a></li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <form class="col-4 navbar-search navbar-search-light form-inline mr-sm-3" id="navbar-search-main">
+                        <div class="form-group mb-0">
+                            <div class="input-group input-group-alternative input-group-merge">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                </div>
+                                <input class="form-control" placeholder="Nhap ma don" type="text">
+                            </div>
+                        </div>
+                        <button type="button" class="close" data-action="search-close" data-target="#navbar-search-main"
+                                aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </form>
+                    <div class="col-4 text-right">
+                        <a href="#" class="btn btn-sm btn-neutral">Tìm kiếm mã đơn</a>
+                        <a href="#" class="btn btn-sm btn-neutral">Tìm kiếm số điện thoại khách hàng</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid mt--6">
+        <div class="row product-detail">
+            <div class="col-12">
+                <div class="card p-5">
+                    <div class="col-12 pb-5">
+                        <a class="fa fa-arrow-left display-4 cursor-pointer product-detail-back-btn"
+                           href="/employee/order"
+                           aria-hidden="true"></a>
+                    </div>
+                    <div class="card-header pl-0 bg-transparent border-0">
+                        <h3 class="mb-0 display-4 font-weight-700">THÔNG TIN KHÁCH HÀNG</h3>
+                    </div>
+                    <div class="row justify-content-between">
+                        <div class="col-12">
+                            <div class="d-flex">
+                                <h2 class="pr-3">Mã khách hàng: </h2>
+                                <h2 class="font-weight-400"
+                                    user-id="{{ order['user']['id'] }}">{{ order['user']['id'] }}</h2>
+                            </div>
+                            <div class="d-flex">
+                                <h2 class="pr-3">Tên khách hàng: </h2>
+                                <h2 class="font-weight-400">{{ order['user']['fullname'] }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-header pl-0 bg-transparent border-0">
+                        <h3 class="mb-0 display-4 font-weight-700">THÔNG TIN ĐƠN HÀNG</h3>
+                    </div>
+                    <div class="row justify-content-between">
+                        <div class="col-6">
+                            <div class="d-flex">
+                                <h2 class="pr-3">Mã đơn: </h2>
+                                <h2 class="font-weight-400">{{ order['order_id'] }}</h2>
+                            </div>
+
+                            <div class="d-flex">
+                                <h2 class="pr-3">Trạng thái: </h2>
+                                <h2 class="font-weight-400">{{ order['status']['name'] }}</h2>
+                            </div>
+                            <div class="d-flex">
+                                <h2 class="pr-3">Phương thức thanh toán: </h2>
+                                <h2 class="font-weight-400">{{ order['payment']['payment_method']['name'] }}</h2>
+                            </div>
+                            <div class="d-flex">
+                                <h2 class="pr-3">Ngày tạo: </h2>
+                                <h2 class="font-weight-400">{{ order['created_at'] }}</h2>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex">
+                                <h2 class="pr-3">Loại đơn: </h2>
+                                <h2 class="font-weight-400">{{ order['order_type']['name'] }}</h2>
+                            </div>
+
+                            {% if order['order_type']['id'] == 1 %}
+                                <div class="d-flex">
+                                    <h2 class="pr-3">Phương thức vận chuyển: </h2>
+                                    <h2 class="font-weight-400">{{ order['order_type']['detail']['shipping_method']['name'] }}</h2>
+                                </div>
+                            {% endif %}
+                            {% if order['order_type']['id'] == 2 %}
+                                <div class="d-flex">
+                                    <h2 class="pr-3">Nhân viên thanh toán: </h2>
+                                    <h2 class="font-weight-400">{{ order['order_type']['detail']['employee_name'] }}</h2>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="row pb-4">
+                                <div class="col-6">
+                                    <h6 class=" display-4 text-muted mb-4">Thông tin giao nhận</h6>
+                                    <div class="pl-lg-4">
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                    <span class="form-control-label"
+                                                          for="input-address">Họ và tên: </span>
+                                                <span>{{ order['address']['fullname'] }} </span>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                    <span class="form-control-label"
+                                                          for="input-address">Địa chỉ: </span>
+                                                <span>{{ order['address']['address'] }} {{ order['address']['province'] }}</span>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                    <span class="form-control-label"
+                                                          for="input-city">Số điện thoại: </span>
+                                                <span>{{ order['address']['phone_number'] }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if order['order_type']['id'] == 1 %}
+                                    <div class="col-6">
+                                        <h6 class=" display-4 text-muted mb-4">Ghi chú</h6>
+                                        <div class="pl-lg-4">
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <span>{{ order['order_type']['detail']['note'] }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Address -->
+                            <!-- <hr class="my-2" /> -->
+                            <!-- Description -->
+                            {% if order['note'] %}
+                                <h6 class=" display-4 text-muted mb-4">Ghi chú</h6>
+                                <div class="col-lg-12">
+                                    <div>{{ order['note'] }}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-8">
+                <div class="card">
+                    <div class="card-header bg-transparent border-0">
+                        <h3 class="mb-0 display-4 font-weight-700">Sản phẩm</h3>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="order-container table align-items-center table-flush">
+                            <thead class="thead-light">
+                            <tr>
+                                <th scope="col" class="sort text-center w-25" data-sort="name">Tên sản phẩm</th>
+                                <th scope="col" class="sort text-center" data-sort="budget">Giá</th>
+                                <th scope="col" class="text-center">Số lượng</th>
+                                <th scope="col" class="sort text-center" data-sort="completion">Tổng tiền</th>
+                                <th scope="col"></th>
+                            </tr>
+
+                            </thead>
+                            <tbody class="list order-list" style="max-height: 200px; overflow-y: scroll">
+                            {% for order_item in order['order_detail'] %}
+                                <tr class="order-item" id="{{ order_item['book']['book_id'] }}">
+                                    <th scope="row">
+                                        <div class="media align-items-center">
+                                            <div class="media-body text-left text-truncate book-item">
+                                                <span class="order-item-name mb-0 text-sm text-center w-100">{{ order_item['book']['title'] }}</span>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <td class="budget text-center order-item-price">
+                                        {{ order_item['price']|currency('VND') }}
+                                    </td>
+                                    <td>
+                                        <div class="d-flex justify-content-center">
+                                            <div class="d-flex justify-content-between align-content-center w-100">
+                                                <span class="cursor-pointer decrement-qty-btn">-</span>
+                                                <input input-id="{{ order_item['book']['book_id'] }}"
+                                                       inputmode="numeric"
+                                                       oninput="this.value = this.value.replace(/\D+/g, '1')"
+                                                       class="text-center" value="{{ order_item['quantity'] }}">
+                                                <span class="cursor-pointer increment-qty-btn">+</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center w-100 justify-content-center">
+                                            <span class="completion mr-2">{{ (order_item['price'] * order_item['quantity'])|currency('VND') }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-right remove-order-item-btn">
+                                        <div class="dropdown">
+                                            <a class="btn btn-sm btn-icon-only text-light cursor-pointer" role="button">
+                                                <i class="fa fa-window-close" aria-hidden="true"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        {% if order['order_type']['id'] == 1 %}
+                            <div class="d-flex px-5 py-4 justify-content-between">
+                                <div class="font-weight-bold display-4">
+                                    Phí ship
+                                </div>
+                                <div class="shipping-fee font-weight-bold display-4">{{ order['order_type']['detail']['shipping_fee']|currency('VND') }}
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="d-flex px-5 py-4 justify-content-between ">
+                            <div class="font-weight-bolder display-4">
+                                Tổng tiền:
+                            </div>
+                            <div class="font-weight-bolder display-4 total-amount">{{ order['total_amount']|currency('VND') }}</div>
+                        </div>
+                        <div class="d-flex py-3">
+                            <div class="w-50 px-3">
+                                <button type="button"
+                                        class="restore-btn w-100 btn btn-primary bg-white text-black border border-0"
+                                        style="color: var(--black-color) !important">
+                                    Khôi phục
+                                </button>
+                            </div>
+                            <div class="w-50 px-3">
+{#                                <button order-id="{{ order['order_id'] }}" type="button"#}
+{#                                        class="update-btn w-100 btn btn-primary bg-blue text-white border border-0">#}
+{##}
+{#                                </button>#}
+                                <button order-id="{{ order['order_id'] }}" type="button"
+                                        class="update-btn w-100 btn btn-primary border border-0"
+                                        style="color: var(--white-color) !important; background-color: var(--red)">
+                                    Cập nhật
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4 ">
+                <div class="card pb-3">
+                    <div class="d-flex justify-content-between align-content-center">
+                        <form class="col-6 navbar-search-light form-inline mr-sm-3 p-3" id="navbar-search-main">
+                            <div class="form-group mb-0 w-100">
+                                <div class="input-group input-group-alternative input-group-merge w-100 border border-1">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                    </div>
+                                    <input class="form-control input-search" placeholder="Nhập barcode"
+                                           type="text">
+                                </div>
+                            </div>
+                        </form>
+                        <div class="dropdown col-6 dropdown-btn align-content-center text-right">
+                            {#                            <button type="button"#}
+                            {#                                    class="btn btn-primary dropdown-toggle dropdown-btn-change justify-content-end"#}
+                            {#                                    data-toggle="dropdown">#}
+                            {#                                Lọc#}
+                            {#                            </button>#}
+                            {#                            <div class="dropdown-menu">#}
+                            {#                                <div class="dropdown-item" id="0" href="">Tên sản phẩm</div>#}
+                            {#                                <div class="dropdown-item" id="1" href="">Barcode</div>#}
+                            {#                            </div>#}
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="btn btn-reset border border-1">Về mặc định</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="btn btn-search btn-primary">Tìm kiếm</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row px-5 product-container">
+                        {% for book in books['books'] %}
+                            <a class="product-item card col-3 cursor-pointer" id="{{ book['book_id'] }}">
+                                <img class="card-img-top"
+                                     src="{% if  book['images'] %}{{ book['images'][0]['image_url'] }} {% else %}null{% endif %}"
+                                     alt="Card image"
+                                    style="height: auto !important;">
+                                <div class="card-body p-0">
+                                    <p class="card-text product-name">{{ book['title'] }}</p>
+                                    <p class="text-primary font-weight-bold mb-1 product-price">{{ book['price']|currency('VND') }}</p>
+                                    <p class="text-dark font-weight-light mb-1">qty: {{ book['quantity'] }}</p>
+                                </div>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+{% block modal %}
+    <div class="modal">
+        <div class="overlay"></div>
+        <div class="modal-body item-bg-color">
+            <div id="reader">
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

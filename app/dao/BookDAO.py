@@ -90,7 +90,7 @@ def find_by_gerne(gerne_id):
     query = Book.query
     gerne = BookGerne.query.get(gerne_id)
     query = query.join(BookGerne)
-    query = query.filter(BookGerne.lft.between(gerne.lft, gerne.rgt))
+    query = query.filter(BookGerne.lft >= gerne.lft,BookGerne.rgt <= gerne.rgt)
     return query.all()
 
 
@@ -115,8 +115,10 @@ def paginate_book(page=1, limit=app.config['PAGE_SIZE']):
 
 
 def find_by_barcode(barcode):
-    return Book.query.filter(Book.barcode.__eq__(barcode))
-
+    book = Book.query.filter(Book.barcode.__eq__(barcode)).first()
+    if not book:
+        raise NotFoundError("Barcode không tồn tại")
+    return book
 
 def countBook():
     return Book.query.count()

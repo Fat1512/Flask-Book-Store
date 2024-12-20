@@ -1,6 +1,7 @@
 import pdb
 
 from app.dao.BookDAO import find_by_id
+from app.model.ExtendedBook import *
 from app.elasticsearch.BookIndexService import delete_document, create_document, update_document, \
     add_attribute_value_document, update_document_bulk
 from app.exception.NotFoundError import NotFoundError
@@ -38,12 +39,15 @@ def modify_attribute_value(book_id):
     update_document(book_document.book_id, {"extended_books": updated_field})
 
 
-# def modify_attribute(attribute_id):
-#     extended_books = ExtendedBook.query.filter(ExtendedBook.attribute_id == attribute_id).all()
-#     if extended_books is None: raise NotFoundError("Khong tim thay sach")
-#
-#     book = [ex.book for ex in extended_books]
-#     update_document_bulk(book, 'extended_books')
+def modify_attribute(attribute_id):
+    extended_books = ExtendedBook.query.filter(ExtendedBook.attribute_id == attribute_id).all()
+    if extended_books is None: raise NotFoundError("Khong tim thay sach")
+
+    # book = [ex.book for ex in extended_books]
+    # update_document_bulk(book, 'extended_books')
+
+    book = [ex.book for ex in extended_books]
+    update_document_bulk(book, 'extended_books')
 
 
 def delete(book_id):

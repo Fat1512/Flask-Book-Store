@@ -7,6 +7,7 @@ from app.dao.BookGerneDAO import get_depth_gerne
 from app.dao.SearchDAO import search_book
 from app.utils.admin import profile
 from datetime import datetime
+import hashlib
 from flask_login import current_user
 from app.model.User import User
 from flask import jsonify
@@ -53,6 +54,10 @@ def update_profile():
         if not user:
             return jsonify({"success": False, "message": "User not found"}), 404
 
+        account = user.account
+        if not account:
+            return jsonify({"success": False, "message": "Account not found"}), 404
+
         user.first_name = data.get('first_name', user.first_name)
         user.last_name = data.get('last_name', user.last_name)
         user.email = data.get('email', user.email)
@@ -61,9 +66,31 @@ def update_profile():
         user.date_of_birth = data.get('date_of_birth', user.date_of_birth)
         user.avt_url = data.get('avt_url', user.avt_url)
 
+        current_password = data.get('password')
+        new_password = data.get('newpassword')
+        confirm_password = data.get('confirm')
+
+        if current_password and new_password and confirm_password:
+            # Hash mật khẩu hiện tại và so sánh với mật khẩu trong Account
+            current_password_hashed = hashlib.md5(current_password.encode('utf-8')).hexdigest()
+            if current_password_hashed != account.password:
+                return jsonify({"success": False, "message": "Mật khẩu hiện tại không chính xác"}), 400
+
+            # Kiểm tra mật khẩu mới và xác nhận mật khẩu
+            if new_password != confirm_password:
+                return jsonify({"success": False, "message": "Mật khẩu không trùng khớp"}), 400
+
+            # Cập nhật mật khẩu mới
+            account.password = hashlib.md5(new_password.strip().encode('utf-8')).hexdigest()
+
         db.session.commit()
 
         return jsonify({"success": True, "updated": data}), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({"success": False, "message": str(e)}), 500
+
+
+@index_bp.route('/profile')
+def profile():
+    return render_template('profile.html')

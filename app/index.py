@@ -3,11 +3,12 @@ import pdb
 import threading
 from datetime import datetime
 from threading import Thread
-
+from app.dao.OrderDAO import delete_orders_after_48hrs
 from elasticsearch import Elasticsearch
 from flask_login import current_user
-
+from app.dao.UserDao import get_user_by_id
 import app.controllers.AccountController
+from app import scheduler
 from app.controllers.CartController import cart_bp
 from app.controllers.rest.AccountAPI import account_rest_bp
 from app.controllers.rest.CartAPI import cart_rest_bp
@@ -22,6 +23,7 @@ from app.elasticsearch.KafkaAsysnData import create, update_book_document, delet
     add_attribute_value, modify_attribute_value
 from app.exception.CartItemError import CartItemError
 from app.exception.InsufficientError import InsufficientError
+from app.exception.GeneralInsufficientError import GeneralInsufficientError
 from app.exception.NotFoundError import NotFoundError
 from app.model.User import UserRole
 from flask import render_template, request, redirect, url_for, jsonify, flash
@@ -29,16 +31,20 @@ from app.controllers.SearchController import home_bp
 from app.controllers.HomeController import index_bp
 from app.controllers.EmployeeController import employee_bp
 from app.controllers.OrderController import order_bp
-from app.controllers.rest.BookController import book_rest_bp
+from app.controllers.rest.BookAPI import book_rest_bp
 from app.controllers.rest.AccountAPI import account_rest_bp
 from app.controllers.rest.ConfigAPI import config_api_bp
 from app.controllers.rest.UserAPI import user_api_bp
 from app.controllers.rest.OrderAPI import order_api_bp, update
-from app.controllers.rest.BookGerneController import book_gerne_rest_bp
+from app.controllers.rest.BookGerneAPI import book_gerne_rest_bp
 from app.controllers.AccountController import account_bp
 from app.controllers.AdminController import admin_bp, update_book
 from app.controllers.CartController import cart_bp
 from app.controllers.rest.CartAPI import cart_rest_bp
+from app.utils.admin import profile
+
+from datetime import datetime
+from flask_login import current_user
 from app.utils.admin import profile
 
 app.register_blueprint(home_bp, url_prefix='/search')
@@ -70,6 +76,39 @@ def handle_not_found_error(e):
     })
 
 
+@app.context_processor
+def context():
+    app_context = {
+        "cart_items": None,
+        "total_price": None,
+        'current_year': datetime.now().year,
+        "profile": None
+    }
+
+    if current_user.is_authenticated and current_user.user_role == UserRole.CUSTOMER:
+        user_data = profile()
+
+        cart = find_by_cart_id(user_data.user_id)
+        app_context['cart_items'] = cart.cart_items
+        app_context['total_price'] = cart.total_price()
+        app_context['profile'] = user_data
+        return app_context
+
+    return app_context
+
+
+# @app.context_processor
+# def user_context():
+#     user_data = None
+#     if current_user.is_authenticated:
+#         user_data = profile()
+#
+#     return {
+#         "current_year": datetime.now().year,
+#         "profile": user_data
+#     }
+
+
 @app.errorhandler(InsufficientError)
 def handle_insufficient_error(e):
     update_cart(current_user.get_id(), {
@@ -85,41 +124,13 @@ def handle_insufficient_error(e):
     })
 
 
-@app.errorhandler(CartItemError)
-def handle_cart_item_error(e):
+@app.errorhandler(GeneralInsufficientError)
+def handle_general_insufficient_error(e):
     return jsonify({
         'name': type(e).__name__,  # Get the name of the exception
         "message": e.message,
         "status": e.status_code
     })
-
-
-@app.errorhandler(Exception)
-def handle_exception(e):
-    return jsonify({
-        'name': type(e).__name__,
-        "message": e.message,
-        "status": 500
-    })
-
-
-@app.context_processor
-def context():
-    app_context = {
-        "cart_items": None,
-        "total_price": None,
-        'current_year': datetime.now().year,
-        "profile": None
-    }
-    if current_user.is_authenticated:
-        user_data = profile()
-        cart = find_by_cart_id(user_data.user_id)
-        app_context['cart_items'] = cart.cart_items
-        app_context['total_price'] = cart.total_price()
-        app_context['profile'] = user_data
-        return app_context
-
-    return app_context
 
 
 def consume_kafka(topic):
@@ -233,10 +244,24 @@ def handle_topic_book_gerne(data):
 #     except Exception as e:
 #         print(f"Error handling topic1 message: {e}")
 
+
+
+@scheduler.task('interval', id='my_job', seconds=3600)
+def my_job():
+    with app.app_context():
+        delete_orders_after_48hrs()
+        print('This job is executed every 5 seconds.')
+
+
 @app.route('/status', methods=['GET'])
 def status():
     threads = [{"name": t.name, "alive": t.is_alive()} for t in threading.enumerate()]
     return jsonify({"threads": threads})
+
+
+@login.user_loader
+def get_by_id(user_id):
+    return get_user_by_id(user_id)
 
 
 if __name__ == "__main__":
@@ -244,5 +269,6 @@ if __name__ == "__main__":
     for topic in KAFKA_TOPICS:
         consumer_thread = Thread(target=consume_kafka, args=(topic,), daemon=True)
         consumer_thread.start()
+    scheduler.start()
 
     app.run(debug=True)

@@ -4,6 +4,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import os
 from urllib.parse import quote
+from flask_apscheduler import APScheduler
 from dotenv import dotenv_values, load_dotenv
 import cloudinary
 from flask_login import LoginManager
@@ -11,10 +12,11 @@ from app.utils.helper import format_currency_filter, format_datetime_filter, for
 
 app = Flask(__name__)
 load_dotenv()
+scheduler = APScheduler()
 
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 
-app.secret_key = "8923yhr9fuwnsejksnpok@$I_I@$)opfk"
+app.secret_key = "8923yhr9fuwnsejksnpokff@$I_I@$)opfk"
 app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql+pymysql://root:%s@localhost/book_store' % quote(DB_PASSWORD)
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 
@@ -39,8 +41,6 @@ consumers = {
     }) for topic in app.config['KAFKA_TOPIC']
 }
 
-
-
 cloudinary.config(
     cloud_name="duk7gxwvc",
     api_key="653944787632934",
@@ -53,13 +53,14 @@ app.config['PAGE_SIZE'] = 12
 app.config['ORDER'] = 'desc'
 
 app.config["ORDER_PAGE_SIZE"] = 12
-app.config["IMPORT_PAGE_SIZE"] = 12
+app.config["IMPORT_PAGE_SIZE"] = 20
 app.config["STATISTIC_FRE_PAGE_SIZE"] = 6
 app.config["STATISTIC_REVEN_PAGE_SIZE"] = 5
 app.config["BOOK_PAGE_SIZE"] = 7
 
 db = SQLAlchemy(app=app)
 login = LoginManager(app)
+
 # Register the custom filter in Jinja2
 app.jinja_env.filters['currency'] = format_currency_filter
 app.jinja_env.filters['datetime'] = format_datetime_filter

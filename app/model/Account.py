@@ -1,7 +1,9 @@
 from sqlalchemy import Column, Integer, String, Boolean, Text, Date, DateTime, Enum, ForeignKey
 from app import db, app
 from sqlalchemy.orm import relationship
-from app.model.User import User
+from flask_login import UserMixin
+
+
 class Account(db.Model):
     __tablename__ = 'account'
     account_id = Column(Integer, primary_key=True, autoincrement=True)
@@ -9,7 +11,7 @@ class Account(db.Model):
     password = Column(String(120), nullable=False)
     user_id = Column(Integer, ForeignKey('user.user_id'), nullable=False, unique=True)
 
-    user = relationship('User', backref='account',uselist=False)
+    user = relationship('User', back_populates='account', uselist=False)
 
     # offline_orders = relationship("OfflineOrder", back_populates="employee", lazy=True)
     # online_orders = relationship("OnlineOrder", back_populates="customer", lazy=True)
