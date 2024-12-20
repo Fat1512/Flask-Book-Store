@@ -76,6 +76,39 @@ def handle_not_found_error(e):
     })
 
 
+@app.context_processor
+def context():
+    app_context = {
+        "cart_items": None,
+        "total_price": None,
+        'current_year': datetime.now().year,
+        "profile": None
+    }
+
+    if current_user.is_authenticated:
+        user_data = profile()
+
+        cart = find_by_cart_id(user_data.user_id)
+        app_context['cart_items'] = cart.cart_items
+        app_context['total_price'] = cart.total_price()
+        app_context['profile'] = user_data
+        return app_context
+
+    return app_context
+
+
+# @app.context_processor
+# def user_context():
+#     user_data = None
+#     if current_user.is_authenticated:
+#         user_data = profile()
+#
+#     return {
+#         "current_year": datetime.now().year,
+#         "profile": user_data
+#     }
+
+
 @app.errorhandler(InsufficientError)
 def handle_insufficient_error(e):
     update_cart(current_user.get_id(), {

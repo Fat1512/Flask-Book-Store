@@ -480,7 +480,7 @@
                                                 <label for="username">Tên đăng nhập</label>
                                                 <div style="margin-left:16px; width:75%;">
                                                     <input type="text" id="username" class="form-control"
-                                                           value="{{ profile[0] }}" disabled>
+                                                           value="{{ profile[1] }}" disabled>
                                                     <!-- Chỉ lấy 1 profile -->
                                                 </div>
                                             </div>
@@ -490,12 +490,12 @@
                                                 <label for="first_name">Họ</label>
                                                 <div style="margin-left:17px; width:40%;">
                                                     <input type="text" id="first_name" class="form-control"
-                                                           value="{{ profile[1] }}">
+                                                           value="{{ profile[2] }}">
                                                 </div>
                                                 <label for="last_name" style="margin-left: 25px;">Tên</label>
                                                 <div style="margin-left:17px; width:40%;">
                                                     <input type="text" id="last_name" class="form-control"
-                                                           value="{{ profile[2] }}">
+                                                           value="{{ profile[3] }}">
                                                 </div>
                                             </div>
 
@@ -504,7 +504,7 @@
                                                 <label for="email">Email</label>
                                                 <div style="margin:0 17px; width:75%;">
                                                     <input type="email" id="email" class="form-control"
-                                                           value="{{ profile[3] }}" disabled>
+                                                           value="{{ profile[4] }}" disabled>
                                                 </div>
                                                 <div>
                                                     <button type="submit" class="btn btn-primary edit-btn-email">Sửa
@@ -517,7 +517,7 @@
                                                 <label for="phone">Số điện thoại</label>
                                                 <div style="margin:0 15px; width:62%;">
                                                     <input type="text" id="phone" class="form-control"
-                                                           value="{{ profile[4] }}" disabled>
+                                                           value="{{ profile[5] }}" disabled>
                                                 </div>
                                                 <div>
                                                     <button type="" class="btn btn-primary edit-btn-phone">Sửa</button>
@@ -591,7 +591,7 @@
                                 <!-- Right Side: Profile Picture and Edit -->
                                 <div class="col-6 text-center">
                                     <div class="profile-picture">
-                                        <img src="{{ profile[5] }}" alt="Profile Picture"
+                                        <img src="{{ profile[6] }}" alt="Profile Picture"
                                              class="img-fluid profile-image rounded-circle" id="profileImage">
 
                                     </div>
