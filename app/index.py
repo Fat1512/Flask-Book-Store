@@ -66,15 +66,24 @@ def handle_custom_error(e):
 
 
 @app.context_processor
-def cart_context():
-    cart = find_by_cart_id(2)
-    cart_items = cart.cart_items
-    total_price = cart.total_price()
-
-    return {
-        "cart_items": cart_items,
-        "total_price": total_price
+def context():
+    app_context = {
+        "cart_items": None,
+        "total_price": None,
+        'current_year': datetime.now().year,
+        "profile": None
     }
+
+    if current_user.is_authenticated:
+        user_data = profile()
+
+        cart = find_by_cart_id(user_data.user_id)
+        app_context['cart_items'] = cart.cart_items
+        app_context['total_price'] = cart.total_price()
+        app_context['profile'] = user_data
+        return app_context
+
+    return app_context
 
 
 @app.context_processor

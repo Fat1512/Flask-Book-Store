@@ -8,7 +8,7 @@ from flask import Blueprint
 from app import db
 from app.model.User import User
 from app.model.Account import Account
-
+from flask_login import current_user
 account_bp = Blueprint('account', __name__)
 
 
@@ -35,6 +35,8 @@ def admin_login():
         password = request.form.get('password')
 
         user = UserDao.auth_user(username=username, password=password)
+        print("test", current_user)
+
         if user:
             if user.user_role == UserRole.ADMIN:
                 login_user(user=user)
@@ -64,7 +66,7 @@ def employee_login():
         user = UserDao.auth_user(username=username, password=password)
         if user:
             login_user(user=user)
-
+            print("test", current_user)
             if user.user_role == UserRole.EMPLOYEE_SALE:
                 return redirect(url_for('employee.checkout'))
             elif user.user_role == UserRole.EMPLOYEE_MANAGER_WAREHOUSE:
@@ -143,6 +145,7 @@ def login_process():
 
         if u:
             login_user(u)
+
             return redirect(url_for('index.index'))
         else:
             err_msg = "Tên đăng nhập hoặc mật khẩu không đúng!"

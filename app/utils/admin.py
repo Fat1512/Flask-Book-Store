@@ -499,9 +499,7 @@ def book_management(gerne_id=None, kw=None, price_start=None, price_end=None):
 def bookgerne_management(kw=None):
     query = db.session.query(
         BookGerne.book_gerne_id,
-        BookGerne.name,
-        BookGerne.lft,
-        BookGerne.rgt
+        BookGerne.name
     ).group_by(BookGerne.book_gerne_id, BookGerne.name)
 
     if kw:
@@ -516,6 +514,7 @@ def profile():
         return None  # Trả về None nếu không có người dùng hiện tại (chưa đăng nhập)
 
     query = db.session.query(
+        Account.user_id,
         Account.username,
         User.first_name,
         User.last_name,
