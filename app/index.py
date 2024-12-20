@@ -6,7 +6,7 @@ from threading import Thread
 from app.dao.OrderDAO import delete_orders_after_48hrs
 from elasticsearch import Elasticsearch
 from flask_login import current_user
-
+from app.dao.UserDao import get_user_by_id
 import app.controllers.AccountController
 from app import scheduler
 from app.controllers.CartController import cart_bp
@@ -224,6 +224,11 @@ def my_job():
 def status():
     threads = [{"name": t.name, "alive": t.is_alive()} for t in threading.enumerate()]
     return jsonify({"threads": threads})
+
+
+@login.user_loader
+def get_by_id(user_id):
+    return get_user_by_id(int(user_id))
 
 
 if __name__ == "__main__":

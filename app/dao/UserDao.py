@@ -17,7 +17,7 @@ from sqlalchemy.orm import joinedload
 
 
 def auth_user(username, password, role=None):
-    password = hashlib.md5(password.strip().encode('utf-8')).hexdigest()
+    # password = hashlib.md5(password.strip().encode('utf-8')).hexdigest()
 
     if not username or not password:
         return None
@@ -211,7 +211,12 @@ def check_exists(username=None, email=None):
 
 
 def get_user_by_id(user_id):
-    return User.query.options(joinedload(User.account)).filter_by(user_id=user_id).first()
+    return User.query.get(user_id)
+    # return User.query.options(joinedload(User.account)).filter_by(user_id=user_id).first()
+
+
+def get_account_by_id(account_id):
+    return Account.query.get(account_id)
 
 
 def get_user_by_email(email):

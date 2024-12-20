@@ -17,6 +17,7 @@ employee_bp = Blueprint('employee', __name__)
 
 def employee_required(f):
     def wrap(*args, **kwargs):
+        print("Current", current_user)
         if not current_user.is_authenticated:
             return redirect(url_for('account.employee_login'))
         if current_user.user_role not in [UserRole.EMPLOYEE_SALE, UserRole.EMPLOYEE_MANAGER_WAREHOUSE,
@@ -26,6 +27,7 @@ def employee_required(f):
 
     wrap.__name__ = f.__name__
     return wrap
+
 
 @employee_bp.route("/checkout")
 @employee_required

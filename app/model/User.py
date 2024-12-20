@@ -2,12 +2,10 @@ from sqlalchemy import Column, Integer, String, Boolean, Text, Date, DateTime, E
 from app import db, app
 from sqlalchemy.orm import relationship
 from enum import Enum as RoleEnum
+from flask_login import UserMixin
 from datetime import datetime
 import hashlib
 from app.model.Cart import Cart
-from app.model.Account import Account
-
-from app.model.Address import Address
 
 
 class UserRole(RoleEnum):
@@ -34,10 +32,7 @@ class User(db.Model):
     last_access = Column(DateTime, default=datetime.utcnow)
     user_role = Column(Enum(UserRole), default=UserRole.CUSTOMER)
     address = relationship('Address', backref='user', lazy=True)
-    # order = relationship('Order', backref='user', lazy=True, foreign_keys='Order.user_id')
 
-    account = relationship('Account', back_populates='user', uselist=False)
-    # online_orders = relationship("OnlineOrder", backref="customer", foreign_keys="[Order.customer_id]", lazy=True)
     offline_orders = relationship("OfflineOrder", back_populates="employee", foreign_keys="[OfflineOrder.employee_id]", lazy=True)
     orders = relationship("Order", back_populates="customer", enable_typechecks=False, foreign_keys="[Order.customer_id]", lazy=True)
 
