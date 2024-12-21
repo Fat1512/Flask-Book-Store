@@ -6,7 +6,7 @@ from threading import Thread
 from app.dao.OrderDAO import delete_orders_after_48hrs
 from elasticsearch import Elasticsearch
 from flask_login import current_user
-
+from app.dao.UserDao import get_user_by_id
 import app.controllers.AccountController
 from app import scheduler
 from app.controllers.CartController import cart_bp
@@ -16,11 +16,11 @@ from app.dao.CartDao import update_cart
 from app.controllers.rest.PaymentAPI import payment_rest_bp
 from app.controllers.rest.SearchAPI import search_res_bp
 from app.dao import UserDao
-from app import app, login
+from app import app, login, consumers
 from app.dao.CartDao import find_by_cart_id
-# from app.elasticsearch.BookIndexService import create_document, delete_document
-# from app.elasticsearch.KafkaAsysnData import create, update_book_document, delete, \
-#     add_attribute_value, modify_attribute_value
+from app.elasticsearch.BookIndexService import create_document, delete_document
+from app.elasticsearch.KafkaAsysnData import create, update_book_document, delete, \
+    add_attribute_value, modify_attribute_value
 from app.exception.CartItemError import CartItemError
 from app.exception.InsufficientError import InsufficientError
 from app.exception.GeneralInsufficientError import GeneralInsufficientError
@@ -41,6 +41,8 @@ from app.controllers.AccountController import account_bp
 from app.controllers.AdminController import admin_bp
 from app.controllers.CartController import cart_bp
 from app.controllers.rest.CartAPI import cart_rest_bp
+from app.utils.admin import profile
+
 from datetime import datetime
 from flask_login import current_user
 from app.utils.admin import profile
@@ -74,37 +76,37 @@ def handle_not_found_error(e):
     })
 
 
+@app.context_processor
+def context():
+    app_context = {
+        "cart_items": None,
+        "total_price": None,
+        'current_year': datetime.now().year,
+        "profile": None
+    }
+
+    if current_user.is_authenticated and current_user.user_role == UserRole.CUSTOMER:
+        user_data = profile()
+
+        cart = find_by_cart_id(user_data.user_id)
+        app_context['cart_items'] = cart.cart_items
+        app_context['total_price'] = cart.total_price()
+        app_context['profile'] = user_data
+        return app_context
+
+    return app_context
+
+
 # @app.context_processor
-# def context():
-#     app_context = {
-#         "cart_items": None,
-#         "total_price": None,
-#         'current_year': datetime.now().year,
-#         "profile": None
-#     }
-#
+# def user_context():
+#     user_data = None
 #     if current_user.is_authenticated:
 #         user_data = profile()
 #
-#         cart = find_by_cart_id(user_data.user_id)
-#         app_context['cart_items'] = cart.cart_items
-#         app_context['total_price'] = cart.total_price()
-#         app_context['profile'] = user_data
-#         return app_context
-#
-#     return app_context
-
-
-@app.context_processor
-def user_context():
-    user_data = None
-    if current_user.is_authenticated:
-        user_data = profile()
-
-    return {
-        "current_year": datetime.now().year,
-        "profile": user_data
-    }
+#     return {
+#         "current_year": datetime.now().year,
+#         "profile": user_data
+#     }
 
 
 @app.errorhandler(InsufficientError)
@@ -244,7 +246,7 @@ def handle_topic_book_gerne(data):
 
 
 
-@scheduler.task('interval', id='my_job', seconds=5)
+@scheduler.task('interval', id='my_job', seconds=3600)
 def my_job():
     with app.app_context():
         delete_orders_after_48hrs()
@@ -255,6 +257,11 @@ def my_job():
 def status():
     threads = [{"name": t.name, "alive": t.is_alive()} for t in threading.enumerate()]
     return jsonify({"threads": threads})
+
+
+@login.user_loader
+def get_by_id(user_id):
+    return get_user_by_id(user_id)
 
 
 if __name__ == "__main__":

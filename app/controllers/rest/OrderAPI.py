@@ -7,8 +7,7 @@ from app.dao.UserDao import *
 from app.dao.FormImportDAO import *
 from flask import Blueprint, jsonify
 from flask import render_template, request
-import json
-
+from app.controllers.EmployeeController import employee_required
 order_api_bp = Blueprint('/api/v1/order', __name__)
 
 
@@ -42,6 +41,7 @@ def get_order():
 
 
 @order_api_bp.route("/<int:order_id>/update", methods=['POST'])
+@employee_required
 def update(order_id):
     update_order(order_id, request.json)
     return jsonify({
@@ -52,6 +52,7 @@ def update(order_id):
 
 
 @order_api_bp.route("/add", methods=['POST'], endpoint='test_add')
+@employee_required
 def offline_order():
     order_list = request.json['orderList']
     customer_info = request.json['customerInfo']
@@ -60,7 +61,9 @@ def offline_order():
     if bool(customer_info):
         user = find_by_customer_id_phone_number(int(customer_info['id']), str(customer_info['phone_number']))
 
-    order = create_offline_order(order_list, user)
+    employee_id = current_user.get_id()
+    order = create_offline_order(order_list=order_list, user=user, employee_id=employee_id)
+
     return jsonify({
         "message": "Successfully Created",
         "status": 200,
@@ -74,7 +77,7 @@ def online_order():
     order = create_online_order(current_user.get_id(), data)
 
     for book in data['books']:
-        delete_cart_item(current_user.get_id(),book['bookId'])
+        delete_cart_item(current_user.get_id(), book['bookId'])
 
     return jsonify({
         "message": "Success",
@@ -95,6 +98,7 @@ def cancel_order():
 
 
 @order_api_bp.route("/<order_id>/status", methods=['POST'])
+@employee_required
 def update_status(order_id):
     status = request.json.get("orderStatusId")
     status_enum = OrderStatus(int(status))
@@ -121,9 +125,3 @@ def find(order_id):
         'status': 200,
         'data': order
     })
-
-
-@order_api_bp.route("/test/<int:order_id>", methods=["GET"])
-def test_order(order_id):
-    return find_form_imports()
-    # calculate_total_order_amount(order_id)

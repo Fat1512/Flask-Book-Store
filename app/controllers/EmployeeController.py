@@ -31,6 +31,7 @@ def employee_required(f):
     return wrap
 
 
+
 def employee_sale_required(f):
     def wrap(*args, **kwargs):
         print("yest1", current_user.is_authenticated)
@@ -126,14 +127,6 @@ def get_order_detail(order_id):
     order = find_by_id(order_id)
     today = datetime.utcnow()
     return render_template("employee/employeeOrderDetail.html", order=order, today=today)
-
-
-# @employee_bp.route("/category")
-# def get_category():
-#     with open('data/category.json', encoding="utf8") as f:
-#         data = json.load(f)
-#         categories = data[0:4]
-#     return categories
 
 
 @employee_bp.route("/import")

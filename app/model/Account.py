@@ -1,7 +1,7 @@
-from sqlalchemy import Column, Integer, String, Boolean, Text, Date, DateTime, Enum, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey
 from app import db, app
 from sqlalchemy.orm import relationship
-from app.model.User import User
+from flask_login import UserMixin
 
 class Account(db.Model):
     __tablename__ = 'account'
@@ -10,7 +10,7 @@ class Account(db.Model):
     password = Column(String(120), nullable=False)
     user_id = Column(Integer, ForeignKey('user.user_id'), nullable=False, unique=True)
 
-    user = relationship('User',backref='account',uselist=False)
+    user = relationship('User',backref_populates='account',uselist=False)
 
     # offline_orders = relationship("OfflineOrder", back_populates="employee", lazy=True)
     # online_orders = relationship("OnlineOrder", back_populates="customer", lazy=True)
@@ -19,7 +19,7 @@ class Account(db.Model):
 
     @property
     def is_active(self):
-        return self.isActive
+        return True
 
     @property
     def is_authenticated(self):
