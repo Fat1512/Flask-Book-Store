@@ -57,6 +57,29 @@ def admin_logout():
     return redirect(url_for('account.admin_login'))
 
 
+@account_bp.route("/admin-forgot", methods=['GET', 'POST'])
+def admin_forgot():
+    err_msg = ''
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        confirm = request.form.get('confirm')
+        if not email or not password or not confirm:
+            err_msg = 'Vui lòng điền đầy đủ thông tin!'
+        else:
+            email = email.strip()
+            account = db.session.query(Account).join(User).filter(User.email == email).first()
+            if account is None:
+                err_msg = 'Email không tồn tại!'
+            elif password != confirm:
+                err_msg = 'Mật khẩu và xác nhận mật khẩu không trùng khớp!'
+            else:
+                UserDao.update_password(username=account.username, password=password)
+                return redirect(url_for('account.admin_login'))
+
+    return render_template("admin-forgotpass.html", err_msg=err_msg)
+
+
 @account_bp.route('/employee-login', methods=['GET', 'POST'])
 def employee_login():
     err_msg = ''
@@ -68,12 +91,8 @@ def employee_login():
         if user:
             login_user(user=user)
 
-            if user.user_role == UserRole.EMPLOYEE_SALE:
-                return redirect(url_for('employee.checkout'))
-            elif user.user_role == UserRole.EMPLOYEE_MANAGER_WAREHOUSE:
-                return redirect(url_for('employee.checkout'))
-            elif user.user_role == UserRole.EMPLOYEE_MANAGER:
-                return redirect(url_for('employee.checkout'))
+            if user.user_role == UserRole.EMPLOYEE_SALE or user.user_role == UserRole.EMPLOYEE_MANAGER_WAREHOUSE or user.user_role == UserRole.EMPLOYEE_MANAGER:
+                return redirect(url_for('employee.employee_profile'))
             else:
                 err_msg = "Vai trò không hợp lệ!"
         else:
@@ -126,6 +145,29 @@ def employee_login():
 def employee_logout():
     logout_user()
     return redirect(url_for('account.employee_login'))
+
+
+@account_bp.route("/employee-forgot", methods=['GET', 'POST'])
+def employee_forgot():
+    err_msg = ''
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        confirm = request.form.get('confirm')
+        if not email or not password or not confirm:
+            err_msg = 'Vui lòng điền đầy đủ thông tin!'
+        else:
+            email = email.strip()
+            account = db.session.query(Account).join(User).filter(User.email == email).first()
+            if account is None:
+                err_msg = 'Email không tồn tại!'
+            elif password != confirm:
+                err_msg = 'Mật khẩu và xác nhận mật khẩu không trùng khớp!'
+            else:
+                UserDao.update_password(username=account.username, password=password)
+                return redirect(url_for('account.employee_login'))
+
+    return render_template("employee-forgotpass.html", err_msg=err_msg)
 
 
 

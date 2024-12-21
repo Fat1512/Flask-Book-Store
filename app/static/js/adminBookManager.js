@@ -29,7 +29,7 @@ function populateGerneList(gernes, filter = "") {
             gerneList.style.display = "none";
 
             // Redirect to statistic page with gerne_id
-            window.location.href = `/admin/book-manager?gerne_id=${gerne.id}`;
+            window.location.href = `/employee/book-manager?gerne_id=${gerne.id}`;
         });
         gerneList.appendChild(item);
     });

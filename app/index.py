@@ -16,11 +16,11 @@ from app.dao.CartDao import update_cart
 from app.controllers.rest.PaymentAPI import payment_rest_bp
 from app.controllers.rest.SearchAPI import search_res_bp
 from app.dao import UserDao
-from app import app, login, consumers
+from app import app, login
 from app.dao.CartDao import find_by_cart_id
-from app.elasticsearch.BookIndexService import create_document, delete_document
-from app.elasticsearch.KafkaAsysnData import create, update_book_document, delete, \
-    add_attribute_value, modify_attribute_value
+# from app.elasticsearch.BookIndexService import create_document, delete_document
+# from app.elasticsearch.KafkaAsysnData import create, update_book_document, delete, \
+#     add_attribute_value, modify_attribute_value
 from app.exception.CartItemError import CartItemError
 from app.exception.InsufficientError import InsufficientError
 from app.exception.GeneralInsufficientError import GeneralInsufficientError
@@ -38,11 +38,9 @@ from app.controllers.rest.UserAPI import user_api_bp
 from app.controllers.rest.OrderAPI import order_api_bp, update
 from app.controllers.rest.BookGerneAPI import book_gerne_rest_bp
 from app.controllers.AccountController import account_bp
-from app.controllers.AdminController import admin_bp, update_book
+from app.controllers.AdminController import admin_bp
 from app.controllers.CartController import cart_bp
 from app.controllers.rest.CartAPI import cart_rest_bp
-from app.utils.admin import profile
-
 from datetime import datetime
 from flask_login import current_user
 from app.utils.admin import profile
@@ -76,37 +74,37 @@ def handle_not_found_error(e):
     })
 
 
-@app.context_processor
-def context():
-    app_context = {
-        "cart_items": None,
-        "total_price": None,
-        'current_year': datetime.now().year,
-        "profile": None
-    }
-
-    if current_user.is_authenticated:
-        user_data = profile()
-
-        cart = find_by_cart_id(user_data.user_id)
-        app_context['cart_items'] = cart.cart_items
-        app_context['total_price'] = cart.total_price()
-        app_context['profile'] = user_data
-        return app_context
-
-    return app_context
-
-
 # @app.context_processor
-# def user_context():
-#     user_data = None
+# def context():
+#     app_context = {
+#         "cart_items": None,
+#         "total_price": None,
+#         'current_year': datetime.now().year,
+#         "profile": None
+#     }
+#
 #     if current_user.is_authenticated:
 #         user_data = profile()
 #
-#     return {
-#         "current_year": datetime.now().year,
-#         "profile": user_data
-#     }
+#         cart = find_by_cart_id(user_data.user_id)
+#         app_context['cart_items'] = cart.cart_items
+#         app_context['total_price'] = cart.total_price()
+#         app_context['profile'] = user_data
+#         return app_context
+#
+#     return app_context
+
+
+@app.context_processor
+def user_context():
+    user_data = None
+    if current_user.is_authenticated:
+        user_data = profile()
+
+    return {
+        "current_year": datetime.now().year,
+        "profile": user_data
+    }
 
 
 @app.errorhandler(InsufficientError)

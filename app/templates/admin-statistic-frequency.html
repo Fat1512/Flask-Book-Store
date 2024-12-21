@@ -82,17 +82,18 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="/admin/config">
+                            <i class="ni ni-circle-08 text-pink"></i>
+                            <span class="nav-link-text">Thay đổi cấu hình</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="/admin/profile">
                             <i class="ni ni-key-25 text-info"></i>
                             <span class="nav-link-text">Hồ sơ</span>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="register.html">
-                            <i class="ni ni-circle-08 text-pink"></i>
-                            <span class="nav-link-text">Register</span>
-                        </a>
-                    </li>
+
                     <li class="nav-item">
                         <a class="nav-link" href="upgrade.html">
                             <i class="ni ni-send text-dark"></i>
@@ -723,87 +724,88 @@
         // Kiểm tra nếu giá trị doanh thu là None và thay thế bằng 0
         data.push({{ s[3] }}); // Doanh thu (thay None bằng 0)
         {% endfor %}
+    });
 
-        // Kiểm tra dữ liệu có hợp lệ không
-        if (labels.length === 0 || data.length === 0) {
-            alert("Không có dữ liệu để hiển thị biểu đồ!");
-            return;
-        }
+    // Kiểm tra dữ liệu có hợp lệ không
+    if (labels.length === 0 || data.length === 0) {
+        alert("Không có dữ liệu để hiển thị biểu đồ!");
+        return;
+    }
 
-        // Tạo biểu đồ mới
-        window.myChartInstance = new Chart(ctx, {
-    type: 'pie',
-    data: {
-        labels: labels,
-        datasets: [{
-            label: 'Doanh thu',
-            data: data,
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.8)',
-                'rgba(54, 162, 235, 0.8)',
-                'rgba(255, 206, 86, 0.8)',
-                'rgba(75, 192, 192, 0.8)',
-                'rgba(153, 102, 255, 0.8)',
-                'rgba(255, 159, 64, 0.8)'
-            ],
-            borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)'
-            ],
-            borderWidth: 2, // Độ rộng viền tăng lên để làm nổi bật các phần
-            hoverOffset: 10 // Tạo hiệu ứng "phóng to" khi hover
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'left',  // Đặt mục lục ở trên
-                align: 'center',  // Căn giữa mục lục
-                labels: {
-                    padding: 20,  // Khoảng cách giữa các mục lục
-                    font: {
-                        size: 14,  // Kích thước chữ mục lục lớn hơn
-                        weight: 'bold', // In đậm mục lục
-                        family: "'Poppins', sans-serif" // Chọn font chữ đẹp, hiện đại
-                    },
-                    color: '#333'  // Màu chữ của mục lục
-                }
-            },
-            tooltip: {
-                callbacks: {
-                    label: function(tooltipItem) {
-                        // Định dạng tooltip để hiển thị giá trị và đơn vị
-                        return `${tooltipItem.label}: ${tooltipItem.raw.toLocaleString()} cuốn`;
+    // Tạo biểu đồ mới
+    window.myChartInstance = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Doanh thu',
+                data: data,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(255, 206, 86, 0.8)',
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(153, 102, 255, 0.8)',
+                    'rgba(255, 159, 64, 0.8)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 2, // Độ rộng viền tăng lên để làm nổi bật các phần
+                hoverOffset: 10 // Tạo hiệu ứng "phóng to" khi hover
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'left',  // Đặt mục lục ở trên
+                    align: 'center',  // Căn giữa mục lục
+                    labels: {
+                        padding: 20,  // Khoảng cách giữa các mục lục
+                        font: {
+                            size: 14,  // Kích thước chữ mục lục lớn hơn
+                            weight: 'bold', // In đậm mục lục
+                            family: "'Poppins', sans-serif" // Chọn font chữ đẹp, hiện đại
+                        },
+                        color: '#333'  // Màu chữ của mục lục
                     }
                 },
-                backgroundColor: 'rgba(0, 0, 0, 0.7)', // Nền tooltip tối để dễ nhìn
-                titleFont: { size: 16, weight: 'bold' },
-                bodyFont: { size: 14 },
-                borderWidth: 1,
-                borderColor: '#fff'
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            // Định dạng tooltip để hiển thị giá trị và đơn vị
+                            return `${tooltipItem.label}: ${tooltipItem.raw.toLocaleString()} cuốn`;
+                        }
+                    },
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)', // Nền tooltip tối để dễ nhìn
+                    titleFont: { size: 16, weight: 'bold' },
+                    bodyFont: { size: 14 },
+                    borderWidth: 1,
+                    borderColor: '#fff'
+                }
+            },
+            layout: {
+                padding: {
+                    top: 40,    // Tăng khoảng cách trên để tạo không gian
+                    bottom: 40, // Tăng khoảng cách dưới
+                    left: 30,   // Khoảng cách trái
+                    right: 30   // Khoảng cách phải
+                }
+            },
+            animation: {
+                duration: 1000, // Thời gian animation để biểu đồ thêm mượt mà
+                easing: 'easeOutBounce' // Hiệu ứng bounce khi biểu đồ load
             }
-        },
-        layout: {
-            padding: {
-                top: 40,    // Tăng khoảng cách trên để tạo không gian
-                bottom: 40, // Tăng khoảng cách dưới
-                left: 30,   // Khoảng cách trái
-                right: 30   // Khoảng cách phải
-            }
-        },
-        animation: {
-            duration: 1000, // Thời gian animation để biểu đồ thêm mượt mà
-            easing: 'easeOutBounce' // Hiệu ứng bounce khi biểu đồ load
         }
-    }
-});
     });
+
 </script>
 
 
@@ -819,25 +821,6 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"
         integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
-<script src="{{ url_for('static', filename='js/adminStatistic.js') }}"></script>
-
-<!--<script>-->
-<!--    const statisticTableCheck = document.getElementById("statistic-table-check");-->
-<!--    const statisticChartCheck = document.getElementById("statistic-chart-check");-->
-<!--    const statisticTable = document.getElementById("statistic-table");-->
-<!--    const statisticChart = document.getElementById("statistic-chart");-->
-<!--    statisticTableCheck.addEventListener("click", (event) => {-->
-<!--        statisticTable.style.display = "block";-->
-<!--        statisticChart.style.display = "none";-->
-<!--    });-->
-
-
-<!--    statisticChartCheck.addEventListener("click", (event) => {-->
-<!--        statisticTable.style.display = "none";-->
-<!--        statisticChart.style.display = "block";-->
-<!--    });-->
-<!--});-->
-<!--</script>-->
 
 </body>
 </html>

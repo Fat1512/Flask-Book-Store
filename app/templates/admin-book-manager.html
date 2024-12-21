@@ -82,17 +82,18 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="/admin/config">
+                            <i class="ni ni-circle-08 text-pink"></i>
+                            <span class="nav-link-text">Thay đổi cấu hình</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="/admin/profile">
                             <i class="ni ni-key-25 text-info"></i>
                             <span class="nav-link-text">Hồ sơ</span>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="register.html">
-                            <i class="ni ni-circle-08 text-pink"></i>
-                            <span class="nav-link-text">Register</span>
-                        </a>
-                    </li>
+
                     <li class="nav-item">
                         <a class="nav-link" href="upgrade.html">
                             <i class="ni ni-send text-dark"></i>
@@ -591,9 +592,6 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.edit-btn').forEach(button => {
@@ -727,91 +725,91 @@
 
 
 <script>
-    <!--    document.addEventListener('DOMContentLoaded', function() {-->
-    <!--    document.querySelectorAll('.edit-btn').forEach(button => {-->
-    <!--        button.addEventListener('click', function(event) {-->
-    <!--            event.preventDefault();-->
-
-    <!--            // Lấy dòng tr và id sách-->
-    <!--            const row = this.closest('tr');-->
-    <!--            const bookId = row.getAttribute('data-id');-->
-
-    <!--            // Chuyển các ô dữ liệu thành input-->
-    <!--            row.querySelectorAll('.budget').forEach(cell => {-->
-    <!--                const cellContent = cell.textContent.trim();-->
-    <!--                const field = cell.dataset.field; // Lấy tên trường từ data-field-->
-    <!--                if (field) {-->
-    <!--                    cell.innerHTML = `<input type="text" value="${cellContent}" class="edit-input" data-field="${field}">`;-->
-    <!--                }-->
-    <!--            });-->
-
-    <!--            // Ẩn dropdown list khi chỉnh sửa-->
-    <!--            row.querySelectorAll('.dropdown-btn').forEach(dropdown => {-->
-    <!--                dropdown.style.display = 'none'; // Ẩn dropdown-->
-    <!--            });-->
-
-    <!--            // Thêm nút "Cập nhật"-->
-    <!--            const updateButton = document.createElement('button');-->
-    <!--            updateButton.style.marginLeft = '15px';-->
-    <!--            updateButton.style.padding = '12px';-->
-    <!--            updateButton.textContent = 'Cập nhật';-->
-    <!--            updateButton.className = 'update-btn btn btn-success btn-sm';-->
-    <!--            row.querySelector('td:first-child').appendChild(updateButton);-->
-
-    <!--            // Ẩn nút "Sửa"-->
-    <!--            this.style.display = 'none';-->
-
-    <!--            // Xử lý khi bấm "Cập nhật"-->
-    <!--            updateButton.addEventListener('click', function() {-->
-    <!--                const updatedData = {};-->
-
-    <!--                // Thu thập dữ liệu từ các ô input-->
-    <!--                row.querySelectorAll('.edit-input').forEach(input => {-->
-    <!--                    const field = input.dataset.field;-->
-    <!--                    updatedData[field] = input.value;-->
-    <!--                });-->
-
-    <!--                console.log('Updated data being sent:', updatedData);-->
-
-    <!--                // Gửi yêu cầu POST để cập nhật-->
-    <!--                fetch(`/admin/update-book/${bookId}`, {  // Đổi URL này-->
-    <!--                    method: 'POST',-->
-    <!--                    headers: {-->
-    <!--                        'Content-Type': 'application/json',-->
-    <!--                    },-->
-    <!--                    body: JSON.stringify(updatedData)-->
-    <!--                })-->
-    <!--                .then(response => response.json())-->
-    <!--                .then(data => {-->
-    <!--                    if (data.success) {-->
-    <!--                        // Cập nhật giao diện với dữ liệu trả về-->
-    <!--                        const updatedFields = data.updated;-->
-    <!--                        for (const [field, value] of Object.entries(updatedFields)) {-->
-    <!--                            const cell = row.querySelector(`[data-field="${field}"]`);-->
-    <!--                            if (cell) {-->
-    <!--                                cell.innerHTML = value; // Cập nhật lại nội dung cell-->
-    <!--                            }-->
-    <!--                        }-->
-
-    <!--                        // Xóa nút "Cập nhật" và hiển thị lại nút "Sửa"-->
-    <!--                        updateButton.remove();-->
-    <!--                        row.querySelector('.edit-btn').style.display = 'inline-block';-->
-
-    <!--                        // Hiển thị lại nút dropdown list-->
-    <!--                        row.querySelectorAll('.dropdown-btn').forEach(dropdown => {-->
-    <!--                            dropdown.style.display = 'inline-block'; // Hiển thị lại dropdown-->
-    <!--                        });-->
-    <!--                    } else {-->
-    <!--                        alert('Cập nhật thất bại: ' + (data.message || 'Lỗi không xác định'));-->
-    <!--                    }-->
-    <!--                })-->
-    <!--                .catch(error => {-->
-    <!--                    console.error('Error updating book:', error);-->
-    <!--                    alert('Đã xảy ra lỗi trong quá trình cập nhật.');-->
-    <!--                });-->
-    <!--            });-->
-    <!--        });-->
-    <!--    });-->
+//    <!--    document.addEventListener('DOMContentLoaded', function() {-->
+//    <!--    document.querySelectorAll('.edit-btn').forEach(button => {-->
+//    <!--        button.addEventListener('click', function(event) {-->
+//    <!--            event.preventDefault();-->
+//
+//    <!--            // Lấy dòng tr và id sách-->
+//    <!--            const row = this.closest('tr');-->
+//    <!--            const bookId = row.getAttribute('data-id');-->
+//
+//    <!--            // Chuyển các ô dữ liệu thành input-->
+//    <!--            row.querySelectorAll('.budget').forEach(cell => {-->
+//    <!--                const cellContent = cell.textContent.trim();-->
+//    <!--                const field = cell.dataset.field; // Lấy tên trường từ data-field-->
+//    <!--                if (field) {-->
+//    <!--                    cell.innerHTML = `<input type="text" value="${cellContent}" class="edit-input" data-field="${field}">`;-->
+//    <!--                }-->
+//    <!--            });-->
+//
+//    <!--            // Ẩn dropdown list khi chỉnh sửa-->
+//    <!--            row.querySelectorAll('.dropdown-btn').forEach(dropdown => {-->
+//    <!--                dropdown.style.display = 'none'; // Ẩn dropdown-->
+//    <!--            });-->
+//
+//    <!--            // Thêm nút "Cập nhật"-->
+//    <!--            const updateButton = document.createElement('button');-->
+//    <!--            updateButton.style.marginLeft = '15px';-->
+//    <!--            updateButton.style.padding = '12px';-->
+//    <!--            updateButton.textContent = 'Cập nhật';-->
+//    <!--            updateButton.className = 'update-btn btn btn-success btn-sm';-->
+//    <!--            row.querySelector('td:first-child').appendChild(updateButton);-->
+//
+//    <!--            // Ẩn nút "Sửa"-->
+//    <!--            this.style.display = 'none';-->
+//
+//    <!--            // Xử lý khi bấm "Cập nhật"-->
+//    <!--            updateButton.addEventListener('click', function() {-->
+//    <!--                const updatedData = {};-->
+//
+//    <!--                // Thu thập dữ liệu từ các ô input-->
+//    <!--                row.querySelectorAll('.edit-input').forEach(input => {-->
+//    <!--                    const field = input.dataset.field;-->
+//    <!--                    updatedData[field] = input.value;-->
+//    <!--                });-->
+//
+//    <!--                console.log('Updated data being sent:', updatedData);-->
+//
+//    <!--                // Gửi yêu cầu POST để cập nhật-->
+//    <!--                fetch(`/admin/update-book/${bookId}`, {  // Đổi URL này-->
+//    <!--                    method: 'POST',-->
+//    <!--                    headers: {-->
+//    <!--                        'Content-Type': 'application/json',-->
+//    <!--                    },-->
+//    <!--                    body: JSON.stringify(updatedData)-->
+//    <!--                })-->
+//    <!--                .then(response => response.json())-->
+//    <!--                .then(data => {-->
+//    <!--                    if (data.success) {-->
+//    <!--                        // Cập nhật giao diện với dữ liệu trả về-->
+//    <!--                        const updatedFields = data.updated;-->
+//    <!--                        for (const [field, value] of Object.entries(updatedFields)) {-->
+//    <!--                            const cell = row.querySelector(`[data-field="${field}"]`);-->
+//    <!--                            if (cell) {-->
+//    <!--                                cell.innerHTML = value; // Cập nhật lại nội dung cell-->
+//    <!--                            }-->
+//    <!--                        }-->
+//
+//    <!--                        // Xóa nút "Cập nhật" và hiển thị lại nút "Sửa"-->
+//    <!--                        updateButton.remove();-->
+//    <!--                        row.querySelector('.edit-btn').style.display = 'inline-block';-->
+//
+//    <!--                        // Hiển thị lại nút dropdown list-->
+//    <!--                        row.querySelectorAll('.dropdown-btn').forEach(dropdown => {-->
+//    <!--                            dropdown.style.display = 'inline-block'; // Hiển thị lại dropdown-->
+//    <!--                        });-->
+//    <!--                    } else {-->
+//    <!--                        alert('Cập nhật thất bại: ' + (data.message || 'Lỗi không xác định'));-->
+//    <!--                    }-->
+//    <!--                })-->
+//    <!--                .catch(error => {-->
+//    <!--                    console.error('Error updating book:', error);-->
+//    <!--                    alert('Đã xảy ra lỗi trong quá trình cập nhật.');-->
+//    <!--                });-->
+//    <!--            });-->
+//    <!--        });-->
+//    <!--    });-->
 
         document.querySelectorAll('.delete-btn').forEach(button => {
         button.addEventListener('click', function(event) {

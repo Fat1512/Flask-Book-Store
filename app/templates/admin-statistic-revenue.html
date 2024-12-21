@@ -82,17 +82,18 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="/admin/config">
+                            <i class="ni ni-circle-08 text-pink"></i>
+                            <span class="nav-link-text">Thay đổi cấu hình</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="/admin/profile">
                             <i class="ni ni-key-25 text-info"></i>
                             <span class="nav-link-text">Hồ sơ</span>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="register.html">
-                            <i class="ni ni-circle-08 text-pink"></i>
-                            <span class="nav-link-text">Register</span>
-                        </a>
-                    </li>
+
                     <li class="nav-item">
                         <a class="nav-link" href="upgrade.html">
                             <i class="ni ni-send text-dark"></i>
@@ -699,91 +700,91 @@
         let data = [];
         let labels = [];
 
-        {% for s in full_stats %}
+    {% for s in full_stats %}
         labels.push('{{ s[1] }}');  // Tên thể loại
-        // Kiểm tra nếu giá trị doanh thu là None và thay thế bằng 0
-        data.push({{ s[2] if s[2] is not none else 0 }}); // Doanh thu (thay None bằng 0)
-        {% endfor %}
+    // Kiểm tra nếu giá trị doanh thu là None và thay thế bằng 0
+    data.push({{ s[2] if s[2] is not none else 0 }}); // Doanh thu (thay None bằng 0)
+    {% endfor %}
 
-        // Kiểm tra dữ liệu có hợp lệ không
-        if (labels.length === 0 || data.length === 0) {
-            alert("Không có dữ liệu để hiển thị biểu đồ!");
-            return;
-        }
+    // Kiểm tra dữ liệu có hợp lệ không
+    if (labels.length === 0 || data.length === 0) {
+    alert("Không có dữ liệu để hiển thị biểu đồ!");
+    return;
+    }
 
-        // Tạo biểu đồ mới
-        window.myChartInstance = new Chart(ctx, {
+    // Tạo biểu đồ mới
+    window.myChartInstance = new Chart(ctx, {
     type: 'pie',
     data: {
-        labels: labels,
-        datasets: [{
-            label: 'Doanh thu',
-            data: data,
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.8)',
-                'rgba(54, 162, 235, 0.8)',
-                'rgba(255, 206, 86, 0.8)',
-                'rgba(75, 192, 192, 0.8)',
-                'rgba(153, 102, 255, 0.8)',
-                'rgba(255, 159, 64, 0.8)'
-            ],
-            borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)'
-            ],
-            borderWidth: 2, // Độ rộng viền tăng lên để làm nổi bật các phần
-            hoverOffset: 10 // Tạo hiệu ứng "phóng to" khi hover
-        }]
+    labels: labels,
+    datasets: [{
+    label: 'Doanh thu',
+    data: data,
+    backgroundColor: [
+    'rgba(255, 99, 132, 0.8)',
+    'rgba(54, 162, 235, 0.8)',
+    'rgba(255, 206, 86, 0.8)',
+    'rgba(75, 192, 192, 0.8)',
+    'rgba(153, 102, 255, 0.8)',
+    'rgba(255, 159, 64, 0.8)'
+    ],
+    borderColor: [
+    'rgba(255, 99, 132, 1)',
+    'rgba(54, 162, 235, 1)',
+    'rgba(255, 206, 86, 1)',
+    'rgba(75, 192, 192, 1)',
+    'rgba(153, 102, 255, 1)',
+    'rgba(255, 159, 64, 1)'
+    ],
+    borderWidth: 2, // Độ rộng viền tăng lên để làm nổi bật các phần
+    hoverOffset: 10 // Tạo hiệu ứng "phóng to" khi hover
+    }]
     },
     options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'left',  // Đặt mục lục ở trên
-                align: 'center',  // Căn giữa mục lục
-                labels: {
-                    padding: 20,  // Khoảng cách giữa các mục lục
-                    font: {
-                        size: 14,  // Kích thước chữ mục lục lớn hơn
-                        weight: 'bold', // In đậm mục lục
-                        family: "'Poppins', sans-serif" // Chọn font chữ đẹp, hiện đại
-                    },
-                    color: '#333'  // Màu chữ của mục lục
-                }
-            },
-            tooltip: {
-                callbacks: {
-                    label: function(tooltipItem) {
-                        // Định dạng tooltip để hiển thị giá trị và đơn vị
-                        return `${tooltipItem.label}: ${tooltipItem.raw.toLocaleString()} VNĐ`;
-                    }
-                },
-                backgroundColor: 'rgba(0, 0, 0, 0.7)', // Nền tooltip tối để dễ nhìn
-                titleFont: { size: 16, weight: 'bold' },
-                bodyFont: { size: 14 },
-                borderWidth: 1,
-                borderColor: '#fff'
-            }
-        },
-        layout: {
-            padding: {
-                top: 40,    // Tăng khoảng cách trên để tạo không gian
-                bottom: 40, // Tăng khoảng cách dưới
-                left: 30,   // Khoảng cách trái
-                right: 30   // Khoảng cách phải
-            }
-        },
-        animation: {
-            duration: 1000, // Thời gian animation để biểu đồ thêm mượt mà
-            easing: 'easeOutBounce' // Hiệu ứng bounce khi biểu đồ load
-        }
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+    legend: {
+    position: 'left',  // Đặt mục lục ở trên
+    align: 'center',  // Căn giữa mục lục
+    labels: {
+    padding: 20,  // Khoảng cách giữa các mục lục
+    font: {
+    size: 14,  // Kích thước chữ mục lục lớn hơn
+    weight: 'bold', // In đậm mục lục
+    family: "'Poppins', sans-serif" // Chọn font chữ đẹp, hiện đại
+    },
+    color: '#333'  // Màu chữ của mục lục
     }
-});
+    },
+    tooltip: {
+    callbacks: {
+    label: function(tooltipItem) {
+    // Định dạng tooltip để hiển thị giá trị và đơn vị
+    return `${tooltipItem.label}: ${tooltipItem.raw.toLocaleString()} VNĐ`;
+    }
+    },
+    backgroundColor: 'rgba(0, 0, 0, 0.7)', // Nền tooltip tối để dễ nhìn
+    titleFont: { size: 16, weight: 'bold' },
+    bodyFont: { size: 14 },
+    borderWidth: 1,
+    borderColor: '#fff'
+    }
+    },
+    layout: {
+    padding: {
+    top: 40,    // Tăng khoảng cách trên để tạo không gian
+    bottom: 40, // Tăng khoảng cách dưới
+    left: 30,   // Khoảng cách trái
+    right: 30   // Khoảng cách phải
+    }
+    },
+    animation: {
+    duration: 1000, // Thời gian animation để biểu đồ thêm mượt mà
+    easing: 'easeOutBounce' // Hiệu ứng bounce khi biểu đồ load
+    }
+    }
+    });
 
     });
 
@@ -792,149 +793,149 @@
 
     // Hiển thị biểu đồ và ẩn bảng khi chọn "Xem biểu đồ"
     statisticChartMonthCheck.addEventListener("click", () => {
-        statisticTableMonth.style.display = "none";
-        statisticChartMonth.style.display = "block";
-        statisticTable.style.display = "none";
-        statisticChart.style.display = "none";
+    statisticTableMonth.style.display = "none";
+    statisticChartMonth.style.display = "block";
+    statisticTable.style.display = "none";
+    statisticChart.style.display = "none";
 
 
-        // Kiểm tra và xóa biểu đồ cũ nếu tồn tại
-        if (window.myChartInstance) {
-            window.myChartInstance.destroy();
-        }
+    // Kiểm tra và xóa biểu đồ cũ nếu tồn tại
+    if (window.myChartInstance) {
+    window.myChartInstance.destroy();
+    }
 
-        // Dữ liệu từ full_stats_month (được truyền từ server cho biểu đồ)
-        let data = [];
-        let labels = [];
+    // Dữ liệu từ full_stats_month (được truyền từ server cho biểu đồ)
+    let data = [];
+    let labels = [];
 
-        {% for s in full_stats_month %}
-        labels.push({{ s[0] }});
-        data.push({{ s[1] if s[1] is not none else 0 }});
-        {% endfor %}
+    {% for s in full_stats_month %}
+    labels.push({{ s[0] }});
+    data.push({{ s[1] if s[1] is not none else 0 }});
+    {% endfor %}
 
-        // Kiểm tra dữ liệu có hợp lệ không
-        if (labels.length === 0 || data.length === 0) {
-            alert("Không có dữ liệu để hiển thị biểu đồ!");
-            return;
-        }
+    // Kiểm tra dữ liệu có hợp lệ không
+    if (labels.length === 0 || data.length === 0) {
+    alert("Không có dữ liệu để hiển thị biểu đồ!");
+    return;
+    }
 
-        // Tạo biểu đồ mới
-window.myChartInstance = new Chart(ctxm, {
+    // Tạo biểu đồ mới
+    window.myChartInstance = new Chart(ctxm, {
     type: 'bar',
     data: {
-        labels: labels, // Dữ liệu nhãn cho trục X
-        datasets: [{
-            label: ' Doanh thu',
-            data: data, // Dữ liệu cho trục Y
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.8)',
-                'rgba(54, 162, 235, 0.8)',
-                'rgba(255, 206, 86, 0.8)',
-                'rgba(75, 192, 192, 0.8)',
-                'rgba(153, 102, 255, 0.8)',
-                'rgba(255, 159, 64, 0.8)',
-                'rgba(201, 203, 207, 0.8)' // Thêm màu để tăng đa dạng
-            ],
-            borderColor: 'rgba(0, 0, 0, 0.2)', // Viền mờ để làm mềm biểu đồ
-            borderWidth: 1
-        }]
+    labels: labels, // Dữ liệu nhãn cho trục X
+    datasets: [{
+    label: ' Doanh thu',
+    data: data, // Dữ liệu cho trục Y
+    backgroundColor: [
+    'rgba(255, 99, 132, 0.8)',
+    'rgba(54, 162, 235, 0.8)',
+    'rgba(255, 206, 86, 0.8)',
+    'rgba(75, 192, 192, 0.8)',
+    'rgba(153, 102, 255, 0.8)',
+    'rgba(255, 159, 64, 0.8)',
+    'rgba(201, 203, 207, 0.8)' // Thêm màu để tăng đa dạng
+    ],
+    borderColor: 'rgba(0, 0, 0, 0.2)', // Viền mờ để làm mềm biểu đồ
+    borderWidth: 1
+    }]
     },
     options: {
-        responsive: true, // Biểu đồ sẽ tự điều chỉnh khi thay đổi kích thước
-        maintainAspectRatio: false, // Không giữ tỷ lệ cố định
-        plugins: {
-            legend: {
-                position: 'top', // Mục lục đặt ở trên
-                labels: {
-                    font: {
-                        size: 18, // Kích thước chữ lớn hơn để dễ đọc
-                        family: "'Poppins', sans-serif", // Font chữ hiện đại
-                        weight: 'bold'
-                    },
-                    color: '#333', // Màu chữ của mục lục
-                    padding: 0 // Khoảng cách giữa các mục trong mục lục
-                }
-            },
-            tooltip: {
-                callbacks: {
-                    label: function(tooltipItem) {
-                        // Format tooltip để hiển thị giá trị và đơn vị
-                        return `Doanh thu: ${tooltipItem.raw.toLocaleString()} VNĐ`;
-                    }
-                },
-                backgroundColor: 'rgba(0, 0, 0, 0.8)', // Nền đen mờ
-                titleFont: { size: 16, weight: 'bold' },
-                bodyFont: { size: 14 },
-                borderWidth: 1,
-                borderColor: '#fff'
-            }
-        },
-        scales: {
-            x: {
-                grid: {
-                    display: false // Tắt lưới ngang trên trục X để làm rõ biểu đồ
-                },
-                ticks: {
-                    font: {
-                        size: 18,
-                        family: "'Poppins', sans-serif",
-                        weight: 'bold'
-                    },
-                    color: '#333'
-                },
-                title: {
-                    display: true,
-                    text: 'Tháng', // Tiêu đề cho trục X
-                    font: {
-                        size: 14,
-                        family: "'Poppins', sans-serif",
-                        weight: 'bold'
-                    }
-                }
-            },
-            y: {
+    responsive: true, // Biểu đồ sẽ tự điều chỉnh khi thay đổi kích thước
+    maintainAspectRatio: false, // Không giữ tỷ lệ cố định
+    plugins: {
+    legend: {
+    position: 'top', // Mục lục đặt ở trên
+    labels: {
+    font: {
+    size: 18, // Kích thước chữ lớn hơn để dễ đọc
+    family: "'Poppins', sans-serif", // Font chữ hiện đại
+    weight: 'bold'
+    },
+    color: '#333', // Màu chữ của mục lục
+    padding: 0 // Khoảng cách giữa các mục trong mục lục
+    }
+    },
+    tooltip: {
+    callbacks: {
+    label: function(tooltipItem) {
+    // Format tooltip để hiển thị giá trị và đơn vị
+    return `Doanh thu: ${tooltipItem.raw.toLocaleString()} VNĐ`;
+    }
+    },
+    backgroundColor: 'rgba(0, 0, 0, 0.8)', // Nền đen mờ
+    titleFont: { size: 16, weight: 'bold' },
+    bodyFont: { size: 14 },
+    borderWidth: 1,
+    borderColor: '#fff'
+    }
+    },
+    scales: {
+    x: {
     grid: {
-        color: 'rgba(0, 0, 0, 0.3)', // Màu lưới nhạt để không làm rối biểu đồ
-        borderDash: [5, 5] // Lưới dạng nét đứt
+    display: false // Tắt lưới ngang trên trục X để làm rõ biểu đồ
     },
     ticks: {
-        font: {
-            size: 12,
-            family: "'Poppins', sans-serif",
-            weight: 'bold'
-        },
-        color: '#333',
-        callback: function(value) {
-            return `${value.toLocaleString()} VNĐ`; // Thêm đơn vị cho trục Y
-        },
-        stepSize: 500000,
-        beginAtZero: true
+    font: {
+    size: 18,
+    family: "'Poppins', sans-serif",
+    weight: 'bold'
+    },
+    color: '#333'
     },
     title: {
-        display: true,
-        text: 'Doanh thu (VNĐ)',
-        font: {
-            size: 14,
-            family: "'Poppins', sans-serif",
-            weight: 'bold'
-        }
+    display: true,
+    text: 'Tháng', // Tiêu đề cho trục X
+    font: {
+    size: 14,
+    family: "'Poppins', sans-serif",
+    weight: 'bold'
     }
-}
-
-        },
-        layout: {
-            padding: {
-                left: 20,
-                right: 20
-            }
-
-        },
-        animation: {
-            duration: 1500, // Thời gian hoạt ảnh dài hơn để mượt mà
-            easing: 'easeOutBounce' // Hiệu ứng bounce để biểu đồ sống động hơn
-        }
     }
-});
+    },
+    y: {
+    grid: {
+    color: 'rgba(0, 0, 0, 0.3)', // Màu lưới nhạt để không làm rối biểu đồ
+    borderDash: [5, 5] // Lưới dạng nét đứt
+    },
+    ticks: {
+    font: {
+    size: 12,
+    family: "'Poppins', sans-serif",
+    weight: 'bold'
+    },
+    color: '#333',
+    callback: function(value) {
+    return `${value.toLocaleString()} VNĐ`; // Thêm đơn vị cho trục Y
+    },
+    stepSize: 500000,
+    beginAtZero: true
+    },
+    title: {
+    display: true,
+    text: 'Doanh thu (VNĐ)',
+    font: {
+    size: 14,
+    family: "'Poppins', sans-serif",
+    weight: 'bold'
+    }
+    }
+    }
+
+    },
+    layout: {
+    padding: {
+    left: 20,
+    right: 20
+    }
+
+    },
+    animation: {
+    duration: 1500, // Thời gian hoạt ảnh dài hơn để mượt mà
+    easing: 'easeOutBounce' // Hiệu ứng bounce để biểu đồ sống động hơn
+    }
+    }
+    });
 
 
     });
@@ -954,7 +955,6 @@ window.myChartInstance = new Chart(ctxm, {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"
         integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
-<script src="{{ url_for('static', filename='js/adminStatistic.js') }}"></script>
 
 </body>
 </html>

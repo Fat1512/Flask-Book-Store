@@ -46,27 +46,27 @@
         }
 
         .upload-box {
-    display: inline-block;
-    padding: 10px 15px;
-    background-color: #c92127;
-    color: white;
-    cursor: pointer;
-    border-radius: 5px;
-    text-align: center;
-    transition: background-color 0.3s ease;
-}
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #c92127;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
 
-.upload-box:hover {
-    background-color: #007bff;
-}
+        .upload-box:hover {
+            background-color: #007bff;
+        }
 
-.upload-box:active {
-    background-color: #007bff;
-}
+        .upload-box:active {
+            background-color: #007bff;
+        }
 
-#fileUpload {
-    display: none;
-}
+        #fileUpload {
+            display: none;
+        }
 
     </style>
 </head>
@@ -124,18 +124,18 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="/admin/config">
+                            <i class="ni ni-circle-08 text-pink"></i>
+                            <span class="nav-link-text">Thay đổi cấu hình</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link active" href="/admin/profile">
                             <i class="ni ni-key-25 text-info"></i>
                             <span class="nav-link-text">Hồ sơ</span>
                         </a>
                     </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="register.html">
-                            <i class="ni ni-circle-08 text-pink"></i>
-                            <span class="nav-link-text">Register</span>
-                        </a>
-                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="upgrade.html">
                             <i class="ni ni-send text-dark"></i>
@@ -478,7 +478,7 @@
                                             <!-- Username Field -->
                                             <div class="form-group">
                                                 <label for="username">Tên đăng nhập</label>
-                                                <div style="margin-left:16px; width:75%;">
+                                                <div style="margin-left:18px; width:73%;">
                                                     <input type="text" id="username" class="form-control"
                                                            value="{{ profile[1] }}" disabled>
                                                     <!-- Chỉ lấy 1 profile -->
@@ -498,16 +498,19 @@
                                                            value="{{ profile[3] }}">
                                                 </div>
                                             </div>
+                                            <!--                                        <div class="form-group">-->
+
+                                            <!--                                        </div>-->
 
                                             <!-- Email Field -->
                                             <div class="form-group">
                                                 <label for="email">Email</label>
-                                                <div style="margin:0 17px; width:75%;">
+                                                <div style="margin:0 17px; width:79%;">
                                                     <input type="email" id="email" class="form-control"
                                                            value="{{ profile[4] }}" disabled>
                                                 </div>
                                                 <div>
-                                                    <button type="submit" class="btn btn-primary edit-btn-email">Sửa
+                                                    <button type="button" class="btn btn-primary edit-btn-email">Sửa
                                                     </button>
                                                 </div>
                                             </div>
@@ -520,7 +523,8 @@
                                                            value="{{ profile[5] }}" disabled>
                                                 </div>
                                                 <div>
-                                                    <button type="" class="btn btn-primary edit-btn-phone">Sửa</button>
+                                                    <button type="button" class="btn btn-primary edit-btn-phone">Sửa
+                                                    </button>
                                                 </div>
                                             </div>
 
@@ -550,7 +554,8 @@
                                                         <option value="" disabled>Ngày</option>
                                                         {% for i in range(1, 32) %}
                                                         <option value="{{ i }}" {% if i== profile.day %}selected{% endif
-                                                                %}>{{ i }}
+                                                                %}>{{ i
+                                                            }}
                                                         </option>
                                                         {% endfor %}
                                                     </select>
@@ -579,9 +584,13 @@
                                                 </div>
                                             </div>
 
+
                                             <!-- Save Button -->
                                             <div class="form-group">
-                                                <button type="button" class="btn btn-primary btn-save">Lưu</button>
+                                                <button type="button" class="btn btn-primary btn-save"
+                                                        style="padding: 10px 50px;background-color: #2196F3;border-color: #2196F3;">
+                                                    Lưu
+                                                </button>
                                             </div>
                                         </form>
 
@@ -604,7 +613,6 @@
                                                style="display: none;">
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>
@@ -626,7 +634,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"
         integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
-<script src="{{ url_for('static', filename='js/employeeAddProducts.js') }}"></script>
+<!--<script src="{{ url_for('static', filename='js/employeeAddProducts.js') }}"></script>-->
 <script>
     function previewImage(event) {
     const file = event.target.files[0];  // Lấy tệp ảnh người dùng chọn
@@ -644,65 +652,69 @@
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-    // Lắng nghe sự kiện click cho nút "Sửa"
-    document.querySelector('.edit-btn-phone').addEventListener('click', function() {
-        const phoneInput = document.getElementById('phone'); // Trường số điện thoại
-        const currentValue = phoneInput.value;
+        // Lắng nghe sự kiện click cho nút "Sửa"
+        document.querySelector('.edit-btn-phone').addEventListener('click', function() {
+            const phoneInput = document.getElementById('phone'); // Trường số điện thoại
+            const currentValue = phoneInput.value;
 
-        // Nếu ô input đang ở trạng thái disabled, kích hoạt nó
-        if (phoneInput.disabled) {
-            phoneInput.disabled = false;  // Bỏ disable
-            phoneInput.focus();  // Đưa con trỏ vào ô input để người dùng có thể chỉnh sửa
+            // Nếu ô input đang ở trạng thái disabled, kích hoạt nó
+            if (phoneInput.disabled) {
+                phoneInput.disabled = false;  // Bỏ disable
+                phoneInput.focus();  // Đưa con trỏ vào ô input để người dùng có thể chỉnh sửa
 
-            // Chuyển nút "Sửa" thành "Lưu"
-            this.textContent = 'Xác nhận';
-            this.classList.remove('btn-primary');
-            this.classList.add('btn-success');  // Thay đổi màu nút
+                // Chuyển nút "Sửa" thành "Lưu"
+                this.textContent = 'Xác nhận';
+                this.classList.remove('btn-primary');
+                this.classList.add('btn-success');  // Thay đổi màu nút
 
-        } else {
-            // Nếu ô input đang ở trạng thái chỉnh sửa, lưu giá trị mới và cập nhật lại giao diện
-            const newValue = phoneInput.value;
+            } else {
+                // Nếu ô input đang ở trạng thái chỉnh sửa, lưu giá trị mới và cập nhật lại giao diện
+                const newValue = phoneInput.value;
+                if (!newValue) {
+                    alert('Vui lòng nhập số điện thoại');
+                    phoneInput.focus();
+                    return;
+                }
 
-            // Cập nhật giá trị của ô input (trong trường hợp này chỉ cần in ra console)
-            console.log('Số điện thoại mới:', newValue);
+                // Sau khi lưu, tắt chỉnh sửa và giữ giá trị mới trong ô input
+                phoneInput.disabled = true;  // Vô hiệu hóa ô input sau khi lưu
+                this.textContent = 'Sửa';  // Đổi lại thành "Sửa"
+                this.classList.remove('btn-success');
+                this.classList.add('btn-primary');  // Đổi màu nút trở lại
+            }
+        });
 
-            // Sau khi lưu, tắt chỉnh sửa và giữ giá trị mới trong ô input
-            phoneInput.disabled = true;  // Vô hiệu hóa ô input sau khi lưu
-            this.textContent = 'Sửa';  // Đổi lại thành "Sửa"
-            this.classList.remove('btn-success');
-            this.classList.add('btn-primary');  // Đổi màu nút trở lại
-        }
+        document.querySelector('.edit-btn-email').addEventListener('click', function() {
+            const emailInput = document.getElementById('email'); // Trường số điện thoại
+            const currentValue = emailInput.value;
+
+            // Nếu ô input đang ở trạng thái disabled, kích hoạt nó
+            if (emailInput.disabled) {
+                emailInput.disabled = false;  // Bỏ disable
+                emailInput.focus();  // Đưa con trỏ vào ô input để người dùng có thể chỉnh sửa
+
+                // Chuyển nút "Sửa" thành "Lưu"
+                this.textContent = 'Xác nhận';
+                this.classList.remove('btn-primary');
+                this.classList.add('btn-success');  // Thay đổi màu nút
+
+            } else {
+                // Nếu ô input đang ở trạng thái chỉnh sửa, lưu giá trị mới và cập nhật lại giao diện
+                const newValue = emailInput.value;
+                if (!newValue) {
+                    alert('Vui lòng nhập email');
+                    emailInput.focus();
+                    return;
+                }
+
+                // Sau khi lưu, tắt chỉnh sửa và giữ giá trị mới trong ô input
+                emailInput.disabled = true;  // Vô hiệu hóa ô input sau khi lưu
+                this.textContent = 'Sửa';  // Đổi lại thành "Sửa"
+                this.classList.remove('btn-success');
+                this.classList.add('btn-primary');  // Đổi màu nút trở lại
+            }
+        });
     });
-
-    document.querySelector('.edit-btn-email').addEventListener('click', function() {
-        const emailInput = document.getElementById('email'); // Trường số điện thoại
-        const currentValue = emailInput.value;
-
-        // Nếu ô input đang ở trạng thái disabled, kích hoạt nó
-        if (emailInput.disabled) {
-            emailInput.disabled = false;  // Bỏ disable
-            emailInput.focus();  // Đưa con trỏ vào ô input để người dùng có thể chỉnh sửa
-
-            // Chuyển nút "Sửa" thành "Lưu"
-            this.textContent = 'Xác nhận';
-            this.classList.remove('btn-primary');
-            this.classList.add('btn-success');  // Thay đổi màu nút
-
-        } else {
-            // Nếu ô input đang ở trạng thái chỉnh sửa, lưu giá trị mới và cập nhật lại giao diện
-            const newValue = emailInput.value;
-
-            // Cập nhật giá trị của ô input (trong trường hợp này chỉ cần in ra console)
-            console.log('Số điện thoại mới:', newValue);
-
-            // Sau khi lưu, tắt chỉnh sửa và giữ giá trị mới trong ô input
-            emailInput.disabled = true;  // Vô hiệu hóa ô input sau khi lưu
-            this.textContent = 'Sửa';  // Đổi lại thành "Sửa"
-            this.classList.remove('btn-success');
-            this.classList.add('btn-primary');  // Đổi màu nút trở lại
-        }
-    });
-});
 </script>
 
 <script>
