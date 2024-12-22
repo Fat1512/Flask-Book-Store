@@ -50,7 +50,6 @@ def admin_login():
     return render_template('admin-login.html', err_msg=err_msg)
 
 
-
 @account_bp.route("/admin-logout")
 def admin_logout():
     logout_user()
@@ -101,7 +100,6 @@ def employee_login():
     return render_template('employee-login.html', err_msg=err_msg)
 
 
-
 # @account_bp.route("/employee-register", methods=['GET', 'POST'])
 # def employee_register():
 #     err_msg = ''
@@ -140,7 +138,6 @@ def employee_login():
 #     return render_template('employee-register.html', err_msg=err_msg)
 
 
-
 @account_bp.route("/employee-logout")
 def employee_logout():
     logout_user()
@@ -170,7 +167,6 @@ def employee_forgot():
     return render_template("employee-forgotpass.html", err_msg=err_msg)
 
 
-
 @account_bp.route("/login", methods=['GET', 'POST'])
 def login_process():
     err_msg = ''
@@ -178,7 +174,8 @@ def login_process():
         username = request.form.get('username')
         password = request.form.get('password')
 
-        roles = [UserRole.CUSTOMER, UserRole.ADMIN, UserRole.EMPLOYEE_SALE, UserRole.EMPLOYEE_MANAGER, UserRole.EMPLOYEE_MANAGER_WAREHOUSE]
+        roles = [UserRole.CUSTOMER, UserRole.ADMIN, UserRole.EMPLOYEE_SALE, UserRole.EMPLOYEE_MANAGER,
+                 UserRole.EMPLOYEE_MANAGER_WAREHOUSE]
 
         u = None
         for role in roles:
@@ -209,10 +206,11 @@ def register_process():
         confirm = request.form.get('confirm')
         username = request.form.get('username')
         email = request.form.get('email')
+        phone_number = request.form.get('phone_number')
 
         if password == confirm:
-            if UserDao.check_exists(username=username, email=email):
-                err_msg = 'Tên người dùng hoặc email đã tồn tại!'
+            if UserDao.check_exists(username=username, email=email, phone_number=phone_number):
+                err_msg = 'Tên người dùng hoặc email hoặc SĐT đã tồn tại!'
             else:
                 data = request.form.copy()
                 del data['confirm']
@@ -222,7 +220,19 @@ def register_process():
                 for field in optional_fields:
                     data[field] = data.get(field, None)
 
-                UserDao.add_user(avt_url=avt_url, **data)
+                UserDao.add_user(
+                    first_name=data.get('first_name'),
+                    last_name=data.get('last_name'),
+                    username=username,
+                    password=password,
+                    email=email,
+                    phone_number=phone_number,
+                    avt_url=avt_url,
+                    sex=data.get('sex'),
+                    date_of_birth=data.get('date_of_birth'),
+                    isActive=data.get('isActive'),
+                    last_access=data.get('last_access')
+                )
 
                 return redirect(url_for('account.login_process'))
         else:

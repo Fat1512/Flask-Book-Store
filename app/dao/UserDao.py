@@ -65,7 +65,7 @@ def add_offline_user(first_name, last_name, email, avt_url=None, sex=None, phone
 
 
 
-def add_user(first_name, last_name, username, password, email, avt_url=None, sex=None, phone_number=None,
+def add_user(first_name, last_name, username, password, email, phone_number, avt_url=None, sex=None,
              date_of_birth=None, isActive=None, last_access=None):
     password = hashlib.md5(password.strip().encode('utf-8')).hexdigest()
 
@@ -84,7 +84,6 @@ def add_user(first_name, last_name, username, password, email, avt_url=None, sex
     db.session.add(u)
     db.session.flush()  # Flush để có user_id
 
-    # Tạo bản ghi Account
     account = Account(
         username=username,
         password=password,
@@ -197,11 +196,14 @@ def find_customer_phone_number(phone_number):
     return obj
 
 
-def check_exists(username=None, email=None):
+def check_exists(username=None, email=None, phone_number=None):
     if username and Account.query.filter_by(username=username).first():
         return True
 
     if email and User.query.filter_by(email=email).first():
+        return True
+
+    if phone_number and User.query.filter_by(phone_number=phone_number).first():
         return True
 
     return False
@@ -221,6 +223,7 @@ def get_account_by_id(account_id):
 
 def get_user_by_email(email):
     return db.session.query(User).filter_by(email=email).first()
+
 
 
 def update_password(username, password):
