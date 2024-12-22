@@ -379,7 +379,7 @@
 
         // Fetch gernes and populate the select element
         function fetchGernesForSelect(selectElement, selectedValue) {
-            fetch('/admin/api/gernes') // Gọi API backend để lấy thể loại
+            fetch('/api/gernes') // Gọi API backend để lấy thể loại
                 .then(response => response.json())
                 .then(data => {
                 data.forEach(gerne => {
