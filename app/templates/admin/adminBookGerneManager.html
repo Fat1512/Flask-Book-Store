@@ -350,7 +350,7 @@
                     console.log('Updated data being sent:', updatedData);
 
                     // Gửi yêu cầu POST để cập nhật
-                    fetch(`/admin/update-bookgerne/${bookId}`, {  // Đổi URL này
+                    fetch(`/update-bookgerne/${bookId}`, {  // Đổi URL này
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -360,7 +360,10 @@
                         .then(response => response.json())
                         .then(data => {
                         if (data.success) {
-                            // Cập nhật giao diện với dữ liệu trả về
+                            if (data.success) {
+                                alert('Thể loại đã được cập nhật thành công!');
+                            }
+
                             const updatedFields = data.updated;
                             for (const [field, value] of Object.entries(updatedFields)) {
                                 const cell = row.querySelector(`[data-field="${field}"]`);
@@ -400,7 +403,7 @@
                 // Hiển thị thông báo xác nhận trước khi xóa
                 if (confirm('Bạn có chắc chắn muốn xóa sách này không?')) {
                     // Gửi yêu cầu POST để xóa sách
-                    fetch(`/admin/delete-bookgerne/${bookId}`, {  // Đảm bảo URL đúng
+                    fetch(`/delete-bookgerne/${bookId}`, {  // Đảm bảo URL đúng
                         method: 'POST',
                     })
                         .then(response => response.json())  // Đảm bảo rằng response là JSON
@@ -432,7 +435,7 @@
     // Fetch genres from backend and populate dropdown list
     async function fetchGernes() {
         try {
-            const response = await fetch('/admin/api/gernes'); // Gọi API backend
+            const response = await fetch('/api/gernes'); // Gọi API backend
             if (!response.ok) throw new Error('Failed to fetch gernes');
 
             const gernes = await response.json(); // Parse JSON từ API
@@ -471,7 +474,7 @@
 
     // Event listener cho tìm kiếm
     gerneSearch.addEventListener("input", async () => {
-        const response = await fetch('/admin/api/gernes'); // Fetch lại gernes
+        const response = await fetch('/api/gernes'); // Fetch lại gernes
         const gernes = await response.json();
         populateGerneList(gernes, gerneSearch.value); // Filter theo input
     });
@@ -506,7 +509,7 @@
         };
 
         // Gửi yêu cầu POST đến server
-        fetch('/admin/add-bookgerne', {  // Cập nhật URL của bạn ở đây
+        fetch('/add-bookgerne', {  // Cập nhật URL của bạn ở đây
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

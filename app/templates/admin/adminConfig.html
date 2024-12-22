@@ -51,7 +51,7 @@
                                                 thiểu</label>
                                             <div style="margin:0 17px; width:66%;">
                                                 <input type="number" id="quantity" class="form-control"
-                                                       value="{{ config.min_restock_qty }}" disabled>
+                                                       value="{{ c.min_restock_qty }}" disabled>
                                             </div>
                                             <div>
                                                 <button type="button" class="btn btn-primary edit-btn-quantity">Sửa
@@ -65,7 +65,7 @@
                                                 nhập</label>
                                             <div style="margin:0 15px; width:66%;">
                                                 <input type="number" id="level" class="form-control"
-                                                       value="{{ config.min_restock_level }}" disabled>
+                                                       value="{{ c.min_restock_level }}" disabled>
                                             </div>
                                             <div>
                                                 <button type="button" class="btn btn-primary edit-btn-level">Sửa
@@ -79,7 +79,7 @@
                                                 dùng không nhận (Giờ)</label>
                                             <div style="margin:0 15px; width:55%;">
                                                 <input type="number" id="cancel" class="form-control"
-                                                       value="{{ config.order_cancel_period }}"
+                                                       value="{{ c.order_cancel_period }}"
                                                        disabled>
                                             </div>
                                             <div>
@@ -116,8 +116,7 @@
             updatedData.cancel = document.querySelector('#cancel').value;
 
 
-
-            fetch('/admin/update-config', {
+            fetch('/update-config', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

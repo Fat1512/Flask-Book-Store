@@ -41,7 +41,7 @@ def admin_login():
         if user:
             if user.user_role == UserRole.ADMIN:
                 login_user(user=user)
-                return redirect(url_for('admin.admin_home'))
+                return redirect(url_for('admin.index'))
             else:
                 err_msg = "Vai trò không hợp lệ!"
         else:

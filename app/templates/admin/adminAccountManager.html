@@ -322,7 +322,7 @@
     // Fetch user roles from backend
     async function fetchUserRoles1() {
         try {
-            const response = await fetch('/admin/api/user_roles_employee');
+            const response = await fetch('/api/user_roles_employee');
             if (!response.ok) throw new Error('Failed to fetch user roles');
 
             const userRoles = await response.json();
@@ -391,7 +391,7 @@
 
     // Event listener for search input
     roleSearch1.addEventListener("input", async () => {
-        const response = await fetch('/admin/api/user_roles_employee');
+        const response = await fetch('/api/user_roles_employee');
         const userRoles = await response.json();
         populateRoleList1(userRoles, roleSearch1.value); // Filter roles based on search input
     });
@@ -453,7 +453,7 @@
         };
 
         // Gửi yêu cầu POST đến server
-        fetch('/admin/add-employee', {  // Cập nhật URL của bạn ở đây
+        fetch('/add-employee', {  // Cập nhật URL của bạn ở đây
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

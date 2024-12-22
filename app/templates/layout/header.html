@@ -33,35 +33,35 @@
                         Thông báo
                     </p>
                     {% if current_user.is_authenticated %}
-                        <div class="sub-notification-menu text-center pl-4 pt-4 pr-4">
-                            <img src="{{ current_user.avt_url }}" style="margin-left: auto; margin-right: auto;"
-                                 width="100"
-                                 class="rounded-circle"/>
-                            <a class="nav-link text-info" href="/">
-                                Chào {{ current_user.full_name }}
-                            </a>
-                        </div>
-                        <div class="pl-4 pb-4 pr-4 ">
-                            <!--                        <button class="btn mb-3 pt-1 pb-1 pr-3 pl-3 btn-primary btn-large" id="profileButton">-->
-                            <!--                            <a class="text-decoration-none text-white" href="javascript:void(0)">Hồ sơ</a>-->
-                            <!--                        </button>-->
-                            <button class="btn mb-3 pt-1 pb-1 pr-3 pl-3 btn-primary btn-large">
-                                <a class="text-decoration-none text-white" href="/account/logout">Đăng xuất</a>
-                            </button>
-                        </div>
+                    <div class="sub-notification-menu text-center pl-4 pt-4 pr-4">
+                        <img src="{{ current_user.avt_url }}" style="margin-left: auto; margin-right: auto;"
+                             width="100"
+                             class="rounded-circle"/>
+                        <a class="nav-link text-info" href="/">
+                            Chào {{ current_user.full_name }}
+                        </a>
+                    </div>
+                    <div class="pl-4 pb-4 pr-4 ">
+                        <!--                        <button class="btn mb-3 pt-1 pb-1 pr-3 pl-3 btn-primary btn-large" id="profileButton">-->
+                        <!--                            <a class="text-decoration-none text-white" href="javascript:void(0)">Hồ sơ</a>-->
+                        <!--                        </button>-->
+                        <button class="btn mb-3 pt-1 pb-1 pr-3 pl-3 btn-primary btn-large">
+                            <a class="text-decoration-none text-white" href="/account/logout">Đăng xuất</a>
+                        </button>
+                    </div>
                     {% else %}
-                        <div class="sub-notification-menu text-center pl-4 pt-4 pr-4">
-                            <span class="sub-notification-menu-icon"></span>
-                            <p class="pt-3 pb-3">Vui lòng đăng nhập để xem thông báo </p>
-                        </div>
-                        <div class="pl-4 pb-4 pr-4 ">
-                            <button class="btn mb-3 pt-1 pb-1 pr-3 pl-3 btn-primary btn-large">
-                                <a class="text-decoration-none text-white" href="/account/login">Đăng nhập</a>
-                            </button>
-                            <button class="btn pt-1 pb-1 pr-3 pl-3 btn-primary-outline btn-large">
-                                <a class="text-decoration-none text-primary" href="/account/register">Đăng ký</a>
-                            </button>
-                        </div>
+                    <div class="sub-notification-menu text-center pl-4 pt-4 pr-4">
+                        <span class="sub-notification-menu-icon"></span>
+                        <p class="pt-3 pb-3">Vui lòng đăng nhập để xem thông báo </p>
+                    </div>
+                    <div class="pl-4 pb-4 pr-4 ">
+                        <button class="btn mb-3 pt-1 pb-1 pr-3 pl-3 btn-primary btn-large">
+                            <a class="text-decoration-none text-white" href="/account/login">Đăng nhập</a>
+                        </button>
+                        <button class="btn pt-1 pb-1 pr-3 pl-3 btn-primary-outline btn-large">
+                            <a class="text-decoration-none text-primary" href="/account/register">Đăng ký</a>
+                        </button>
+                    </div>
                     {% endif %}
                 </div>
             </div>
@@ -69,50 +69,50 @@
                 <i class="fa-solid fa-cart-shopping"></i>
                 <span>Giỏ hàng</span>
                 {% if current_user.is_authenticated %}
-                    {% if cart_items |length %}
-                        <span class="label-total text-white">{{ cart_items|length }}</span>
-                    {% endif %}
-                    <div class="menu-cart-item">
-                        <div class="menu-cart-item-header">
-                            <p class="p-3 m-0">
-                                <span><i class="fa-solid fa-cart-shopping"></i></span>
-                                <span class="sub-total">Giỏ hàng ({{ cart_items|length }})</span>
-                            </p>
-                        </div>
-                        {% if cart_items |length %}
-                            <ul class="sub-cart list-unstyled mt-3">
-                                {% for item in cart_items %}
-                                    <li id="{{ item.book_id }}" class="sub-cart-item d-flex p-3">
-                                        <img class="sub-cart-item-image"
-                                             src="{{ item.book.images[0].image_url }}">
-                                        <div class="sub-cart-item-detail pl-3">
-                                            <p class="sub-cart-item-title text-secondary">{{ item.book.title }}</p>
-                                            <p class="font-weight-bold m-0 text-primary">{{ item.book.price|currency("VND") }}
-                                                <span class="quantity">x {{ item.quantity }}</span></p>
-                                        </div>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-
-                            <div class="d-flex p-3 align-items-center justify-content-between">
-                                <div class="group-price">
-                                    <p class="m-0">Tổng cộng</p>
-                                    <p class="text-primary sub-total-price">{{ total_price|currency("VND") }}</p>
-                                </div>
-                                <div>
-                                    <button class="btn btn-primary">
-                                        Xem giỏ hàng
-                                    </button>
-                                </div>
-                            </div>
-                        {% else %}
-                            <div class="text-center mt-5 mb-5">
-                                <div class="cart-item-null"></div>
-                                <p>Chưa có sản phẩm nào</p>
-                            </div>
-
-                        {% endif %}
+                {% if cart_items |length %}
+                <span class="label-total text-white">{{ cart_items|length }}</span>
+                {% endif %}
+                <div class="menu-cart-item">
+                    <div class="menu-cart-item-header">
+                        <p class="p-3 m-0">
+                            <span><i class="fa-solid fa-cart-shopping"></i></span>
+                            <span class="sub-total">Giỏ hàng ({{ cart_items|length }})</span>
+                        </p>
                     </div>
+                    {% if cart_items |length %}
+                    <ul class="sub-cart list-unstyled mt-3">
+                        {% for item in cart_items %}
+                        <li id="{{ item.book_id }}" class="sub-cart-item d-flex p-3">
+                            <img class="sub-cart-item-image"
+                                 src="{{ item.book.images[0].image_url }}">
+                            <div class="sub-cart-item-detail pl-3">
+                                <p class="sub-cart-item-title text-secondary">{{ item.book.title }}</p>
+                                <p class="font-weight-bold m-0 text-primary">{{ item.book.price|currency("VND") }}
+                                    <span class="quantity">x {{ item.quantity }}</span></p>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+
+                    <div class="d-flex p-3 align-items-center justify-content-between">
+                        <div class="group-price">
+                            <p class="m-0">Tổng cộng</p>
+                            <p class="text-primary sub-total-price">{{ total_price|currency("VND") }}</p>
+                        </div>
+                        <div>
+                            <button class="btn btn-primary">
+                                Xem giỏ hàng
+                            </button>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="text-center mt-5 mb-5">
+                        <div class="cart-item-null"></div>
+                        <p>Chưa có sản phẩm nào</p>
+                    </div>
+
+                    {% endif %}
+                </div>
                 {% endif %}
 
             </a>
@@ -121,16 +121,15 @@
                 <span>Tài khoản</span>
                 <div class="sub-login flex-column border-1">
                     {% if current_user.is_authenticated %}
-                        <div class="col-6 text-center">
-                            <div class="profile-picture" style="width: 170px; height: 170px">
-                                <img src="{{ current_user.avt_url }}" alt="Profile Picture"
-                                     class="img-fluid profile-image rounded-circle">
-
+                    <div class="col-6 text-center" >
+                        <div class="profile-picture" style="width: 170px; height: 170px">
+                            <img src="{{ current_user.avt_url }}" alt="Profile Picture"
+                                 class="img-fluid profile-image rounded-circle">
                         </div>
                     </div>
                     <!--                    <img src="{{ current_user.avt_url }}" style="margin-left: auto; margin-right: auto;" width="100"-->
                     <!--                         class="rounded-circle"/>-->
-                    <a class="nav-link text-info" href="/">
+                    <a class="nav-link text-info" href="/" style="text-align:center !important;">
                         Chào {{ current_user.full_name }}
                     </a>
                     <button class="btn mb-3 pt-1 pb-1 pr-3 pl-3 btn-primary btn-large" id="profileButton">
@@ -141,10 +140,10 @@
                     </button>
                     {% else %}
 
-                        <a class="btn mb-3 pt-1 pb-1 pr-3 pl-3 btn-primary btn-large" href="/account/login">Đăng
-                            nhập</a>
-                        <a class="btn mb-3 pt-1 pb-1 pr-3 pl-3 btn-primary-outline btn-large" href="/account/register">Đăng
-                            ký </a>
+                    <a class="btn mb-3 pt-1 pb-1 pr-3 pl-3 btn-primary btn-large" href="/account/login">Đăng
+                        nhập</a>
+                    <a class="btn mb-3 pt-1 pb-1 pr-3 pl-3 btn-primary-outline btn-large" href="/account/register">Đăng
+                        ký </a>
 
                     {% endif %}
                 </div>

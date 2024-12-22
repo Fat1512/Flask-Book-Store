@@ -16,6 +16,7 @@ from app import db
 index_bp = Blueprint('index', __name__)
 
 
+
 @index_bp.route("/")
 def index():
     book_gerne = get_depth_gerne(1)

@@ -252,29 +252,3 @@ def delete_book(book_id):
 def employee_profile():
     return render_template("/employee/employeeProfile.html")
 
-
-@employee_bp.route('/update-profile', methods=['POST'])
-@employee_required
-def update_profile():
-    data = request.get_json()
-
-    try:
-        user = User.query.filter_by(user_id=current_user.user_id).first()
-
-        if not user:
-            return jsonify({"success": False, "message": "User not found"}), 404
-
-        user.first_name = data.get('first_name', user.first_name)
-        user.last_name = data.get('last_name', user.last_name)
-        user.email = data.get('email', user.email)
-        user.phone_number = data.get('phone_number', user.phone_number)
-        user.sex = data.get('sex', user.sex)
-        user.date_of_birth = data.get('date_of_birth', user.date_of_birth)
-        user.avt_url = data.get('avt_url', user.avt_url)
-
-        db.session.commit()
-
-        return jsonify({"success": True, "updated": data}), 200
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"success": False, "message": str(e)}), 500

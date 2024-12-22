@@ -63,7 +63,7 @@ app.register_blueprint(payment_rest_bp, url_prefix='/api/v1/payment')
 app.register_blueprint(account_rest_bp, url_prefix='/api/v1/account')
 app.register_blueprint(index_bp, url_prefix='/')
 app.register_blueprint(account_bp, url_prefix='/account')
-app.register_blueprint(admin_bp, url_prefix='/admin')
+# app.register_blueprint(admin_bp, url_prefix='/admin')
 app.register_blueprint(cart_bp, url_prefix='/cart')
 
 
@@ -85,13 +85,16 @@ def context():
         "profile": None
     }
 
-    if current_user.is_authenticated and current_user.user_role == UserRole.CUSTOMER:
+    user_data = None
+    if current_user.is_authenticated:
         user_data = profile()
+        app_context['profile'] = user_data
+
+    if current_user.is_authenticated and current_user.user_role == UserRole.CUSTOMER:
 
         cart = find_by_cart_id(user_data.user_id)
         app_context['cart_items'] = cart.cart_items
         app_context['total_price'] = cart.total_price()
-        app_context['profile'] = user_data
         return app_context
 
     return app_context
@@ -107,6 +110,7 @@ def context():
 #         "current_year": datetime.now().year,
 #         "profile": user_data
 #     }
+
 
 
 @app.errorhandler(InsufficientError)
@@ -245,7 +249,6 @@ def handle_topic_book_gerne(data):
 #         print(f"Error handling topic1 message: {e}")
 
 
-
 @scheduler.task('interval', id='my_job', seconds=3600)
 def my_job():
     with app.app_context():
@@ -265,6 +268,8 @@ def get_by_id(user_id):
 
 
 if __name__ == "__main__":
+    from app.admin import *
+
     KAFKA_TOPICS = app.config["KAFKA_TOPIC"]
     for topic in KAFKA_TOPICS:
         consumer_thread = Thread(target=consume_kafka, args=(topic,), daemon=True)
