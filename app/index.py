@@ -3,7 +3,7 @@ import pdb
 import threading
 from datetime import datetime
 from threading import Thread
-from app.dao.OrderDAO import delete_orders_after_48hrs
+from app.dao.OrderDAO import delete_orders_after_48hrs, delete_payment_after_48hrs
 from elasticsearch import Elasticsearch
 from flask_login import current_user
 from app.dao.UserDao import get_user_by_id
@@ -97,16 +97,13 @@ def context():
     return app_context
 
 
-# @app.context_processor
-# def user_context():
-#     user_data = None
-#     if current_user.is_authenticated:
-#         user_data = profile()
-#
-#     return {
-#         "current_year": datetime.now().year,
-#         "profile": user_data
-#     }
+@app.errorhandler(CartItemError)
+def handle_cart_item_error(e):
+    return jsonify({
+        'name': type(e).__name__,  # Get the name of the exception
+        "message": e.message,
+        "status": e.status_code
+    })
 
 
 @app.errorhandler(InsufficientError)
@@ -245,11 +242,11 @@ def handle_topic_book_gerne(data):
 #         print(f"Error handling topic1 message: {e}")
 
 
-
 @scheduler.task('interval', id='my_job', seconds=3600)
 def my_job():
     with app.app_context():
         delete_orders_after_48hrs()
+        delete_payment_after_48hrs()
         print('This job is executed every 5 seconds.')
 
 

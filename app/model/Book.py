@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, ForeignKey, Double, DATETIME, DATE
+from sqlalchemy import Column, Integer, String, ForeignKey, Double, DATETIME, DATE, Enum
 from app import db, app
 from sqlalchemy.orm import relationship
 from app.model.BookImage import BookImage
@@ -13,6 +13,8 @@ from app.model.CartItem import CartItem
 from app.model.Cart import Cart
 from app.model.FormImportDetail import FormImportDetail
 from enum import Enum as PythonEnum
+
+from app.utils.helper import FORMAT_BOOK_TEXT
 
 
 class BookFormat(PythonEnum):
@@ -34,7 +36,7 @@ class Book(db.Model):
     dimension = Column(String)
     weight = Column(Double)
     barcode = Column(String)
-    format = Column(String)
+    format = Column(Enum(BookFormat), default=BookFormat.BIA_CUNG)
     publisher_id = Column(Integer, ForeignKey('publisher.publisher_id'), nullable=False)
     book_gerne_id = Column(Integer, ForeignKey('book_gerne.book_gerne_id'))
 
@@ -65,7 +67,7 @@ class Book(db.Model):
             "weight": self.weight,
             "barcode": self.barcode,
             "images": [image.to_dict() for image in self.images],
-            'format': self.format,
+            'format': FORMAT_BOOK_TEXT[self.format.value - 1],
             "publisher": self.publisher_info.to_dict() if self.publisher_info else None,
             'book_gerne': self.book_gerne.to_dict(),
             'extended_books': [extended.to_dict() for extended in self.extended_books],
@@ -84,7 +86,7 @@ class Book(db.Model):
             "book_gerne": self.book_gerne.to_dto(),
             "page_number": self.num_page,
             "weight": self.weight,
-            'format': self.format,
+            'format': FORMAT_BOOK_TEXT[self.format.value - 1],
             "publisher": "Kim đồng",
             'book_image': [image.to_dto() for image in self.images],
             'extended_books': [extended.to_dto() for extended in self.extended_books],

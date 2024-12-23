@@ -15,7 +15,9 @@ account_rest_bp = Blueprint('account_rest', __name__)
 @account_rest_bp.route('/purchase', methods=['GET'])
 def get_purchase():
     status = request.args.get('status')
-    orders = find_add_by_user_id(current_user.get_id(), status)
+    page = request.args.get('page', type=int, default=1)
+    limit = request.args.get('limit', type=int, default=5)
+    orders = find_add_by_user_id(current_user.get_id(), status, page, limit)
 
     order_to_dict = [order.to_detail_dict() for order in orders]
     return jsonify({

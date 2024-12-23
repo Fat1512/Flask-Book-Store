@@ -1,3 +1,5 @@
+import pdb
+
 import app.model.User
 from app.exception.NotFoundError import NotFoundError
 from app.exception.BadRequestError import BadRequestError
@@ -17,7 +19,7 @@ from sqlalchemy.orm import joinedload
 
 
 def auth_user(username, password, role=None):
-    # password = hashlib.md5(password.strip().encode('utf-8')).hexdigest()
+    password = hashlib.md5(password.strip().encode('utf-8')).hexdigest()
 
     if not username or not password:
         return None
@@ -27,6 +29,7 @@ def auth_user(username, password, role=None):
         Account.username == username.strip(),
         Account.password == password
     )
+
 
     if role:
         query = query.filter(Account.user.has(user_role=role))

@@ -11,7 +11,7 @@ from app.dao.BookDAO import find_all, paginate_book, find_by_gerne, find_by_id, 
 from app.dao.BookGerneDAO import get_depth_gerne
 from app.dao.CartDao import find_by_cart_id
 from app.dao.SearchDAO import search_book, search_book_es
-from app.utils.helper import order_type
+from app.utils.helper import order_type, FORMAT_BOOK_TEXT
 
 home_bp = Blueprint('search', __name__)
 
@@ -62,7 +62,7 @@ def get_detail():
         "Trọng lượng (gr)": book.weight,
         "Kích thước bao bì": book.dimension,
         "Số trang": book.num_page,
-        "Hình thức": book.format,
+        "Hình thức": FORMAT_BOOK_TEXT[book.format.value - 1],
     }
     print('test', book.price)
 
@@ -79,7 +79,7 @@ def get_detail():
             avg_star[comment.star_count - 1] += 1
         avg_rating = avg_rating / len(comments)
 
-    return render_template("book-detail.html", book=book
+    return render_template("book-detail.html", book=book.to_dict()
                            , sold_book=sold_book
                            , detail_book=detail_book
                            , books=books

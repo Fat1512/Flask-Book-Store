@@ -37,12 +37,15 @@ def update_order_status(order_id, status):
     return order
 
 
-def find_add_by_user_id(user_id, status):
+def find_add_by_user_id(user_id, status, page, limit):
     order = Order.query
     order = order.filter(Order.customer_id == user_id)
     if status and status != 8:
         order = order.filter(Order.status == OrderStatus(int(status)))
     order = order.order_by(desc(Order.created_at))
+    start = (page - 1) * limit
+    end = start + limit
+    order = order.slice(start, end)
     return order.all()
 
 
@@ -253,6 +256,23 @@ def delete_orders_after_48hrs():
         create_order_cancellation({
             "orderId": order.order_id,
             "reason": "Đơn quá 48h"
+        })
+
+
+def delete_payment_after_48hrs():
+    print("ok")
+    expired_time = datetime.utcnow() + timedelta(hours=7) - timedelta(hours=48)
+    orders = Order.query.filter(Order.created_at < expired_time,
+                                Order.payment_method == PaymentMethod.THE,
+                                Order.status == OrderStatus.DANG_CHO_THANH_TOAN)
+    orders = orders.join(OnlineOrder).filter(Order.created_at < expired_time,
+                                             Order.payment_method == PaymentMethod.THE,
+                                             Order.status == OrderStatus.DANG_CHO_THANH_TOAN).all()
+
+    for order in orders:
+        create_order_cancellation({
+            "orderId": order.order_id,
+            "reason": "Đơn chưa thanh toán quá 48h"
         })
 
 

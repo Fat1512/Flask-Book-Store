@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Integer, String, Boolean, Text, Date, DateTime, Enum, ForeignKey
 from app import db, app
 from sqlalchemy.orm import relationship
-from flask_login import UserMixin
 
+# from app.model.User import User
 
 class Account(db.Model):
     __tablename__ = 'account'
