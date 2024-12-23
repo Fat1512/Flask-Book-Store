@@ -1,3 +1,5 @@
+import pdb
+
 import app.model.User
 from app.exception.NotFoundError import NotFoundError
 from app.exception.BadRequestError import BadRequestError
@@ -30,6 +32,7 @@ def auth_user(username, password, role=None):
         Account.username == username.strip(),
         Account.password == password
     )
+
 
     if role:
         query = query.filter(Account.user.has(user_role=role))

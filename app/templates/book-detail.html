@@ -53,7 +53,7 @@
                             <span class="col-md-6"> Tác giả: <span class="font-weight-bold">{{ book.author }}</span>
                                 </span>
                             <span class="col-md-6"> Nhà xuất bản:
-                                 <span class="font-weight-bold">{{ book.publisher_info.publisher_name }}</span>
+                                 <span class="font-weight-bold">{{ book.publisher.publisher_name }}</span>
                                 </span>
                             <span class="col-md-6">Hình thức bìa:
                                  <span class="font-weight-bold">{{ book.format }}</span>
@@ -70,8 +70,7 @@
                         </div>
                         <div class="">
                             <span class="text-large text-primary font-weight-bold">{{ book.price|currency('VND') }} </span>
-                            <span class="text-secondary text-decoration-line-through mb-1">{{ book.price|currency('VND') }}</span>
-                            <span class="discount">-10%</span>
+
                         </div>
                     </div>
                     <div class="item-bg-color p-2 mt-3 rounded">

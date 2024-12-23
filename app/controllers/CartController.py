@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, session, jsonify
 
 from app.dao import AddressDAO
-from app.dao.CartDao import find_by_user_id, find_by_cart_id
+from app.dao.CartDao import find_by_user_id, find_by_cart_id, check_quantity
 from flask_login import current_user
 
 from app.dao.UserDao import find_user_address
@@ -12,8 +12,9 @@ cart_bp = Blueprint('cart', __name__)
 @cart_bp.route('/')
 def cart():
     cart = find_by_user_id(current_user.get_id())
-
-    return render_template("cart.html", cart=cart)
+    cart_result = check_quantity(cart.cart_items)
+    print('test', cart_result)
+    return render_template("cart.html", cart=cart_result)
 
 
 @cart_bp.route('/checkout', methods=['GET', 'POST'])

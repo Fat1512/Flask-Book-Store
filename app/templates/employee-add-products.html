@@ -74,7 +74,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="profile.html">
+                        <a class="nav-link" href="profile/profileLayout.html">
                             <i class="ni ni-single-02 text-yellow"></i>
                             <span class="nav-link-text">Profile</span>
                         </a>
@@ -633,6 +633,19 @@
                                                 <span class="dropdown-item"
                                                       value='{{ loop.index }}'>{{ format }}</span>
                                             {% endfor %}
+                                        </div>
+
+                                    </div>
+                                    <div class="form-group">
+
+                                        <label class="attribute-name mr-1" for="product-name">Barcode</label>
+                                        <div class="attribute-value">
+                                            <input type="text" name="product-barcode"
+                                                   class="product-barcode w-100"
+                                                   id="product-barcode"
+                                                   placeholder="barcode">
+                                            <p id="error-barcode" class="m-0 message-error font-weight-bold">Vui
+                                                lòng nhập đủ barcode</p>
                                         </div>
                                     </div>
                                     <div class="form-group">

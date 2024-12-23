@@ -1,8 +1,10 @@
 from flask_login import current_user
 from sqlalchemy.testing.config import db_url
 from app import db
+from app.dao.BookDAO import find_by_id
 from app.exception.CartItemError import CartItemError
 from app.exception.InsufficientError import InsufficientError
+from app.exception.NotFoundError import NotFoundError
 from app.model.Book import Book
 from app.model.Cart import Cart
 from app.model.CartItem import CartItem
@@ -10,6 +12,35 @@ from app.model.CartItem import CartItem
 
 def find_by_user_id(user_id):
     return Cart.query.filter(Cart.user_id == user_id).first()
+
+
+def check_quantity(cart_items):
+    cart_insufficient = []
+    for cart_item in cart_items:
+        book = find_by_id(cart_item.book_id)
+        if not book:
+            raise NotFoundError("Book not found")
+
+        if cart_item.quantity > book.quantity:
+            cart_item.quantity = book.quantity
+            cart_insufficient.append({
+                'book_id': book.book_id,
+                'quantity': cart_item.quantity,
+                'book_image': book.images[0].image_url if len(book.images) else None,
+                'title': book.title,
+                'price': book.price,
+                'isInsufficient': True
+            })
+        else:
+            cart_insufficient.append({
+                'book_id': book.book_id,
+                'quantity': cart_item.quantity,
+                'book_image': book.images[0].image_url if len(book.images) else None,
+                'title': book.title,
+                'price': book.price,
+                'isInsufficient': False
+            })
+    return cart_insufficient
 
 
 def find_by_cart_id(cart_id):

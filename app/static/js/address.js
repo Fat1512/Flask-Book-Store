@@ -81,6 +81,7 @@ const fethWard = async function (code) {
 
 
 const handleInputProvinceChange = debounce(async e => {
+
     const children = provinceElement.children
     for (let i = 0; i < children.length; i++) {
         const value = e.target.value
@@ -119,15 +120,17 @@ const handleInputWardChange = debounce(async e => {
     }
 
 }, 1000)
-const provinceElement = document.querySelector('.dropdown-province')
-const districtElement = document.querySelector('.dropdown-district')
-const wardElement = document.querySelector('.dropdown-ward')
-const inputProvince = document.querySelector('input[name="dropdown-province"]')
-const inputDistrict = document.querySelector('input[name="dropdown-district"]')
-const inputWard = document.querySelector('input[name="dropdown-ward"]')
-const inputName = document.querySelector('input[name="name"]')
-const inputPhone = document.querySelector('input[name="phone"]')
+
+
 const modalAddAddress = document.querySelector('.modal-address')
+const provinceElement = modalAddAddress.querySelector('.dropdown-province')
+const districtElement = modalAddAddress.querySelector('.dropdown-district')
+const wardElement = modalAddAddress.querySelector('.dropdown-ward')
+const inputProvince = modalAddAddress.querySelector('input[name="dropdown-province"]')
+const inputDistrict = modalAddAddress.querySelector('input[name="dropdown-district"]')
+const inputWard = modalAddAddress.querySelector('input[name="dropdown-ward"]')
+const inputName = modalAddAddress.querySelector('input[name="name"]')
+const inputPhone = modalAddAddress.querySelector('input[name="phone"]')
 const addressLisst = document.querySelector('.address-list')
 const addressItems = addressLisst.querySelectorAll('.address-item')
 
@@ -283,10 +286,10 @@ addressItems.forEach(el => {
 
     async function renderProvice() {
         const data = await fetchProvince()
-
         provinceElement.innerHTML = data.map(province => `
           <span class="dropdown-item" value='${province.code}'>${province.name}</span>
-    `).join('')
+         `
+        ).join('')
         provinceElement.querySelectorAll('.dropdown-item').forEach(
             el => el.addEventListener('click', () =>
                 handleOnClickProvince(parseInt(el.getAttribute('value'), el.textContent))))
@@ -376,8 +379,10 @@ modalAddAddress.querySelector('.form-address').addEventListener('submit', (e) =>
 
             if (!value) {
                 flag = false
-
+                document
                 modalAddAddress.querySelector(`input[name='${key}']`).style = 'border: 1px solid red'
+            } else {
+                modalAddAddress.querySelector(`input[name='${key}']`).style = 'border: inheritance'
             }
         });
         if (flag) {
@@ -448,9 +453,10 @@ function handleOnClickWard(content) {
 
 async function renderProvice() {
     const data = await fetchProvince()
-    provinceElement.innerHTML = data.map(province => `
+    let html = data.map(province => `
           <span onclick="handleOnClickProvince(${province.code},'${province.name}')" class="dropdown-item" value='${province.code}'>${province.name}</span>
     `).join('')
+    provinceElement.innerHTML = html
 }
 
 async function renderDistrict(code) {
