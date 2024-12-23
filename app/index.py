@@ -8,7 +8,7 @@ from elasticsearch import Elasticsearch
 from flask_login import current_user
 from app.dao.UserDao import get_user_by_id
 import app.controllers.AccountController
-from app import scheduler
+from app import scheduler, consumers
 from app.controllers.CartController import cart_bp
 from app.controllers.rest.AccountAPI import account_rest_bp
 from app.controllers.rest.CartAPI import cart_rest_bp
@@ -20,7 +20,7 @@ from app import app, login
 from app.dao.CartDao import find_by_cart_id
 from app.elasticsearch.BookIndexService import create_document, delete_document
 from app.elasticsearch.KafkaAsysnData import create, update_book_document, delete, \
-    add_attribute_value, modify_attribute_value
+    add_attribute_value, modify_attribute_value, modify_attribute
 from app.exception.CartItemError import CartItemError
 from app.exception.InsufficientError import InsufficientError
 from app.exception.GeneralInsufficientError import GeneralInsufficientError
@@ -63,7 +63,7 @@ app.register_blueprint(payment_rest_bp, url_prefix='/api/v1/payment')
 app.register_blueprint(account_rest_bp, url_prefix='/api/v1/account')
 app.register_blueprint(index_bp, url_prefix='/')
 app.register_blueprint(account_bp, url_prefix='/account')
-# app.register_blueprint(admin_bp, url_prefix='/admin')
+app.register_blueprint(admin_bp, url_prefix='/admin')
 app.register_blueprint(cart_bp, url_prefix='/cart')
 
 
@@ -91,7 +91,6 @@ def context():
         app_context['profile'] = user_data
 
     if current_user.is_authenticated and current_user.user_role == UserRole.CUSTOMER:
-
         cart = find_by_cart_id(user_data.user_id)
         app_context['cart_items'] = cart.cart_items
         app_context['total_price'] = cart.total_price()
@@ -107,7 +106,6 @@ def handle_cart_item_error(e):
         "message": e.message,
         "status": e.status_code
     })
-
 
 
 @app.errorhandler(InsufficientError)
@@ -134,22 +132,22 @@ def handle_general_insufficient_error(e):
     })
 
 
-# def consume_kafka(topic):
-#     with app.app_context():
-#         """Consume messages from Kafka and index them into Elasticsearch."""
-#         consumer = consumers[topic]
-#         consumer.subscribe([topic])
-#         while True:
-#             msg = consumer.poll(timeout=1.0)
-#             if msg is None:
-#                 continue
-#             elif msg.error():
-#                 print(msg.error())
-#             else:
-#                 if msg.value():
-#                     data = json.loads(msg.value().decode('utf-8'))
-#                     handler_message(topic, data)
-#         consumer.close()
+def consume_kafka(topic):
+    with app.app_context():
+        """Consume messages from Kafka and index them into Elasticsearch."""
+        consumer = consumers[topic]
+        consumer.subscribe([topic])
+        while True:
+            msg = consumer.poll(timeout=1.0)
+            if msg is None:
+                continue
+            elif msg.error():
+                print(msg.error())
+            else:
+                if msg.value():
+                    data = json.loads(msg.value().decode('utf-8'))
+                    handler_message(topic, data)
+        consumer.close()
 
 
 def handler_message(topic, data):
@@ -226,24 +224,24 @@ def handle_topic_book_gerne(data):
     pass
 
 
-# def handle_topic_attribute(data):
-#     try:
-#         # Extract necessary information from the message
-#         action = data.get('op')  # Assume 'action' field in data determines what to do
-#         # Assuming there's an 'id' field that identifies the entity
-#         if action == 'u' or action == 'd':
-#             # Logic for updating an existing record or entity
-#             print('updated')
-#             modify_attribute(data['after'])
-#         elif action == 'd':
-#             # Logic for updating an existing record or entity
-#             print('delete')
-#             modify_attribute(data['before'])
-#         else:
-#             print(f"Unknown action: {action}")
-#
-#     except Exception as e:
-#         print(f"Error handling topic1 message: {e}")
+def handle_topic_attribute(data):
+    try:
+        # Extract necessary information from the message
+        action = data.get('op')  # Assume 'action' field in data determines what to do
+        # Assuming there's an 'id' field that identifies the entity
+        if action == 'u' or action == 'd':
+            # Logic for updating an existing record or entity
+            print('updated')
+            modify_attribute(data['after'])
+        elif action == 'd':
+            # Logic for updating an existing record or entity
+            print('delete')
+            modify_attribute(data['before'])
+        else:
+            print(f"Unknown action: {action}")
+
+    except Exception as e:
+        print(f"Error handling topic1 message: {e}")
 
 
 @scheduler.task('interval', id='my_job', seconds=3600)
@@ -266,12 +264,10 @@ def get_by_id(user_id):
 
 
 if __name__ == "__main__":
-    from app.admin import *
-
     KAFKA_TOPICS = app.config["KAFKA_TOPIC"]
-    # for topic in KAFKA_TOPICS:
-    #     consumer_thread = Thread(target=consume_kafka, args=(topic,), daemon=True)
-    #     consumer_thread.start()
+    for topic in KAFKA_TOPICS:
+        consumer_thread = Thread(target=consume_kafka, args=(topic,), daemon=True)
+        consumer_thread.start()
     scheduler.start()
 
     app.run(debug=True)

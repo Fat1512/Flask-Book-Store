@@ -42,7 +42,7 @@ class Book(db.Model):
 
     book_gerne = db.relationship('BookGerne', back_populates='books', lazy=True)
     publisher_info = db.relationship('Publisher', back_populates='publisher_books_relation', uselist=False,
-                                     foreign_keys=[publisher_id], lazy=True)
+                                     foreign_keys=[publisher_id], lazy=True, cascade='all')
     images = db.relationship('BookImage', backref='book', lazy=True)
     order_detail = relationship("OrderDetail", back_populates="book", lazy=True)
     form_import_detail = relationship("FormImportDetail", back_populates="book", lazy=True)

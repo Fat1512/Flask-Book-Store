@@ -634,6 +634,19 @@
                                                       value='{{ loop.index }}'>{{ format }}</span>
                                             {% endfor %}
                                         </div>
+
+                                    </div>
+                                    <div class="form-group">
+
+                                        <label class="attribute-name mr-1" for="product-name">Barcode</label>
+                                        <div class="attribute-value">
+                                            <input type="text" name="product-barcode"
+                                                   class="product-barcode w-100"
+                                                   id="product-barcode"
+                                                   placeholder="barcode">
+                                            <p id="error-barcode" class="m-0 message-error font-weight-bold">Vui
+                                                lòng nhập đủ barcode</p>
+                                        </div>
                                     </div>
                                     <div class="form-group">
                                         <label class="attribute-name" for="product-name">Ngày xuất bản</label>

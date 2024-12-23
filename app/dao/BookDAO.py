@@ -66,7 +66,7 @@ def create_book(data):
     if data['publisher']:
         publisher = Publisher.query.get(data['publisher'])
         if publisher is None: raise NotFoundError('Publisher not found')
-        book.publisher = publisher
+        book.publisher_id = publisher.publisher_id
 
     if data['format']:
         book.format = BookFormat(data['format'])
@@ -77,7 +77,6 @@ def create_book(data):
             image_url = res['secure_url']
             new_image = BookImage(image_url=image_url)
             book.images.append(new_image)
-
 
     extend_attributes = data['extend_attributes']
     if extend_attributes:

@@ -3,6 +3,7 @@ import pdb
 import app.dao.BookGerneDAO
 import app.model.Config
 import app.utils.admin
+from app.dao.PublisherDAO import find_all
 from app.model.User import UserRole
 from flask import render_template, redirect, url_for, request
 from flask_login import current_user
@@ -24,6 +25,7 @@ import hashlib
 from app.model.Publisher import Publisher
 from app.dao.BookGerneDAO import add_gerne, remove_gerne
 from app.model.Config import Config
+from app.utils.helper import FORMAT_BOOK_TEXT
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -52,12 +54,10 @@ def admin_home():
                            account=account, top_books=top_books)
 
 
-
-
-
-# @admin_bp.route("/add-products")
-# def add_products_process():
-#     return render_template("employee-add-products.html")
+@admin_bp.route("/add-products")
+def add_products_process():
+    publishers = find_all()
+    return render_template("employee-add-products.html", publishers=publishers, formats=FORMAT_BOOK_TEXT)
 
 
 # @admin_bp.route("/book-manager")

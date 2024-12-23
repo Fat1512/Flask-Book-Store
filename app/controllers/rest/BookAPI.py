@@ -61,7 +61,7 @@ def create_books():
         "price": float(price),
         "num_page": int(num_page),
         "description": description,
-        "format": int(format) + 1,
+        "format": int(format),
         'publisher': int(publisher),
         "release_date": datetime.strptime(release_date, '%d/%m/%Y'),
         "weight": float(weight),
