@@ -8,7 +8,8 @@ from sqlalchemy import text, desc, asc
 from app.elasticsearch.BookIndex import BookIndex
 from app.model.Config import Config
 from app.model.Book import Book
-from app import db, es
+from app import db
+from app import es
 from app.model.BookGerne import BookGerne
 
 

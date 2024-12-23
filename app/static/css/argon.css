@@ -21410,7 +21410,7 @@ textarea[resize='horizontal']
     {
         display: block;
 
-        margin: .5rem; 
+/*        margin: .5rem; */
 
         content: '';
     }

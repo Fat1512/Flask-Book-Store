@@ -1,7 +1,7 @@
 version: "3.0"
 services:
   elasticsearch:
-    build: 
+    build:
       context: ./eleasticsearch
       dockerfile: dockerfile
     container_name: es-container
@@ -9,32 +9,46 @@ services:
       - ELASTIC_PASSWORD="090224T@n"
       - xpack.security.enabled=false
       - "discovery.type=single-node"
+    networks:
+      - kafka-net
     ports:
       - 9200:9200
+    deploy:
+      resources:
+        limits:
+          memory: 4000M
+
   kibana:
-    build: 
+    build:
       context: ./kibana
       dockerfile: dockerfile
     container_name: kb-container
     environment:
       - KIBANA_PASSWORD="090224T@n"
       - ELASTICSEARCH_HOSTS=http://es-container:9200
-    depends_on: 
+    depends_on:
       - elasticsearch
+    networks:
+      - kafka-net
     ports:
       - 5601:5601
-      
+
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - kafka-net
+
   kafdrop:
     image: obsidiandynamics/kafdrop:3.28.0
+    networks:
+      - kafka-net
     ports:
       - "9000:9000"
     environment:
       KAFKA_BROKERCONNECT: kafka2:29092,kafka1:29091,kafka3:29093
-    
+
   kafka1:
     image: confluentinc/cp-kafka:latest
     hostname: kafka1
@@ -54,6 +68,9 @@ services:
       KAFKA_LISTENER_PORT_INSIDE: 29091
       KAFKA_DEFAULT_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
+    networks:
+      kafka-net:
+        ipv4_address: 172.100.0.100
     ports:
       - "9091:9091"
       - "29091:29091"
@@ -77,6 +94,9 @@ services:
       KAFKA_LISTENER_PORT_INSIDE: 29092
       KAFKA_DEFAULT_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
+    networks:
+      kafka-net:
+        ipv4_address: 172.100.0.101
     ports:
       - "9092:9092"
       - "29092:29092"
@@ -100,10 +120,13 @@ services:
       KAFKA_LISTENER_PORT_INSIDE: 29093
       KAFKA_DEFAULT_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
+    networks:
+      kafka-net:
+        ipv4_address: 172.100.0.102
     ports:
       - "9093:9093"
       - "29093:29093"
-    
+
   schema_registry:
     image: confluentinc/cp-schema-registry:6.2.0
     hostname: schema-registry
@@ -112,18 +135,22 @@ services:
       - kafka1
       - kafka2
       - kafka3
+    networks:
+      - kafka-net
     ports:
       - "8081:8081"
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'kafka2:29092'
-      SCHEMA_REGISTRY_LISTENERS: http://127.0.0.1:8081  
+      SCHEMA_REGISTRY_LISTENERS: http://127.0.0.1:8081
     # Debezium Service (optional)
 
   debezium:
     image: debezium/connect:2.7.3.Final
     hostname: debezium-container
     container_name: debezium-container
+    networks:
+      - kafka-net
     ports:
       - "8083:8083"
     depends_on:
@@ -132,7 +159,6 @@ services:
       - kafka3
       - schema_registry
     environment:
-     
       DEBUG: "true"
       BOOTSTRAP_SERVERS: kafka1:29091,kafka2:29092,kafka3:29093  # Connect using all Kafka brokers' internal addresses
       GROUP_ID: debezium-group
@@ -146,14 +172,37 @@ services:
       CONNECT_SCHEMA_REGISTRY_URL: http://schema-registry:8081
       SCHEMA_HISTORY_INTERNAL_KAFKA_TOPIC: schema-changes.mysql_server_history
       SCHEMA_HISTORY_INTERNAL_KAFKA_BOOTSTRAP_SERVERS: kafka1:29091,kafka2:29092,kafka3:29093
-
+  mysql:
+    container_name: mysql
+    image: mysql:8.0
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 15122004
+      MYSQL_USER: phat
+      MYSQL_PASSWORD: 15122004
+      # MYSQL_DATABASE: book_store
+    volumes:
+      - ./zzz:/etc/mysql/my.cnf
+    networks:
+      kafka-net:
+        ipv4_address: 172.100.0.200
   debezium-ui:
     container_name: debezium-ui
     image: debezium/debezium-ui:1.9
+    networks:
+      - kafka-net
     ports:
       - "8090:8080"
     environment:
       - KAFKA_CONNECT_URIS=http://debezium-container:8083
     depends_on:
       - debezium
- 
+
+networks:
+  kafka-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.100.0.0/16
+          gateway: 172.100.0.1

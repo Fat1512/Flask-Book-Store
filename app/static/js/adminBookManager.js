@@ -6,7 +6,7 @@ const newGerneInput = document.getElementById("newGerne");
 // Fetch genres from backend and populate dropdown list
 async function fetchGernes() {
     try {
-        const response = await fetch('/admin/api/gernes'); // Gọi API backend
+        const response = await fetch('/api/gernes'); // Gọi API backend
         if (!response.ok) throw new Error('Failed to fetch gernes');
 
         const gernes = await response.json(); // Parse JSON từ API
@@ -29,7 +29,7 @@ function populateGerneList(gernes, filter = "") {
             gerneList.style.display = "none";
 
             // Redirect to statistic page with gerne_id
-            window.location.href = `/admin/book-manager?gerne_id=${gerne.id}`;
+            window.location.href = `/employee/book-manager?gerne_id=${gerne.id}`;
         });
         gerneList.appendChild(item);
     });
@@ -43,7 +43,7 @@ gerneSearch.addEventListener("focus", () => {
 
 // Event listener cho tìm kiếm
 gerneSearch.addEventListener("input", async () => {
-    const response = await fetch('/admin/api/gernes'); // Fetch lại gernes
+    const response = await fetch('/api/gernes'); // Fetch lại gernes
     const gernes = await response.json();
     populateGerneList(gernes, gerneSearch.value); // Filter theo input
 });

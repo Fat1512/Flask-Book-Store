@@ -14,9 +14,10 @@
     <meta name="description" content="GPHUCDEPZAI">
     <meta http-equiv="refresh" content="1800">
     <link href="https://cdn0.fahasa.com/media/favicon/default/favicon4.ico" rel="shortcut icon">
-    <title>Đăng nhập</title>
+    <title>Quên mật khẩu</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+    <script src="wow.min.js"></script>
 </head>
 
 <body>
@@ -43,18 +44,18 @@
                                              alt="">
                                     </a>
                                 </div>
-                                <h2 style="color: #5a5a5a;">Đăng nhập EMPLOYEE</h2>
-                                <form method="post" action="/account/employee-login">
+                                <h2 style="color: #5a5a5a;">Quên mật khẩu EMPLOYEE</h2>
+                                <form method="post" action="{{ url_for('account.employee_forgot') }}">
                                     <div class="form-group appoinment-body-1">
-                                        <label for="username">
-                                            <font>Tên đăng nhập</font>
+                                        <label for="email">
+                                            <font>Email</font>
                                             <span style="color: red;">*</span>
                                         </label>
-                                        <input class="form-control-1" id="username" name="username" type="text">
+                                        <input class="form-control-1" id="email" name="email" type="email">
                                     </div>
                                     <div class="form-group appoinment-body-1">
                                         <label for="pass">
-                                            <font>Mật khẩu</font>
+                                            <font>Mật khẩu mới</font>
                                             <span style="color: red;">*</span>
                                         </label>
                                         <div class="box">
@@ -62,15 +63,15 @@
                                             <div class="toggle" id="toggle" onclick="showPass()"></div>
                                         </div>
                                     </div>
-                                    <div class="forgotpass">
-                                        <div class="remember-me">
-                                            <label class="custom_check">
-                                                <input type="checkbox" name="radio">
-                                                <font>Nhớ mật khẩu</font>
-                                                <span class="checkmark"></span>
-                                            </label>
+                                    <div class="form-group appoinment-body-1">
+                                        <label for="pass">
+                                            <font>Xác nhận mật khẩu</font>
+                                            <span style="color: red;">*</span>
+                                        </label>
+                                        <div class="box">
+                                            <input class="form-control-1" id="confirm" name="confirm" type="password">
+                                            <div class="toggle" id="toggle1" onclick="showConfirm()"></div>
                                         </div>
-                                        <a href="/account/employee-forgot">Quên mật khẩu</a>
                                     </div>
                                     {% if err_msg %}
                                     <div class="checkpass" style="margin-bottom: 15px">
@@ -82,13 +83,12 @@
                                         </div>
                                     </div>
                                     {% endif %}
-                                    <div class="form-group login-btn">
-                                        <a href="{{ url_for('employee.checkout') }}">
-                                            <button class="btn-primary" type="submit">Đăng nhập</button>
+                                    <div class="form-group login-btn" style="margin-top: 30px;">
+                                        <a href="/account/employee-login">
+                                            <button class="btn-primary" type="submit">Xác nhận</button>
                                         </a>
                                     </div>
                                 </form>
-
                             </div>
                         </div>
                     </div>
@@ -110,6 +110,20 @@
         else {
             pass.setAttribute('type', 'password');
             toggle.classList.remove('hide')
+        }
+    }
+
+    const confirm = document.getElementById('confirm');
+    const toggle1 = document.getElementById('toggle1');
+
+    function showConfirm() {
+        if (confirm.type === 'password') {
+            confirm.setAttribute('type', 'text');
+            toggle1.classList.add('hide')
+        }
+        else {
+            confirm.setAttribute('type', 'password');
+            toggle1.classList.remove('hide')
         }
     }
 </script>

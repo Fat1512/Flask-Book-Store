@@ -16,7 +16,7 @@ from app.dao.CartDao import update_cart
 from app.controllers.rest.PaymentAPI import payment_rest_bp
 from app.controllers.rest.SearchAPI import search_res_bp
 from app.dao import UserDao
-from app import app, login, consumers
+from app import app, login
 from app.dao.CartDao import find_by_cart_id
 from app.elasticsearch.BookIndexService import create_document, delete_document
 from app.elasticsearch.KafkaAsysnData import create, update_book_document, delete, \
@@ -38,7 +38,7 @@ from app.controllers.rest.UserAPI import user_api_bp
 from app.controllers.rest.OrderAPI import order_api_bp, update
 from app.controllers.rest.BookGerneAPI import book_gerne_rest_bp
 from app.controllers.AccountController import account_bp
-from app.controllers.AdminController import admin_bp, update_book
+from app.controllers.AdminController import admin_bp
 from app.controllers.CartController import cart_bp
 from app.controllers.rest.CartAPI import cart_rest_bp
 from app.utils.admin import profile
@@ -63,7 +63,7 @@ app.register_blueprint(payment_rest_bp, url_prefix='/api/v1/payment')
 app.register_blueprint(account_rest_bp, url_prefix='/api/v1/account')
 app.register_blueprint(index_bp, url_prefix='/')
 app.register_blueprint(account_bp, url_prefix='/account')
-app.register_blueprint(admin_bp, url_prefix='/admin')
+# app.register_blueprint(admin_bp, url_prefix='/admin')
 app.register_blueprint(cart_bp, url_prefix='/cart')
 
 
@@ -85,13 +85,16 @@ def context():
         "profile": None
     }
 
-    if current_user.is_authenticated and current_user.user_role == UserRole.CUSTOMER:
+    user_data = None
+    if current_user.is_authenticated:
         user_data = profile()
+        app_context['profile'] = user_data
+
+    if current_user.is_authenticated and current_user.user_role == UserRole.CUSTOMER:
 
         cart = find_by_cart_id(user_data.user_id)
         app_context['cart_items'] = cart.cart_items
         app_context['total_price'] = cart.total_price()
-        app_context['profile'] = user_data
         return app_context
 
     return app_context
@@ -104,6 +107,7 @@ def handle_cart_item_error(e):
         "message": e.message,
         "status": e.status_code
     })
+
 
 
 @app.errorhandler(InsufficientError)
@@ -130,22 +134,22 @@ def handle_general_insufficient_error(e):
     })
 
 
-def consume_kafka(topic):
-    with app.app_context():
-        """Consume messages from Kafka and index them into Elasticsearch."""
-        consumer = consumers[topic]
-        consumer.subscribe([topic])
-        while True:
-            msg = consumer.poll(timeout=1.0)
-            if msg is None:
-                continue
-            elif msg.error():
-                print(msg.error())
-            else:
-                if msg.value():
-                    data = json.loads(msg.value().decode('utf-8'))
-                    handler_message(topic, data)
-        consumer.close()
+# def consume_kafka(topic):
+#     with app.app_context():
+#         """Consume messages from Kafka and index them into Elasticsearch."""
+#         consumer = consumers[topic]
+#         consumer.subscribe([topic])
+#         while True:
+#             msg = consumer.poll(timeout=1.0)
+#             if msg is None:
+#                 continue
+#             elif msg.error():
+#                 print(msg.error())
+#             else:
+#                 if msg.value():
+#                     data = json.loads(msg.value().decode('utf-8'))
+#                     handler_message(topic, data)
+#         consumer.close()
 
 
 def handler_message(topic, data):
@@ -262,10 +266,12 @@ def get_by_id(user_id):
 
 
 if __name__ == "__main__":
+    from app.admin import *
+
     KAFKA_TOPICS = app.config["KAFKA_TOPIC"]
-    for topic in KAFKA_TOPICS:
-        consumer_thread = Thread(target=consume_kafka, args=(topic,), daemon=True)
-        consumer_thread.start()
+    # for topic in KAFKA_TOPICS:
+    #     consumer_thread = Thread(target=consume_kafka, args=(topic,), daemon=True)
+    #     consumer_thread.start()
     scheduler.start()
 
     app.run(debug=True)

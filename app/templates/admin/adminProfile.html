@@ -1,0 +1,454 @@
+{% extends 'admin/layout/base.html' %}
+{% block title %} Hồ sơ {% endblock %}
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/adminStatistic.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/employeeAddProducts.css') }}">
+<!--<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">-->
+
+<style>
+    .profile-picture {
+        position: relative;
+        width: 300px;
+        height: 300px;
+        margin: 0 auto;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 2px solid #ddd;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .upload-box {
+        display: inline-block;
+        padding: 10px 15px;
+        background-color: #c92127;
+        color: white;
+        cursor: pointer;
+        border-radius: 5px;
+        text-align: center;
+        transition: background-color 0.3s ease;
+    }
+
+    .upload-box:hover {
+        background-color: #007bff;
+    }
+
+    .upload-box:active {
+        background-color: #007bff;
+    }
+
+    #fileUpload {
+        display: none;
+    }
+
+    .change-pass-1, .change-pass-2, .change-pass-3 {
+        display: none;
+    }
+</style>
+{% endblock %}
+{% block js %}
+<script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+{% endblock %}
+{% block content %}
+<div class="header bg-primary pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <!--                        <h6 class="h2 text-white d-inline-block mb-0">Icons</h6>-->
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="#">Hồ sơ</a></li>
+                            <!--                                <li class="breadcrumb-item active" aria-current="page">Icons</li>-->
+                        </ol>
+                    </nav>
+                </div>
+                <!--                    <div class="col-lg-6 col-5 text-right">-->
+                <!--                        <a href="#" class="btn btn-neutral" id="statistic-table-check">Bảng</a>-->
+                <!--                        <a href="#" class="btn btn-neutral" id="statistic-chart-check">Biểu đồ</a>-->
+                <!--                    </div>-->
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Page content -->
+<div class="container-fluid mt--6" id="statistic-table" style="display: block;">
+    <div class="row justify-content-center">
+        <div class=" col ">
+            <div class="card" style="margin-bottom: 0">
+                <div class="card-header bg-transparent">
+                    <h3 class="mb-0">Thông tin hồ sơ</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row icon-examples">
+                        <div class="col-12 d-flex">
+                            <!-- Left Side: Form to Edit Information -->
+                            <div class="col-6">
+                                <div class="profile-form">
+                                    <form>
+                                        <!-- Username Field -->
+                                        <div class="form-group">
+                                            <label for="username">Tên đăng nhập</label>
+                                            <div style="margin-left:18px; width:73%;">
+                                                <input type="text" id="username" class="form-control"
+                                                       value="{{ profile[1] }}" disabled>
+                                                <!-- Chỉ lấy 1 profile -->
+                                            </div>
+                                        </div>
+
+                                        <!-- Name Field -->
+                                        <div class="form-group">
+                                            <label for="first_name">Họ</label>
+                                            <div style="margin-left:17px; width:40%;">
+                                                <input type="text" id="first_name" class="form-control"
+                                                       value="{{ profile[2] }}">
+                                            </div>
+                                            <label for="last_name" style="margin-left: 25px;">Tên</label>
+                                            <div style="margin-left:17px; width:40%;">
+                                                <input type="text" id="last_name" class="form-control"
+                                                       value="{{ profile[3] }}">
+                                            </div>
+                                        </div>
+                                        <!--                                        <div class="form-group">-->
+
+                                        <!--                                        </div>-->
+
+                                        <!-- Email Field -->
+                                        <div class="form-group">
+                                            <label for="email">Email</label>
+                                            <div style="margin:0 17px; width:79%;">
+                                                <input type="email" id="email" class="form-control"
+                                                       value="{{ profile[4] }}" disabled>
+                                            </div>
+                                            <div>
+                                                <button type="button" class="btn btn-primary edit-btn-email">Sửa
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Phone Field -->
+                                        <div class="form-group">
+                                            <label for="phone">Số điện thoại</label>
+                                            <div style="margin:0 15px; width:62%;">
+                                                <input type="text" id="phone" class="form-control"
+                                                       value="{{ profile[5] }}" disabled>
+                                            </div>
+                                            <div>
+                                                <button type="button" class="btn btn-primary edit-btn-phone">Sửa
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Gender Selection -->
+                                        <div class="form-group">
+                                            <label>Giới tính</label><br>
+                                            <div style="display:flex;margin:0 40px;">
+                                                <input type="radio" id="male" name="gender" value="Nam"
+                                                       {% if profile.is_male %}checked{% endif %}>
+                                                <label for="male">Nam</label>
+                                            </div>
+                                            <div style="display:flex;margin:0 40px;">
+                                                <input type="radio" id="female" name="gender" value="Nữ"
+                                                       {% if profile.is_female %}checked{% endif %}>
+                                                <label for="female">Nữ</label>
+                                            </div>
+
+                                        </div>
+
+                                        <!-- Date of Birth Fields -->
+                                        <div class="form-group">
+                                            <label for="dob">Ngày sinh</label><br>
+                                            <div style="display:flex; margin:0 36px;">
+                                                <!-- Select for Day -->
+                                                <select id="day" class="form-control d-inline"
+                                                        style="width: 120px; max-height: 100px; overflow-y: auto;">
+                                                    <option value="" disabled>Ngày</option>
+                                                    {% for i in range(1, 32) %}
+                                                    <option value="{{ i }}" {% if i== profile.day %}selected{% endif
+                                                            %}>{{ i
+                                                        }}
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+
+                                                <!-- Select for Month -->
+                                                <select id="month" class="form-control d-inline"
+                                                        style="width: 120px; max-height: 100px; overflow-y: auto;">
+                                                    <option value="" disabled>Tháng</option>
+                                                    {% for i in range(1, 13) %}
+                                                    <option value="{{ i }}" {% if i== profile.month %}selected{%
+                                                            endif %}>{{ i }}
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+
+                                                <!-- Select for Year -->
+                                                <select id="year" class="form-control d-inline"
+                                                        style="width: 120px; max-height: 100px; overflow-y: auto;">
+                                                    <option value="" disabled>Năm</option>
+                                                    {% for i in range(1900, current_year + 1) %}
+                                                    <option value="{{ i }}" {% if i== profile.year %}selected{%
+                                                            endif %}>{{ i }}
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group change-pass-1">
+                                            <label for="password">Mật khẩu hiện tại</label>
+                                            <div style="margin:0 15px;">
+                                                <input type="password" id="password" class="form-control"
+                                                       value="">
+                                            </div>
+                                            <p id="passwordError" class="text-danger"
+                                               style="display: none;margin: 10px; padding-left: 20px">Mật khẩu hiện tại
+                                                không chính xác</p>
+                                        </div>
+
+                                        <div class="form-group change-pass-2">
+                                            <label for="newpassword">Mật khẩu mới</label>
+                                            <div style="margin:0 15px;">
+                                                <input type="password" id="newpassword" class="form-control"
+                                                       value="">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group change-pass-3">
+                                            <label for="confirm">Xác nhận mật khẩu</label>
+                                            <div style="margin:0 15px;">
+                                                <input type="password" id="confirm" class="form-control"
+                                                       value="">
+                                            </div>
+                                            <p id="confirmError" class="text-danger"
+                                               style="display: none;margin: 10px; padding-left: 20px">Mật khẩu không
+                                                trùng khớp</p>
+                                        </div>
+
+
+                                        <!-- Save Button -->
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-primary btn-save"
+                                                    style="padding:10px 50px; margin-right:30px;">Lưu
+                                            </button>
+                                            <button type="button" class="btn btn-primary btn-save" id="change-pass"
+                                                    style="padding:10px 20px">Đổi mật khẩu
+                                            </button>
+                                        </div>
+
+
+                                        <!-- Save Button -->
+                                        <!--                                        <div class="form-group">-->
+                                        <!--                                            <button type="button" class="btn btn-primary btn-save"-->
+                                        <!--                                                    style="padding: 10px 50px;background-color: #2196F3;border-color: #2196F3;">-->
+                                        <!--                                                Lưu-->
+                                        <!--                                            </button>-->
+                                        <!--                                        </div>-->
+                                    </form>
+
+                                </div>
+                            </div>
+
+                            <!-- Right Side: Profile Picture and Edit -->
+                            <div class="col-6 text-center">
+                                <div class="profile-picture">
+                                    <img src="{{ profile[6] }}" alt="Profile Picture"
+                                         class="img-fluid profile-image rounded-circle" id="profileImage">
+
+                                </div>
+                                <div class="image-upload" style="margin-top: 30px;">
+                                    <label for="fileUpload" class="upload-box">
+                                        Tải ảnh
+                                    </label>
+                                    <input type="file" id="fileUpload" accept="image/*"
+                                           onchange="previewImage(event)"
+                                           style="display: none;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--<script>-->
+<!--    function previewImage(event) {-->
+<!--        const file = event.target.files[0];  // Lấy tệp ảnh người dùng chọn-->
+<!--        const reader = new FileReader();     // Tạo một đối tượng FileReader để đọc tệp ảnh-->
+
+<!--        reader.onload = function() {-->
+<!--            const imageElement = document.getElementById('profileImage');  // Lấy thẻ img-->
+<!--            imageElement.src = reader.result;  // Đặt src của thẻ img thành ảnh đã tải lên-->
+<!--        }-->
+
+<!--        if (file) {-->
+<!--            reader.readAsDataURL(file);  // Đọc tệp ảnh dưới dạng URL-->
+<!--        }-->
+<!--    }-->
+<!--</script>-->
+<!--<script>-->
+<!--    document.addEventListener('DOMContentLoaded', function() {-->
+<!--        // Lắng nghe sự kiện click cho nút "Sửa"-->
+<!--        document.querySelector('.edit-btn-phone').addEventListener('click', function() {-->
+<!--            const phoneInput = document.getElementById('phone'); // Trường số điện thoại-->
+<!--            const currentValue = phoneInput.value;-->
+
+<!--            // Nếu ô input đang ở trạng thái disabled, kích hoạt nó-->
+<!--            if (phoneInput.disabled) {-->
+<!--                phoneInput.disabled = false;  // Bỏ disable-->
+<!--                phoneInput.focus();  // Đưa con trỏ vào ô input để người dùng có thể chỉnh sửa-->
+
+<!--                // Chuyển nút "Sửa" thành "Lưu"-->
+<!--                this.textContent = 'Xác nhận';-->
+<!--                this.classList.remove('btn-primary');-->
+<!--                this.classList.add('btn-success');  // Thay đổi màu nút-->
+
+<!--            } else {-->
+<!--                // Nếu ô input đang ở trạng thái chỉnh sửa, lưu giá trị mới và cập nhật lại giao diện-->
+<!--                const newValue = phoneInput.value;-->
+<!--                if (!newValue) {-->
+<!--                    alert('Vui lòng nhập số điện thoại');-->
+<!--                    phoneInput.focus();-->
+<!--                    return;-->
+<!--                }-->
+
+<!--                // Sau khi lưu, tắt chỉnh sửa và giữ giá trị mới trong ô input-->
+<!--                phoneInput.disabled = true;  // Vô hiệu hóa ô input sau khi lưu-->
+<!--                this.textContent = 'Sửa';  // Đổi lại thành "Sửa"-->
+<!--                this.classList.remove('btn-success');-->
+<!--                this.classList.add('btn-primary');  // Đổi màu nút trở lại-->
+<!--            }-->
+<!--        });-->
+
+<!--        document.querySelector('.edit-btn-email').addEventListener('click', function() {-->
+<!--            const emailInput = document.getElementById('email'); // Trường số điện thoại-->
+<!--            const currentValue = emailInput.value;-->
+
+<!--            // Nếu ô input đang ở trạng thái disabled, kích hoạt nó-->
+<!--            if (emailInput.disabled) {-->
+<!--                emailInput.disabled = false;  // Bỏ disable-->
+<!--                emailInput.focus();  // Đưa con trỏ vào ô input để người dùng có thể chỉnh sửa-->
+
+<!--                // Chuyển nút "Sửa" thành "Lưu"-->
+<!--                this.textContent = 'Xác nhận';-->
+<!--                this.classList.remove('btn-primary');-->
+<!--                this.classList.add('btn-success');  // Thay đổi màu nút-->
+
+<!--            } else {-->
+<!--                // Nếu ô input đang ở trạng thái chỉnh sửa, lưu giá trị mới và cập nhật lại giao diện-->
+<!--                const newValue = emailInput.value;-->
+<!--                if (!newValue) {-->
+<!--                    alert('Vui lòng nhập email');-->
+<!--                    emailInput.focus();-->
+<!--                    return;-->
+<!--                }-->
+
+<!--                // Sau khi lưu, tắt chỉnh sửa và giữ giá trị mới trong ô input-->
+<!--                emailInput.disabled = true;  // Vô hiệu hóa ô input sau khi lưu-->
+<!--                this.textContent = 'Sửa';  // Đổi lại thành "Sửa"-->
+<!--                this.classList.remove('btn-success');-->
+<!--                this.classList.add('btn-primary');  // Đổi màu nút trở lại-->
+<!--            }-->
+<!--        });-->
+<!--    });-->
+<!--</script>-->
+
+<!--<script>-->
+<!--    document.addEventListener('DOMContentLoaded', function() {-->
+<!--        const saveButton = document.querySelector('.btn-save'); // Nút "Lưu"-->
+
+<!--        saveButton.addEventListener('click', function() {-->
+<!--            // Tạo đối tượng lưu trữ dữ liệu người dùng-->
+<!--            const updatedData = {};-->
+
+<!--            // Thu thập dữ liệu từ các ô input (như số điện thoại, email, ...)-->
+<!--            // Giả sử các trường như số điện thoại có ID là "phone", và các trường khác cũng có ID tương tự-->
+<!--            updatedData.first_name = document.querySelector('#first_name').value;-->
+<!--            updatedData.last_name = document.querySelector('#last_name').value;-->
+<!--            updatedData.email = document.querySelector('#email').value;-->
+<!--            updatedData.phone_number = document.querySelector('#phone').value;-->
+<!--            const gender = document.querySelector('input[name="gender"]:checked').value;-->
+<!--            if (gender === "Nam") {-->
+<!--                updatedData.sex = 1;  // Nam-->
+<!--            } else if (gender === "Nữ") {-->
+<!--                updatedData.sex = 0;  // Nữ-->
+<!--            } else {-->
+<!--                updatedData.sex = null; // Nếu "Khác" hoặc không chọn thì set là null-->
+<!--            }-->
+<!--            updatedData.date_of_birth = `${document.querySelector('#year').value}-${document.querySelector('#month').value}-${document.querySelector('#day').value}`;-->
+
+<!--            // Lấy giá trị ảnh đại diện nếu có thay đổi-->
+<!--            const avatarInput = document.querySelector('#fileUpload');-->
+<!--            if (avatarInput && avatarInput.files.length > 0) {-->
+<!--                updatedData.avt_url = URL.createObjectURL(avatarInput.files[0]);-->
+<!--            } else {-->
+<!--                updatedData.avt_url = document.querySelector('#profileImage').src; // Giữ ảnh đại diện cũ nếu không thay đổi-->
+<!--            }-->
+
+<!--            // Gửi yêu cầu POST tới server để cập nhật thông tin-->
+<!--            fetch('/admin/update-profile', {  // Thay '/admin/update-profile' bằng URL thực tế-->
+<!--                method: 'POST',-->
+<!--                headers: {-->
+<!--                    'Content-Type': 'application/json',-->
+<!--                },-->
+<!--                body: JSON.stringify(updatedData)-->
+<!--            })-->
+<!--                .then(response => response.json())-->
+<!--                .then(data => {-->
+<!--                if (data.success) {-->
+<!--                    // Cập nhật giao diện với dữ liệu mới sau khi sửa-->
+<!--                    alert('Cập nhật thành công!');-->
+<!--                    // Có thể cập nhật lại nội dung các trường hiển thị nếu cần-->
+<!--                    document.querySelector('#profileImage').src = updatedData.avt_url;-->
+<!--                } else {-->
+<!--                    alert('Cập nhật thất bại: ' + (data.message || 'Lỗi không xác định'));-->
+<!--                }-->
+<!--            })-->
+<!--                .catch(error => {-->
+<!--                console.error('Error updating profile:', error);-->
+<!--                alert('Đã xảy ra lỗi trong quá trình cập nhật.');-->
+<!--            });-->
+<!--        });-->
+<!--    });-->
+<!--</script>-->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Gắn sự kiện click vào nút đổi mật khẩu
+        const changePass = document.getElementById('change-pass');
+        const changeInputPass1 = document.querySelector('.change-pass-1');
+        const changeInputPass2 = document.querySelector('.change-pass-2');
+        const changeInputPass3 = document.querySelector('.change-pass-3');
+        const value1 = document.getElementById('password');
+        const value2 = document.getElementById('newpassword');
+        const value3 = document.getElementById('confirm');
+
+        changePass.addEventListener('click', () => {
+            if (getComputedStyle(changeInputPass1).display !== 'none') {
+                changeInputPass1.style.display = 'none';
+                changeInputPass2.style.display = 'none';
+                changeInputPass3.style.display = 'none';
+                changePass.textContent = 'Đổi mật khẩu';
+                value1.value = '';
+                value2.value = '';
+                value3.value = '';
+            } else {
+                changeInputPass1.style.display = 'block';
+                changeInputPass2.style.display = 'block';
+                changeInputPass3.style.display = 'block';
+                changePass.textContent = 'Đóng';
+            }
+        });
+    });
+
+
+</script>
+
+{% endblock %}

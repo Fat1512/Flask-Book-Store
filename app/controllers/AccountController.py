@@ -41,7 +41,7 @@ def admin_login():
         if user:
             if user.user_role == UserRole.ADMIN:
                 login_user(user=user)
-                return redirect(url_for('admin.admin_home'))
+                return redirect(url_for('admin.index'))
             else:
                 err_msg = "Vai trò không hợp lệ!"
         else:
@@ -56,6 +56,29 @@ def admin_logout():
     return redirect(url_for('account.admin_login'))
 
 
+@account_bp.route("/admin-forgot", methods=['GET', 'POST'])
+def admin_forgot():
+    err_msg = ''
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        confirm = request.form.get('confirm')
+        if not email or not password or not confirm:
+            err_msg = 'Vui lòng điền đầy đủ thông tin!'
+        else:
+            email = email.strip()
+            account = db.session.query(Account).join(User).filter(User.email == email).first()
+            if account is None:
+                err_msg = 'Email không tồn tại!'
+            elif password != confirm:
+                err_msg = 'Mật khẩu và xác nhận mật khẩu không trùng khớp!'
+            else:
+                UserDao.update_password(username=account.username, password=password)
+                return redirect(url_for('account.admin_login'))
+
+    return render_template("admin-forgotpass.html", err_msg=err_msg)
+
+
 @account_bp.route('/employee-login', methods=['GET', 'POST'])
 def employee_login():
     err_msg = ''
@@ -65,20 +88,17 @@ def employee_login():
 
         user = UserDao.auth_user(username=username, password=password)
         if user:
-            login_user(user=user, remember=True)
-            print("current user day ne", current_user.user_role)
-            if user.user_role == UserRole.EMPLOYEE_SALE:
-                return redirect(url_for('employee.checkout'))
-            elif user.user_role == UserRole.EMPLOYEE_MANAGER_WAREHOUSE:
-                return redirect(url_for('employee.checkout'))
-            elif user.user_role == UserRole.EMPLOYEE_MANAGER:
-                return redirect(url_for('employee.checkout'))
+            login_user(user=user)
+
+            if user.user_role == UserRole.EMPLOYEE_SALE or user.user_role == UserRole.EMPLOYEE_MANAGER_WAREHOUSE or user.user_role == UserRole.EMPLOYEE_MANAGER:
+                return redirect(url_for('employee.employee_profile'))
             else:
                 err_msg = "Vai trò không hợp lệ!"
         else:
             err_msg = "Tên đăng nhập hoặc mật khẩu không đúng!"
 
     return render_template('employee-login.html', err_msg=err_msg)
+
 
 
 # @account_bp.route("/employee-register", methods=['GET', 'POST'])
@@ -119,10 +139,34 @@ def employee_login():
 #     return render_template('employee-register.html', err_msg=err_msg)
 
 
+
 @account_bp.route("/employee-logout")
 def employee_logout():
     logout_user()
     return redirect(url_for('account.employee_login'))
+
+
+@account_bp.route("/employee-forgot", methods=['GET', 'POST'])
+def employee_forgot():
+    err_msg = ''
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        confirm = request.form.get('confirm')
+        if not email or not password or not confirm:
+            err_msg = 'Vui lòng điền đầy đủ thông tin!'
+        else:
+            email = email.strip()
+            account = db.session.query(Account).join(User).filter(User.email == email).first()
+            if account is None:
+                err_msg = 'Email không tồn tại!'
+            elif password != confirm:
+                err_msg = 'Mật khẩu và xác nhận mật khẩu không trùng khớp!'
+            else:
+                UserDao.update_password(username=account.username, password=password)
+                return redirect(url_for('account.employee_login'))
+
+    return render_template("employee-forgotpass.html", err_msg=err_msg)
 
 
 @account_bp.route("/login", methods=['GET', 'POST'])
@@ -169,10 +213,11 @@ def register_process():
         confirm = request.form.get('confirm')
         username = request.form.get('username')
         email = request.form.get('email')
+        phone_number = request.form.get('phone_number')
 
         if password == confirm:
-            if UserDao.check_exists(username=username, email=email):
-                err_msg = 'Tên người dùng hoặc email đã tồn tại!'
+            if UserDao.check_exists(username=username, email=email, phone_number=phone_number):
+                err_msg = 'Tên người dùng hoặc email hoặc SĐT đã tồn tại!'
             else:
                 data = request.form.copy()
                 del data['confirm']
@@ -182,7 +227,19 @@ def register_process():
                 for field in optional_fields:
                     data[field] = data.get(field, None)
 
-                UserDao.add_user(avt_url=avt_url, **data)
+                UserDao.add_user(
+                    first_name=data.get('first_name'),
+                    last_name=data.get('last_name'),
+                    username=username,
+                    password=password,
+                    email=email,
+                    phone_number=phone_number,
+                    avt_url=avt_url,
+                    sex=data.get('sex'),
+                    date_of_birth=data.get('date_of_birth'),
+                    isActive=data.get('isActive'),
+                    last_access=data.get('last_access')
+                )
 
                 return redirect(url_for('account.login_process'))
         else:

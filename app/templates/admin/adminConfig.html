@@ -1,0 +1,229 @@
+{% extends 'admin/layout/base.html' %}
+{% block title %} Thay đổi cấu hình {% endblock %}
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/adminStatistic.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/employeeAddProducts.css') }}">
+{% endblock %}
+{% block js %}
+{% endblock %}
+{% block content %}
+<div class="header bg-primary pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <!--                        <h6 class="h2 text-white d-inline-block mb-0">Icons</h6>-->
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="#">Thay đổi cấu hình</a></li>
+                            <!--                                <li class="breadcrumb-item active" aria-current="page">Icons</li>-->
+                        </ol>
+                    </nav>
+                </div>
+                <!--                    <div class="col-lg-6 col-5 text-right">-->
+                <!--                        <a href="#" class="btn btn-neutral" id="statistic-table-check">Bảng</a>-->
+                <!--                        <a href="#" class="btn btn-neutral" id="statistic-chart-check">Biểu đồ</a>-->
+                <!--                    </div>-->
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Page content -->
+<div class="container-fluid mt--6" style="display: block;">
+    <div class="row justify-content-center">
+        <div class=" col ">
+            <div class="card" style="margin-bottom: 0">
+                <div class="card-header bg-transparent">
+                    <h3 class="mb-0">Thông tin cấu hình</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row icon-examples">
+                        <div class="col-12 d-flex">
+                            <!-- Left Side: Form to Edit Information -->
+                            <div class="col-12">
+                                <div class="profile-form">
+                                    <form>
+
+                                        <div class="form-group">
+                                            <label for="quantity" style="width: 60%;">Số lượng nhập tối
+                                                thiểu</label>
+                                            <div style="margin:0 17px; width:66%;">
+                                                <input type="number" id="quantity" class="form-control"
+                                                       value="{{ c.min_restock_qty }}" disabled>
+                                            </div>
+                                            <div>
+                                                <button type="button" class="btn btn-primary edit-btn-quantity">Sửa
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Phone Field -->
+                                        <div class="form-group">
+                                            <label for="level" style="width: 60%;">Số lượng tồn tối thiểu trước khi
+                                                nhập</label>
+                                            <div style="margin:0 15px; width:66%;">
+                                                <input type="number" id="level" class="form-control"
+                                                       value="{{ c.min_restock_level }}" disabled>
+                                            </div>
+                                            <div>
+                                                <button type="button" class="btn btn-primary edit-btn-level">Sửa
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Phone Field -->
+                                        <div class="form-group">
+                                            <label for="cancel" style="width: 50%;">Thời gian hủy đơn hàng nếu người
+                                                dùng không nhận (Giờ)</label>
+                                            <div style="margin:0 15px; width:55%;">
+                                                <input type="number" id="cancel" class="form-control"
+                                                       value="{{ c.order_cancel_period }}"
+                                                       disabled>
+                                            </div>
+                                            <div>
+                                                <button type="button" class="btn btn-primary edit-btn-cancel">Sửa
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-primary btn-save"
+                                                    style="left: 88.5%;padding: 10px 50px;background-color: #2196F3;border-color: #2196F3;">
+                                                Lưu
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const saveButton = document.querySelector('.btn-save');
+
+        saveButton.addEventListener('click', function() {
+            const updatedData = {};
+
+            updatedData.quantity = document.querySelector('#quantity').value;
+            updatedData.level = document.querySelector('#level').value;
+            updatedData.cancel = document.querySelector('#cancel').value;
+
+
+            fetch('/update-config', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updatedData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                if (data.success) {
+                    alert('Cập nhật thành công!');
+                } else {
+                    alert('Cập nhật thất bại: ' + (data.message || 'Lỗi không xác định'));
+                }
+            })
+                .catch(error => {
+                console.error('Error updating profile:', error);
+                alert('Đã xảy ra lỗi trong quá trình cập nhật.');
+            });
+        });
+    });
+
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('.edit-btn-quantity').addEventListener('click', function() {
+            const phoneInput = document.getElementById('quantity');
+            const currentValue = phoneInput.value;
+
+            if (phoneInput.disabled) {
+                phoneInput.disabled = false;
+                phoneInput.focus();
+
+                this.textContent = 'Xác nhận';
+                this.classList.remove('btn-primary');
+                this.classList.add('btn-success');
+
+            } else {
+                // Nếu ô input đang ở trạng thái chỉnh sửa, lưu giá trị mới và cập nhật lại giao diện
+                const newValue = phoneInput.value;
+                if (!newValue) {
+                    alert('Vui lòng nhập giá trị cho "Số lượng nhập tối thiểu"!');
+                    phoneInput.focus();
+                    return;
+                }
+
+                phoneInput.disabled = true;
+                this.textContent = 'Sửa';
+                this.classList.remove('btn-success');
+                this.classList.add('btn-primary');
+            }
+        });
+
+        document.querySelector('.edit-btn-level').addEventListener('click', function() {
+            const emailInput = document.getElementById('level');
+            const currentValue = emailInput.value;
+
+            if (emailInput.disabled) {
+                emailInput.disabled = false;
+                emailInput.focus();
+
+                this.textContent = 'Xác nhận';
+                this.classList.remove('btn-primary');
+                this.classList.add('btn-success');
+
+            } else {
+                // Nếu ô input đang ở trạng thái chỉnh sửa, lưu giá trị mới và cập nhật lại giao diện
+                const newValue = emailInput.value;
+                if (!newValue) {
+                    alert('Vui lòng nhập giá trị cho "Số lượng tồn tối thiểu trước khi nhập"!');
+                    emailInput.focus();
+                    return;
+                }
+
+                emailInput.disabled = true;
+                this.textContent = 'Sửa';
+                this.classList.remove('btn-success');
+                this.classList.add('btn-primary');
+            }
+        });
+
+        document.querySelector('.edit-btn-cancel').addEventListener('click', function() {
+            const emailInput = document.getElementById('cancel');
+            const currentValue = emailInput.value;
+
+            if (emailInput.disabled) {
+                emailInput.disabled = false;
+                emailInput.focus();
+
+                this.textContent = 'Xác nhận';
+                this.classList.remove('btn-primary');
+                this.classList.add('btn-success');
+
+            } else {
+                // Nếu ô input đang ở trạng thái chỉnh sửa, lưu giá trị mới và cập nhật lại giao diện
+                const newValue = emailInput.value;
+                if (!newValue) {
+                    alert('Vui lòng nhập giá trị cho "Thời gian hủy đơn hàng nếu người dùng không nhận (Giờ)"!');
+                    emailInput.focus();
+                    return;
+                }
+
+                emailInput.disabled = true;
+                this.textContent = 'Sửa';
+                this.classList.remove('btn-success');
+                this.classList.add('btn-primary');
+            }
+        });
+    });
+</script>
+{% endblock %}

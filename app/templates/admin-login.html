@@ -14,7 +14,7 @@
     <meta name="description" content="GPHUCDEPZAI">
     <meta http-equiv="refresh" content="1800">
     <link href="https://cdn0.fahasa.com/media/favicon/default/favicon4.ico" rel="shortcut icon">
-    <title>Đăng nhập ADMIN</title>
+    <title>Đăng nhập</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
     <script src="wow.min.js"></script>
@@ -71,7 +71,7 @@
                                                 <span class="checkmark"></span>
                                             </label>
                                         </div>
-                                        <a href="javascript:;">Quên mật khẩu</a>
+                                        <a href="/account/admin-forgot">Quên mật khẩu</a>
                                     </div>
                                     {% if err_msg %}
                                     <div class="checkpass" style="margin-bottom: 15px">
@@ -84,7 +84,7 @@
                                     </div>
                                     {% endif %}
                                     <div class="form-group login-btn">
-                                        <a href="{{ url_for('admin.admin_home') }}">
+                                        <a href="{{ url_for('admin.index') }}">
                                             <button class="btn-primary" type="submit">Đăng nhập</button>
                                         </a>
                                     </div>

@@ -486,6 +486,7 @@ function handleCreateBook(e) {
         const r = document.querySelector('input[name="product-dimension-r"]').value
         const d = document.querySelector('input[name="product-dimension-d"]').value
         const c = document.querySelector('input[name="product-dimension-c"]').value
+        const barcode = document.querySelector('input[name="product-barcode"]').value
         const extendAttriubte = document.querySelector('.group-extend-atrtribute').children
         let extendAttributes = []
         if (extendAttriubte.length > 1) {
@@ -555,6 +556,25 @@ function handleCreateBook(e) {
         } else {
             document.getElementById('error-dimessions').classList.remove('text-primary')
         }
+        if (barcode === '' || isNaN(barcode) || barcode.length !== 12) {
+            throw new Error("Sai định dạng barcode UPC 8");
+            document.getElementById('error-barcode').classList.add('text-primary')
+        } else {
+            let barcodeDigits = barcode.split('').slice(0, 11);
+
+            const sumOdd = barcodeDigits.reduce((acc, cur, idx) => idx % 2 === 0 ? acc + +cur : acc, 0);
+            const sumEven = barcodeDigits.reduce((acc, cur, idx) => idx % 2 !== 0 ? acc + +cur : acc, 0);
+            const totalSum = sumOdd * 3 + sumEven;
+            const checkDigit = (10 - (totalSum % 10)) % 10
+
+            barcodeDigits.push(checkDigit)
+            const checkedBarcode = barcodeDigits.join('');
+
+            if(checkedBarcode !== barcode) {
+                throw new Error("Sai định dạng barcode UPC 8");
+            }
+            document.getElementById('error-barcode').classList.remove('text-primary')
+        }
         if (flag) throw Error("Vui lòng nhập các trường cần thiết")
 
         const data = {
@@ -570,7 +590,8 @@ function handleCreateBook(e) {
             'release_date': releaseDate,
             'dimension': r + 'x' + d + 'x' + c + ' cm',
             'book_images': fileImage,
-            'extend_attributes': extendAttributes
+            'extend_attributes': extendAttributes,
+            'barcode': barcode
         }
         const formData = new FormData()
         for (const key in data) {

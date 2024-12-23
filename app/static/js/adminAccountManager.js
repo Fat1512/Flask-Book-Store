@@ -15,7 +15,7 @@ const roleMap = {
 // Fetch user roles from backend and populate dropdown list
 async function fetchUserRoles() {
     try {
-        const response = await fetch('/admin/api/user_roles');
+        const response = await fetch('/api/user_roles');
         if (!response.ok) throw new Error('Failed to fetch user roles');
 
         const userRoles = await response.json();
@@ -50,7 +50,7 @@ function populateRoleList(userRoles, filter = "") {
 
 // Fetch user data based on selected role (from URL)
 async function filterUsersByRole(selectedRoleId) {
-    const response = await fetch(`/admin/api/account-manager?user_role=${selectedRoleId}`);
+    const response = await fetch(`/api/account-manager?user_role=${selectedRoleId}`);
     if (response.ok) {
         const data = await response.json();
         renderUserStats(data); // Render the filtered user stats
@@ -86,7 +86,7 @@ roleSearch.addEventListener("focus", () => {
 
 // Event listener for search input
 roleSearch.addEventListener("input", async () => {
-    const response = await fetch('/admin/api/user_roles');
+    const response = await fetch('/api/user_roles');
     const userRoles = await response.json();
     populateRoleList(userRoles, roleSearch.value); // Filter roles based on search input
 });

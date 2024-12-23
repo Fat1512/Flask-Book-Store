@@ -21,3 +21,4 @@ class Comment(db.Model):
             'star_count': self.star_count,
             'user_name': self.user.full_name
         }
+

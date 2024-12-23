@@ -29,17 +29,17 @@ app.config['KAFKA_TOPIC'] = ['dbs_.book_store.book','dbs_.book_store.extended_bo
 
 es = Elasticsearch(
     hosts=[{'host': 'localhost', 'port': 9200, 'scheme': 'http'}],
-    http_auth=('docker-cluster', '090224T@n')
+    http_auth=('docker-cluster', '15122004')
 )
 
 
-consumers = {
-    topic: confluent_kafka.Consumer({
-        'bootstrap.servers': ','.join(app.config['KAFKA_BROKER']),
-        'group.id': 'my-group',
-        'auto.offset.reset': 'earliest'
-    }) for topic in app.config['KAFKA_TOPIC']
-}
+# consumers = {
+#     topic: confluent_kafka.Consumer({
+#         'bootstrap.servers': ','.join(app.config['KAFKA_BROKER']),
+#         'group.id': 'my-group',
+#         'auto.offset.reset': 'earliest'
+#     }) for topic in app.config['KAFKA_TOPIC']
+# }
 
 cloudinary.config(
     cloud_name="duk7gxwvc",

@@ -12,3 +12,11 @@ class Config(db.Model):
             'min_restock_level': self.min_restock_level,
             'order_cancel_period': self.order_cancel_period
         }
+
+
+# if __name__ == '__main__':
+#     with app.app_context():
+#         db.create_all()
+#         c = Config(min_restock_qty=1,min_restock_level=1, order_cancel_period=1)
+#         db.session.add(c)
+#         db.session.commit()

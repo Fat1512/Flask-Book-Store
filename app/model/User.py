@@ -9,6 +9,7 @@ from app.model.Cart import Cart
 from app.model.Account import Account
 
 
+
 class UserRole(RoleEnum):
     ADMIN = 1
     CUSTOMER = 2
@@ -34,7 +35,7 @@ class User(db.Model, UserMixin):
     user_role = Column(Enum(UserRole), default=UserRole.CUSTOMER)
     address = relationship('Address', backref='user', lazy=True)
 
-    account = relationship('Account', back_populates='user', uselist=False)
+    account = relationship('Account', uselist=False)
 
     offline_orders = relationship("OfflineOrder", back_populates="employee", foreign_keys="[OfflineOrder.employee_id]", lazy=True)
     orders = relationship("Order", back_populates="customer", enable_typechecks=False, foreign_keys="[Order.customer_id]", lazy=True)

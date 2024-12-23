@@ -46,6 +46,7 @@ def create_books():
     dimension = request.form.get('dimension')
     publisher = request.form.get('publisher')
     release_date = request.form.get('release_date')
+    barcode = request.form.get('barcode')
 
     # Handle book_images (file upload)
     book_images = request.files.getlist('book_images[]')
@@ -66,7 +67,8 @@ def create_books():
         "weight": float(weight),
         "dimension": dimension,
         "book_images": book_images,
-        "extend_attributes": extend_attributes
+        "extend_attributes": extend_attributes,
+        "barcode": barcode
     }
     create_book(data)
 
