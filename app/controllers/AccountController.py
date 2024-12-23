@@ -1,6 +1,7 @@
 from app.dao import UserDao
 from app import login
 from app.dao.OrderDAO import find_all, find_add_by_user_id
+from sendgrid.helpers.mail import Mail, Email, To, Content
 from app.dao.UserDao import find_user_address, is_valid_email
 from app.model.User import UserRole
 from flask import render_template, request, redirect, url_for, session
@@ -267,14 +268,13 @@ def verify_email():
             try:
                 # Gửi mã xác nhận qua SendGrid
                 message = Mail(
-                    from_email='trinhgiaphuc24@gmail.com',
-                    to_emails=email,
+                    from_email=Email('trinhgiaphuc24@gmail.com'),
+                    to_emails=To(email),
                     subject='Mã xác nhận đăng ký',
                     plain_text_content=f'Mã xác nhận của bạn là: {verification_code}'
                 )
 
-                pdb.set_trace()
-                sg = SendGridAPIClient(SENDGRID_API_KEY)
+                sg = SendGridAPIClient(api_key=SENDGRID_API_KEY)
                 sg.send(message)
 
                 session['registration_data'] = {

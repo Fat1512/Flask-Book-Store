@@ -18,9 +18,6 @@ from sqlalchemy.orm import joinedload
 import validators
 
 
-
-
-
 def auth_user(username, password, role=None):
     password = hashlib.md5(password.strip().encode('utf-8')).hexdigest()
 
