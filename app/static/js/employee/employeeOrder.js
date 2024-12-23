@@ -824,3 +824,17 @@ window.addEventListener("load", function () {
     })
     renderLabel();
 })
+
+// const barcode = '12341234'
+// let barcodeDigit = barcode.split('');
+// barcodeDigit = barcodeDigit.slice(0, barcode.length - 1);
+//
+// const sumOdd = barcodeDigit.reduce((acc, cur, idx) => idx % 2 !== 0 ? acc + +cur : acc, 0);
+// const sumEven = barcodeDigit.reduce((acc, cur, idx) => idx % 2 === 0 ? acc + +cur : acc, 0);
+// const totalSum = sumOdd + sumEven;
+// const checkDigit = (10 - (totalSum % 10)) % 10
+// barcodeDigit.push(checkDigit)
+// barcodeDigit = barcodeDigit.join('');
+// console.log(barcode)
+// console.log(barcodeDigit)
+// console.log(barcode === barcodeDigit)

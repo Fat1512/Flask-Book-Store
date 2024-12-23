@@ -16,7 +16,7 @@ from app.dao.CartDao import update_cart
 from app.controllers.rest.PaymentAPI import payment_rest_bp
 from app.controllers.rest.SearchAPI import search_res_bp
 from app.dao import UserDao
-from app import app, login, consumers
+from app import app, login
 from app.dao.CartDao import find_by_cart_id
 from app.elasticsearch.BookIndexService import create_document, delete_document
 from app.elasticsearch.KafkaAsysnData import create, update_book_document, delete, \
@@ -137,22 +137,22 @@ def handle_general_insufficient_error(e):
     })
 
 
-def consume_kafka(topic):
-    with app.app_context():
-        """Consume messages from Kafka and index them into Elasticsearch."""
-        consumer = consumers[topic]
-        consumer.subscribe([topic])
-        while True:
-            msg = consumer.poll(timeout=1.0)
-            if msg is None:
-                continue
-            elif msg.error():
-                print(msg.error())
-            else:
-                if msg.value():
-                    data = json.loads(msg.value().decode('utf-8'))
-                    handler_message(topic, data)
-        consumer.close()
+# def consume_kafka(topic):
+#     with app.app_context():
+#         """Consume messages from Kafka and index them into Elasticsearch."""
+#         consumer = consumers[topic]
+#         consumer.subscribe([topic])
+#         while True:
+#             msg = consumer.poll(timeout=1.0)
+#             if msg is None:
+#                 continue
+#             elif msg.error():
+#                 print(msg.error())
+#             else:
+#                 if msg.value():
+#                     data = json.loads(msg.value().decode('utf-8'))
+#                     handler_message(topic, data)
+#         consumer.close()
 
 
 def handler_message(topic, data):
@@ -271,9 +271,9 @@ if __name__ == "__main__":
     from app.admin import *
 
     KAFKA_TOPICS = app.config["KAFKA_TOPIC"]
-    for topic in KAFKA_TOPICS:
-        consumer_thread = Thread(target=consume_kafka, args=(topic,), daemon=True)
-        consumer_thread.start()
+    # for topic in KAFKA_TOPICS:
+    #     consumer_thread = Thread(target=consume_kafka, args=(topic,), daemon=True)
+    #     consumer_thread.start()
     scheduler.start()
 
     app.run(debug=True)

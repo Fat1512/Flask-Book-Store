@@ -39,10 +39,16 @@ def count_book_sell(book_id):
 
 
 def create_book(data):
-    book = Book(title=data['title'], author=data['author'], price=data['price'],
-                num_page=data['num_page'], description=data['description'],
+    book = Book(title=data['title'],
+                author=data['author'],
+                price=data['price'],
+                num_page=data['num_page'],
+                description=data['description'],
                 release_date=data['release_date'],
-                weight=data['weight'], book_gerne_id=data['book_gerne_id'], dimension=data['dimension'])
+                weight=data['weight'],
+                book_gerne_id=data['book_gerne_id'],
+                dimension=data['dimension'],
+                barcode=data['barcode'])
 
     book_images = data['book_images']
     if data['publisher']:
@@ -59,6 +65,7 @@ def create_book(data):
             image_url = res['secure_url']
             new_image = BookImage(image_url=image_url)
             book.images.append(new_image)
+
 
     extend_attributes = data['extend_attributes']
     if extend_attributes:
@@ -90,7 +97,7 @@ def find_by_gerne(gerne_id):
     query = Book.query
     gerne = BookGerne.query.get(gerne_id)
     query = query.join(BookGerne)
-    query = query.filter(BookGerne.lft >= gerne.lft,BookGerne.rgt <= gerne.rgt)
+    query = query.filter(BookGerne.lft >= gerne.lft, BookGerne.rgt <= gerne.rgt)
     return query.all()
 
 
@@ -119,6 +126,7 @@ def find_by_barcode(barcode):
     if not book:
         raise NotFoundError("Barcode không tồn tại")
     return book
+
 
 def countBook():
     return Book.query.count()

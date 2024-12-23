@@ -33,13 +33,13 @@ es = Elasticsearch(
 )
 
 
-consumers = {
-    topic: confluent_kafka.Consumer({
-        'bootstrap.servers': ','.join(app.config['KAFKA_BROKER']),
-        'group.id': 'my-group',
-        'auto.offset.reset': 'earliest'
-    }) for topic in app.config['KAFKA_TOPIC']
-}
+# consumers = {
+#     topic: confluent_kafka.Consumer({
+#         'bootstrap.servers': ','.join(app.config['KAFKA_BROKER']),
+#         'group.id': 'my-group',
+#         'auto.offset.reset': 'earliest'
+#     }) for topic in app.config['KAFKA_TOPIC']
+# }
 
 cloudinary.config(
     cloud_name="duk7gxwvc",
