@@ -76,40 +76,40 @@ def handle_not_found_error(e):
     })
 
 
-@app.context_processor
-def context():
-    app_context = {
-        "cart_items": None,
-        "total_price": None,
-        'current_year': datetime.now().year,
-        "profile": None
-    }
-
-    user_data = None
-    if current_user.is_authenticated:
-        user_data = profile()
-        app_context['profile'] = user_data
-
-    if current_user.is_authenticated and current_user.user_role == UserRole.CUSTOMER:
-
-        cart = find_by_cart_id(user_data.user_id)
-        app_context['cart_items'] = cart.cart_items
-        app_context['total_price'] = cart.total_price()
-        return app_context
-
-    return app_context
-
-
 # @app.context_processor
-# def user_context():
+# def context():
+#     app_context = {
+#         "cart_items": None,
+#         "total_price": None,
+#         'current_year': datetime.now().year,
+#         "profile": None
+#     }
+#
 #     user_data = None
 #     if current_user.is_authenticated:
 #         user_data = profile()
+#         app_context['profile'] = user_data
 #
-#     return {
-#         "current_year": datetime.now().year,
-#         "profile": user_data
-#     }
+#     if current_user.is_authenticated and current_user.user_role == UserRole.CUSTOMER:
+#
+#         cart = find_by_cart_id(user_data.user_id)
+#         app_context['cart_items'] = cart.cart_items
+#         app_context['total_price'] = cart.total_price()
+#         return app_context
+#
+#     return app_context
+
+
+@app.context_processor
+def user_context():
+    user_data = None
+    if current_user.is_authenticated:
+        user_data = profile()
+
+    return {
+        "current_year": datetime.now().year,
+        "profile": user_data
+    }
 
 
 

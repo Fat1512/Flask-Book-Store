@@ -13,11 +13,14 @@ from app.model.Account import Account
 from app.model.User import User
 from sqlalchemy import or_, select
 from sqlalchemy.orm import joinedload
+import validators
+
+
 
 
 
 def auth_user(username, password, role=None):
-    # password = hashlib.md5(password.strip().encode('utf-8')).hexdigest()
+    password = hashlib.md5(password.strip().encode('utf-8')).hexdigest()
 
     if not username or not password:
         return None
@@ -224,6 +227,9 @@ def get_account_by_id(account_id):
 def get_user_by_email(email):
     return db.session.query(User).filter_by(email=email).first()
 
+
+def is_valid_email(email):
+    return validators.email(email)
 
 
 def update_password(username, password):
