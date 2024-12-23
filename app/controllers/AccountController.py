@@ -1,14 +1,21 @@
 from app.dao import UserDao
 from app import login
 from app.dao.OrderDAO import find_all, find_add_by_user_id
-from app.dao.UserDao import find_user_address
+from app.dao.UserDao import find_user_address, is_valid_email
 from app.model.User import UserRole
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, session
 from flask_login import login_user, logout_user, current_user
 from flask import Blueprint
 from app import db
 from app.model.User import User
 from app.model.Account import Account
+import random
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+from app import SENDGRID_API_KEY
+import pdb
+
+
 
 account_bp = Blueprint('account', __name__)
 
@@ -22,12 +29,12 @@ def purchase():
 
     status = request.args.get('type', type=int)
 
-    order = find_add_by_user_id(current_user.get_id(), status)
+    order = find_add_by_user_id(current_user.get_id(), status, 1, 5)
 
     order_to_dict = [order.to_detail_dict() for order in order]
     is_success = request.args.get('payment', default=None)
 
-    return render_template("purchase.html", is_success=is_success, order=order_to_dict)
+    return render_template("profile/purchase.html", is_success=is_success, order=order_to_dict)
 
 
 @account_bp.route('/admin-login', methods=['GET', 'POST'])
@@ -100,6 +107,7 @@ def employee_login():
     return render_template('employee-login.html', err_msg=err_msg)
 
 
+
 # @account_bp.route("/employee-register", methods=['GET', 'POST'])
 # def employee_register():
 #     err_msg = ''
@@ -136,6 +144,7 @@ def employee_login():
 #             err_msg = 'Mật khẩu không khớp!'
 #
 #     return render_template('employee-register.html', err_msg=err_msg)
+
 
 
 @account_bp.route("/employee-logout")
@@ -195,51 +204,213 @@ def login_process():
 @account_bp.route('/address')
 def address():
     address_list = find_user_address(current_user.get_id())
-    return render_template('address.html', address_list=address_list)
+    return render_template('profile/address.html', address_list=address_list)
 
 
-@account_bp.route("/register", methods=['get', 'post'])
+@account_bp.route('/profile')
+def profile():
+    return render_template('profile/profileUser.html')
+
+
+
+
+
+@account_bp.route("/register", methods=['GET', 'POST'])
 def register_process():
     err_msg = ''
     if request.method == 'POST':
-        password = request.form.get('password')
-        confirm = request.form.get('confirm')
+        # Lấy thông tin người dùng nhập vào trong form đăng ký
         username = request.form.get('username')
-        email = request.form.get('email')
-        phone_number = request.form.get('phone_number')
+        password = request.form.get('password')
+        email = request.form.get('email')  # Email người dùng đã nhập trong bước xác minh
+        verification_code = random.randint(100000, 999999)
 
-        if password == confirm:
-            if UserDao.check_exists(username=username, email=email, phone_number=phone_number):
-                err_msg = 'Tên người dùng hoặc email hoặc SĐT đã tồn tại!'
-            else:
-                data = request.form.copy()
-                del data['confirm']
+        # Kiểm tra email hợp lệ (Nếu không hợp lệ, quay lại trang đăng ký với thông báo lỗi)
+        if not is_valid_email(email):
+            err_msg = 'Email không hợp lệ!'
+            return render_template('register.html', err_msg=err_msg)
 
-                avt_url = request.files.get('avt_url')
-                optional_fields = ['sex', 'phone_number', 'date_of_birth', 'isActive', 'last_access']
-                for field in optional_fields:
-                    data[field] = data.get(field, None)
+        # Thêm người dùng vào cơ sở dữ liệu
+        try:
+            UserDao.add_user(
+                email=email,
+                username=username,
+                password=password
+            )
+            return redirect(url_for('account.login_process'))
 
-                UserDao.add_user(
-                    first_name=data.get('first_name'),
-                    last_name=data.get('last_name'),
-                    username=username,
-                    password=password,
-                    email=email,
-                    phone_number=phone_number,
-                    avt_url=avt_url,
-                    sex=data.get('sex'),
-                    date_of_birth=data.get('date_of_birth'),
-                    isActive=data.get('isActive'),
-                    last_access=data.get('last_access')
-                )
-
-                return redirect(url_for('account.login_process'))
-        else:
-            err_msg = 'Mật khẩu không khớp!'
+        except Exception as e:
+            print(e)
+            err_msg = 'Đã có lỗi xảy ra trong quá trình đăng ký. Vui lòng thử lại!'
 
     return render_template('register.html', err_msg=err_msg)
 
+
+@account_bp.route("/verify", methods=['GET', 'POST'])
+def verify_email():
+    err_msg = ''
+    if request.method == 'POST':
+        action = request.form.get('action')  # Kiểm tra hành động của form
+        email = request.form.get('email')  # Email người dùng nhập vào
+        input_code = request.form.get('verification_code')  # Mã xác nhận người dùng nhập
+
+        # Nếu người dùng nhấn nút Gửi mã
+        if action == 'send_code':
+            # Kiểm tra tính hợp lệ của email
+            if not is_valid_email(email):
+                err_msg = 'Email không hợp lệ!'
+                return render_template('verify-email.html', err_msg=err_msg)
+
+            verification_code = random.randint(100000, 999999)  # Tạo mã xác nhận
+
+
+            try:
+                # Gửi mã xác nhận qua SendGrid
+                message = Mail(
+                    from_email='trinhgiaphuc24@gmail.com',
+                    to_emails=email,
+                    subject='Mã xác nhận đăng ký',
+                    plain_text_content=f'Mã xác nhận của bạn là: {verification_code}'
+                )
+
+                pdb.set_trace()
+                sg = SendGridAPIClient(SENDGRID_API_KEY)
+                sg.send(message)
+
+                session['registration_data'] = {
+                    'email': email,
+                    'verification_code': verification_code
+                }
+
+                err_msg = 'Mã xác nhận đã được gửi đến email của bạn.'
+            except Exception as e:
+                print(e)
+                err_msg = 'Không thể gửi email. Vui lòng thử lại!'
+
+        # Nếu người dùng nhấn nút Xác nhận
+        elif action == 'confirm':
+            registration_data = session.get('registration_data', {})
+
+            # Nếu không có dữ liệu trong session (email và mã xác nhận)
+            if not registration_data:
+                return redirect(url_for('account.verify_email'))
+
+            # Kiểm tra mã xác nhận người dùng nhập
+            if str(input_code) == str(registration_data['verification_code']):
+                # Mã xác nhận đúng, chuyển đến trang đăng ký
+                return redirect(url_for('account.register_process'))
+            else:
+                err_msg = 'Mã xác nhận không đúng!'
+
+    return render_template('verify-email.html', err_msg=err_msg)
+
+
+
+# @account_bp.route("/verify", methods=['GET', 'POST'])
+# def verify_email():
+#     err_msg = ''
+#     if request.method == 'POST':
+#         input_code = request.form.get('verification_code')
+#         registration_data = session.get('registration_data', {})
+#
+#         # Nếu không có dữ liệu trong session (email và mã xác nhận)
+#         if not registration_data:
+#             return redirect(url_for('account.register_process'))
+#
+#         # Kiểm tra mã xác nhận người dùng nhập
+#         if str(input_code) == str(registration_data['verification_code']):
+#             # Mã xác nhận đúng, chuyển đến trang đăng ký
+#             return redirect(url_for('account.register_process'))
+#
+#         else:
+#             err_msg = 'Mã xác nhận không đúng!'
+#
+#     return render_template('verify-email.html', err_msg=err_msg)
+
+
+
+# @account_bp.route("/send-code", methods=['POST'])
+# def send_code():
+#     err_msg = ''
+#     email = request.form.get('email')  # Email người dùng nhập
+#
+#     # Kiểm tra tính hợp lệ của email
+#     if not is_valid_email(email):
+#         err_msg = 'Email không hợp lệ!'
+#         return render_template('register.html', err_msg=err_msg)
+#
+#     verification_code = random.randint(100000, 999999)
+#
+#     try:
+#         # Gửi mã xác nhận qua SendGrid
+#         message = Mail(
+#             from_email='your_verified_email@example.com',  # Email đã xác thực với SendGrid
+#             to_emails=email,  # Gửi đến email người dùng nhập
+#             subject='Mã xác nhận đăng ký',
+#             plain_text_content=f'Mã xác nhận của bạn là: {verification_code}'
+#         )
+#         sg = SendGridAPIClient(SENDGRID_API_KEY)
+#         sg.send(message)
+#
+#         # Lưu thông tin mã xác nhận vào session
+#         session['registration_data'] = {
+#             'email': email,
+#             'verification_code': verification_code
+#         }
+#
+#         err_msg = 'Mã xác nhận đã được gửi đến email của bạn.'
+#     except Exception as e:
+#         print(e)
+#         err_msg = 'Không thể gửi email. Vui lòng thử lại!'
+#
+#     return render_template('verify-email.html', err_msg=err_msg)
+
+
+
+
+
+
+# @account_bp.route("/register", methods=['get', 'post'])
+# def register_process():
+#     err_msg = ''
+#     if request.method == 'POST':
+#         password = request.form.get('password')
+#         confirm = request.form.get('confirm')
+#         username = request.form.get('username')
+#         email = request.form.get('email')
+#         phone_number = request.form.get('phone_number')
+#
+#         if password == confirm:
+#             if UserDao.check_exists(username=username, email=email, phone_number=phone_number):
+#                 err_msg = 'Tên người dùng hoặc email hoặc SĐT đã tồn tại!'
+#             else:
+#                 data = request.form.copy()
+#                 del data['confirm']
+#
+#                 avt_url = request.files.get('avt_url')
+#                 optional_fields = ['sex', 'phone_number', 'date_of_birth', 'isActive', 'last_access']
+#                 for field in optional_fields:
+#                     data[field] = data.get(field, None)
+#
+#                 UserDao.add_user(
+#                     first_name=data.get('first_name'),
+#                     last_name=data.get('last_name'),
+#                     username=username,
+#                     password=password,
+#                     email=email,
+#                     phone_number=phone_number,
+#                     avt_url=avt_url,
+#                     sex=data.get('sex'),
+#                     date_of_birth=data.get('date_of_birth'),
+#                     isActive=data.get('isActive'),
+#                     last_access=data.get('last_access')
+#                 )
+#
+#                 return redirect(url_for('account.login_process'))
+#         else:
+#             err_msg = 'Mật khẩu không khớp!'
+#
+#     return render_template('register.html', err_msg=err_msg)
 
 @account_bp.route("/logout")
 def logout_process():

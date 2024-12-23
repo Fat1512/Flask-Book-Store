@@ -5,7 +5,7 @@ from flask import Blueprint, request, jsonify
 
 from app import app
 from app.dao.FormImportDAO import find_form_imports, create_form_import, find_form_import_by_id
-from app.dao.BookDAO import find_by_id, find_by_barcode, create_book, count_book_sell
+from app.dao.BookDAO import find_by_id, find_by_barcode, create_book, count_book_sell, upload_images
 from app.dao.SearchDAO import search_book
 
 book_rest_bp = Blueprint('book_rest', __name__)
@@ -14,6 +14,14 @@ book_rest_bp = Blueprint('book_rest', __name__)
 @book_rest_bp.route('/test')
 def get_books():
     return find_by_id(54).to_dict()
+
+
+@book_rest_bp.route('/test1')
+def upload():
+    upload_images()
+    return jsonify({
+        "ok": "ok"
+    })
 
 
 @book_rest_bp.route('/<book_id>/sold')
@@ -53,7 +61,7 @@ def create_books():
         "price": float(price),
         "num_page": int(num_page),
         "description": description,
-        "format": int(format) + 1,
+        "format": int(format),
         'publisher': int(publisher),
         "release_date": datetime.strptime(release_date, '%d/%m/%Y'),
         "weight": float(weight),

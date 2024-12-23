@@ -6,6 +6,7 @@ from flask_login import UserMixin
 from datetime import datetime
 import hashlib
 from app.model.Cart import Cart
+from app.model.Account import Account
 
 
 

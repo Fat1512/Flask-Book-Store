@@ -92,6 +92,4 @@ def update_profile():
         return jsonify({"success": False, "message": str(e)}), 500
 
 
-@index_bp.route('/profile')
-def profile():
-    return render_template('profile.html')
+

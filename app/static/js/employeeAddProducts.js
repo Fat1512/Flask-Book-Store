@@ -576,7 +576,6 @@ function handleCreateBook(e) {
             document.getElementById('error-barcode').classList.remove('text-primary')
         }
         if (flag) throw Error("Vui lòng nhập các trường cần thiết")
-
         const data = {
             'title': title,
             'book_gerne_id': gerneId,

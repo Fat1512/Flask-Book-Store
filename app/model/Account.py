@@ -1,8 +1,9 @@
+from flask_login import UserMixin
 from sqlalchemy import Column, Integer, String, ForeignKey
 from app import db, app
 from sqlalchemy.orm import relationship
-from flask_login import UserMixin
 
+# from app.model.User import User
 
 class Account(db.Model ,UserMixin):
     __tablename__ = 'account'
@@ -20,7 +21,7 @@ class Account(db.Model ,UserMixin):
 
     @property
     def is_active(self):
-        return True
+        return self.isActive
 
     @property
     def is_authenticated(self):

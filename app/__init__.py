@@ -9,6 +9,10 @@ from dotenv import dotenv_values, load_dotenv
 import cloudinary
 from flask_login import LoginManager
 from app.utils.helper import format_currency_filter, format_datetime_filter, format_date_VN
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+
+
 
 app = Flask(__name__)
 load_dotenv()
@@ -17,7 +21,9 @@ scheduler = APScheduler()
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 
 app.secret_key = "8923yhr9fuwnsejksnpokff@$I_I@$)opfk"
-app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql+pymysql://root:%s@localhost/book_store' % quote(DB_PASSWORD)
+SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
+app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql+pymysql://root:%s@127.0.0.1:3307/book_store' % quote('15122004')
+# app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql+pymysql://root:%s@localhost/book_store' % quote(DB_PASSWORD)
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 
 app.config["VNPAY_URL"] = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'  # Use the sandbox URL for testing
@@ -33,13 +39,13 @@ es = Elasticsearch(
 )
 
 
-# consumers = {
-#     topic: confluent_kafka.Consumer({
-#         'bootstrap.servers': ','.join(app.config['KAFKA_BROKER']),
-#         'group.id': 'my-group',
-#         'auto.offset.reset': 'earliest'
-#     }) for topic in app.config['KAFKA_TOPIC']
-# }
+consumers = {
+    topic: confluent_kafka.Consumer({
+        'bootstrap.servers': ','.join(app.config['KAFKA_BROKER']),
+        'group.id': 'my-group',
+        'auto.offset.reset': 'earliest'
+    }) for topic in app.config['KAFKA_TOPIC']
+}
 
 cloudinary.config(
     cloud_name="duk7gxwvc",

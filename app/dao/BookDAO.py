@@ -38,6 +38,18 @@ def count_book_sell(book_id):
     return result.sold if result.sold else 0
 
 
+def upload_images():
+    books = find_all()
+    for book in books[0:20]:
+        if len(book.images):
+            for image in book.images:
+                res = cloudinary.uploader.upload(image.image_url)
+                image_url_ok = res['secure_url']
+
+                image.image_url = image_url_ok
+    db.session.commit()
+
+
 def create_book(data):
     book = Book(title=data['title'],
                 author=data['author'],
@@ -54,7 +66,7 @@ def create_book(data):
     if data['publisher']:
         publisher = Publisher.query.get(data['publisher'])
         if publisher is None: raise NotFoundError('Publisher not found')
-        book.publisher = publisher
+        book.publisher_id = publisher.publisher_id
 
     if data['format']:
         book.format = BookFormat(data['format'])
@@ -65,7 +77,6 @@ def create_book(data):
             image_url = res['secure_url']
             new_image = BookImage(image_url=image_url)
             book.images.append(new_image)
-
 
     extend_attributes = data['extend_attributes']
     if extend_attributes:
