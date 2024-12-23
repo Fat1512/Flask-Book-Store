@@ -25,6 +25,7 @@ def checkout():
         if cart_ss is None:
             cart_ss = []
 
+
         # Update the cart session with new data
         cart_ss = [{
             'bookId': int(item['bookId']),

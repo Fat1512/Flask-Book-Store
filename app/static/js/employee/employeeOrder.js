@@ -376,8 +376,8 @@ const renderCancelForm = function (order) {
             <h1 class="modal-title d-flex justify-content-center pt-4" id="modalLabel">
                 <i class="fas fa-exclamation-circle text-warning display-1"></i>
             </h1>
-            <h2 class="text-center">Bạn có chắc chắn hủy không ?</h2>
-
+             <h2 class="text-center">Lý do hủy ?</h2>
+            <input type="text" class="cancel-reason">
             <div class="d-flex pt-4">
                 <button type="button"
                         class="cancel-back-btn w-50 btn btn-primary bg-white text-black border border-0"
@@ -445,13 +445,13 @@ const modifyOrderStatus = async function (orderId, orderStatusId) {
     }
 };
 
-const cancelOrder = async function (orderId) {
+const cancelOrder = async function (orderId, reason) {
     try {
         const res = await fetch(`${ORDER_API}/orderCancellation`, {
             method: "POST",
             body: JSON.stringify({
                 "orderId": orderId,
-                "reason": "Khách yêu cầu hủy"
+                "reason": reason
             }),
             headers: {
                 'Content-Type': 'application/json'
@@ -664,11 +664,13 @@ modalCancelOrder.addEventListener("click", async function (e) {
         const backCancelBtn = e.target.closest(".cancel-back-btn");
         if (cancelBtn) {
             const orderId = modalCancelOrder.querySelector(".order-cancel-modal").getAttribute("id");
-            await cancelOrder(orderId);
+            const reason = modalCancelOrder.querySelector(".cancel-reason").value;
+
+            await cancelOrder(orderId, reason);
             renderToast("Đã hủy thành công", Color.SUCCESS);
 
             const data = await fetchOrder();
-            renderOrder(data['orders'])
+            renderOrder(data['orders']);
             renderPagination(data['total_page'], data['current_page']);
             closeModal();
         }

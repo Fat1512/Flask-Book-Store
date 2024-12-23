@@ -18,9 +18,6 @@ from sqlalchemy.orm import joinedload
 import validators
 
 
-
-
-
 def auth_user(username, password, role=None):
     password = hashlib.md5(password.strip().encode('utf-8')).hexdigest()
 
@@ -212,6 +209,12 @@ def check_exists(username=None, email=None, phone_number=None):
     if phone_number and User.query.filter_by(phone_number=phone_number).first():
         return True
 
+    return False
+
+
+def check_exists_email(email=None):
+    if email and User.query.filter_by(email=email).first():
+        return True
     return False
 
 # def get_user_by_id(user_id):

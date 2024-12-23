@@ -45,7 +45,7 @@
                                     </a>
                                 </div>
                                 <h2 style="color: #5a5a5a;">Xác nhận email</h2>
-                                <form class="row" method="post" action="{{ url_for('account.verify_email') }}" id="verificationForm">
+                                <form class="row" method="post" action="{{ url_for('account.verify_pass') }}" id="verificationForm">
                                     <!-- Email -->
                                     <div class="form-group-2 appoinment-body-1" style="width: 102%;">
                                         <div class="form-group appoinment-body-1">
@@ -127,52 +127,5 @@
         </div>
     </div>
 </div>
-<!--<script>-->
-<!--    document.addEventListener('DOMContentLoaded', function () {-->
-<!--        const sendCodeBtn = document.getElementById('sendCodeBtn');-->
-<!--        const resendCodeBtn = document.getElementById('resendCodeBtn');-->
-<!--        const confirmBtn = document.getElementById('confirmBtn');-->
-<!--        const errMsg = document.getElementById('errMsg');-->
-
-<!--        // Hàm gửi yêu cầu AJAX-->
-<!--        function sendAjax(action) {-->
-<!--            const email = document.getElementById('email').value;-->
-<!--            const verificationCode = document.getElementById('verify').value;-->
-
-<!--            fetch('/verify', {-->
-<!--                method: 'POST',-->
-<!--                headers: {-->
-<!--                    'Content-Type': 'application/json',-->
-<!--                },-->
-<!--                body: JSON.stringify({-->
-<!--                    action: action,-->
-<!--                    email: email,-->
-<!--                    verification_code: verificationCode,-->
-<!--                }),-->
-<!--            })-->
-<!--                .then(response => response.json())-->
-<!--                .then(data => {-->
-<!--                if (data.error) {-->
-<!--                    errMsg.textContent = data.error;-->
-<!--                } else if (data.redirect) {-->
-<!--                    window.location.href = data.redirect;-->
-<!--                } else {-->
-<!--                    errMsg.textContent = data.message;-->
-<!--                }-->
-<!--            })-->
-<!--                .catch(err => {-->
-<!--                console.error('Error:', err);-->
-<!--                errMsg.textContent = 'Đã xảy ra lỗi. Vui lòng thử lại.';-->
-<!--            });-->
-<!--        }-->
-
-<!--        // Gắn sự kiện vào các nút-->
-<!--        sendCodeBtn.addEventListener('click', () => sendAjax('send_code'));-->
-<!--        resendCodeBtn.addEventListener('click', () => sendAjax('resend_code'));-->
-<!--        confirmBtn.addEventListener('click', () => sendAjax('confirm'));-->
-<!--    });-->
-
-<!--</script>-->
-
 </body>
 </html>

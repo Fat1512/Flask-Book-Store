@@ -44,15 +44,8 @@
                                              alt="">
                                     </a>
                                 </div>
-                                <h2 style="color: #5a5a5a;">Quên mật khẩu EMPLOYEE</h2>
+                                <h2 style="color: #5a5a5a;">Quên mật khẩu</h2>
                                 <form method="post" action="{{ url_for('account.employee_forgot') }}">
-                                    <div class="form-group appoinment-body-1">
-                                        <label for="email">
-                                            <font>Email</font>
-                                            <span style="color: red;">*</span>
-                                        </label>
-                                        <input class="form-control-1" id="email" name="email" type="email">
-                                    </div>
                                     <div class="form-group appoinment-body-1">
                                         <label for="pass">
                                             <font>Mật khẩu mới</font>
@@ -84,7 +77,7 @@
                                     </div>
                                     {% endif %}
                                     <div class="form-group login-btn" style="margin-top: 30px;">
-                                        <a href="/account/employee-login">
+                                        <a href="/account/login">
                                             <button class="btn-primary" type="submit">Xác nhận</button>
                                         </a>
                                     </div>

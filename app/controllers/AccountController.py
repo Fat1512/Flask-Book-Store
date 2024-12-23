@@ -1,6 +1,7 @@
 from app.dao import UserDao
 from app import login
 from app.dao.OrderDAO import find_all, find_add_by_user_id
+from sendgrid.helpers.mail import Mail, Email, To, Content
 from app.dao.UserDao import find_user_address, is_valid_email
 from app.model.User import UserRole
 from flask import render_template, request, redirect, url_for, session
@@ -13,9 +14,9 @@ import random
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from app import SENDGRID_API_KEY
+import threading
+from flask import flash
 import pdb
-
-
 
 account_bp = Blueprint('account', __name__)
 
@@ -107,7 +108,6 @@ def employee_login():
     return render_template('employee-login.html', err_msg=err_msg)
 
 
-
 # @account_bp.route("/employee-register", methods=['GET', 'POST'])
 # def employee_register():
 #     err_msg = ''
@@ -146,27 +146,112 @@ def employee_login():
 #     return render_template('employee-register.html', err_msg=err_msg)
 
 
-
 @account_bp.route("/employee-logout")
 def employee_logout():
     logout_user()
     return redirect(url_for('account.employee_login'))
 
 
+@account_bp.route("/employee-verify-pass", methods=['GET', 'POST'])
+def employee_verify_pass():
+    err_msg = ''
+    email = ''  # Khai báo biến email
+
+    if request.method == 'POST':
+        action = request.form.get('action')  # Kiểm tra hành động của form
+        email = request.form.get('email')  # Email người dùng nhập vào
+        input_code = request.form.get('verification_code')  # Mã xác nhận người dùng nhập
+
+        if action == 'send_code':
+            if not UserDao.check_exists_email(email=email):
+                err_msg = 'Email không tồn tại!'
+            else:
+                if not is_valid_email(email):
+                    err_msg = 'Email không hợp lệ!'
+                    return render_template('employee-verify-pass.html', err_msg=err_msg, email=email)
+
+                verification_code = random.randint(100000, 999999)  # Tạo mã xác nhận
+
+                # Gửi mã xác nhận qua SendGrid trong một luồng riêng
+                message = Mail(
+                    from_email=Email('trinhgiaphuc24@gmail.com'),
+                    to_emails=To(email),
+                    subject='Mã xác nhận đăng ký',
+                    plain_text_content=f'Mã xác nhận của bạn là: {verification_code}'
+                )
+
+                threading.Thread(target=send_email_async, args=(message,)).start()
+
+                session['registration_data'] = {
+                    'email': email,
+                    'verification_code': verification_code
+                }
+                err_msg = 'Mã xác nhận đã được gửi đến email của bạn.'
+
+
+        elif action == 'resend_code':
+            if not UserDao.check_exists_email(email=email):
+                err_msg = 'Email không tồn tại!'
+
+            else:
+                registration_data = session.get('registration_data', {})
+                if not registration_data:
+                    err_msg = 'Không tìm thấy dữ liệu email để gửi lại mã.'
+                    return render_template('employee-verify-pass.html', err_msg=err_msg, email=email)
+
+                email = registration_data.get('email')
+                verification_code = random.randint(100000, 999999)  # Tạo mã xác nhận mới
+
+                # Gửi lại mã xác nhận qua email trong một luồng riêng
+                message = Mail(
+                    from_email=Email('trinhgiaphuc24@gmail.com'),
+                    to_emails=To(email),
+                    subject='Mã xác nhận mới',
+                    plain_text_content=f'Mã xác nhận mới của bạn là: {verification_code}'
+                )
+
+                threading.Thread(target=send_email_async, args=(message,)).start()
+
+                registration_data['verification_code'] = verification_code
+                session['registration_data'] = registration_data  # Cập nhật session
+
+                err_msg = 'Mã xác nhận mới đã được gửi đến email của bạn.'
+
+        elif action == 'confirm':
+            if not UserDao.check_exists_email(email=email):
+                err_msg = 'Email không tồn tại!'
+            else:
+                registration_data = session.get('registration_data', {})
+                if not input_code:
+                    err_msg = 'Vui lòng nhập mã xác nhận!'
+                    return render_template('employee-verify-pass.html', err_msg=err_msg, email=email)
+
+                if not registration_data:
+                    err_msg = 'Không tìm thấy dữ liệu xác nhận. Vui lòng thử lại!'
+                    return render_template('employee-verify-pass.html', err_msg=err_msg, email=email)
+
+                if str(input_code) == str(registration_data.get('verification_code')):
+                    return redirect(url_for('account.employee_forgot'))
+                else:
+                    err_msg = 'Mã xác nhận không đúng!'
+
+    return render_template('employee-verify-pass.html', err_msg=err_msg, email=email)
+
+
 @account_bp.route("/employee-forgot", methods=['GET', 'POST'])
 def employee_forgot():
     err_msg = ''
     if request.method == 'POST':
-        email = request.form.get('email')
+        email = session.get('registration_data', {}).get('email', '')
         password = request.form.get('password')
         confirm = request.form.get('confirm')
-        if not email or not password or not confirm:
+        if not password or not confirm:
             err_msg = 'Vui lòng điền đầy đủ thông tin!'
         else:
             email = email.strip()
             account = db.session.query(Account).join(User).filter(User.email == email).first()
             if account is None:
-                err_msg = 'Email không tồn tại!'
+                err_msg = 'Không tìm thấy tài khoản với email này!'
             elif password != confirm:
                 err_msg = 'Mật khẩu và xác nhận mật khẩu không trùng khớp!'
             else:
@@ -174,6 +259,8 @@ def employee_forgot():
                 return redirect(url_for('account.employee_login'))
 
     return render_template("employee-forgotpass.html", err_msg=err_msg)
+
+
 
 
 @account_bp.route("/login", methods=['GET', 'POST'])
@@ -212,205 +299,148 @@ def profile():
     return render_template('profile/profileUser.html')
 
 
-
-
-
-@account_bp.route("/register", methods=['GET', 'POST'])
-def register_process():
-    err_msg = ''
-    if request.method == 'POST':
-        # Lấy thông tin người dùng nhập vào trong form đăng ký
-        username = request.form.get('username')
-        password = request.form.get('password')
-        email = request.form.get('email')  # Email người dùng đã nhập trong bước xác minh
-        verification_code = random.randint(100000, 999999)
-
-        # Kiểm tra email hợp lệ (Nếu không hợp lệ, quay lại trang đăng ký với thông báo lỗi)
-        if not is_valid_email(email):
-            err_msg = 'Email không hợp lệ!'
-            return render_template('register.html', err_msg=err_msg)
-
-        # Thêm người dùng vào cơ sở dữ liệu
-        try:
-            UserDao.add_user(
-                email=email,
-                username=username,
-                password=password
-            )
-            return redirect(url_for('account.login_process'))
-
-        except Exception as e:
-            print(e)
-            err_msg = 'Đã có lỗi xảy ra trong quá trình đăng ký. Vui lòng thử lại!'
-
-    return render_template('register.html', err_msg=err_msg)
+def send_email_async(message):
+    try:
+        sg = SendGridAPIClient(api_key=SENDGRID_API_KEY)
+        sg.send(message)
+    except Exception as e:
+        print(f"Lỗi khi gửi email: {str(e)}")
 
 
 @account_bp.route("/verify", methods=['GET', 'POST'])
 def verify_email():
     err_msg = ''
+    email = ''  # Khai báo biến email
+
     if request.method == 'POST':
         action = request.form.get('action')  # Kiểm tra hành động của form
         email = request.form.get('email')  # Email người dùng nhập vào
         input_code = request.form.get('verification_code')  # Mã xác nhận người dùng nhập
 
-        # Nếu người dùng nhấn nút Gửi mã
         if action == 'send_code':
-            # Kiểm tra tính hợp lệ của email
-            if not is_valid_email(email):
-                err_msg = 'Email không hợp lệ!'
-                return render_template('verify-email.html', err_msg=err_msg)
+            if UserDao.check_exists_email(email=email):
+                err_msg = 'Email đã tồn tại!'
 
-            verification_code = random.randint(100000, 999999)  # Tạo mã xác nhận
+            else:
+                if not is_valid_email(email):
+                    err_msg = 'Email không hợp lệ!'
+                    return render_template('verify-email.html', err_msg=err_msg, email=email)
 
+                verification_code = random.randint(100000, 999999)  # Tạo mã xác nhận
 
-            try:
-                # Gửi mã xác nhận qua SendGrid
+                # Gửi mã xác nhận qua SendGrid trong một luồng riêng
                 message = Mail(
-                    from_email='trinhgiaphuc24@gmail.com',
-                    to_emails=email,
+                    from_email=Email('trinhgiaphuc24@gmail.com'),
+                    to_emails=To(email),
                     subject='Mã xác nhận đăng ký',
                     plain_text_content=f'Mã xác nhận của bạn là: {verification_code}'
                 )
 
-                pdb.set_trace()
-                sg = SendGridAPIClient(SENDGRID_API_KEY)
-                sg.send(message)
+                threading.Thread(target=send_email_async, args=(message,)).start()
 
                 session['registration_data'] = {
                     'email': email,
                     'verification_code': verification_code
                 }
-
                 err_msg = 'Mã xác nhận đã được gửi đến email của bạn.'
-            except Exception as e:
-                print(e)
-                err_msg = 'Không thể gửi email. Vui lòng thử lại!'
 
-        # Nếu người dùng nhấn nút Xác nhận
-        elif action == 'confirm':
-            registration_data = session.get('registration_data', {})
+        elif action == 'resend_code':
+            if UserDao.check_exists_email(email=email):
+                err_msg = 'Email đã tồn tại!'
 
-            # Nếu không có dữ liệu trong session (email và mã xác nhận)
-            if not registration_data:
-                return redirect(url_for('account.verify_email'))
-
-            # Kiểm tra mã xác nhận người dùng nhập
-            if str(input_code) == str(registration_data['verification_code']):
-                # Mã xác nhận đúng, chuyển đến trang đăng ký
-                return redirect(url_for('account.register_process'))
             else:
-                err_msg = 'Mã xác nhận không đúng!'
+                registration_data = session.get('registration_data', {})
+                if not registration_data:
+                    err_msg = 'Không tìm thấy dữ liệu email để gửi lại mã.'
+                    return render_template('verify-email.html', err_msg=err_msg, email=email)
 
-    return render_template('verify-email.html', err_msg=err_msg)
+                email = registration_data.get('email')
+                verification_code = random.randint(100000, 999999)  # Tạo mã xác nhận mới
 
+                # Gửi lại mã xác nhận qua email trong một luồng riêng
+                message = Mail(
+                    from_email=Email('trinhgiaphuc24@gmail.com'),
+                    to_emails=To(email),
+                    subject='Mã xác nhận mới',
+                    plain_text_content=f'Mã xác nhận mới của bạn là: {verification_code}'
+                )
 
+                threading.Thread(target=send_email_async, args=(message,)).start()
 
-# @account_bp.route("/verify", methods=['GET', 'POST'])
-# def verify_email():
-#     err_msg = ''
-#     if request.method == 'POST':
-#         input_code = request.form.get('verification_code')
-#         registration_data = session.get('registration_data', {})
-#
-#         # Nếu không có dữ liệu trong session (email và mã xác nhận)
-#         if not registration_data:
-#             return redirect(url_for('account.register_process'))
-#
-#         # Kiểm tra mã xác nhận người dùng nhập
-#         if str(input_code) == str(registration_data['verification_code']):
-#             # Mã xác nhận đúng, chuyển đến trang đăng ký
-#             return redirect(url_for('account.register_process'))
-#
-#         else:
-#             err_msg = 'Mã xác nhận không đúng!'
-#
-#     return render_template('verify-email.html', err_msg=err_msg)
+                registration_data['verification_code'] = verification_code
+                session['registration_data'] = registration_data  # Cập nhật session
 
+                err_msg = 'Mã xác nhận mới đã được gửi đến email của bạn.'
 
+        elif action == 'confirm':
+            if UserDao.check_exists_email(email=email):
+                err_msg = 'Email đã tồn tại!'
 
-# @account_bp.route("/send-code", methods=['POST'])
-# def send_code():
-#     err_msg = ''
-#     email = request.form.get('email')  # Email người dùng nhập
-#
-#     # Kiểm tra tính hợp lệ của email
-#     if not is_valid_email(email):
-#         err_msg = 'Email không hợp lệ!'
-#         return render_template('register.html', err_msg=err_msg)
-#
-#     verification_code = random.randint(100000, 999999)
-#
-#     try:
-#         # Gửi mã xác nhận qua SendGrid
-#         message = Mail(
-#             from_email='your_verified_email@example.com',  # Email đã xác thực với SendGrid
-#             to_emails=email,  # Gửi đến email người dùng nhập
-#             subject='Mã xác nhận đăng ký',
-#             plain_text_content=f'Mã xác nhận của bạn là: {verification_code}'
-#         )
-#         sg = SendGridAPIClient(SENDGRID_API_KEY)
-#         sg.send(message)
-#
-#         # Lưu thông tin mã xác nhận vào session
-#         session['registration_data'] = {
-#             'email': email,
-#             'verification_code': verification_code
-#         }
-#
-#         err_msg = 'Mã xác nhận đã được gửi đến email của bạn.'
-#     except Exception as e:
-#         print(e)
-#         err_msg = 'Không thể gửi email. Vui lòng thử lại!'
-#
-#     return render_template('verify-email.html', err_msg=err_msg)
+            else:
+                registration_data = session.get('registration_data', {})
+                if not input_code:
+                    err_msg = 'Vui lòng nhập mã xác nhận!'
+                    return render_template('verify-email.html', err_msg=err_msg, email=email)
+
+                # if not registration_data:
+                #     err_msg = 'Không tìm thấy dữ liệu xác nhận. Vui lòng thử lại!'
+                #     return render_template('verify-email.html', err_msg=err_msg, email=email)
+
+                if str(input_code) == str(registration_data.get('verification_code')):
+                    return redirect(url_for('account.register_process'))
+                else:
+                    err_msg = 'Mã xác nhận không đúng!'
+
+    return render_template('verify-email.html', err_msg=err_msg, email=email)
 
 
+@account_bp.route("/register", methods=['get', 'post'])
+def register_process():
+    err_msg = ''
+    if request.method == 'POST':
+        password = request.form.get('password')
+        confirm = request.form.get('confirm')
+        username = request.form.get('username')
+        email = session.get('registration_data', {}).get('email', '')
+        phone_number = request.form.get('phone_number')
 
+        if len(phone_number) > 10:
+            err_msg = "Số điện thoại quá dài. Vui lòng nhập lại."
+            return render_template('register.html', err_msg=err_msg)
 
+        if password == confirm:
 
+            if UserDao.check_exists(username=username, email=email, phone_number=phone_number):
+                err_msg = 'Tên người dùng hoặc email hoặc SĐT đã tồn tại!'
+            else:
+                data = request.form.copy()
+                del data['confirm']
 
-# @account_bp.route("/register", methods=['get', 'post'])
-# def register_process():
-#     err_msg = ''
-#     if request.method == 'POST':
-#         password = request.form.get('password')
-#         confirm = request.form.get('confirm')
-#         username = request.form.get('username')
-#         email = request.form.get('email')
-#         phone_number = request.form.get('phone_number')
-#
-#         if password == confirm:
-#             if UserDao.check_exists(username=username, email=email, phone_number=phone_number):
-#                 err_msg = 'Tên người dùng hoặc email hoặc SĐT đã tồn tại!'
-#             else:
-#                 data = request.form.copy()
-#                 del data['confirm']
-#
-#                 avt_url = request.files.get('avt_url')
-#                 optional_fields = ['sex', 'phone_number', 'date_of_birth', 'isActive', 'last_access']
-#                 for field in optional_fields:
-#                     data[field] = data.get(field, None)
-#
-#                 UserDao.add_user(
-#                     first_name=data.get('first_name'),
-#                     last_name=data.get('last_name'),
-#                     username=username,
-#                     password=password,
-#                     email=email,
-#                     phone_number=phone_number,
-#                     avt_url=avt_url,
-#                     sex=data.get('sex'),
-#                     date_of_birth=data.get('date_of_birth'),
-#                     isActive=data.get('isActive'),
-#                     last_access=data.get('last_access')
-#                 )
-#
-#                 return redirect(url_for('account.login_process'))
-#         else:
-#             err_msg = 'Mật khẩu không khớp!'
-#
-#     return render_template('register.html', err_msg=err_msg)
+                avt_url = request.files.get('avt_url')
+                optional_fields = ['sex', 'phone_number', 'date_of_birth', 'isActive', 'last_access']
+                for field in optional_fields:
+                    data[field] = data.get(field, None)
+
+                UserDao.add_user(
+                    first_name=data.get('first_name'),
+                    last_name=data.get('last_name'),
+                    username=username,
+                    password=password,
+                    email=email,
+                    phone_number=phone_number,
+                    avt_url=avt_url,
+                    sex=data.get('sex'),
+                    date_of_birth=data.get('date_of_birth'),
+                    isActive=data.get('isActive'),
+                    last_access=data.get('last_access')
+                )
+
+                return redirect(url_for('account.login_process'))
+        else:
+            err_msg = 'Mật khẩu không khớp!'
+
+    return render_template('register.html', err_msg=err_msg)
+
 
 @account_bp.route("/logout")
 def logout_process():
@@ -418,21 +448,107 @@ def logout_process():
     return redirect('/')
 
 
+@account_bp.route("/verify-pass", methods=['GET', 'POST'])
+def verify_pass():
+    err_msg = ''
+    email = ''  # Khai báo biến email
+
+    if request.method == 'POST':
+        action = request.form.get('action')  # Kiểm tra hành động của form
+        email = request.form.get('email')  # Email người dùng nhập vào
+        input_code = request.form.get('verification_code')  # Mã xác nhận người dùng nhập
+
+        if action == 'send_code':
+            if not UserDao.check_exists_email(email=email):
+                err_msg = 'Email không tồn tại!'
+            else:
+                if not is_valid_email(email):
+                    err_msg = 'Email không hợp lệ!'
+                    return render_template('verify-pass.html', err_msg=err_msg, email=email)
+
+                verification_code = random.randint(100000, 999999)  # Tạo mã xác nhận
+
+                # Gửi mã xác nhận qua SendGrid trong một luồng riêng
+                message = Mail(
+                    from_email=Email('trinhgiaphuc24@gmail.com'),
+                    to_emails=To(email),
+                    subject='Mã xác nhận đăng ký',
+                    plain_text_content=f'Mã xác nhận của bạn là: {verification_code}'
+                )
+
+                threading.Thread(target=send_email_async, args=(message,)).start()
+
+                session['registration_data'] = {
+                    'email': email,
+                    'verification_code': verification_code
+                }
+                err_msg = 'Mã xác nhận đã được gửi đến email của bạn.'
+
+
+        elif action == 'resend_code':
+            if not UserDao.check_exists_email(email=email):
+                err_msg = 'Email không tồn tại!'
+
+            else:
+                registration_data = session.get('registration_data', {})
+                if not registration_data:
+                    err_msg = 'Không tìm thấy dữ liệu email để gửi lại mã.'
+                    return render_template('verify-pass.html', err_msg=err_msg, email=email)
+
+                email = registration_data.get('email')
+                verification_code = random.randint(100000, 999999)  # Tạo mã xác nhận mới
+
+                # Gửi lại mã xác nhận qua email trong một luồng riêng
+                message = Mail(
+                    from_email=Email('trinhgiaphuc24@gmail.com'),
+                    to_emails=To(email),
+                    subject='Mã xác nhận mới',
+                    plain_text_content=f'Mã xác nhận mới của bạn là: {verification_code}'
+                )
+
+                threading.Thread(target=send_email_async, args=(message,)).start()
+
+                registration_data['verification_code'] = verification_code
+                session['registration_data'] = registration_data  # Cập nhật session
+
+                err_msg = 'Mã xác nhận mới đã được gửi đến email của bạn.'
+
+        elif action == 'confirm':
+            if not UserDao.check_exists_email(email=email):
+                err_msg = 'Email không tồn tại!'
+            else:
+                registration_data = session.get('registration_data', {})
+                if not input_code:
+                    err_msg = 'Vui lòng nhập mã xác nhận!'
+                    return render_template('verify-pass.html', err_msg=err_msg, email=email)
+
+                if not registration_data:
+                    err_msg = 'Không tìm thấy dữ liệu xác nhận. Vui lòng thử lại!'
+                    return render_template('verify-pass.html', err_msg=err_msg, email=email)
+
+                if str(input_code) == str(registration_data.get('verification_code')):
+                    return redirect(url_for('account.forgot_process'))
+                else:
+                    err_msg = 'Mã xác nhận không đúng!'
+
+    return render_template('verify-pass.html', err_msg=err_msg, email=email)
+
+
 @account_bp.route("/forgot", methods=['GET', 'POST'])
 def forgot_process():
     err_msg = ''
     if request.method == 'POST':
-        email = request.form.get('email')
+        email = session.get('registration_data', {}).get('email', '')
         password = request.form.get('password')
         confirm = request.form.get('confirm')
-        if not email or not password or not confirm:
+        if not password or not confirm:
             err_msg = 'Vui lòng điền đầy đủ thông tin!'
         else:
             email = email.strip()
             # Truy vấn account dựa trên email
             account = db.session.query(Account).join(User).filter(User.email == email).first()
             if account is None:
-                err_msg = 'Email không tồn tại!'
+                err_msg = 'Không tìm thấy tài khoản với email này!'
             elif password != confirm:
                 err_msg = 'Mật khẩu và xác nhận mật khẩu không trùng khớp!'
             else:
@@ -440,6 +556,7 @@ def forgot_process():
                 return redirect(url_for('account.login_process'))
 
     return render_template("forgotpass.html", err_msg=err_msg)
+
 
 
 @login.user_loader
