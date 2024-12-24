@@ -107,7 +107,7 @@ def handle_cart_item_error(e):
         "status": e.status_code
     })
 
-
+    
 @app.errorhandler(InsufficientError)
 def handle_insufficient_error(e):
     update_cart(current_user.get_id(), {
