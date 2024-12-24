@@ -15,7 +15,7 @@ from app.model.Account import Account
 from app.model.User import User
 from sqlalchemy import or_, select
 from sqlalchemy.orm import joinedload
-
+import validators
 
 
 def auth_user(username, password, role=None):
@@ -211,6 +211,12 @@ def check_exists(username=None, email=None, phone_number=None):
 
     return False
 
+
+def check_exists_email(email=None):
+    if email and User.query.filter_by(email=email).first():
+        return True
+    return False
+
 # def get_user_by_id(user_id):
 #     return User.query.get(user_id)
 
@@ -227,6 +233,9 @@ def get_account_by_id(account_id):
 def get_user_by_email(email):
     return db.session.query(User).filter_by(email=email).first()
 
+
+def is_valid_email(email):
+    return validators.email(email)
 
 
 def update_password(username, password):

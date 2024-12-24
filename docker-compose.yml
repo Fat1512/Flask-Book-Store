@@ -1,27 +1,23 @@
 version: "3.0"
 services:
   elasticsearch:
-    build:
-      context: ./eleasticsearch
-      dockerfile: dockerfile
+    image: elasticsearch:7.17.24
     container_name: es-container
     environment:
       - ELASTIC_PASSWORD="090224T@n"
       - xpack.security.enabled=false
       - "discovery.type=single-node"
     networks:
-      - kafka-net
+      kafka-net:
+        ipv4_address: 172.100.0.203
     ports:
       - 9200:9200
     deploy:
       resources:
         limits:
           memory: 4000M
-
   kibana:
-    build:
-      context: ./kibana
-      dockerfile: dockerfile
+    image: kibana:7.17.24
     container_name: kb-container
     environment:
       - KIBANA_PASSWORD="090224T@n"
@@ -74,6 +70,7 @@ services:
     ports:
       - "9091:9091"
       - "29091:29091"
+
 
   kafka2:
     image: confluentinc/cp-kafka:latest
@@ -181,9 +178,6 @@ services:
       MYSQL_ROOT_PASSWORD: 15122004
       MYSQL_USER: phat
       MYSQL_PASSWORD: 15122004
-      # MYSQL_DATABASE: book_store
-    volumes:
-      - ./zzz:/etc/mysql/my.cnf
     networks:
       kafka-net:
         ipv4_address: 172.100.0.200
@@ -198,6 +192,35 @@ services:
       - KAFKA_CONNECT_URIS=http://debezium-container:8083
     depends_on:
       - debezium
+  nginx:
+    container_name: nginx
+    image: phat1512/nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - flask
+    expose:
+      - "1512"
+    networks:
+      kafka-net:
+        ipv4_address: 172.100.0.201
+    volumes:
+      - ./webserver/sslKey/selfsigned.crt:/etc/ssl/certs/selfsigned.crt
+      - ./webserver/sslKey/selfsigned.key:/etc/ssl/private/selfsigned.key
+      - ./webserver/nginx.conf:/etc/nginx/conf.d/flask.conf
+  flask:
+    build: .
+    networks:
+      - kafka-net
+    expose:
+      - "5000"
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      DB_PASSWORD: 15122004
+      DB_URL: mysql+pymysql://root:%s@mysql:3306/book_store?charset=utf8mb4
 
 networks:
   kafka-net:

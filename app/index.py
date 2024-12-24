@@ -3,7 +3,7 @@ import pdb
 import threading
 from datetime import datetime
 from threading import Thread
-from app.dao.OrderDAO import delete_orders_after_48hrs, delete_payment_after_48hrs
+from app.dao.OrderDAO import delete_orders_after_48hrs
 from elasticsearch import Elasticsearch
 from flask_login import current_user
 from app.dao.UserDao import get_user_by_id
@@ -107,7 +107,7 @@ def handle_cart_item_error(e):
         "status": e.status_code
     })
 
-    
+
 @app.errorhandler(InsufficientError)
 def handle_insufficient_error(e):
     update_cart(current_user.get_id(), {
@@ -264,6 +264,8 @@ def get_by_id(user_id):
 
 
 if __name__ == "__main__":
+    from app.admin import *
+
     KAFKA_TOPICS = app.config["KAFKA_TOPIC"]
     for topic in KAFKA_TOPICS:
         consumer_thread = Thread(target=consume_kafka, args=(topic,), daemon=True)

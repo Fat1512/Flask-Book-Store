@@ -9,27 +9,40 @@ from dotenv import dotenv_values, load_dotenv
 import cloudinary
 from flask_login import LoginManager
 from app.utils.helper import format_currency_filter, format_datetime_filter, format_date_VN
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+
+
 
 app = Flask(__name__)
 load_dotenv()
 scheduler = APScheduler()
 
 DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_URL = os.getenv("DB_URL")
+SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
 
+ELASTIC_HOST=os.getenv("ELASTIC_HOST")
+ELASTIC_PORT=int(os.getenv("ELASTIC_PORT"))
+
+KAFKA1 = os.getenv("KAFKA1")
+KAFKA2 = os.getenv("KAFKA2")
+KAFKA3 = os.getenv("KAFKA3")
 app.secret_key = "8923yhr9fuwnsejksnpokff@$I_I@$)opfk"
-app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql+pymysql://root:%s@127.0.0.1:3307/book_store' % quote('15122004')
+app.config["SQLALCHEMY_DATABASE_URI"] = DB_URL % quote(DB_PASSWORD)
+# app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql+pymysql://root:%s@localhost/book_store' % quote(DB_PASSWORD)
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 
 app.config["VNPAY_URL"] = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'  # Use the sandbox URL for testing
 app.config["VNPAY_TMN_CODE"] = 'MEBTRFP0'
 app.config["VNPAY_HASH_SECRET"] = 'ILFTJ080X209IM562X1NKYTMZ70RLVJO'
 app.config["VNPAY_RETURN_URL"] = 'http://127.0.0.1:5000/account/purchase'
-app.config['KAFKA_BROKER'] = ['127.0.0.1:9091', '127.0.0.1:9092', '127.0.0.1:9093']
+app.config['KAFKA_BROKER'] = [KAFKA1, KAFKA2, KAFKA3]
 app.config['KAFKA_TOPIC'] = ['dbs_.book_store.book','dbs_.book_store.extended_book', 'schema-changes.mysql']
 
 es = Elasticsearch(
-    hosts=[{'host': 'localhost', 'port': 9200, 'scheme': 'http'}],
-    http_auth=('docker-cluster', '15122004')
+    hosts=[{'host': ELASTIC_HOST, 'port': ELASTIC_PORT, 'scheme': 'http'}],
+    http_auth=('webserver-cluster', '15122004')
 )
 
 

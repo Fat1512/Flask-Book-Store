@@ -1,9 +1,8 @@
+- Biến môi trường
+
 ![img.png](img.png)
-![img_1.png](img_1.png)
 
-Mình sẽ xài chung file init
-
-Thông tin thanh toán VNPay
+- Thông tin thanh toán VNPay
 
 Ngân hàng: NCB
 
