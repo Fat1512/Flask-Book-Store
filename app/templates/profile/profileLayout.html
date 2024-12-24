@@ -1,0 +1,76 @@
+{% extends 'layout/base.html' %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+{% block css %}
+    {{ super() }}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+
+{% endblock %}
+
+
+{% block content %}
+    <div class="my-bg-color pt-3 pb-3">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card-header bg-transparent menu">
+                        <ul class="list-unstyled">
+                            <li>
+                                <a id="toggle-menu">
+                                    <div class="icon"></div>
+                                    <i class="fa-solid fa-user"></i>
+                                    <span>Tài Khoản Của Tôi</span>
+                                </a>
+                                <ul class="submenu">
+                                    <li>
+                                        <a href="/account/profile" class="active"><i class="fa-regular fa-user"></i>
+                                            <span>Hồ sơ</span></a>
+                                    </li>
+                                    <li>
+                                        <a href="/account/address"><i class="fa-solid fa-location-dot"></i>
+                                            <span>Địa chỉ</span></a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li><a href="/account/purchase">
+                                <div class="icon"></div>
+                                <i class="fa-solid fa-cart-shopping"></i>
+                                <span>Đơn Mua</span></a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    {% block main %}
+
+                    {% endblock %}
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+    <script>
+        // JavaScript để xử lý hiển thị submenu
+        const toggleMenu = document.getElementById('toggle-menu');
+        const submenu = document.querySelector('.submenu');
+
+        toggleMenu.addEventListener('click', () => {
+            // Toggle hiển thị submenu
+            if (submenu.style.display === 'none') {
+                submenu.style.display = 'block';
+            } else {
+                submenu.style.display = 'none';
+            }
+        });
+
+
+    </script>
+{% endblock %}

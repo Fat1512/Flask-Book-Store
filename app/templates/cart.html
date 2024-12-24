@@ -9,7 +9,7 @@
 
         // Example: Display messages dynamically
         flashedMessages.forEach(([category, message]) => {
-            
+
             showToast(message, true)
         });
     </script>
@@ -20,16 +20,16 @@
             <div class="row-body row">
                 <div>
                     <span class="font-weight-bold text-large">Giỏ hàng</span>
-                    <span class="cart-header-total">({{ cart.cart_items|length }}  sản phẩm)</span>
+                    <span class="cart-header-total">({{ cart|length }}  sản phẩm)</span>
                 </div>
-                {% if cart.cart_items|length %}
+                {% if cart|length %}
                     <div class="content d-flex p-0">
                         <div class="col-md-9">
                             <div class="item-bg-color rounded p-3 align-items-center">
                                 <div class="header-cart d-flex">
                                     <div class="check-all col-md-8">
                                         <input type="checkbox" id="toggleAll" name="vehicle1" value="Bike">
-                                        <span class="cart-total">Chọn tất cả ({{ cart.cart_items|length }})</span>
+                                        <span class="cart-total">Chọn tất cả ({{ cart|length }})</span>
                                     </div>
                                     <p class="col-md-2 m-0">Số lượng</p>
                                     <p class="col-md-2 m-0">Thành tiền</p>
@@ -37,37 +37,42 @@
                                 </div>
                             </div>
                             <div class="item-bg-color cart rounded mt-3 p-3">
-                                {% for cart_item in cart.cart_items %}
-                                    <div id="{{ cart_item.book.book_id }}" class="cart-item d-flex align-items-center">
+                                {% for cart_item in cart %}
+                                    <div id="{{ cart_item.book_id }}" class="cart-item d-flex align-items-center">
                                         <div class="col-md-1">
                                             <input type="checkbox" class="checkbox"
-                                                   value="{{ cart_item.book.book_id }}">
+                                                   value="{{ cart_item.book_id }}">
                                         </div>
                                         <div class="col-md-11 p-0 d-flex align-items-center">
                                             <div class="d-flex group-infor">
-                                                <a href="/search/detail?bookId={{ cart_item.book.book_id }}">
+                                                <a href="/search/detail?bookId={{ cart_item.book_id }}">
                                                     <img class=" cart-item-image"
-                                                         src="{{ cart_item.book.images[0].image_url }}">
+                                                         src="{{ cart_item.book_image }}">
                                                 </a>
                                                 <div class="cart-item-detail flex-column d-flex justify-content-between">
-                                                    <a href="/search/detail?bookId={{ cart_item.book.book_id }}">
-                                                        <p class="cart-item-detail-title">{{ cart_item.book.title }}</p>
+                                                    <a href="/search/detail?bookId={{ cart_item.book_id }}">
+                                                        <p class="cart-item-detail-title">{{ cart_item.title }}</p>
                                                     </a>
                                                     <p>
-                                                        <span class="font-weight-bold">{{ cart_item.book.price|currency('VND') }}</span>
-                                                        <span class="text-decoration-line-through text-secondary">{{ cart_item.book.price|currency('VND') }}</span>
+
+                                                        <span class="font-weight-bold"> {{ cart_item.price|currency('VND') }}</span>
+
+                                                        {% if cart_item.isInsufficient %}
+                                                            <p class="item-msg-error font-weight-bold text-primary">* Số
+                                                                lượng hiện tại chỉ còn {{ cart_item.quantity }}</p>
+                                                        {% endif %}
                                                     </p>
                                                 </div>
                                             </div>
                                             <div class="group-controll d-flex">
                                                 <div class="controll ">
                                             <span class="cart-item-descrease cursor-pointer"
-                                                  value= {{ cart_item.book.price }}>-</span>
+                                                  value= {{ cart_item.price }}>-</span>
                                                     <span class="cart-item-quantity">{{ cart_item.quantity }}</span>
                                                     <span class="cart-item-increase cursor-pointer"
-                                                          value= {{ cart_item.book.price }}>+</span>
+                                                          value= {{ cart_item.price }}>+</span>
                                                 </div>
-                                                <p class="cart-item-price font-weight-bold text-primary m-0">{{ (cart_item.book.price * cart_item.quantity)|currency('VND') }}</p>
+                                                <p class="cart-item-price font-weight-bold text-primary m-0">{{ (cart_item.price * cart_item.quantity)|currency('VND') }}</p>
                                             </div>
 
                                         </div>

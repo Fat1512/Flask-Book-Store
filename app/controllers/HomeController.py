@@ -16,6 +16,7 @@ from app import db
 index_bp = Blueprint('index', __name__)
 
 
+
 @index_bp.route("/")
 def index():
     book_gerne = get_depth_gerne(1)
@@ -91,6 +92,4 @@ def update_profile():
         return jsonify({"success": False, "message": str(e)}), 500
 
 
-@index_bp.route('/profile')
-def profile():
-    return render_template('profile.html')
+

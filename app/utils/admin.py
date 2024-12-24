@@ -10,6 +10,7 @@ from sqlalchemy import or_, func, case
 from datetime import datetime, timedelta, date
 from sqlalchemy.sql import extract
 from flask_login import current_user
+from app.model.Config import Config
 from sqlalchemy.orm import joinedload
 from sqlalchemy.sql import join
 
@@ -485,7 +486,15 @@ def book_management(gerne_id=None, kw=None, price_start=None, price_end=None):
         query = query.filter(Book.book_gerne_id == gerne_id)
 
     if kw:
-        query = query.filter(Book.title.contains(kw))
+        keyword = f"%{kw}%"  # Chuẩn bị mẫu tìm kiếm
+        query = query.filter(
+            or_(
+                Book.title.ilike(keyword),  # Tìm trong tiêu đề
+                BookGerne.name.ilike(keyword),  # Tìm trong tên thể loại
+                Book.author.ilike(keyword),  # Tìm trong tác giả
+                Publisher.publisher_name.ilike(keyword)  # Tìm trong nhà xuất bản
+            )
+        )
 
     if price_start is not None:
         query = query.filter(Book.price >= price_start)
@@ -509,9 +518,8 @@ def bookgerne_management(kw=None):
 
 
 def profile():
-    # Kiểm tra xem current_user có tồn tại không
     if not current_user.is_authenticated:
-        return None  # Trả về None nếu không có người dùng hiện tại (chưa đăng nhập)
+        return None
 
     query = db.session.query(
         Account.user_id,
@@ -533,5 +541,15 @@ def profile():
     ).join(Account, Account.user_id == User.user_id
            ).filter(User.user_id == current_user.user_id)
 
-    # Trả về kết quả của truy vấn hoặc None nếu không tìm thấy kết quả
-    return query.first()  # Trả về một hàng kết quả hoặc None nếu không có dữ liệu
+    return query.first()
+
+
+def config():
+    return Config.query.first()
+
+
+
+
+
+
+

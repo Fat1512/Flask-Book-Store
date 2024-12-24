@@ -38,17 +38,35 @@ def count_book_sell(book_id):
     return result.sold if result.sold else 0
 
 
+def upload_images():
+    books = find_all()
+    for book in books[0:20]:
+        if len(book.images):
+            for image in book.images:
+                res = cloudinary.uploader.upload(image.image_url)
+                image_url_ok = res['secure_url']
+
+                image.image_url = image_url_ok
+    db.session.commit()
+
+
 def create_book(data):
-    book = Book(title=data['title'], author=data['author'], price=data['price'],
-                num_page=data['num_page'], description=data['description'],
+    book = Book(title=data['title'],
+                author=data['author'],
+                price=data['price'],
+                num_page=data['num_page'],
+                description=data['description'],
                 release_date=data['release_date'],
-                weight=data['weight'], book_gerne_id=data['book_gerne_id'], dimension=data['dimension'])
+                weight=data['weight'],
+                book_gerne_id=data['book_gerne_id'],
+                dimension=data['dimension'],
+                barcode=data['barcode'])
 
     book_images = data['book_images']
     if data['publisher']:
         publisher = Publisher.query.get(data['publisher'])
         if publisher is None: raise NotFoundError('Publisher not found')
-        book.publisher = publisher
+        book.publisher_id = publisher.publisher_id
 
     if data['format']:
         book.format = BookFormat(data['format'])
@@ -90,7 +108,7 @@ def find_by_gerne(gerne_id):
     query = Book.query
     gerne = BookGerne.query.get(gerne_id)
     query = query.join(BookGerne)
-    query = query.filter(BookGerne.lft >= gerne.lft,BookGerne.rgt <= gerne.rgt)
+    query = query.filter(BookGerne.lft >= gerne.lft, BookGerne.rgt <= gerne.rgt)
     return query.all()
 
 
@@ -119,6 +137,7 @@ def find_by_barcode(barcode):
     if not book:
         raise NotFoundError("Barcode không tồn tại")
     return book
+
 
 def countBook():
     return Book.query.count()

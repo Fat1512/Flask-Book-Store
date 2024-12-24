@@ -52,7 +52,7 @@
 
 .icon-search {
     position: absolute !important;
-    z-index: 20;
+    z-index: 5000!important;
     top: 50%;
     left: 93%;
     transform: translate(-50%, -50%);

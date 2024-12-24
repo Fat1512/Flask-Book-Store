@@ -9,6 +9,10 @@ from dotenv import dotenv_values, load_dotenv
 import cloudinary
 from flask_login import LoginManager
 from app.utils.helper import format_currency_filter, format_datetime_filter, format_date_VN
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+
+
 
 app = Flask(__name__)
 load_dotenv()
@@ -16,6 +20,7 @@ scheduler = APScheduler()
 
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_URL = os.getenv("DB_URL")
+SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
 
 ELASTIC_HOST=os.getenv("ELASTIC_HOST")
 ELASTIC_PORT=int(os.getenv("ELASTIC_PORT"))
@@ -25,6 +30,7 @@ KAFKA2 = os.getenv("KAFKA2")
 KAFKA3 = os.getenv("KAFKA3")
 app.secret_key = "8923yhr9fuwnsejksnpokff@$I_I@$)opfk"
 app.config["SQLALCHEMY_DATABASE_URI"] = DB_URL % quote(DB_PASSWORD)
+# app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql+pymysql://root:%s@localhost/book_store' % quote(DB_PASSWORD)
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 
 app.config["VNPAY_URL"] = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'  # Use the sandbox URL for testing

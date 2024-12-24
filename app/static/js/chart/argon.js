@@ -847,7 +847,7 @@ var BarsChart = (function () {
 
   // Lấy dữ liệu số lượng bán ra từ API
   function fetchSalesData() {
-    return fetch(`/admin/api/sales_count`) // Lấy dữ liệu từ API
+    return fetch(`/api/sales_count`) // Lấy dữ liệu từ API
       .then(response => response.json())
       .then(data => {
         console.log('Dữ liệu số lượng nhận được:', data); // Kiểm tra dữ liệu nhận được từ API
@@ -1005,19 +1005,19 @@ var SalesChart = (function() {
   // Khởi tạo biểu đồ và lắng nghe sự kiện click vào tab
   function init($chart) {
     // Tạo biểu đồ mặc định với dữ liệu online
-    fetchRevenueData('/admin/api/revenue-online').then(revenueData => {
+    fetchRevenueData('/api/revenue-online').then(revenueData => {
       chartInstance = createChart($chart, revenueData);
     });
 
     // Lắng nghe sự kiện click vào tab
     $('#online-tab').on('click', function() {
-      fetchRevenueData('/admin/api/revenue-online').then(revenueData => {
+      fetchRevenueData('/api/revenue-online').then(revenueData => {
         updateChartData(revenueData);  // Cập nhật dữ liệu cho tab Online
       });
     });
 
     $('#offline-tab').on('click', function() {
-      fetchRevenueData('/admin/api/revenue-offline').then(revenueData => {
+      fetchRevenueData('/api/revenue-offline').then(revenueData => {
         updateChartData(revenueData);  // Cập nhật dữ liệu cho tab Offline
       });
     });

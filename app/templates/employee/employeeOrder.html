@@ -1,4 +1,5 @@
 {% extends 'admin/layout/base.html' %}
+{% block title %} Quản lý đơn {% endblock %}
 {% block css %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/employeeOrder.css') }}">
@@ -375,18 +376,18 @@
     </div>
 {% endblock %}
 {% block modal %}
-    <div class="modal">
-        <div class="overlay"></div>
+    <div class="modal d-flex">
+        <div class="overlay d-flex"></div>
         <div class="modal-body d-none modal-update-order-status item-bg-color">
 
         </div>
-        <div class="modal-body d-none modal-cancel-order item-bg-color">
+        <div class="modal-body d-none d-flex modal-cancel-order item-bg-color">
             <div class="w-100 d-flex justify-content-center align-content-center flex-column">
                 <h1 class="modal-title d-flex justify-content-center pt-4" id="modalLabel">
                     <i class="fas fa-exclamation-circle text-warning display-1"></i>
                 </h1>
-                <h2 class="text-center">Bạn có chắc chắn hủy không ?</h2>
-
+                <h2 class="text-center">Lý do hủy ?</h2>
+                <input type="text" class="cancel-reason">
                 <div class="d-flex pt-4">
                     <button type="button"
                             class="cancel-back-btn w-50 btn btn-primary bg-white text-black border border-0"

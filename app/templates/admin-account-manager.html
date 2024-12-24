@@ -85,17 +85,18 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="/admin/config">
+                            <i class="ni ni-circle-08 text-pink"></i>
+                            <span class="nav-link-text">Thay đổi cấu hình</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="/admin/profile">
                             <i class="ni ni-key-25 text-info"></i>
                             <span class="nav-link-text">Hồ sơ</span>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="register.html">
-                            <i class="ni ni-circle-08 text-pink"></i>
-                            <span class="nav-link-text">Register</span>
-                        </a>
-                    </li>
+
                     <li class="nav-item">
                         <a class="nav-link" href="upgrade.html">
                             <i class="ni ni-send text-dark"></i>
@@ -105,6 +106,7 @@
                 </ul>
             </div>
         </div>
+    </div>
 </nav>
 <!-- Main content -->
 <div class="main-content" id="panel">
@@ -522,218 +524,183 @@
             </div>
         </div>
     </div>
-</div>
+    <script src="{{ url_for('static', filename='js/adminAccountManager.js') }}"></script>
 
-<script>
-    // Đảm bảo script chỉ chạy sau khi DOM đã được tải
-    document.addEventListener('DOMContentLoaded', function() {
 
-        // Hiển thị modal khi bấm nút "Thêm Thể Loại Mới"
-        document.getElementById('addBookGerneButton').addEventListener('click', function() {
-            document.getElementById('addBookGerneModal').style.display = 'flex';
-        });
+    <div id="addBookGerneModal" class="login-wrap-bg" style="display: none;">
+        <div class="modal-content"
+             style="margin: auto; background-color: white; padding: 20px; border-radius: 8px; position: relative;">
+            <!-- Nút đóng modal -->
+            <span id="close-modal" style="position: absolute; top: 10px; right: 15px; cursor: pointer;">&times;</span>
+            <h2 style="text-align: center; color: #c92127;">Thêm nhân viên mới</h2>
+            <form id="form-register-employee" class="row" method="post" style="padding: 20px;">
+                <div class="form-group-1 appoinment-body-1">
+                    <div class="form-group appoinment-body-1">
+                        <label for="first_name">
+                            <font>Họ</font>
+                            <span style="color: red;">*</span>
+                        </label>
+                    </div>
+                    <div>
+                        <input class="form-control-all form-control-ho-email-pass" type="text"
+                               id="first_name" name="first_name">
+                    </div>
+                </div>
+                <div class="form-group-2 appoinment-body-1">
+                    <div class="form-group appoinment-body-1">
+                        <label for="last_name">
+                            <font>Tên</font>
+                            <span style="color: red;">*</span>
+                        </label>
+                    </div>
+                    <div>
+                        <input class="form-control-all form-control-ten-sdt-checkpass" type="text"
+                               id="last_name" name="last_name">
+                    </div>
+                </div>
+                <div class="form-group-1 appoinment-body-1">
+                    <div class="form-group appoinment-body-1">
+                        <label for="username">
+                            <font>Tên đăng nhập</font>
+                            <span style="color: red;">*</span>
+                        </label>
+                    </div>
+                    <div>
+                        <input class="form-control-all form-control-ho-email-pass" id="username"
+                               name="username" type="text">
+                    </div>
+                </div>
+                <div class="form-group-2 appoinment-body-1">
+                    <div class="form-group appoinment-body-1">
+                        <label for="email">
+                            <font>Email</font>
+                            <span style="color: red;">*</span>
+                        </label>
+                    </div>
+                    <div>
+                        <input class="form-control-all form-control-ten-sdt-checkpass" type="email"
+                               id="email" name="email">
+                    </div>
+                </div>
+                <div class="form-group-1 appoinment-body-1">
+                    <div class="form-group appoinment-body-1">
+                        <label for="pass">
+                            <font>Mật khẩu</font>
+                            <span style="color: red;">*</span>
+                        </label>
+                    </div>
+                    <div class="box">
+                        <input class="form-control-all form-control-ho-email-pass" id="pass"
+                               name="password" type="password">
+                        <div class="toggle" id="toggle" onclick="showPass()"></div>
+                    </div>
+                </div>
+                <div class="form-group-2 appoinment-body-1">
+                    <div class="form-group appoinment-body-1">
+                        <label for="confirm">
+                            <font>Xác nhận mật khẩu</font>
+                            <span style="color: red;">*</span>
+                        </label>
+                    </div>
+                    <div class="box">
+                        <input class="form-control-all form-control-ten-sdt-checkpass" id="confirm"
+                               name="confirm" type="password">
+                        <div class="toggle" id="toggle1" onclick="showConfirm()"></div>
+                    </div>
+                </div>
+                <div class="form-group-1 appoinment-body-1" style="width:100%">
+                    <div class="form-group">
+                        <label for="confirm">
+                            <font>Chọn loại nhân viên</font>
+                            <span style="color: red;">*</span>
+                        </label>
+                    </div>
+                    <div class="dropdown-container1 box">
+                        <input type="text" id="roleSearch1"
+                               class="dropdown-search form-control-all"
+                               autocomplete="off" placeholder=""
+                               style="box-sizing: border-box; margin-bottom: 0;width: 102%">
+                        <div class="dropdown-list" id="roleList1"
+                             style="box-sizing: border-box;width: 102%;left:0;"></div>
+                        <input type="hidden" id="hiddenUserRole" name="user_role">
+                        <!-- Input hidden -->
+                    </div>
+                </div>
+                {% if err_msg %}
+                <div class="checkpass" style="margin-top: 15px">
+                    <div class="remember-me">
+                        <label class="custom_check">
+                            <font style="color: red; font-weight: 600;">{{err_msg}}</font>
+                            <span class="checkmark"></span>
+                        </label>
+                    </div>
+                </div>
+                {% endif %}
+                <button type="submit"
+                        style="width: 100%; padding: 10px; background-color: #c92127; color: white; border: none; border-radius: 4px; cursor: pointer;margin-top:20px">
+                    Đăng ký
+                </button>
+            </form>
+        </div>
+    </div>
+    <script>
+        // DOM Elements
+        const roleList1 = document.getElementById("roleList1");
+        const roleSearch1 = document.getElementById("roleSearch1");
+        const statsContainer1 = document.getElementById("statsContainer1"); // Element hiển thị kết quả
 
-        // Đóng modal khi nhấn vào nút đóng (X)
-        var closeModalButton = document.getElementById('close-modal');
-        if (closeModalButton) {
-            closeModalButton.addEventListener('click', function() {
-                document.getElementById('addBookGerneModal').style.display = 'none';
+        // Fetch user roles from backend
+        async function fetchUserRoles1() {
+            try {
+                const response = await fetch('/admin/api/user_roles_employee');
+                if (!response.ok) throw new Error('Failed to fetch user roles');
+
+                const userRoles = await response.json();
+                populateRoleList1(userRoles); // Gửi dữ liệu đến hàm tạo dropdown
+            } catch (error) {
+                console.error('Error fetching user roles:', error);
+            }
+        }
+
+        // Populate role dropdown list
+        function populateRoleList1(userRoles, filter = "") {
+            roleList1.innerHTML = ""; // Clear dropdown
+            const filteredRoles = userRoles.filter(role =>
+            role.user_role.toLowerCase().includes(filter.toLowerCase()) // Filter roles based on search input
+            );
+
+            filteredRoles.forEach(role => {
+                const item = document.createElement("div");
+                item.classList.add("dropdown-item");
+                item.textContent = role.user_role; // Hiển thị tên vai trò
+                item.addEventListener("click", () => {
+                    roleSearch1.value = role.user_role;  // Hiển thị tên vai trò trong input
+                    document.getElementById("hiddenUserRole").value = role.user_role;  // Gán tên vai trò vào input hidden
+                    roleList1.style.display = "none";  // Ẩn dropdown
+                });
+
+                roleList1.appendChild(item);
             });
         }
 
+        // Fetch user data based on selected role (from URL)
+        async function filterUsersByRole1(selectedRole) {
+            const response = await fetch(`/admin/account-manager?user_role=${encodeURIComponent(selectedRole)}`);
+            if (response.ok) {
+                const data = await response.json();
+                renderUserStats(data); // Render the filtered user stats
+            } else {
+                console.error('Failed to fetch filtered user data');
+            }
+        }
 
-    });
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-        crossorigin="anonymous"></script>
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js"
-        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
-        crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"
-        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
-        crossorigin="anonymous"></script>
-<script src="{{ url_for('static', filename='js/adminAccountManager.js') }}"></script>
-
-
-<div id="addBookGerneModal" class="login-wrap-bg" style="display: none;">
-    <div class="modal-content"
-         style="margin: auto; background-color: white; padding: 20px; border-radius: 8px; position: relative;">
-        <!-- Nút đóng modal -->
-        <span id="close-modal" style="position: absolute; top: 10px; right: 15px; cursor: pointer;">&times;</span>
-        <h2 style="text-align: center; color: #c92127;">Thêm nhân viên mới</h2>
-        <form id="form-register-employee" class="row" method="post" style="padding: 20px;">
-            <div class="form-group-1 appoinment-body-1">
-                <div class="form-group appoinment-body-1">
-                    <label for="first_name">
-                        <font>Họ</font>
-                        <span style="color: red;">*</span>
-                    </label>
-                </div>
-                <div>
-                    <input class="form-control-all form-control-ho-email-pass" type="text"
-                           id="first_name" name="first_name">
-                </div>
-            </div>
-            <div class="form-group-2 appoinment-body-1">
-                <div class="form-group appoinment-body-1">
-                    <label for="last_name">
-                        <font>Tên</font>
-                        <span style="color: red;">*</span>
-                    </label>
-                </div>
-                <div>
-                    <input class="form-control-all form-control-ten-sdt-checkpass" type="text"
-                           id="last_name" name="last_name">
-                </div>
-            </div>
-            <div class="form-group-1 appoinment-body-1">
-                <div class="form-group appoinment-body-1">
-                    <label for="username">
-                        <font>Tên đăng nhập</font>
-                        <span style="color: red;">*</span>
-                    </label>
-                </div>
-                <div>
-                    <input class="form-control-all form-control-ho-email-pass" id="username"
-                           name="username" type="text">
-                </div>
-            </div>
-            <div class="form-group-2 appoinment-body-1">
-                <div class="form-group appoinment-body-1">
-                    <label for="email">
-                        <font>Email</font>
-                        <span style="color: red;">*</span>
-                    </label>
-                </div>
-                <div>
-                    <input class="form-control-all form-control-ten-sdt-checkpass" type="email"
-                           id="email" name="email">
-                </div>
-            </div>
-            <div class="form-group-1 appoinment-body-1">
-                <div class="form-group appoinment-body-1">
-                    <label for="pass">
-                        <font>Mật khẩu</font>
-                        <span style="color: red;">*</span>
-                    </label>
-                </div>
-                <div class="box">
-                    <input class="form-control-all form-control-ho-email-pass" id="pass"
-                           name="password" type="password">
-                    <div class="toggle" id="toggle" onclick="showPass()"></div>
-                </div>
-            </div>
-            <div class="form-group-2 appoinment-body-1">
-                <div class="form-group appoinment-body-1">
-                    <label for="confirm">
-                        <font>Xác nhận mật khẩu</font>
-                        <span style="color: red;">*</span>
-                    </label>
-                </div>
-                <div class="box">
-                    <input class="form-control-all form-control-ten-sdt-checkpass" id="confirm"
-                           name="confirm" type="password">
-                    <div class="toggle" id="toggle1" onclick="showConfirm()"></div>
-                </div>
-            </div>
-            <div class="form-group-1 appoinment-body-1" style="width:100%">
-                <div class="form-group">
-                    <label for="confirm">
-                        <font>Chọn loại nhân viên</font>
-                        <span style="color: red;">*</span>
-                    </label>
-                </div>
-                <div class="dropdown-container1 box">
-                    <input type="text" id="roleSearch1"
-                           class="dropdown-search form-control-all"
-                           autocomplete="off" placeholder=""
-                           style="box-sizing: border-box; margin-bottom: 0;width: 102%">
-                    <div class="dropdown-list" id="roleList1"
-                         style="box-sizing: border-box;width: 102%;left:0;"></div>
-                    <input type="hidden" id="hiddenUserRole" name="user_role">
-                    <!-- Input hidden -->
-                </div>
-            </div>
-            {% if err_msg %}
-            <div class="checkpass" style="margin-top: 15px">
-                <div class="remember-me">
-                    <label class="custom_check">
-                        <font style="color: red; font-weight: 600;">{{err_msg}}</font>
-                        <span class="checkmark"></span>
-                    </label>
-                </div>
-            </div>
-            {% endif %}
-            <button type="submit"
-                    style="width: 100%; padding: 10px; background-color: #c92127; color: white; border: none; border-radius: 4px; cursor: pointer;margin-top:20px">
-                Đăng ký
-            </button>
-        </form>
-    </div>
-</div>
-<script>
-    // DOM Elements
-const roleList1 = document.getElementById("roleList1");
-const roleSearch1 = document.getElementById("roleSearch1");
-const statsContainer1 = document.getElementById("statsContainer1"); // Element hiển thị kết quả
-
-// Fetch user roles from backend
-async function fetchUserRoles1() {
-    try {
-        const response = await fetch('/admin/api/user_roles_employee');
-        if (!response.ok) throw new Error('Failed to fetch user roles');
-
-        const userRoles = await response.json();
-        populateRoleList1(userRoles); // Gửi dữ liệu đến hàm tạo dropdown
-    } catch (error) {
-        console.error('Error fetching user roles:', error);
-    }
-}
-
-// Populate role dropdown list
-function populateRoleList1(userRoles, filter = "") {
-    roleList1.innerHTML = ""; // Clear dropdown
-    const filteredRoles = userRoles.filter(role =>
-        role.user_role.toLowerCase().includes(filter.toLowerCase()) // Filter roles based on search input
-    );
-
-    filteredRoles.forEach(role => {
-        const item = document.createElement("div");
-        item.classList.add("dropdown-item");
-        item.textContent = role.user_role; // Hiển thị tên vai trò
-        item.addEventListener("click", () => {
-            roleSearch1.value = role.user_role;  // Hiển thị tên vai trò trong input
-            document.getElementById("hiddenUserRole").value = role.user_role;  // Gán tên vai trò vào input hidden
-            roleList1.style.display = "none";  // Ẩn dropdown
-        });
-
-        roleList1.appendChild(item);
-    });
-}
-
-// Fetch user data based on selected role (from URL)
-async function filterUsersByRole1(selectedRole) {
-    const response = await fetch(`/admin/account-manager?user_role=${encodeURIComponent(selectedRole)}`);
-    if (response.ok) {
-        const data = await response.json();
-        renderUserStats(data); // Render the filtered user stats
-    } else {
-        console.error('Failed to fetch filtered user data');
-    }
-}
-
-// Render user stats in the table
-function renderUserStats(data) {
-    statsContainer1.innerHTML = ""; // Clear previous stats
-    if (data.stats) {
-        data.stats.forEach(stat => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
+        // Render user stats in the table
+        function renderUserStats(data) {
+            statsContainer1.innerHTML = ""; // Clear previous stats
+            if (data.stats) {
+                data.stats.forEach(stat => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
                 <td>${stat.user_id}</td>
                 <td>${stat.first_name}</td>
                 <td>${stat.last_name}</td>
@@ -741,130 +708,166 @@ function renderUserStats(data) {
                 <td>${stat.email}</td>
                 <td>${stat.user_role}</td>
             `;
-            statsContainer1.appendChild(row);
-        });
-    }
-}
-
-// Show dropdown list on focus
-roleSearch1.addEventListener("focus", () => {
-    fetchUserRoles1(); // Fetch user roles from backend
-    roleList1.style.display = "block"; // Show dropdown
-});
-
-// Event listener for search input
-roleSearch1.addEventListener("input", async () => {
-    const response = await fetch('/admin/api/user_roles_employee');
-    const userRoles = await response.json();
-    populateRoleList1(userRoles, roleSearch1.value); // Filter roles based on search input
-});
-
-// Hide dropdown when clicking outside
-document.addEventListener("click", (event) => {
-    if (!event.target.closest(".dropdown-container1")) {
-        roleList1.style.display = "none";
-    }
-});
-
-// Check URL on page load to auto-load filtered users if URL contains 'user_role'
-function checkAndFilterUsersByRole() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const userRole = urlParams.get('user_role');
-    if (userRole) {
-        filterUsersByRole1(userRole); // Filter users based on the selected role when page loads
-    }
-}
-
-// Check URL on page load
-window.addEventListener("DOMContentLoaded", checkAndFilterUsersByRole);
-
-// Cập nhật lại dữ liệu khi URL thay đổi (khi người dùng điều hướng trang)
-window.addEventListener('popstate', () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const userRole = urlParams.get('user_role');
-    if (userRole) {
-        filterUsersByRole1(userRole); // Fetch and render filtered users when back/forward button is used
-    }
-});
-
-</script>
-<script>
-    document.querySelector('#form-register-employee').addEventListener('submit', function (event) {
-    event.preventDefault();  // Ngăn không cho form reload trang
-    const firstName = document.getElementById('first_name').value;
-    const lastName = document.getElementById('last_name').value;
-    const username = document.getElementById('username').value;
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('pass').value;
-    const confirmPassword = document.getElementById('confirm').value;
-    const userRole = hiddenUserRole.value;
-
-    // Kiểm tra các trường nhập liệu
-    if (!firstName || !lastName || !username || !email || !password || !userRole || !confirmPassword) {
-        alert('Vui lòng điền đầy đủ thông tin!');
-        return;
-    }
-
-    // Tạo payload gửi lên server
-    const payload = {
-        first_name: firstName,
-        last_name: lastName,
-        username: username,
-        email: email,
-        password: password,
-        user_role: userRole,
-    };
-
-    // Gửi yêu cầu POST đến server
-    fetch('/admin/add-employee', {  // Cập nhật URL của bạn ở đây
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload)
-    }).then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('Đăng ký thành công!');
-                location.reload();  // Reload trang sau khi thành công
-            } else {
-                alert('Đăng ký thất bại: ' + data.message);
+                    statsContainer1.appendChild(row);
+                });
             }
-        })
-        .catch(error => {
-            console.error('Lỗi khi đăng ký:', error);
-            alert('Đã xảy ra lỗi trong quá trình đăng ký.');
+        }
+
+        // Show dropdown list on focus
+        roleSearch1.addEventListener("focus", () => {
+            fetchUserRoles1(); // Fetch user roles from backend
+            roleList1.style.display = "block"; // Show dropdown
         });
-});
-</script>
-<script>
-    const pass = document.getElementById('pass');
-    const toggle = document.getElementById('toggle');
 
-    function showPass() {
-        if (pass.type === 'password') {
-            pass.setAttribute('type', 'text');
-            toggle.classList.add('hide')
-        }
-        else {
-            pass.setAttribute('type', 'password');
-            toggle.classList.remove('hide')
-        }
-    }
+        // Event listener for search input
+        roleSearch1.addEventListener("input", async () => {
+            const response = await fetch('/admin/api/user_roles_employee');
+            const userRoles = await response.json();
+            populateRoleList1(userRoles, roleSearch1.value); // Filter roles based on search input
+        });
 
-    const confirm = document.getElementById('confirm');
-    const toggle1 = document.getElementById('toggle1');
+        // Hide dropdown when clicking outside
+        document.addEventListener("click", (event) => {
+            if (!event.target.closest(".dropdown-container1")) {
+                roleList1.style.display = "none";
+            }
+        });
 
-    function showConfirm() {
-        if (confirm.type === 'password') {
-            confirm.setAttribute('type', 'text');
-            toggle1.classList.add('hide')
+        // Check URL on page load to auto-load filtered users if URL contains 'user_role'
+        function checkAndFilterUsersByRole() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const userRole = urlParams.get('user_role');
+            if (userRole) {
+                filterUsersByRole1(userRole); // Filter users based on the selected role when page loads
+            }
         }
-        else {
-            confirm.setAttribute('type', 'password');
-            toggle1.classList.remove('hide')
+
+        // Check URL on page load
+        window.addEventListener("DOMContentLoaded", checkAndFilterUsersByRole);
+
+        // Cập nhật lại dữ liệu khi URL thay đổi (khi người dùng điều hướng trang)
+        window.addEventListener('popstate', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const userRole = urlParams.get('user_role');
+            if (userRole) {
+                filterUsersByRole1(userRole); // Fetch and render filtered users when back/forward button is used
+            }
+        });
+
+    </script>
+    <script>
+        document.querySelector('#form-register-employee').addEventListener('submit', function (event) {
+            event.preventDefault();  // Ngăn không cho form reload trang
+            const firstName = document.getElementById('first_name').value;
+            const lastName = document.getElementById('last_name').value;
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('pass').value;
+            const confirmPassword = document.getElementById('confirm').value;
+            const userRole = hiddenUserRole.value;
+
+            // Kiểm tra các trường nhập liệu
+            if (!firstName || !lastName || !username || !email || !password || !userRole || !confirmPassword) {
+                alert('Vui lòng điền đầy đủ thông tin!');
+                return;
+            }
+
+            // Tạo payload gửi lên server
+            const payload = {
+                first_name: firstName,
+                last_name: lastName,
+                username: username,
+                email: email,
+                password: password,
+                user_role: userRole,
+            };
+
+            // Gửi yêu cầu POST đến server
+            fetch('/admin/add-employee', {  // Cập nhật URL của bạn ở đây
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            }).then(response => response.json())
+                .then(data => {
+                if (data.success) {
+                    alert('Đăng ký thành công!');
+                    location.reload();  // Reload trang sau khi thành công
+                } else {
+                    alert('Đăng ký thất bại: ' + data.message);
+                }
+            })
+                .catch(error => {
+                console.error('Lỗi khi đăng ký:', error);
+                alert('Đã xảy ra lỗi trong quá trình đăng ký.');
+            });
+        });
+    </script>
+    <script>
+        const pass = document.getElementById('pass');
+        const toggle = document.getElementById('toggle');
+
+        function showPass() {
+            if (pass.type === 'password') {
+                pass.setAttribute('type', 'text');
+                toggle.classList.add('hide')
+            }
+            else {
+                pass.setAttribute('type', 'password');
+                toggle.classList.remove('hide')
+            }
         }
-    }
-</script>
+
+        const confirm = document.getElementById('confirm');
+        const toggle1 = document.getElementById('toggle1');
+
+        function showConfirm() {
+            if (confirm.type === 'password') {
+                confirm.setAttribute('type', 'text');
+                toggle1.classList.add('hide')
+            }
+            else {
+                confirm.setAttribute('type', 'password');
+                toggle1.classList.remove('hide')
+            }
+        }
+    </script>
+    <script>
+        // Đảm bảo script chỉ chạy sau khi DOM đã được tải
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // Hiển thị modal khi bấm nút "Thêm Thể Loại Mới"
+            document.getElementById('addBookGerneButton').addEventListener('click', function() {
+                document.getElementById('addBookGerneModal').style.display = 'flex';
+            });
+
+            // Đóng modal khi nhấn vào nút đóng (X)
+            var closeModalButton = document.getElementById('close-modal');
+            if (closeModalButton) {
+                closeModalButton.addEventListener('click', function() {
+                    document.getElementById('addBookGerneModal').style.display = 'none';
+                });
+            }
+
+
+        });
+    </script>
+</div>
+
+
+<!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"-->
+<!--        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"-->
+<!--        crossorigin="anonymous"></script>-->
+<!--<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"-->
+<!--        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"-->
+<!--        crossorigin="anonymous"></script>-->
+<!--<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js"-->
+<!--        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"-->
+<!--        crossorigin="anonymous"></script>-->
+<!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"-->
+<!--        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"-->
+<!--        crossorigin="anonymous"></script>-->
+
 </body>
 </html>

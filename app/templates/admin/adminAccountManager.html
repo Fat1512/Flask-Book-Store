@@ -1,0 +1,526 @@
+{% extends 'admin/layout/base.html' %}
+{% block title %} Quản lí tài khoản {% endblock %}
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/adminStatistic.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/adminAccountManager.css') }}">
+{% endblock %}
+{% block js %}
+<script src="{{ url_for('static', filename='js/adminAccountManager.js') }}"></script>
+{% endblock %}
+{% block content %}
+<div class="header bg-primary pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4" style="display: flex; width: 100%;">
+                <!-- Div 1: 23% -->
+                <div class="col-lg-6 col-7" style="flex: 0 0 25%; max-width: 25%;">
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="/admin/statistic-revenue"><i
+                                    class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="/admin/statistic-revenue">Quản lí tài khoản</a>
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
+
+                <!-- Div 2: 59% -->
+                <div class="col-lg-6 col-7" style="flex: 0 0 70%; max-width: 70%;">
+                    <form class="" style="display: flex; gap: 10px; align-items: center;">
+                        <div class="dropdown-container" style="width: 70%;">
+                            <input type="text" id="roleSearch"
+                                   class="dropdown-search product-publisher" autocomplete="off"
+                                   placeholder="Chọn vai trò người dùng" style="box-sizing: border-box; width: 95%">
+                            <div class="dropdown-list" id="roleList"
+                                 style="box-sizing: border-box; width: 95%"></div>
+                        </div>
+                        <div>
+                            <input type="text" name="first_name" placeholder="Nhập họ"
+                                   style="box-sizing: border-box; width: 100%;">
+                        </div>
+                        <div>
+                            <input type="text" name="last_name" placeholder="Nhập tên"
+                                   style="box-sizing: border-box; width: 100%;">
+                        </div>
+                        <div>
+                            <input type="submit" value="Tìm kiếm" class="btn btn-neutral"
+                                   style="cursor: pointer;background-color: #2196F3; color: white">
+                        </div>
+                        <div>
+                            <!-- Nút để hiển thị form thêm thể loại mới -->
+                            <input type="button" value="Thêm nhân viên" class="btn btn-neutral"
+                                   style="cursor: pointer; background-color: #2196F3; color: white"
+                                   id="addBookGerneButton">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Page content -->
+<div class="container-fluid mt--6" id="statistic-table" style="display: block;">
+    <div class="row justify-content-center">
+        <div class=" col ">
+            <div class="card" style="margin-bottom: 0">
+                <div class="card-header bg-transparent" style="display: flex; justify-content: space-between">
+                    <h3 class="mb-0">Danh sách tài khoản</h3>
+                    <ul class="pagination" style="margin: 0; display: flex; justify-content: center;">
+                        <!-- Nút Previous -->
+                        <li class="page-item{% if books['current_page'] == 1 %} disabled{% endif %}">
+                            <a class="page-link"
+                               href="?page={{ books['current_page'] - 1 }}{% if request.args.get('user_role') %}&user_role={{ request.args.get('user_role') }}{% endif %}">
+                                <i class="fas fa-angle-left"></i>
+                                <span class="sr-only">Previous</span>
+                            </a>
+                        </li>
+
+                        <!-- Hiển thị các trang -->
+                        {% for page in books['pages'] %}
+                        <li class="page-item{% if page == books['current_page'] %} active{% endif %}">
+                            <a class="page-link"
+                               href="?page={{ page }}{% if request.args.get('user_role') %}&user_role={{ request.args.get('user_role') }}{% endif %}">
+                                {{ page }}
+                            </a>
+                        </li>
+                        {% endfor %}
+
+                        <!-- Nút Next -->
+                        <li class="page-item{% if books['current_page'] == books['total_page'] %} disabled{% endif %}">
+                            <a class="page-link"
+                               href="?page={{ books['current_page'] + 1 }}{% if request.args.get('user_role') %}&user_role={{ request.args.get('user_role') }}{% endif %}">
+                                <i class="fas fa-angle-right"></i>
+                                <span class="sr-only">Next</span>
+                            </a>
+                        </li>
+                    </ul>
+
+
+                </div>
+
+                <div class="card-body" style="padding-top: 0">
+                    <div class="row icon-examples">
+                        <div class="col-12">
+                            <div class="table-responsive"
+                                 style="max-height: 507px; overflow-y: auto; border: 1px solid #adb5bd; border-radius: 5px;">
+                                <table class="table align-items-center table-flush"
+                                       style="border-collapse: collapse; width: 100%; border: 1px solid #adb5bd;">
+                                    <thead class="thead-light" style="position: sticky; top: 0; z-index: 1;">
+                                    <tr>
+                                        <th scope="col" class="sort text-center" data-sort="budget"
+                                            style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
+                                            Ma TK
+                                        </th>
+                                        <th scope="col" class="sort text-center" data-sort="name"
+                                            style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff; max-width: 200px; word-wrap: break-word;">
+                                            Ho
+                                        </th>
+                                        <th scope="col" class="sort text-center" data-sort="budget"
+                                            style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
+                                            Ten
+                                        </th>
+                                        <th scope="col" class="sort text-center" data-sort="budget"
+                                            style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
+                                            Ten danh nhap
+                                        </th>
+                                        <th scope="col" class="sort text-center" data-sort="budget"
+                                            style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
+                                            Email
+                                        </th>
+                                        <th scope="col" class="sort text-center" data-sort="budget"
+                                            style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
+                                            Vai tro
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="list">
+                                    {% for s in stats %}
+                                    <tr>
+                                        <th scope="row" style="border: 1px solid #adb5bd;">
+                                            <div class="media align-items-center">
+                                                <div class="media-body text-center">
+                                                    <span class="name mb-0 text-sm text-center">{{s[0]}}</span>
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <td class="budget text-center"
+                                            style="border: 1px solid #adb5bd;max-width: 200px; word-wrap: break-word; overflow: hidden; text-overflow: ellipsis;">
+                                            {{s[1]}}
+                                        </td>
+                                        <td class="budget text-center" style="border: 1px solid #adb5bd;">
+                                            {{s[2]}}
+                                        </td>
+                                        <td class="budget text-center" style="border: 1px solid #adb5bd;">
+                                            {{s[3]}}
+                                        </td>
+                                        <td class="budget text-center" style="border: 1px solid #adb5bd;">
+                                            {{s[4]}}
+                                        </td>
+                                        <td style="border: 1px solid #adb5bd;">
+                                                        <span class="badge badge-dot mr-4 text-center w-100">
+                                                        <span class="status text-center">{{ s[5] }}</span>
+                                                        </span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+
+                            </div>
+
+                            <!--                                <div class="d-flex px-5 py-4 justify-content-between "-->
+                            <!--                                     style="padding-bottom: 5px !important">-->
+                            <!--                                    <div class="font-weight-bolder display-4">-->
+                            <!--                                        Tổng doanh thu:-->
+                            <!--                                    </div>-->
+                            <!--                                    <div class="font-weight-bolder display-4">{{ total_revenue }} VNĐ</div>-->
+                            <!--                                </div>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid mt--6" style="display: none;" id="statistic-chart">
+    <div class="row justify-content-center">
+        <div class=" col ">
+            <div class="card">
+                <div class="card-header bg-transparent">
+                    <h3 class="mb-0">Thống kê dạng biểu đồ</h3>
+                </div>
+                <div class="card-body">
+                    <canvas id="myChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="addBookGerneModal" class="login-wrap-bg" style="display: none;">
+    <div class="modal-content"
+         style="margin: auto; background-color: white; padding: 20px; border-radius: 8px; position: relative;">
+        <!-- Nút đóng modal -->
+        <span id="close-modal" style="position: absolute; top: 10px; right: 15px; cursor: pointer;">&times;</span>
+        <h2 style="text-align: center; color: #c92127;">Thêm nhân viên mới</h2>
+        <form id="form-register-employee" class="row" method="post" style="padding: 20px;">
+            <div class="form-group-1 appoinment-body-1">
+                <div class="form-group appoinment-body-1">
+                    <label for="first_name">
+                        <font>Họ</font>
+                        <span style="color: red;">*</span>
+                    </label>
+                </div>
+                <div>
+                    <input class="form-control-all form-control-ho-email-pass" type="text"
+                           id="first_name" name="first_name">
+                </div>
+            </div>
+            <div class="form-group-2 appoinment-body-1">
+                <div class="form-group appoinment-body-1">
+                    <label for="last_name">
+                        <font>Tên</font>
+                        <span style="color: red;">*</span>
+                    </label>
+                </div>
+                <div>
+                    <input class="form-control-all form-control-ten-sdt-checkpass" type="text"
+                           id="last_name" name="last_name">
+                </div>
+            </div>
+            <div class="form-group-1 appoinment-body-1">
+                <div class="form-group appoinment-body-1">
+                    <label for="username">
+                        <font>Tên đăng nhập</font>
+                        <span style="color: red;">*</span>
+                    </label>
+                </div>
+                <div>
+                    <input class="form-control-all form-control-ho-email-pass" id="username"
+                           name="username" type="text">
+                </div>
+            </div>
+            <div class="form-group-2 appoinment-body-1">
+                <div class="form-group appoinment-body-1">
+                    <label for="email">
+                        <font>Email</font>
+                        <span style="color: red;">*</span>
+                    </label>
+                </div>
+                <div>
+                    <input class="form-control-all form-control-ten-sdt-checkpass" type="email"
+                           id="email" name="email">
+                </div>
+            </div>
+            <div class="form-group-1 appoinment-body-1">
+                <div class="form-group appoinment-body-1">
+                    <label for="pass">
+                        <font>Mật khẩu</font>
+                        <span style="color: red;">*</span>
+                    </label>
+                </div>
+                <div class="box">
+                    <input class="form-control-all form-control-ho-email-pass" id="pass"
+                           name="password" type="password">
+                    <div class="toggle" id="toggle" onclick="showPass()"></div>
+                </div>
+            </div>
+            <div class="form-group-2 appoinment-body-1">
+                <div class="form-group appoinment-body-1">
+                    <label for="confirm">
+                        <font>Xác nhận mật khẩu</font>
+                        <span style="color: red;">*</span>
+                    </label>
+                </div>
+                <div class="box">
+                    <input class="form-control-all form-control-ten-sdt-checkpass" id="confirm"
+                           name="confirm" type="password">
+                    <div class="toggle" id="toggle1" onclick="showConfirm()"></div>
+                </div>
+            </div>
+            <div class="form-group-1 appoinment-body-1" style="width:100%">
+                <div class="form-group">
+                    <label for="confirm">
+                        <font>Chọn loại nhân viên</font>
+                        <span style="color: red;">*</span>
+                    </label>
+                </div>
+                <div class="dropdown-container1 box">
+                    <input type="text" id="roleSearch1"
+                           class="dropdown-search form-control-all"
+                           autocomplete="off" placeholder=""
+                           style="box-sizing: border-box; margin-bottom: 0;width: 102%">
+                    <div class="dropdown-list" id="roleList1"
+                         style="box-sizing: border-box;width: 102%;left:0;"></div>
+                    <input type="hidden" id="hiddenUserRole" name="user_role">
+                    <!-- Input hidden -->
+                </div>
+            </div>
+            {% if err_msg %}
+            <div class="checkpass" style="margin-top: 15px">
+                <div class="remember-me">
+                    <label class="custom_check">
+                        <font style="color: red; font-weight: 600;">{{err_msg}}</font>
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
+            </div>
+            {% endif %}
+            <button type="submit"
+                    style="width: 100%; padding: 10px; background-color: #c92127; color: white; border: none; border-radius: 4px; cursor: pointer;margin-top:20px">
+                Đăng ký
+            </button>
+        </form>
+    </div>
+</div>
+<script>
+    // DOM Elements
+    const roleList1 = document.getElementById("roleList1");
+    const roleSearch1 = document.getElementById("roleSearch1");
+    const statsContainer1 = document.getElementById("statsContainer1"); // Element hiển thị kết quả
+
+    // Fetch user roles from backend
+    async function fetchUserRoles1() {
+        try {
+            const response = await fetch('/api/user_roles_employee');
+            if (!response.ok) throw new Error('Failed to fetch user roles');
+
+            const userRoles = await response.json();
+            populateRoleList1(userRoles); // Gửi dữ liệu đến hàm tạo dropdown
+        } catch (error) {
+            console.error('Error fetching user roles:', error);
+        }
+    }
+
+    // Populate role dropdown list
+    function populateRoleList1(userRoles, filter = "") {
+        roleList1.innerHTML = ""; // Clear dropdown
+        const filteredRoles = userRoles.filter(role =>
+        role.user_role.toLowerCase().includes(filter.toLowerCase()) // Filter roles based on search input
+        );
+
+        filteredRoles.forEach(role => {
+            const item = document.createElement("div");
+            item.classList.add("dropdown-item");
+            item.textContent = role.user_role; // Hiển thị tên vai trò
+            item.addEventListener("click", () => {
+                roleSearch1.value = role.user_role;  // Hiển thị tên vai trò trong input
+                document.getElementById("hiddenUserRole").value = role.user_role;  // Gán tên vai trò vào input hidden
+                roleList1.style.display = "none";  // Ẩn dropdown
+            });
+
+            roleList1.appendChild(item);
+        });
+    }
+
+    // Fetch user data based on selected role (from URL)
+    async function filterUsersByRole1(selectedRole) {
+        const response = await fetch(`/admin/account-manager?user_role=${encodeURIComponent(selectedRole)}`);
+        if (response.ok) {
+            const data = await response.json();
+            renderUserStats(data); // Render the filtered user stats
+        } else {
+            console.error('Failed to fetch filtered user data');
+        }
+    }
+
+    // Render user stats in the table
+    function renderUserStats(data) {
+        statsContainer1.innerHTML = ""; // Clear previous stats
+        if (data.stats) {
+            data.stats.forEach(stat => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                <td>${stat.user_id}</td>
+                <td>${stat.first_name}</td>
+                <td>${stat.last_name}</td>
+                <td>${stat.username}</td>
+                <td>${stat.email}</td>
+                <td>${stat.user_role}</td>
+            `;
+                statsContainer1.appendChild(row);
+            });
+        }
+    }
+
+    // Show dropdown list on focus
+    roleSearch1.addEventListener("focus", () => {
+        fetchUserRoles1(); // Fetch user roles from backend
+        roleList1.style.display = "block"; // Show dropdown
+    });
+
+    // Event listener for search input
+    roleSearch1.addEventListener("input", async () => {
+        const response = await fetch('/api/user_roles_employee');
+        const userRoles = await response.json();
+        populateRoleList1(userRoles, roleSearch1.value); // Filter roles based on search input
+    });
+
+    // Hide dropdown when clicking outside
+    document.addEventListener("click", (event) => {
+        if (!event.target.closest(".dropdown-container1")) {
+            roleList1.style.display = "none";
+        }
+    });
+
+    // Check URL on page load to auto-load filtered users if URL contains 'user_role'
+    function checkAndFilterUsersByRole() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const userRole = urlParams.get('user_role');
+        if (userRole) {
+            filterUsersByRole1(userRole); // Filter users based on the selected role when page loads
+        }
+    }
+
+    // Check URL on page load
+    window.addEventListener("DOMContentLoaded", checkAndFilterUsersByRole);
+
+    // Cập nhật lại dữ liệu khi URL thay đổi (khi người dùng điều hướng trang)
+    window.addEventListener('popstate', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const userRole = urlParams.get('user_role');
+        if (userRole) {
+            filterUsersByRole1(userRole); // Fetch and render filtered users when back/forward button is used
+        }
+    });
+
+</script>
+<script>
+    document.querySelector('#form-register-employee').addEventListener('submit', function (event) {
+        event.preventDefault();  // Ngăn không cho form reload trang
+        const firstName = document.getElementById('first_name').value;
+        const lastName = document.getElementById('last_name').value;
+        const username = document.getElementById('username').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('pass').value;
+        const confirmPassword = document.getElementById('confirm').value;
+        const userRole = hiddenUserRole.value;
+
+        // Kiểm tra các trường nhập liệu
+        if (!firstName || !lastName || !username || !email || !password || !userRole || !confirmPassword) {
+            alert('Vui lòng điền đầy đủ thông tin!');
+            return;
+        }
+
+        // Tạo payload gửi lên server
+        const payload = {
+            first_name: firstName,
+            last_name: lastName,
+            username: username,
+            email: email,
+            password: password,
+            user_role: userRole,
+        };
+
+        // Gửi yêu cầu POST đến server
+        fetch('/add-employee', {  // Cập nhật URL của bạn ở đây
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        }).then(response => response.json())
+            .then(data => {
+            if (data.success) {
+                alert('Đăng ký thành công!');
+                location.reload();  // Reload trang sau khi thành công
+            } else {
+                alert('Đăng ký thất bại: ' + data.message);
+            }
+        })
+            .catch(error => {
+            console.error('Lỗi khi đăng ký:', error);
+            alert('Đã xảy ra lỗi trong quá trình đăng ký.');
+        });
+    });
+</script>
+<script>
+    const pass = document.getElementById('pass');
+    const toggle = document.getElementById('toggle');
+
+    function showPass() {
+        if (pass.type === 'password') {
+            pass.setAttribute('type', 'text');
+            toggle.classList.add('hide')
+        }
+        else {
+            pass.setAttribute('type', 'password');
+            toggle.classList.remove('hide')
+        }
+    }
+
+    const confirm = document.getElementById('confirm');
+    const toggle1 = document.getElementById('toggle1');
+
+    function showConfirm() {
+        if (confirm.type === 'password') {
+            confirm.setAttribute('type', 'text');
+            toggle1.classList.add('hide')
+        }
+        else {
+            confirm.setAttribute('type', 'password');
+            toggle1.classList.remove('hide')
+        }
+    }
+</script>
+<script>
+    // Đảm bảo script chỉ chạy sau khi DOM đã được tải
+    document.addEventListener('DOMContentLoaded', function() {
+
+        // Hiển thị modal khi bấm nút "Thêm Thể Loại Mới"
+        document.getElementById('addBookGerneButton').addEventListener('click', function() {
+            document.getElementById('addBookGerneModal').style.display = 'flex';
+        });
+
+        // Đóng modal khi nhấn vào nút đóng (X)
+        var closeModalButton = document.getElementById('close-modal');
+        if (closeModalButton) {
+            closeModalButton.addEventListener('click', function() {
+                document.getElementById('addBookGerneModal').style.display = 'none';
+            });
+        }
+
+
+    });
+</script>
+{% endblock %}

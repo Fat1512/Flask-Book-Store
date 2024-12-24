@@ -1,0 +1,35 @@
+.modal {
+    display: block;
+    position: fixed;
+    z-index: 1000000000000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 3% 0%;
+    padding: 20px;
+    border: 0;
+}
+
+.modal-content {
+    display: flex;
+    width: 100%;
+    padding: 20px;
+    background-color: #fff;
+    border: 0;
+}
+.text-left {
+    flex: 0 0 65%;
+    max-width: 65%;
+}
+
+.text-right {
+    max-width: 35%;
+    text-align: center !important;
+}
