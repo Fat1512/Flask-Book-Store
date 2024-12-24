@@ -3,7 +3,7 @@ import pdb
 import threading
 from datetime import datetime
 from threading import Thread
-from app.dao.OrderDAO import delete_orders_after_48hrs
+from app.dao.OrderDAO import delete_orders_after_48hrs, delete_payment_after_48hrs
 from elasticsearch import Elasticsearch
 from flask_login import current_user
 from app.dao.UserDao import get_user_by_id
@@ -262,7 +262,7 @@ def my_job():
     with app.app_context():
         delete_orders_after_48hrs()
         delete_payment_after_48hrs()
-        print('This job is executed every 5 seconds.')
+        print('This job is executed every 3600 seconds.')
 
 
 @app.route('/status', methods=['GET'])

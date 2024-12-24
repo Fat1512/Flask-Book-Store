@@ -19,7 +19,7 @@ import validators
 
 
 def auth_user(username, password, role=None):
-    password = hashlib.md5(password.strip().encode('utf-8')).hexdigest()
+    # password = hashlib.md5(password.strip().encode('utf-8')).hexdigest()
 
     if not username or not password:
         return None
