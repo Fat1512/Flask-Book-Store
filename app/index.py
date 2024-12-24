@@ -25,8 +25,9 @@ from app.exception.CartItemError import CartItemError
 from app.exception.InsufficientError import InsufficientError
 from app.exception.GeneralInsufficientError import GeneralInsufficientError
 from app.exception.NotFoundError import NotFoundError
+from app.exception.Unauthorization import Unauthorization
 from app.model.User import UserRole
-from flask import render_template, request, redirect, url_for, jsonify, flash
+from flask import render_template, request, redirect, url_for, jsonify, flash, session
 from app.controllers.SearchController import home_bp
 from app.controllers.HomeController import index_bp
 from app.controllers.EmployeeController import employee_bp
@@ -65,6 +66,9 @@ app.register_blueprint(index_bp, url_prefix='/')
 app.register_blueprint(account_bp, url_prefix='/account')
 # app.register_blueprint(admin_bp, url_prefix='/admin')
 app.register_blueprint(cart_bp, url_prefix='/cart')
+
+
+
 
 
 @app.errorhandler(NotFoundError)
@@ -108,19 +112,6 @@ def handle_cart_item_error(e):
     })
 
 
-# @app.context_processor
-# def user_context():
-#     user_data = None
-#     if current_user.is_authenticated:
-#         user_data = profile()
-#
-#     return {
-#         "current_year": datetime.now().year,
-#         "profile": user_data
-#     }
-
-
-
 @app.errorhandler(InsufficientError)
 def handle_insufficient_error(e):
     update_cart(current_user.get_id(), {
@@ -137,6 +128,15 @@ def handle_insufficient_error(e):
 
 
 @app.errorhandler(GeneralInsufficientError)
+def handle_general_insufficient_error(e):
+    return jsonify({
+        'name': type(e).__name__,  # Get the name of the exception
+        "message": e.message,
+        "status": e.status_code
+    })
+
+
+@app.errorhandler(Unauthorization)
 def handle_general_insufficient_error(e):
     return jsonify({
         'name': type(e).__name__,  # Get the name of the exception
@@ -201,6 +201,10 @@ def handle_topic_book(data):
             print("delete")
             entity_id = data['before']['book_id']
             delete(entity_id)
+        elif action == 'r':
+            print("read")
+            entity_id = data['after']['book_id']
+            create(entity_id)
         else:
             print(f"Unknown action: {action}")
 

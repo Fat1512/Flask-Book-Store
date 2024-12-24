@@ -1,15 +1,21 @@
-from flask import Blueprint, render_template, request, session, jsonify
+from flask import Blueprint, render_template, request, session, jsonify, redirect, url_for
 
+from app.authentication.login_required import customer_required
 from app.dao import AddressDAO
 from app.dao.CartDao import find_by_user_id, find_by_cart_id, check_quantity
-from flask_login import current_user
+from flask_login import current_user, login_required
 
 from app.dao.UserDao import find_user_address
+
+from app.model.User import UserRole
 
 cart_bp = Blueprint('cart', __name__)
 
 
+
+
 @cart_bp.route('/')
+@customer_required
 def cart():
     cart = find_by_user_id(current_user.get_id())
     cart_result = check_quantity(cart.cart_items)
@@ -24,7 +30,6 @@ def checkout():
         cart_ss = session.get('cartTick')
         if cart_ss is None:
             cart_ss = []
-
 
         # Update the cart session with new data
         cart_ss = [{

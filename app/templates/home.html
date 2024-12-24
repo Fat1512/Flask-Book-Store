@@ -169,7 +169,7 @@
                     <div class="row home_product_container">
                         {% for product in new_release %}
                             <a href="/search/detail?bookId={{ product.book_id }}" class="card col-3">
-                                <span class="discount text-white">10%</span>
+
                                 <img class="card-img-top"
                                      src="{% if product.images|length %}
                                             {{ product.images[0].image_url }}
