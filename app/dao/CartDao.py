@@ -63,7 +63,7 @@ def update_cart(user_id, cart_item):
 
 
 def delete_cart_item(user_id, book_id):
-    cart = Cart.query.filter(Cart.cart_id == user_id).first()
+    cart = Cart.query.filter(Cart.user_id == user_id).first()
     for item in cart.cart_items:
         if item.book_id == book_id:
             cart.cart_items.remove(item)
@@ -73,7 +73,7 @@ def delete_cart_item(user_id, book_id):
 
 
 def add_cart_item(book_id):
-    cart = Cart.query.filter(Cart.cart_id == current_user.get_id()).first()
+    cart = Cart.query.filter(Cart.user_id == current_user.get_id()).first()
     book = Book.query.get(book_id)
     for item in cart.cart_items:
         if item.book_id == book_id:

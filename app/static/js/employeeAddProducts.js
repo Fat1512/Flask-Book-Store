@@ -291,7 +291,7 @@ async function confirmSelection() {
         if (col3.querySelector('.menu-item.active'))
             gerneId = col3.querySelector('.menu-item.active').id
         else if (col2.querySelector('.menu-item.active'))
-            gerneId = col3.querySelector('.menu-item.active').id
+            gerneId = col2.querySelector('.menu-item.active').id
         else
             throw new Error("Vui lòng chọn thể loại cụ thể")
         document.querySelector('input[name="input-gerne"]').value = selectedPath
@@ -619,6 +619,8 @@ function handleCreateBook(e) {
                     behavior: 'smooth' // Smooth scrolling
                 });
             }
+        }).then(() => {
+            window.location.reload();
         })
 
     } catch (error) {

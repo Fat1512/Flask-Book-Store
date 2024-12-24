@@ -946,7 +946,10 @@ var SalesChart = (function() {
         return Array(12).fill(0); // Dữ liệu mặc định nếu có lỗi
       });
   }
-
+const vndCurrencyFormat = new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+});
   // Tạo biểu đồ
   function createChart($chart, revenueData) {
     return new Chart($chart, {
@@ -964,7 +967,7 @@ var SalesChart = (function() {
             ticks: {
               callback: function(value) {
                 if (value % 1000000 === 0) {
-                  return value + ' VNĐ';
+                  return vndCurrencyFormat.format(value);
                 }
               }
             }

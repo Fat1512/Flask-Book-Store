@@ -54,7 +54,7 @@ document.addEventListener("click", (event) => {
         gerneList.style.display = "none";
     }
 });
-
+console.log(document.getElementById("bookForm"))
 // Form submission handler
 document.getElementById("bookForm").addEventListener("submit", function(event) {
     event.preventDefault();

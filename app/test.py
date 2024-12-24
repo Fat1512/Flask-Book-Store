@@ -86,7 +86,7 @@ print(type(date_object))
 
 date_object = datetime.strptime(date_str, '%m-%d-%Y').date()
 print(type(date_object))
-print(datetime.utcnow() + timedelta(hours=7) - timedelta(minutes=1))
+print(datetime.utcnow() + timedelta(hours=7) - timedelta(minutes=2))
 
 # printed in default format
 # if obj["1"] is not None and obj["b"] is not None:

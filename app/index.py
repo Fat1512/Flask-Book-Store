@@ -8,11 +8,12 @@ from elasticsearch import Elasticsearch
 from flask_login import current_user
 from app.dao.UserDao import get_user_by_id
 import app.controllers.AccountController
-from app import scheduler, consumers
+from app import scheduler
+# , consumers)
 from app.controllers.CartController import cart_bp
 from app.controllers.rest.AccountAPI import account_rest_bp
 from app.controllers.rest.CartAPI import cart_rest_bp
-from app.dao.CartDao import update_cart
+from app.dao.CartDao import update_cart, find_by_user_id
 from app.controllers.rest.PaymentAPI import payment_rest_bp
 from app.controllers.rest.SearchAPI import search_res_bp
 from app.dao import UserDao
@@ -95,7 +96,9 @@ def context():
         app_context['profile'] = user_data
 
     if current_user.is_authenticated and current_user.user_role == UserRole.CUSTOMER:
-        cart = find_by_cart_id(user_data.user_id)
+        cart = find_by_user_id(user_data.user_id)
+        print("cart-items", cart.cart_items)
+
         app_context['cart_items'] = cart.cart_items
         app_context['total_price'] = cart.total_price()
         return app_context
@@ -145,128 +148,128 @@ def handle_general_insufficient_error(e):
     })
 
 
-def consume_kafka(topic):
-    with app.app_context():
-        """Consume messages from Kafka and index them into Elasticsearch."""
-        consumer = consumers[topic]
-        consumer.subscribe([topic])
-        while True:
-            msg = consumer.poll(timeout=1.0)
-            if msg is None:
-                continue
-            elif msg.error():
-                print(msg.error())
-            else:
-                if msg.value():
-                    data = json.loads(msg.value().decode('utf-8'))
-                    handler_message(topic, data)
-        consumer.close()
+# def consume_kafka(topic):
+#     with app.app_context():
+#         """Consume messages from Kafka and index them into Elasticsearch."""
+#         consumer = consumers[topic]
+#         consumer.subscribe([topic])
+#         while True:
+#             msg = consumer.poll(timeout=1.0)
+#             if msg is None:
+#                 continue
+#             elif msg.error():
+#                 print(msg.error())
+#             else:
+#                 if msg.value():
+#                     data = json.loads(msg.value().decode('utf-8'))
+#                     handler_message(topic, data)
+#         consumer.close()
 
 
-def handler_message(topic, data):
-    if topic.__eq__("dbs_.book_store.book"):
-        handle_topic_book(data['payload'])
-    elif topic.__eq__("dbs_.book_store.extended_book"):
-        handle_topic_extended_book(data['payload'])
+# def handler_message(topic, data):
+#     if topic.__eq__("dbs_.book_store.book"):
+#         handle_topic_book(data['payload'])
+#     elif topic.__eq__("dbs_.book_store.extended_book"):
+#         handle_topic_extended_book(data['payload'])
     # elif topic.__eq__("dbs_.book_store.attribute"):
     #     handle_topic_attribute(data['payload'])
     # elif topic.__eq__("dbs_.book_store.book_gerne"):
     #     handle_topic_book_gerne(data['payload'])
 
 
-def handle_topic_book(data):
-    try:
-        # Extract necessary information from the message
-        action = data.get('op')  # Assume 'action' field in data determines what to do
-
-        if action == 'c':
-            print("created")
-            # Logic for creating a new record or entity
-            entity_id = data['after']['book_id']
-            create(entity_id)
-
-        elif action == 'u':
-            # Logic for updating an existing record or entity
-            print('update')
-            before_data = data.get('before')
-            after_data = data.get('after')
-            updated_fields = {}
-            for field in before_data.keys():
-                if before_data[field] != after_data[field]:
-                    updated_fields[field] = after_data[field]
-
-            update_book_document(after_data['book_id'], updated_fields)
-
-        elif action == 'd':
-            print("delete")
-            entity_id = data['before']['book_id']
-            delete(entity_id)
-        elif action == 'r':
-            print("read")
-            entity_id = data['after']['book_id']
-            create(entity_id)
-        else:
-            print(f"Unknown action: {action}")
-
-    except Exception as e:
-        print(f"Error handling topic1 message: {e}")
-
-
-def handle_topic_extended_book(data):
-    try:
-        # Extract necessary information from the message
-        action = data.get('op')  # Assume 'action' field in data determines what to do
-        # Assuming there's an 'id' field that identifies the entity
-
-        if action == 'c':
-            print("created")
-            # Logic for creating a new record or entity
-            add_attribute_value(data['after'])
-
-        elif action == 'u':
-            # Logic for updating an existing record or entity
-            print('updated')
-            modify_attribute_value(data['after']['book_id'])
-        elif action == 'd':
-            print("delete")
-            modify_attribute_value(data['before']['book_id'])
-        else:
-            print(f"Unknown action: {action}")
-
-    except Exception as e:
-        print(f"Error handling topic1 message: {e}")
+# def handle_topic_book(data):
+#     try:
+#         # Extract necessary information from the message
+#         action = data.get('op')  # Assume 'action' field in data determines what to do
+#
+#         if action == 'c':
+#             print("created")
+#             # Logic for creating a new record or entity
+#             entity_id = data['after']['book_id']
+#             create(entity_id)
+#
+#         elif action == 'u':
+#             # Logic for updating an existing record or entity
+#             print('update')
+#             before_data = data.get('before')
+#             after_data = data.get('after')
+#             updated_fields = {}
+#             for field in before_data.keys():
+#                 if before_data[field] != after_data[field]:
+#                     updated_fields[field] = after_data[field]
+#
+#             update_book_document(after_data['book_id'], updated_fields)
+#
+#         elif action == 'd':
+#             print("delete")
+#             entity_id = data['before']['book_id']
+#             delete(entity_id)
+#         elif action == 'r':
+#             print("read")
+#             entity_id = data['after']['book_id']
+#             create(entity_id)
+#         else:
+#             print(f"Unknown action: {action}")
+#
+#     except Exception as e:
+#         print(f"Error handling topic1 message: {e}")
 
 
-def handle_topic_book_gerne(data):
-    pass
+# def handle_topic_extended_book(data):
+#     try:
+#         # Extract necessary information from the message
+#         action = data.get('op')  # Assume 'action' field in data determines what to do
+#         # Assuming there's an 'id' field that identifies the entity
+#
+#         if action == 'c':
+#             print("created")
+#             # Logic for creating a new record or entity
+#             add_attribute_value(data['after'])
+#
+#         elif action == 'u':
+#             # Logic for updating an existing record or entity
+#             print('updated')
+#             modify_attribute_value(data['after']['book_id'])
+#         elif action == 'd':
+#             print("delete")
+#             modify_attribute_value(data['before']['book_id'])
+#         else:
+#             print(f"Unknown action: {action}")
+#
+#     except Exception as e:
+#         print(f"Error handling topic1 message: {e}")
+#
+#
+# def handle_topic_book_gerne(data):
+#     pass
 
 
-def handle_topic_attribute(data):
-    try:
-        # Extract necessary information from the message
-        action = data.get('op')  # Assume 'action' field in data determines what to do
-        # Assuming there's an 'id' field that identifies the entity
-        if action == 'u' or action == 'd':
-            # Logic for updating an existing record or entity
-            print('updated')
-            modify_attribute(data['after'])
-        elif action == 'd':
-            # Logic for updating an existing record or entity
-            print('delete')
-            modify_attribute(data['before'])
-        else:
-            print(f"Unknown action: {action}")
+# def handle_topic_attribute(data):
+#     try:
+#         # Extract necessary information from the message
+#         action = data.get('op')  # Assume 'action' field in data determines what to do
+#         # Assuming there's an 'id' field that identifies the entity
+#         if action == 'u' or action == 'd':
+#             # Logic for updating an existing record or entity
+#             print('updated')
+#             modify_attribute(data['after'])
+#         elif action == 'd':
+#             # Logic for updating an existing record or entity
+#             print('delete')
+#             modify_attribute(data['before'])
+#         else:
+#             print(f"Unknown action: {action}")
+#
+#     except Exception as e:
+#         print(f"Error handling topic1 message: {e}")
 
-    except Exception as e:
-        print(f"Error handling topic1 message: {e}")
 
-
-@scheduler.task('interval', id='my_job', seconds=3600)
+@scheduler.task('interval', id='my_job', seconds=30000)
 def my_job():
     with app.app_context():
         delete_orders_after_48hrs()
         delete_payment_after_48hrs()
-        print('This job is executed every 3600 seconds.')
+        print('This job is executed every 120 seconds.')
 
 
 @app.route('/status', methods=['GET'])
@@ -283,10 +286,10 @@ def get_by_id(user_id):
 if __name__ == "__main__":
     from app.admin import *
 
-    KAFKA_TOPICS = app.config["KAFKA_TOPIC"]
-    for topic in KAFKA_TOPICS:
-        consumer_thread = Thread(target=consume_kafka, args=(topic,), daemon=True)
-        consumer_thread.start()
+    # KAFKA_TOPICS = app.config["KAFKA_TOPIC"]
+    # for topic in KAFKA_TOPICS:
+    #     consumer_thread = Thread(target=consume_kafka, args=(topic,), daemon=True)
+        # consumer_thread.start()
     scheduler.start()
 
     app.run(debug=True)

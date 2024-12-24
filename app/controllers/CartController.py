@@ -1,3 +1,5 @@
+import pdb
+
 from flask import Blueprint, render_template, request, session, jsonify, redirect, url_for
 
 from app.authentication.login_required import customer_required
@@ -25,9 +27,11 @@ def cart():
 
 @cart_bp.route('/checkout', methods=['GET', 'POST'])
 def checkout():
+    cart_ss = session.get('cartTick')
+
     if request.method.__eq__('POST'):
-        data = request.get_json()
-        cart_ss = session.get('cartTick')
+        data = request.json
+
         if cart_ss is None:
             cart_ss = []
 
@@ -46,6 +50,8 @@ def checkout():
             "status": "200",
             "message": "SUCCESS",
         })
+    if cart_ss is None:
+        return redirect(url_for('cart.cart'))
 
     cart_tick = session.get('cartTick')
     address_default = AddressDAO.find_by_user_id(1)

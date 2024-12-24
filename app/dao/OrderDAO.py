@@ -1,9 +1,11 @@
 import pdb
 
+from app.dao.ConfigDAO import get_config
 from app.exception.InsufficientError import InsufficientError
 from app.exception.GeneralInsufficientError import GeneralInsufficientError
 from app.exception.NotFoundError import NotFoundError
 from app.model.Book import Book
+from app.model.Config import Config
 from app.model.Order import Order, PaymentDetail, ShippingMethod, OrderCancellation
 from sqlalchemy import desc, asc, func
 from datetime import datetime, timedelta
@@ -243,7 +245,8 @@ def calculate_total_order_amount(order_id):
 
 
 def delete_orders_after_48hrs():
-    expired_time = datetime.utcnow() + timedelta(hours=7) - timedelta(hours=48)
+    config = get_config()
+    expired_time = datetime.utcnow() + timedelta(hours=7) - timedelta(seconds=config.order_cancel_period)
     orders = Order.query.filter(Order.created_at < expired_time,
                                 Order.payment_method == PaymentMethod.TIEN_MAT,
                                 Order.status == OrderStatus.DANG_CHO_NHAN)

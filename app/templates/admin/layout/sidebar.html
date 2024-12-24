@@ -12,142 +12,142 @@
             <div class="collapse navbar-collapse" id="sidenav-collapse-main">
                 <!-- Nav items -->
                 {% if current_user.user_role.value == 1 %}
-                <hr class="my-3">
-                <!-- Heading -->
-                <h6 class="navbar-heading p-0 text-muted">
-                    <span class="docs-normal">Quản trị viên</span>
-                </h6>
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/">
-                            <i class="ni ni-chart-pie-35 text-primary"></i>
-                            <span class="nav-link-text">Trang chủ</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/statistic-revenue">
-                            <i class="ni ni-planet text-orange"></i>
-                            <span class="nav-link-text">Thống kê doanh thu</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/statistic-frequency">
-                            <i class="ni ni-pin-3 text-primary"></i>
-                            <span class="nav-link-text">Thống kê tần suất</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/account-manager">
-                            <i class="ni ni-single-02 text-yellow"></i>
-                            <span class="nav-link-text">Quản lí tài khoản</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/bookgerne-manager">
-                            <i class="ni ni-bullet-list-67 text-default"></i>
-                            <span class="nav-link-text">Quản lí thể loại</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/config">
-                            <i class="ni ni-circle-08 text-pink"></i>
-                            <span class="nav-link-text">Thay đổi cấu hình</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/profile">
-                            <i class="ni ni-key-25 text-info"></i>
-                            <span class="nav-link-text">Hồ sơ</span>
-                        </a>
-                    </li>
-                </ul>
+                    <hr class="my-3">
+                    <!-- Heading -->
+                    <h6 class="navbar-heading p-0 text-muted">
+                        <span class="docs-normal">Quản trị viên</span>
+                    </h6>
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/">
+                                <i class="ni ni-chart-pie-35 text-primary"></i>
+                                <span class="nav-link-text">Trang chủ</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/statistic-revenue">
+                                <i class="ni ni-planet text-orange"></i>
+                                <span class="nav-link-text">Thống kê doanh thu</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/statistic-frequency">
+                                <i class="ni ni-pin-3 text-primary"></i>
+                                <span class="nav-link-text">Thống kê tần suất</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/account-manager">
+                                <i class="ni ni-single-02 text-yellow"></i>
+                                <span class="nav-link-text">Quản lí tài khoản</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/config">
+                                <i class="ni ni-circle-08 text-pink"></i>
+                                <span class="nav-link-text">Thay đổi cấu hình</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/profile">
+                                <i class="ni ni-key-25 text-info"></i>
+                                <span class="nav-link-text">Hồ sơ</span>
+                            </a>
+                        </li>
+                    </ul>
                 {% endif %}
 
                 {% if current_user.user_role.value == 1 or current_user.user_role.value == 4 %}
-                <hr class="my-3">
-                <h6 class="navbar-heading p-0 text-muted">
-                    <span class="docs-normal">Nhân viên bán hàng</span>
-                </h6>
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/employee/checkout">
-                            <i class="ni ni-pin-3 text-primary"></i>
-                            <span class="nav-link-text">Bán sách</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/employee/order">
-                            <i class="ni ni-bullet-list-67 text-default"></i>
-                            <span class="nav-link-text">Quản lý đơn đặt</span>
-                        </a>
-                    </li>
-                    {% if current_user.user_role.value == 4 %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="/employee/profile">
-                            <i class="ni ni-key-25 text-info"></i>
-                            <span class="nav-link-text">Hồ sơ</span>
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
+                    <hr class="my-3">
+                    <h6 class="navbar-heading p-0 text-muted">
+                        <span class="docs-normal">Nhân viên bán hàng</span>
+                    </h6>
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/employee/checkout">
+                                <i class="ni ni-pin-3 text-primary"></i>
+                                <span class="nav-link-text">Bán sách</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/employee/order">
+                                <i class="ni ni-bullet-list-67 text-default"></i>
+                                <span class="nav-link-text">Quản lý đơn đặt</span>
+                            </a>
+                        </li>
+                        {% if current_user.user_role.value == 4 %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/employee/profile">
+                                    <i class="ni ni-key-25 text-info"></i>
+                                    <span class="nav-link-text">Hồ sơ</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
                 {% endif %}
 
                 {% if current_user.user_role.value == 1 or current_user.user_role.value == 5 %}
-                <hr class="my-3">
-                <h6 class="navbar-heading p-0 text-muted">
-                    <span class="docs-normal">Nhân viên quản lí kho</span>
-                </h6>
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/employee/import">
-                            <i class="ni ni-single-02 text-yellow"></i>
-                            <span class="nav-link-text">Nhập sách</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/employee/import/history">
-                            <i class="ni ni-chart-pie-35 text-primary"></i>
-                            <span class="nav-link-text">Lịch sử nhập sách</span>
-                        </a>
-                    </li>
-                    {% if current_user.user_role.value == 5 %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="/employee/profile">
-                            <i class="ni ni-key-25 text-info"></i>
-                            <span class="nav-link-text">Hồ sơ</span>
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
+                    <hr class="my-3">
+                    <h6 class="navbar-heading p-0 text-muted">
+                        <span class="docs-normal">Nhân viên quản lí kho</span>
+                    </h6>
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/employee/import">
+                                <i class="ni ni-single-02 text-yellow"></i>
+                                <span class="nav-link-text">Nhập sách</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/employee/import/history">
+                                <i class="ni ni-chart-pie-35 text-primary"></i>
+                                <span class="nav-link-text">Lịch sử nhập sách</span>
+                            </a>
+                        </li>
+                        {% if current_user.user_role.value == 5 %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/employee/profile">
+                                    <i class="ni ni-key-25 text-info"></i>
+                                    <span class="nav-link-text">Hồ sơ</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
                 {% endif %}
 
                 {% if current_user.user_role.value == 1 or current_user.user_role.value == 6 %}
-                <hr class="my-3">
-                <h6 class="navbar-heading p-0 text-muted">
-                    <span class="docs-normal">Nhân viên quản lí</span>
-                </h6>
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/employee/book-manager">
-                            <i class="ni ni-tv-2 text-primary"></i>
-                            <span class="nav-link-text">Quản lí sách</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/employee/add-products">
-                            <i class="ni ni-planet text-orange"></i>
-                            <span class="nav-link-text">Thêm sách mới</span>
-                        </a>
-                    </li>
-                    {% if current_user.user_role.value == 6 %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="/employee/profile">
-                            <i class="ni ni-key-25 text-info"></i>
-                            <span class="nav-link-text">Hồ sơ</span>
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
+                    <hr class="my-3">
+                    <h6 class="navbar-heading p-0 text-muted">
+                        <span class="docs-normal">Nhân viên quản lí</span>
+                    </h6>
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/employee/book-manager">
+                                <i class="ni ni-tv-2 text-primary"></i>
+                                <span class="nav-link-text">Quản lí sách</span>
+                            </a>
+                        </li>
+                         <li class="nav-item">
+                            <a class="nav-link" href="/employee/bookgerne-manager">
+                                <i class="ni ni-bullet-list-67 text-default"></i>
+                                <span class="nav-link-text">Quản lí thể loại</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/employee/add-products">
+                                <i class="ni ni-planet text-orange"></i>
+                                <span class="nav-link-text">Thêm sách mới</span>
+                            </a>
+                        </li>
+                        {% if current_user.user_role.value == 6 %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/employee/profile">
+                                    <i class="ni ni-key-25 text-info"></i>
+                                    <span class="nav-link-text">Hồ sơ</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
                 {% endif %}
             </div>
         </div>

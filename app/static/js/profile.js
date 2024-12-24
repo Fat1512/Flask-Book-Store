@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Xử lý lưu thông tin người dùng
     const saveButton = document.querySelector('.btn-save');
-    saveButton.addEventListener('click', function () {
+    saveButton.addEventListener('click', async function () {
         const updatedData = {};
 
         // Thu thập dữ liệu từ các trường input
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
         updatedData.phone_number = document.querySelector('#phone').value;
 
         const gender = document.querySelector('input[name="gender"]:checked').value;
-        updatedData.sex = gender === 'Nam' ? 1 : gender === 'Nữ' ? 0 : null;
+        updatedData.sex = gender === 'Nam' ? 1 : gender === 'Nữ' ? 0 : 0;
 
         updatedData.date_of_birth = `${document.querySelector('#year').value}-${document.querySelector('#month').value}-${document.querySelector('#day').value}`;
 
@@ -54,32 +54,40 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
         const avatarInput = document.querySelector('#fileUpload');
+        console.log(avatarInput);
         updatedData.avt_url = avatarInput && avatarInput.files.length > 0
-            ? URL.createObjectURL(avatarInput.files[0])
-            : document.querySelector('#profileImage').src;
+            ? avt_image
+            : null
+
+        const formData = new FormData()
+        for (const key in updatedData) {
+            if (updatedData.hasOwnProperty(key)) {
+                // For all other fields, append as a string or number
+                formData.append(key, updatedData[key]);
+            }
+        }
 
         // Gửi dữ liệu tới server
-        fetch('/update-profile', {
+        await fetch('/update-profile', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(updatedData)
+            body: formData
         })
             .then(response => response.json())
             .then(data => {
+                avt_image = null
                 document.querySelector('#passwordError').style.display = 'none';
                 document.querySelector('#confirmError').style.display = 'none';
                 const changePass = document.getElementById('change-pass');
 
 
-
                 if (data.success) {
-                    if(changePass.textContent === 'Đóng') {
+                    if (changePass.textContent === 'Đóng') {
                         if (!updatedData.password || !updatedData.newpassword || !updatedData.confirm) {
                             alert('Vui lòng nhập đầy đủ thông tin');
                             return;
                         }
                     }
-                    
+
                     alert('Cập nhật thành công!');
                     document.querySelector('#profileImage').src = updatedData.avt_url;
 
@@ -127,13 +135,15 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
 });
+let avt_image;
 
 // Xử lý ảnh
 function previewImage(event) {
     const file = event.target.files[0];
+    avt_image = file
     const reader = new FileReader();
 
-    reader.onload = function() {
+    reader.onload = function () {
         const imageElement = document.getElementById('profileImage');
         imageElement.src = reader.result;
     }
