@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, Boolean, Text, Date, DateTime, E
 from app import db, app
 from sqlalchemy.orm import relationship
 from enum import Enum as RoleEnum
+from app.model import Account
 from flask_login import UserMixin
 from datetime import datetime
 import hashlib
