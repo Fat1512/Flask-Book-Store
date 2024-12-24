@@ -33,20 +33,26 @@ const showToast = function (message, isError) {
 buttonBuy.addEventListener('click', () => {
     addCartItem(CURRENT_URL.searchParams.get("bookId")).then(res => {
         if (res['status'] === 200)
-            window.location.href = "http://127.0.0.1:5000/cart"
+            window.location.href = "/cart/checkout"
+
         else if (res['status'] === 507) {
             showToast(res['message'], true)
+        } else if (res['status'] === 403) {
+            window.location.href = "/account/login"
         }
     })
 
 })
 buttonAddCart.addEventListener('click', () =>
     addCartItem(CURRENT_URL.searchParams.get("bookId")).then(res => {
+
         if (res['status'] === 200) {
             renderTotalCartItem(res['data'])
             showToast("Thêm sản phẩm vào giỏ hàng thành công", false)
         } else if (res['status'] === 507) {
             showToast(res['message'], true)
+        } else if (res['status'] === 403) {
+            window.location.href = "/account/login"
         }
     }))
 const addCartItem = async function (id) {
@@ -60,6 +66,7 @@ const addCartItem = async function (id) {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
+
         // Parse JSON response
         return await response.json()
     } catch (error) {

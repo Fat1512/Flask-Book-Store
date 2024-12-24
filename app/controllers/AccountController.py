@@ -261,8 +261,6 @@ def employee_forgot():
     return render_template("employee-forgotpass.html", err_msg=err_msg)
 
 
-
-
 @account_bp.route("/login", methods=['GET', 'POST'])
 def login_process():
     err_msg = ''
@@ -281,6 +279,7 @@ def login_process():
 
         if u:
             login_user(u)
+
             return redirect(url_for('index.index'))
         else:
             err_msg = "Tên đăng nhập hoặc mật khẩu không đúng!"
@@ -556,7 +555,6 @@ def forgot_process():
                 return redirect(url_for('account.login_process'))
 
     return render_template("forgotpass.html", err_msg=err_msg)
-
 
 
 @login.user_loader

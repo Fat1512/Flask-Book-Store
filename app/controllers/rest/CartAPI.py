@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from flask_login import current_user
 
+from app.authentication.login_required import customer_required, customer_required_api
 from app.dao.CartDao import find_by_user_id, update_cart as update, delete_cart_item, add_cart_item as add, \
     add_multiple_cart_item
 
@@ -13,12 +14,14 @@ def increase_cart_item():
 
 
 @cart_rest_bp.route('/', methods=['GET'])
+@customer_required_api
 def get_cart():
-    cart = find_by_user_id(2)
+    cart = find_by_user_id(current_user.id)
     return cart.to_dict()
 
 
 @cart_rest_bp.route('/', methods=['PUT'])
+@customer_required_api
 def update_cart():
     request_data = request.json
     cart_item = update(current_user.get_id(), request_data['cartItems'])
@@ -30,6 +33,7 @@ def update_cart():
 
 
 @cart_rest_bp.route('/<int:bookId>', methods=['DELETE'])
+@customer_required_api
 def delete_cart(bookId):
     cart = delete_cart_item(current_user.get_id(), bookId)
     print('test', cart)
@@ -41,6 +45,7 @@ def delete_cart(bookId):
 
 
 @cart_rest_bp.route('/<int:bookId>', methods=['POST'])
+@customer_required_api
 def add_cart_items(bookId):
     cart_item = add(bookId)
     return jsonify({
@@ -56,6 +61,7 @@ def add_cart_items(bookId):
 
 
 @cart_rest_bp.route('/books', methods=['POST'])
+@customer_required_api
 def add_cart_item():
     request_data = request.json
     add_multiple_cart_item(request_data)
