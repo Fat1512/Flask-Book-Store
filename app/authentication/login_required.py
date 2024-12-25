@@ -32,3 +32,56 @@ def customer_required_api(f):
 
     wrap.__name__ = f.__name__
     return wrap
+
+def employee_required(f):
+    def wrap(*args, **kwargs):
+        print("yest1", current_user.is_authenticated)
+        if not current_user.is_authenticated:
+            return redirect(url_for('account.employee_login'))
+        if current_user.user_role not in [UserRole.EMPLOYEE_MANAGER, UserRole.EMPLOYEE_MANAGER_WAREHOUSE,
+                                          UserRole.EMPLOYEE_SALE, UserRole.ADMIN]:
+            return redirect(url_for('account.employee_login'))
+        return f(*args, **kwargs)
+
+    wrap.__name__ = f.__name__
+    return wrap
+
+
+
+def employee_sale_required(f):
+    def wrap(*args, **kwargs):
+        print("yest1", current_user.is_authenticated)
+        if not current_user.is_authenticated:
+            return redirect(url_for('account.employee_login'))
+        if current_user.user_role not in [UserRole.EMPLOYEE_SALE, UserRole.ADMIN]:
+            return redirect(url_for('account.employee_login'))
+        return f(*args, **kwargs)
+
+    wrap.__name__ = f.__name__
+    return wrap
+
+
+def employee_manager_warehouse_required(f):
+    def wrap(*args, **kwargs):
+        print("yest1", current_user.is_authenticated)
+        if not current_user.is_authenticated:
+            return redirect(url_for('account.employee_login'))
+        if current_user.user_role not in [UserRole.EMPLOYEE_MANAGER_WAREHOUSE, UserRole.ADMIN]:
+            return redirect(url_for('account.employee_login'))
+        return f(*args, **kwargs)
+
+    wrap.__name__ = f.__name__
+    return wrap
+
+
+def employee_manager_required(f):
+    def wrap(*args, **kwargs):
+        print("yest1", current_user.is_authenticated)
+        if not current_user.is_authenticated:
+            return redirect(url_for('account.employee_login'))
+        if current_user.user_role not in [UserRole.EMPLOYEE_MANAGER, UserRole.ADMIN]:
+            return redirect(url_for('account.employee_login'))
+        return f(*args, **kwargs)
+
+    wrap.__name__ = f.__name__
+    return wrap

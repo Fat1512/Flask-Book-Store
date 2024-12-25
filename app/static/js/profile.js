@@ -54,7 +54,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
         const avatarInput = document.querySelector('#fileUpload');
-        console.log(avatarInput);
         updatedData.avt_url = avatarInput && avatarInput.files.length > 0
             ? avt_image
             : null

@@ -89,16 +89,23 @@ def add_cart_item(book_id):
     return cart_item
 
 
-def add_multiple_cart_item(books):
-    cart = Cart.query.filter(Cart.cart_id == 2).first()
-    for book in books:
+def add_multiple_cart_item(user_id, books):
+    cart = find_by_user_id(user_id)
+    for book_id in books:
         is_present = False
+        book = find_by_id(book_id)
+        if not book:
+            raise NotFoundError("Book not found")
+        if book.quantity < 1:
+            raise CartItemError(f"{book.title} không còn đủ sản phẩm")
         for item in cart.cart_items:
-            if item.book_id == book:
+            if item.book_id == book_id:
+                if book.quantity <= item.quantity:
+                    raise CartItemError(f"{book.title} không còn đủ sản phẩm")
                 item.quantity += 1
                 is_present = True
         if not is_present:
-            cart_item = CartItem(book_id=book, cart_id=cart.cart_id, quantity=1)
+            cart_item = CartItem(book_id=book_id, cart_id=cart.cart_id, quantity=1)
             cart.cart_items.append(cart_item)
 
     db.session.commit()
