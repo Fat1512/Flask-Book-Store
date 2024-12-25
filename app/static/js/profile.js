@@ -31,14 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     handleEditButton('phone', '.edit-btn-phone');
     handleEditButton('email', '.edit-btn-email');
-    const update = async function (formData) {
 
-        const res = await fetch('/update-profile', {
-            method: 'POST',
-            body: formData
-        })
-        return res.json()
-    }
     // Xử lý lưu thông tin người dùng
     const saveButton = document.querySelector('.btn-save');
     saveButton.addEventListener('click', async function () {
@@ -51,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
         updatedData.phone_number = document.querySelector('#phone').value;
 
         const gender = document.querySelector('input[name="gender"]:checked').value;
-        updatedData.sex = gender === 'Nam' ? 1 : gender === 'Nữ' ? 0 : null;
+        updatedData.sex = gender === 'Nam' ? 1 : gender === 'Nữ' ? 0 : 0;
 
         updatedData.date_of_birth = `${document.querySelector('#year').value}-${document.querySelector('#month').value}-${document.querySelector('#day').value}`;
 
@@ -62,19 +55,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const avatarInput = document.querySelector('#fileUpload');
         updatedData.avt_url = avatarInput && avatarInput.files.length > 0
-            ? image
-            : null;
-        const formData = new FormData();
+            ? avt_image
+            : null
+
+        const formData = new FormData()
         for (const key in updatedData) {
             if (updatedData.hasOwnProperty(key)) {
-                formData.append(key, updatedData[key]); // Use append here
+                // For all other fields, append as a string or number
+                formData.append(key, updatedData[key]);
             }
         }
 
         // Gửi dữ liệu tới server
-        update(formData)
+        await fetch('/update-profile', {
+            method: 'POST',
+            body: formData
+        })
             .then(response => response.json())
             .then(data => {
+                avt_image = null
                 document.querySelector('#passwordError').style.display = 'none';
                 document.querySelector('#confirmError').style.display = 'none';
                 const changePass = document.getElementById('change-pass');
@@ -135,12 +134,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
 });
-let image
+let avt_image;
 
 // Xử lý ảnh
 function previewImage(event) {
     const file = event.target.files[0];
-    image = file
+    avt_image = file
     const reader = new FileReader();
 
     reader.onload = function () {

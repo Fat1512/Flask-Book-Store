@@ -155,12 +155,13 @@ class OrderCancellation(db.Model):
     created_at = Column(DATETIME, default=datetime.now())
     reason = Column(String)
 
+
     def to_dict(self):
         return {
             'order_id': self.order_id,
             'reason': self.reason,
             'created_at': self.created_at,
-            'order_detail': [od.to_dict() for od in self.order.order_detail],
+            'order_detail': [od.to_dict() for od in self.order.order_detail]
         }
 
 

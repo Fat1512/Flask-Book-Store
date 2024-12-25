@@ -71,48 +71,48 @@
                 {% if current_user.is_authenticated %}
                     {% if cart_items and cart_items |length %}
                         <span class="label-total text-white">{{ cart_items|length }}</span>
-                    {% endif %}
-                    <div class="menu-cart-item">
-                        <div class="menu-cart-item-header">
-                            <p class="p-3 m-0">
-                                <span><i class="fa-solid fa-cart-shopping"></i></span>
-                                <span class="sub-total">Giỏ hàng ({{ cart_items|length }})</span>
-                            </p>
+                        <div class="menu-cart-item">
+                            <div class="menu-cart-item-header">
+                                <p class="p-3 m-0">
+                                    <span><i class="fa-solid fa-cart-shopping"></i></span>
+                                    <span class="sub-total">Giỏ hàng ({{ cart_items|length }})</span>
+                                </p>
+                            </div>
+                            {% if cart_items |length %}
+                                <ul class="sub-cart list-unstyled mt-3">
+                                    {% for item in cart_items %}
+                                        <li id="{{ item.book_id }}" class="sub-cart-item d-flex p-3">
+                                            <img class="sub-cart-item-image"
+                                                 src="{{ item.book.images[0].image_url }}">
+                                            <div class="sub-cart-item-detail pl-3">
+                                                <p class="sub-cart-item-title text-secondary">{{ item.book.title }}</p>
+                                                <p class="font-weight-bold m-0 text-primary">{{ item.book.price|currency("VND") }}
+                                                    <span class="quantity">x {{ item.quantity }}</span></p>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+
+                                <div class="d-flex p-3 align-items-center justify-content-between">
+                                    <div class="group-price">
+                                        <p class="m-0">Tổng cộng</p>
+                                        <p class="text-primary sub-total-price">{{ total_price|currency("VND") }}</p>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-primary">
+                                            Xem giỏ hàng
+                                        </button>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="text-center mt-5 mb-5">
+                                    <div class="cart-item-null"></div>
+                                    <p>Chưa có sản phẩm nào</p>
+                                </div>
+
+                            {% endif %}
                         </div>
-                        {% if cart_items |length %}
-                            <ul class="sub-cart list-unstyled mt-3">
-                                {% for item in cart_items %}
-                                    <li id="{{ item.book_id }}" class="sub-cart-item d-flex p-3">
-                                        <img class="sub-cart-item-image"
-                                             src="{{ item.book.images[0].image_url }}">
-                                        <div class="sub-cart-item-detail pl-3">
-                                            <p class="sub-cart-item-title text-secondary">{{ item.book.title }}</p>
-                                            <p class="font-weight-bold m-0 text-primary">{{ item.book.price|currency("VND") }}
-                                                <span class="quantity">x {{ item.quantity }}</span></p>
-                                        </div>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-
-                            <div class="d-flex p-3 align-items-center justify-content-between">
-                                <div class="group-price">
-                                    <p class="m-0">Tổng cộng</p>
-                                    <p class="text-primary sub-total-price">{{ total_price|currency("VND") }}</p>
-                                </div>
-                                <div>
-                                    <button class="btn btn-primary">
-                                        Xem giỏ hàng
-                                    </button>
-                                </div>
-                            </div>
-                        {% else %}
-                            <div class="text-center mt-5 mb-5">
-                                <div class="cart-item-null"></div>
-                                <p>Chưa có sản phẩm nào</p>
-                            </div>
-
-                        {% endif %}
-                    </div>
+                    {% endif %}
                 {% endif %}
 
             </a>
@@ -142,7 +142,7 @@
 
                         <a class="btn mb-3 pt-1 pb-1 pr-3 pl-3 btn-primary btn-large" href="/account/login">Đăng
                             nhập</a>
-                        <a class="btn mb-3 pt-1 pb-1 pr-3 pl-3 btn-primary-outline btn-large" href="/account/register">Đăng
+                        <a class="btn mb-3 pt-1 pb-1 pr-3 pl-3 btn-primary-outline btn-large" href="/account/verify">Đăng
                             ký </a>
 
                     {% endif %}

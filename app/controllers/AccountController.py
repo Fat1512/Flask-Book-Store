@@ -33,6 +33,7 @@ def purchase():
     order = find_add_by_user_id(current_user.get_id(), status, 1, 5)
 
     order_to_dict = [order.to_detail_dict() for order in order]
+    print(order_to_dict)
     is_success = request.args.get('payment', default=None)
 
     return render_template("profile/purchase.html", is_success=is_success, order=order_to_dict)
@@ -276,7 +277,6 @@ def login_process():
             u = UserDao.auth_user(username=username, password=password, role=role)
             if u:
                 break
-
         if u:
             login_user(u)
 
@@ -414,7 +414,6 @@ def register_process():
             else:
                 data = request.form.copy()
                 del data['confirm']
-
                 avt_url = request.files.get('avt_url')
                 optional_fields = ['sex', 'phone_number', 'date_of_birth', 'isActive', 'last_access']
                 for field in optional_fields:

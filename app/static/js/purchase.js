@@ -297,7 +297,7 @@ const renderOderArea = function (orders) {
                 <li id="${order.order_id}" class="item-bg-color mt-3 mb-3 p-3">
                     <div class="purchase-header pb-3">
                         <p class="text-right m-0">
-                            ${order.status.id === 4 ? `<span style="color: #26aa99">Giao hàng thành công</span>` : ''}
+                            ${order.status.id === 4 ? `<span style="color: #26aa99">Đã nhận hàng</span>` : ''}
                             <span class="separator"> | </span>
                             <span class="text-primary">${order.status.name}</span></p>
                     </div>

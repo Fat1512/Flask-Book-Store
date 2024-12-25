@@ -186,33 +186,33 @@ class AdminAccountManager(ModelView):
         )
 
 
-class AdminBookGerneManager(ModelView):
-    @expose("/", methods=("GET", "POST"))
-    @admin_required
-    def admin_bookgerne_manager(self):
-        kw = request.args.get('kw')
-        stats = bookgerne_management(kw=kw)
-
-        genres = db.session.query(BookGerne).all()
-        genres_dict = {genre.book_gerne_id: genre.name for genre in genres}
-
-        page = int(request.args.get('page', 1))
-        page_size = app.config['BOOK_PAGE_SIZE']
-        total = len(stats)
-
-        start_idx = (page - 1) * page_size
-        end_idx = start_idx + page_size
-        paginated_stats = stats[start_idx:end_idx]
-
-        return self.render(
-            "/admin/adminBookGerneManager.html",
-            kw=kw,
-            stats=paginated_stats, genres_dict=genres_dict,
-            books={
-                'current_page': page,
-                'total_page': math.ceil(total / page_size),
-                'pages': range(1, math.ceil(total / page_size) + 1),
-            })
+# class AdminBookGerneManager(ModelView):
+#     @expose("/", methods=("GET", "POST"))
+#     @admin_required
+#     def admin_bookgerne_manager(self):
+#         kw = request.args.get('kw')
+#         stats = bookgerne_management(kw=kw)
+#
+#         genres = db.session.query(BookGerne).all()
+#         genres_dict = {genre.book_gerne_id: genre.name for genre in genres}
+#
+#         page = int(request.args.get('page', 1))
+#         page_size = app.config['BOOK_PAGE_SIZE']
+#         total = len(stats)
+#
+#         start_idx = (page - 1) * page_size
+#         end_idx = start_idx + page_size
+#         paginated_stats = stats[start_idx:end_idx]
+#
+#         return self.render(
+#             "/admin/adminBookGerneManager.html",
+#             kw=kw,
+#             stats=paginated_stats, genres_dict=genres_dict,
+#             books={
+#                 'current_page': page,
+#                 'total_page': math.ceil(total / page_size),
+#                 'pages': range(1, math.ceil(total / page_size) + 1),
+#             })
 
 
 class AdminConfig(ModelView):
@@ -238,9 +238,9 @@ admin.add_view(
                             url="/admin/statistic-frequency"))
 admin.add_view(AdminAccountManager(BookGerne, db.session, name='Account Manager', endpoint='account-manager',
                                    url="/admin/account-manager"))
-admin.add_view(
-    AdminBookGerneManager(BookGerne, db.session, name='Bookgerne Manager', endpoint='bookgerne-manager',
-                          url="/admin/bookgerne-manager"))
+# admin.add_view(
+#     AdminBookGerneManager(BookGerne, db.session, name='Bookgerne Manager', endpoint='bookgerne-manager',
+#                           url="/admin/bookgerne-manager"))
 admin.add_view(
     AdminConfig(BookGerne, db.session, name='Config', endpoint='config',
                 url="/admin/config"))

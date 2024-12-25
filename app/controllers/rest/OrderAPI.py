@@ -7,7 +7,7 @@ from app.dao.OrderDAO import *
 from app.dao.PaymentDAO import create_payment
 from app.dao.UserDao import *
 from app.dao.FormImportDAO import *
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, session
 from flask import render_template, request
 from app.controllers.EmployeeController import employee_required
 
@@ -81,6 +81,7 @@ def online_order():
 
     for book in data['books']:
         delete_cart_item(current_user.get_id(), book['bookId'])
+    session.pop("cartTick")
 
     return jsonify({
         "message": "Success",

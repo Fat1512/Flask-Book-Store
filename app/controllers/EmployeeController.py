@@ -1,8 +1,9 @@
 from app.dao.OrderDAO import *
+from app.model.Book import BookFormat
 from app.dao.SearchDAO import search_book
 from app.dao.FormImportDAO import find_form_imports
 from app.dao.ConfigDAO import get_config
-from app.dao.PublisherDAO import find_all
+from app.dao.PublisherDAO import find_all as find_all_publisher
 from flask import Blueprint
 from datetime import datetime
 from flask import render_template, request
@@ -13,8 +14,9 @@ from app.model.User import User
 from flask import jsonify
 from flask import render_template, redirect, url_for, request
 from flask_login import current_user
-from app.utils.admin import book_management
+from app.utils.admin import book_management, bookgerne_management
 from app.utils.helper import FORMAT_BOOK_TEXT
+from app.model.BookGerne import BookGerne
 
 employee_bp = Blueprint('employee', __name__)
 
@@ -31,6 +33,7 @@ def employee_required(f):
 
     wrap.__name__ = f.__name__
     return wrap
+
 
 
 def employee_sale_required(f):
@@ -161,8 +164,7 @@ def import_book_history():
 @employee_bp.route("/add-products")
 @employee_manager_required
 def add_products_process():
-    publishers = find_all()
-    return render_template("employee/employeeAddProducts.html", publishers=publishers, formats=FORMAT_BOOK_TEXT)
+    return render_template("employee/employeeAddProducts.html")
 
 
 @employee_bp.route("/book-manager")
@@ -224,6 +226,12 @@ def update_book(book_id):
             book.publisher_id = publisher.publisher_id
         else:
             return jsonify({'success': False, 'message': f"Publisher '{publisher_name}' not found"}), 400
+    format_value = updated_data.get('format')
+    if format_value:
+        if format_value.startswith('BookFormat.'):
+            format_value = format_value.split('BookFormat.')[1]
+
+        book.format = BookFormat[format_value]
 
     book.price = updated_data.get('price', book.price)
     book.num_page = updated_data.get('num_page', book.num_page)
@@ -249,7 +257,34 @@ def delete_book(book_id):
     return jsonify({"success": True})
 
 
+
+@employee_bp.route("/bookgerne-manager")
+@employee_manager_required
+def admin_bookgerne_manager():
+    kw = request.args.get('kw')
+    stats = bookgerne_management(kw=kw)
+
+    genres = db.session.query(BookGerne).all()
+    genres_dict = {genre.book_gerne_id: genre.name for genre in genres}
+
+    page = int(request.args.get('page', 1))
+    page_size = app.config['BOOK_PAGE_SIZE']
+    total = len(stats)
+
+    start_idx = (page - 1) * page_size
+    end_idx = start_idx + page_size
+    paginated_stats = stats[start_idx:end_idx]
+    return render_template("/admin/adminBookGerneManager.html",
+                           kw=kw,
+                           stats=paginated_stats, genres_dict=genres_dict,
+                           books={
+                               'current_page': page,
+                               'total_page': math.ceil(total / page_size),
+                               'pages': range(1, math.ceil(total / page_size) + 1),
+                           })
+
 @employee_bp.route("/profile")
 @employee_required
 def employee_profile():
     return render_template("/employee/employeeProfile.html")
+

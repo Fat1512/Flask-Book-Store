@@ -4,6 +4,7 @@ import app.model.User
 from app.exception.NotFoundError import NotFoundError
 from app.exception.BadRequestError import BadRequestError
 from app.model.Address import Address
+from app.model.Cart import Cart
 from app.model.User import User
 from app.model.Account import Account
 import hashlib
@@ -84,6 +85,7 @@ def add_user(first_name, last_name, username, password, email, phone_number, avt
         isActive=isActive,
         last_access=last_access
     )
+    u.cart = Cart(user=u)
     db.session.add(u)
     db.session.flush()  # Flush để có user_id
 
@@ -94,6 +96,7 @@ def add_user(first_name, last_name, username, password, email, phone_number, avt
     )
     db.session.add(account)
     db.session.commit()
+
 
 
 def add_employee(first_name, last_name, username, password, email, avt_url=None, sex=None, phone_number=None,

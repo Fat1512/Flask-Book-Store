@@ -1,5 +1,6 @@
 import pdb
 
+import cloudinary
 from flask import Blueprint
 from flask import render_template, request
 import json
@@ -49,10 +50,8 @@ def index():
 
 @index_bp.route('/update-profile', methods=['POST'])
 def update_profile():
-    pdb.set_trace()
-    data = request.get_json()
-
     try:
+        data = request.form
         user = User.query.filter_by(user_id=current_user.user_id).first()
 
         if not user:
@@ -66,9 +65,16 @@ def update_profile():
         user.last_name = data.get('last_name', user.last_name)
         user.email = data.get('email', user.email)
         user.phone_number = data.get('phone_number', user.phone_number)
-        user.sex = data.get('sex', user.sex)
+        user.sex = False if data.get('sex') == '0' else True
         user.date_of_birth = data.get('date_of_birth', user.date_of_birth)
-        user.avt_url = data.get('avt_url', user.avt_url)
+        # user.avt_url = data.get('avt_url', user.avt_url)
+        if request.files:
+            image = request.files.get('avt_url')
+
+            res = cloudinary.uploader.upload(image)
+            image_url = res['secure_url']
+
+            user.avt_url = image_url
 
         current_password = data.get('password')
         new_password = data.get('newpassword')

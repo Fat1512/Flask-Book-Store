@@ -21,23 +21,7 @@
                             </ol>
                         </nav>
                     </div>
-                    <form class="col-8 navbar-search navbar-search-light form-inline mr-sm-3" id="navbar-search-main">
-                        <div class="form-group mb-0 w-100">
-                            <div class="input-group input-group-alternative input-group-merge w-100">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
-                                </div>
-                                <input class="form-control" placeholder="Nhap ma don" type="text">
-                            </div>
-                            <div>
 
-                            </div>
-                        </div>
-                        <button type="button" class="close" data-action="search-close" data-target="#navbar-search-main"
-                                aria-label="Close">
-                            <span aria-hidden="true">×</span>
-                        </button>
-                    </form>
                 </div>
             </div>
         </div>
@@ -376,12 +360,12 @@
     </div>
 {% endblock %}
 {% block modal %}
-    <div class="modal d-flex">
-        <div class="overlay d-flex"></div>
+    <div class="modal">
+        <div class="overlay"></div>
         <div class="modal-body d-none modal-update-order-status item-bg-color">
 
         </div>
-        <div class="modal-body d-none d-flex modal-cancel-order item-bg-color">
+        <div class="modal-body d-none modal-cancel-order item-bg-color">
             <div class="w-100 d-flex justify-content-center align-content-center flex-column">
                 <h1 class="modal-title d-flex justify-content-center pt-4" id="modalLabel">
                     <i class="fas fa-exclamation-circle text-warning display-1"></i>

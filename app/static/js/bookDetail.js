@@ -33,7 +33,7 @@ const showToast = function (message, isError) {
 buttonBuy.addEventListener('click', () => {
     addCartItem(CURRENT_URL.searchParams.get("bookId")).then(res => {
         if (res['status'] === 200)
-            window.location.href = "/cart/checkout"
+            window.location.href = "/cart"
 
         else if (res['status'] === 507) {
             showToast(res['message'], true)
@@ -125,15 +125,16 @@ const renderComment = function (data) {
     const groupOverview = document.querySelector('.overview')
     const starPercentList = groupOverview.querySelector('.star-percent').children
     let startArr = []
-    const totalComment = parseInt(groupOverview.querySelector('.total-comment').getAttribute('length'))
+    const totalComment = +parseInt(groupOverview.querySelector('.total-comment').getAttribute('length'))
+    console.log(groupOverview.querySelector('.total-comment'))
     for (let i = 0; i < starPercentList.length; i++) {
-        startArr[starPercentList.length - i - 1] = (Math.round((starPercentList[i].querySelector('.review-star-percent')
-            .textContent.trim().split(' ')[0]) / 100 * totalComment))
+        startArr[starPercentList.length - i - 1] = +(Math.round((+starPercentList[i].querySelector('.review-star-percent')
+            .textContent.trim().split(' ')[0]) / 100 * +totalComment))
     }
     startArr[data.star_count - 1] += 1
 
     const avg = Math.floor(startArr.reduce(
-        (acc, currentValue, currentIndex) => acc + (currentValue * (currentIndex + 1)), 0) / (totalComment + 1))
+        (acc, currentValue, currentIndex) => acc + (+currentValue * (+currentIndex + 1)), 0) / (+totalComment + 1))
     console.log(data, startArr, totalComment, Math.round(avg))
     const ratingLine = []
     for (let i = startArr.length - 1; i >= 0; i--) {
@@ -144,12 +145,12 @@ const renderComment = function (data) {
                         <div style="width: 0%;"></div>
                     </div>           
                         <div class="review-star"
-                             style="width: calc(200px * ${startArr[i] / (totalComment + 1)});">
+                             style="width: calc(200px * ${+startArr[i] / (+totalComment + 1)});">
                             <div style="width: 0%;"></div>
                         </div>
                
-                    <p class="p-0 m-0"> 
-                            ${Math.round(startArr[i] / (totalComment + 1) * 100)}
+                    <p class="p-0 m-0 review-star-percent"> 
+                            ${Math.round(+startArr[i] / (+totalComment + 1) * 100)}
                         %</p>
                 </div>
     `
@@ -160,7 +161,7 @@ const renderComment = function (data) {
             </p>
                 ${'<i class="text-warning fa-solid fa-star"></i>'.repeat(avg)}
                 ${'<i class="text-warning fa-regular fa-star"></i>'.repeat(5 - avg)}
-            <p class="text-warning">(${totalComment + 1} đánh giá)</p>
+            <p class="text-warning total-comment" length="${totalComment + 1}">(${totalComment + 1} đánh giá)</p>
         </div>
         <div class="star-percent position-relative ml-3">
             ${ratingLine.reverse().join('')}

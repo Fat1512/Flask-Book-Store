@@ -25,7 +25,7 @@ class User(db.Model, UserMixin):
     user_id = Column(Integer, primary_key=True, autoincrement=True)
     first_name = Column(String(20), nullable=False)
     last_name = Column(String(50), nullable=False)
-    sex = Column(Boolean, nullable=False)
+    sex = Column(Boolean, nullable=False, default=True)
     email = Column(String(50), nullable=False, unique=True)
     phone_number = Column(String(10))
     date_of_birth = Column(Date)
@@ -34,7 +34,7 @@ class User(db.Model, UserMixin):
     isActive = Column(Boolean, default=True)
     last_access = Column(DateTime, default=datetime.utcnow)
     user_role = Column(Enum(UserRole), default=UserRole.CUSTOMER)
-    address = relationship('Address', backref='user', lazy=True)
+    address = relationship('Address', backref='user', lazy=True, cascade="all,delete-orphan")
 
     account = relationship('Account', uselist=False)
 
@@ -43,7 +43,7 @@ class User(db.Model, UserMixin):
 
     online_orders = relationship("OnlineOrder", back_populates="customer", foreign_keys="[Order.customer_id]", lazy=True)
     form_import = relationship("FormImport", back_populates="employee", lazy=True)
-    cart = relationship("Cart", back_populates="user")
+    cart = relationship("Cart", back_populates="user", uselist=False)
 
     def to_local_storge(self):
         return {

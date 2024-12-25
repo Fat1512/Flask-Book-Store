@@ -651,7 +651,7 @@
                 console.log('Updated data being sent:', updatedData);
 
                 // Gửi yêu cầu POST để cập nhật
-                fetch(`/admin/update-book/${bookId}`, {
+                fetch(`/employee/update-book/${bookId}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -702,7 +702,7 @@
 
     // Fetch gernes and populate the select element
     function fetchGernesForSelect(selectElement, selectedValue) {
-        fetch('/admin/api/gernes') // Gọi API backend để lấy thể loại
+        fetch('/api/gernes') // Gọi API backend để lấy thể loại
             .then(response => response.json())
             .then(data => {
                 data.forEach(gerne => {
@@ -822,7 +822,7 @@
             // Hiển thị thông báo xác nhận trước khi xóa
             if (confirm('Bạn có chắc chắn muốn xóa sách này không?')) {
                 // Gửi yêu cầu POST để xóa sách
-                fetch(`/admin/delete-book/${bookId}`, {  // Đảm bảo URL đúng
+                fetch(`/employee/delete-book/${bookId}`, {  // Đảm bảo URL đúng
                     method: 'POST',
                 })
                 .then(response => response.json())  // Đảm bảo rằng response là JSON
