@@ -28,6 +28,8 @@ ELASTIC_PORT=int(os.getenv("ELASTIC_PORT"))
 KAFKA1 = os.getenv("KAFKA1")
 KAFKA2 = os.getenv("KAFKA2")
 KAFKA3 = os.getenv("KAFKA3")
+RETURN_URL = os.getenv("RETURN_URL")
+
 app.secret_key = "8923yhr9fuwnsejksnpokff@$I_I@$)opfk"
 app.config["SQLALCHEMY_DATABASE_URI"] = DB_URL % quote(DB_PASSWORD)
 # app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql+pymysql://root:%s@localhost/book_store' % quote(DB_PASSWORD)
@@ -36,7 +38,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 app.config["VNPAY_URL"] = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'  # Use the sandbox URL for testing
 app.config["VNPAY_TMN_CODE"] = 'MEBTRFP0'
 app.config["VNPAY_HASH_SECRET"] = 'ILFTJ080X209IM562X1NKYTMZ70RLVJO'
-app.config["VNPAY_RETURN_URL"] = 'http://127.0.0.1:5000/account/purchase'
+app.config["VNPAY_RETURN_URL"] = RETURN_URL
 app.config['KAFKA_BROKER'] = [KAFKA1, KAFKA2, KAFKA3]
 app.config['KAFKA_TOPIC'] = ['dbs_.book_store.book','dbs_.book_store.extended_book', 'schema-changes.mysql']
 

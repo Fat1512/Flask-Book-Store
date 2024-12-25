@@ -242,6 +242,8 @@ updateBtn.addEventListener("click", async function (e) {
     restoreOrderBtn.classList.add("btn-disable")
     restoreOrderBtn.disabled = true
 
+    console.log(Object.values(currentOrderItemsState))
+
     try {
         const res = await fetch(`/api/v1/order/${+updateBtn.getAttribute("order-id")}/update`, {
             method: "POST",
