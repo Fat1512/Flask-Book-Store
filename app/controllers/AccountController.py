@@ -21,6 +21,22 @@ import pdb
 account_bp = Blueprint('account', __name__)
 
 
+
+def employee_register_required(f):
+    def wrap(*args, **kwargs):
+        return redirect(url_for('account.verify_email'))
+
+    wrap.__name__ = f.__name__
+    return wrap
+
+
+def email_forgot_customer_required(f):
+    def wrap(*args, **kwargs):
+        return redirect(url_for('account.forgot_process'))
+
+    wrap.__name__ = f.__name__
+    return wrap
+
 @account_bp.route('/purchase', methods=['GET'])
 def purchase():
     payment_status = request.args.get('vnp_ResponseCode', default=None)
