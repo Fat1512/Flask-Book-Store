@@ -1,3 +1,5 @@
+import pdb
+
 from flask import Blueprint
 from flask import render_template, request
 import json
@@ -47,6 +49,7 @@ def index():
 
 @index_bp.route('/update-profile', methods=['POST'])
 def update_profile():
+    pdb.set_trace()
     data = request.get_json()
 
     try:

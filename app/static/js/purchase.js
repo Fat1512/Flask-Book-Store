@@ -367,6 +367,7 @@ function renderEvent(el) {
         buttonSendCancellation.addEventListener('click',
             () => handleCancellationOrder(reasonArea, parseInt(el.id)).then(res => {
                 if (res['status'] === 200) {
+                    console.log(res)
                     const bookIds = res['data']['order_detail'].map(od => od.book.book_id)
                     showToast('Hủy đơn hàng thành công', false)
                     el.querySelector('.order-status').textContent = 'Đã hủy'

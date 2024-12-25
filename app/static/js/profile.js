@@ -31,10 +31,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     handleEditButton('phone', '.edit-btn-phone');
     handleEditButton('email', '.edit-btn-email');
+    const update = async function (formData) {
 
+        const res = await fetch('/update-profile', {
+            method: 'POST',
+            body: formData
+        })
+        return res.json()
+    }
     // Xử lý lưu thông tin người dùng
     const saveButton = document.querySelector('.btn-save');
-    saveButton.addEventListener('click', function () {
+    saveButton.addEventListener('click', async function () {
         const updatedData = {};
 
         // Thu thập dữ liệu từ các trường input
@@ -55,15 +62,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const avatarInput = document.querySelector('#fileUpload');
         updatedData.avt_url = avatarInput && avatarInput.files.length > 0
-            ? URL.createObjectURL(avatarInput.files[0])
-            : document.querySelector('#profileImage').src;
+            ? image
+            : null;
+        const formData = new FormData();
+        for (const key in updatedData) {
+            if (updatedData.hasOwnProperty(key)) {
+                formData.append(key, updatedData[key]); // Use append here
+            }
+        }
 
         // Gửi dữ liệu tới server
-        fetch('/update-profile', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(updatedData)
-        })
+        update(formData)
             .then(response => response.json())
             .then(data => {
                 document.querySelector('#passwordError').style.display = 'none';
@@ -71,15 +80,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 const changePass = document.getElementById('change-pass');
 
 
-
                 if (data.success) {
-                    if(changePass.textContent === 'Đóng') {
+                    if (changePass.textContent === 'Đóng') {
                         if (!updatedData.password || !updatedData.newpassword || !updatedData.confirm) {
                             alert('Vui lòng nhập đầy đủ thông tin');
                             return;
                         }
                     }
-                    
+
                     alert('Cập nhật thành công!');
                     document.querySelector('#profileImage').src = updatedData.avt_url;
 
@@ -127,13 +135,15 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
 });
+let image
 
 // Xử lý ảnh
 function previewImage(event) {
     const file = event.target.files[0];
+    image = file
     const reader = new FileReader();
 
-    reader.onload = function() {
+    reader.onload = function () {
         const imageElement = document.getElementById('profileImage');
         imageElement.src = reader.result;
     }

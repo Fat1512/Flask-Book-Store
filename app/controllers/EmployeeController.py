@@ -2,6 +2,7 @@ from app.dao.OrderDAO import *
 from app.dao.SearchDAO import search_book
 from app.dao.FormImportDAO import find_form_imports
 from app.dao.ConfigDAO import get_config
+from app.dao.PublisherDAO import find_all
 from flask import Blueprint
 from datetime import datetime
 from flask import render_template, request
@@ -13,6 +14,7 @@ from flask import jsonify
 from flask import render_template, redirect, url_for, request
 from flask_login import current_user
 from app.utils.admin import book_management
+from app.utils.helper import FORMAT_BOOK_TEXT
 
 employee_bp = Blueprint('employee', __name__)
 
@@ -29,7 +31,6 @@ def employee_required(f):
 
     wrap.__name__ = f.__name__
     return wrap
-
 
 
 def employee_sale_required(f):
@@ -160,7 +161,8 @@ def import_book_history():
 @employee_bp.route("/add-products")
 @employee_manager_required
 def add_products_process():
-    return render_template("employee/employeeAddProducts.html")
+    publishers = find_all()
+    return render_template("employee/employeeAddProducts.html", publishers=publishers, formats=FORMAT_BOOK_TEXT)
 
 
 @employee_bp.route("/book-manager")
@@ -251,4 +253,3 @@ def delete_book(book_id):
 @employee_required
 def employee_profile():
     return render_template("/employee/employeeProfile.html")
-

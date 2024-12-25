@@ -286,12 +286,14 @@ function updateSelectedDisplay() {
 async function confirmSelection() {
     const col2 = document.getElementById("col2");
     const col3 = document.getElementById("col3");
+    console.log(col3.querySelector('.menu-item.active'), col2.querySelector('.menu-item.active'))
     try {
         let gerneId
         if (col3.querySelector('.menu-item.active'))
             gerneId = col3.querySelector('.menu-item.active').id
         else if (col2.querySelector('.menu-item.active'))
-            gerneId = col3.querySelector('.menu-item.active').id
+            gerneId = col2.querySelector('.menu-item.active').id
+
         else
             throw new Error("Vui lòng chọn thể loại cụ thể")
         document.querySelector('input[name="input-gerne"]').value = selectedPath
@@ -570,7 +572,7 @@ function handleCreateBook(e) {
             barcodeDigits.push(checkDigit)
             const checkedBarcode = barcodeDigits.join('');
 
-            if(checkedBarcode !== barcode) {
+            if (checkedBarcode !== barcode) {
                 throw new Error("Sai định dạng barcode UPC 8");
             }
             document.getElementById('error-barcode').classList.remove('text-primary')

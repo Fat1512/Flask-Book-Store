@@ -22,6 +22,7 @@ class OrderStatus(PythonEnum):
     DA_THANH_TOAN = 7
     DANG_CHO_NHAN = 8
 
+
 class PaymentMethod(PythonEnum):
     THE = 1
     TIEN_MAT = 2
@@ -126,7 +127,6 @@ class OnlineOrder(Order):
 
     order_cancellation = relationship('OrderCancellation', backref='order', lazy=True, uselist=False)
 
-
     def to_dict(self):
         json = super().to_dict()
         json['order_type'] = {
@@ -155,11 +155,12 @@ class OrderCancellation(db.Model):
     created_at = Column(DATETIME, default=datetime.now())
     reason = Column(String)
 
-
     def to_dict(self):
         return {
+            'order_id': self.order_id,
             'reason': self.reason,
-            'created_at': self.created_at
+            'created_at': self.created_at,
+            'order_detail': [od.to_dict() for od in self.order.order_detail],
         }
 
 
@@ -192,6 +193,7 @@ class PaymentDetail(db.Model):
 
     order_id = Column(Integer, ForeignKey('order.order_id'), unique=True)
     order = relationship("Order", back_populates="payment_detail", enable_typechecks=False, lazy=True)
+
     def to_dict(self):
         return {
             'amount': self.amount,

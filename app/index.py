@@ -12,7 +12,7 @@ from app import scheduler, consumers
 from app.controllers.CartController import cart_bp
 from app.controllers.rest.AccountAPI import account_rest_bp
 from app.controllers.rest.CartAPI import cart_rest_bp
-from app.dao.CartDao import update_cart
+from app.dao.CartDao import update_cart, find_by_user_id
 from app.controllers.rest.PaymentAPI import payment_rest_bp
 from app.controllers.rest.SearchAPI import search_res_bp
 from app.dao import UserDao
@@ -95,7 +95,7 @@ def context():
         app_context['profile'] = user_data
 
     if current_user.is_authenticated and current_user.user_role == UserRole.CUSTOMER:
-        cart = find_by_cart_id(user_data.user_id)
+        cart = find_by_user_id(user_data.user_id)
         app_context['cart_items'] = cart.cart_items
         app_context['total_price'] = cart.total_price()
         return app_context
