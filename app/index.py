@@ -12,7 +12,7 @@ from app import scheduler, consumers
 from app.controllers.CartController import cart_bp
 from app.controllers.rest.AccountAPI import account_rest_bp
 from app.controllers.rest.CartAPI import cart_rest_bp
-from app.dao.CartDao import update_cart
+from app.dao.CartDao import update_cart, find_by_user_id
 from app.controllers.rest.PaymentAPI import payment_rest_bp
 from app.controllers.rest.SearchAPI import search_res_bp
 from app.dao import UserDao

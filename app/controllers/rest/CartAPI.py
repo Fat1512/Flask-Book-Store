@@ -64,7 +64,7 @@ def add_cart_items(bookId):
 @customer_required_api
 def add_cart_item():
     request_data = request.json
-    add_multiple_cart_item(request_data)
+    add_multiple_cart_item(current_user.get_id(), request_data)
     return jsonify({
         "status": 200,
         "message": "Add cart item successfully"

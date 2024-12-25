@@ -342,17 +342,17 @@
                         <div class="dropdown-menu  dropdown-menu-right ">
                             <form action="/account/admin-login" method="POST">
                                 {% if current_user.is_authenticated %}
-                                <div class="dropdown-header noti-title">
-                                    <h6 class="text-overflow m-0">Chào {{ current_user.full_name }}</h6>
-                                </div>
-                                <a href="/admin/profile" class="dropdown-item">
-                                    <i class="ni ni-single-02"></i>
-                                    <span>Hồ sơ</span>
-                                </a>
-                                <a href="/account/admin-logout" class="dropdown-item">
-                                    <i class="ni ni-user-run"></i>
-                                    <span>Đăng xuất</span>
-                                </a>
+                                    <div class="dropdown-header noti-title">
+                                        <h6 class="text-overflow m-0">Chào {{ current_user.full_name }}</h6>
+                                    </div>
+                                    <a href="/admin/profile" class="dropdown-item">
+                                        <i class="ni ni-single-02"></i>
+                                        <span>Hồ sơ</span>
+                                    </a>
+                                    <a href="/account/admin-logout" class="dropdown-item">
+                                        <i class="ni ni-user-run"></i>
+                                        <span>Đăng xuất</span>
+                                    </a>
                                 {% else %}
                                 {% endif %}
                             </form>
@@ -446,7 +446,10 @@
                             <!-- Nút Previous -->
                             <li class="page-item{% if books['current_page'] == 1 %} disabled {% endif %}">
                                 <a class="page-link"
-                                   href="?page={{ books['current_page'] - 1 }}{% if request.args.get('gerne_id') %}&gerne_id={{ request.args.get('gerne_id') }}{% endif %}{% if request.args.get('kw') %}&kw={{ request.args.get('kw') }}{% endif %}">
+                                   href="?page=
+
+
+                                           {{ books['current_page'] - 1 }}{% if request.args.get('gerne_id') %}&gerne_id={{ request.args.get('gerne_id') }}{% endif %}{% if request.args.get('kw') %}&kw={{ request.args.get('kw') }}{% endif %}">
                                     <i class="fas fa-angle-left"></i>
                                     <span class="sr-only">Previous</span>
                                 </a>
@@ -454,18 +457,24 @@
 
                             <!-- Hiển thị các trang -->
                             {% for page in books['pages'] %}
-                            <li class="page-item{% if page == books['current_page'] %} active {% endif %}">
-                                <a class="page-link"
-                                   href="?page={{ page }}{% if request.args.get('gerne_id') %}&gerne_id={{ request.args.get('gerne_id') }}{% endif %}{% if request.args.get('kw') %}&kw={{ request.args.get('kw') }}{% endif %}">
-                                    {{ page }}
-                                </a>
-                            </li>
+                                <li class="page-item{% if page == books['current_page'] %} active {% endif %}">
+                                    <a class="page-link"
+                                       href="?page=
+
+
+                                               {{ page }}{% if request.args.get('gerne_id') %}&gerne_id={{ request.args.get('gerne_id') }}{% endif %}{% if request.args.get('kw') %}&kw={{ request.args.get('kw') }}{% endif %}">
+                                        {{ page }}
+                                    </a>
+                                </li>
                             {% endfor %}
 
                             <!-- Nút Next -->
                             <li class="page-item{% if books['current_page'] == books['total_page'] %} disabled {% endif %}">
                                 <a class="page-link"
-                                   href="?page={{ books['current_page'] + 1 }}{% if request.args.get('gerne_id') %}&gerne_id={{ request.args.get('gerne_id') }}{% endif %}{% if request.args.get('kw') %}&kw={{ request.args.get('kw') }}{% endif %}">
+                                   href="?page=
+
+
+                                           {{ books['current_page'] + 1 }}{% if request.args.get('gerne_id') %}&gerne_id={{ request.args.get('gerne_id') }}{% endif %}{% if request.args.get('kw') %}&kw={{ request.args.get('kw') }}{% endif %}">
                                     <i class="fas fa-angle-right"></i>
                                     <span class="sr-only">Next</span>
                                 </a>
@@ -500,35 +509,35 @@
                                         </thead>
                                         <tbody class="list">
                                         {% for s in stats %}
-                                        <tr data-id="{{ s[0] }}"> <!-- Lưu book_id vào data-id của thẻ <tr> -->
-                                            <td style="border: 1px solid #adb5bd; padding: 0;">
-                                                <div class="dropdown col-5 dropdown-btn align-content-center text-right">
-                                                    <button type="button"
-                                                            class="btn btn-primary dropdown-toggle dropdown-btn-change justify-content-end"
-                                                            data-toggle="dropdown"
-                                                            style="background-color: white;color: #c92127;border: 2px solid;margin-left: 12px;">
-                                                    </button>
-                                                    <div class="dropdown-menu">
-                                                        <a class="dropdown-item edit-btn"
-                                                        >Sửa</a>
-                                                        <a class="dropdown-item delete-btn">Xóa</a>
+                                            <tr data-id="{{ s[0] }}"> <!-- Lưu book_id vào data-id của thẻ <tr> -->
+                                                <td style="border: 1px solid #adb5bd; padding: 0;">
+                                                    <div class="dropdown col-5 dropdown-btn align-content-center text-right">
+                                                        <button type="button"
+                                                                class="btn btn-primary dropdown-toggle dropdown-btn-change justify-content-end"
+                                                                data-toggle="dropdown"
+                                                                style="background-color: white;color: #c92127;border: 2px solid;margin-left: 12px;">
+                                                        </button>
+                                                        <div class="dropdown-menu">
+                                                            <a class="dropdown-item edit-btn"
+                                                            >Sửa</a>
+                                                            <a class="dropdown-item delete-btn">Xóa</a>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </td>
-                                            <th scope="row" style="border: 1px solid #adb5bd;">
-                                                <div class="media align-items-center">
-                                                    <div class="media-body text-center">
-                                                        <span class="name mb-0 text-sm text-center">{{ s[0] }}</span>
+                                                </td>
+                                                <th scope="row" style="border: 1px solid #adb5bd;">
+                                                    <div class="media align-items-center">
+                                                        <div class="media-body text-center">
+                                                            <span class="name mb-0 text-sm text-center">{{ s[0] }}</span>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </th>
-                                            <td class="budget text-center"
-                                                style="border: 1px solid #adb5bd; max-width: 200px; word-wrap: break-word; overflow: hidden; text-overflow: ellipsis;"
-                                                data-field="name">
-                                                {{s[1]}}
-                                            </td>
+                                                </th>
+                                                <td class="budget text-center"
+                                                    style="border: 1px solid #adb5bd; max-width: 200px; word-wrap: break-word; overflow: hidden; text-overflow: ellipsis;"
+                                                    data-field="name">
+                                                    {{ s[1] }}
+                                                </td>
 
-                                        </tr>
+                                            </tr>
                                         {% endfor %}
                                         </tbody>
                                     </table>
@@ -552,6 +561,7 @@
                     <input type="text" id="name" name="name" required
                            style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ddd;">
                 </div>
+
                 <div class="dropdown-container">
                     <label for="gerneSearch">Thể loại gốc</label>
                     <input type="text" id="gerneSearch" name="gerneName"
@@ -562,13 +572,14 @@
                     <div class="dropdown-list" id="gerneList"
                          style="box-sizing: border-box; width: 100%; top: auto; left: auto; ">
                         {% for genre in genres %}
-                        <div class="dropdown-item" data-value="{{ genre.id }}"
-                             onclick="selectGenre('{{ genre.id }}', '{{ genre.name }}')">
-                            {{ genre.name }}
-                        </div>
+                            <div class="dropdown-item" data-value="{{ genre.id }}"
+                                 onclick="selectGenre('{{ genre.id }}', '{{ genre.name }}')">
+                                {{ genre.name }}
+                            </div>
                         {% endfor %}
                     </div>
                 </div>
+
                 <button type="submit"
                         style="width: 100%; padding: 10px; background-color: #c92127; color: white; border: none; border-radius: 4px; cursor: pointer;margin-top: 20px;">
                     Xác Nhận
@@ -580,17 +591,17 @@
 
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
 
         // Hiển thị modal khi bấm nút "Thêm Thể Loại Mới"
-        document.getElementById('addBookGerneButton').addEventListener('click', function() {
+        document.getElementById('addBookGerneButton').addEventListener('click', function () {
             document.getElementById('addBookGerneModal').style.display = 'flex';
         });
 
         // Đóng modal khi nhấn vào nút đóng (X)
         var closeModalButton = document.getElementById('close-modal');
         if (closeModalButton) {
-            closeModalButton.addEventListener('click', function() {
+            closeModalButton.addEventListener('click', function () {
                 document.getElementById('addBookGerneModal').style.display = 'none';
             });
         }
@@ -631,9 +642,9 @@
     });
 
 
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.edit-btn').forEach(button => {
-            button.addEventListener('click', function(event) {
+            button.addEventListener('click', function (event) {
                 event.preventDefault();
 
                 // Lấy dòng tr và id sách
@@ -666,7 +677,7 @@
                 this.style.display = 'none';
 
                 // Xử lý khi bấm "Cập nhật"
-                updateButton.addEventListener('click', function() {
+                updateButton.addEventListener('click', function () {
                     const updatedData = {};
 
                     // Thu thập dữ liệu từ các ô input
@@ -687,38 +698,38 @@
                     })
                         .then(response => response.json())
                         .then(data => {
-                        if (data.success) {
-                            // Cập nhật giao diện với dữ liệu trả về
-                            const updatedFields = data.updated;
-                            for (const [field, value] of Object.entries(updatedFields)) {
-                                const cell = row.querySelector(`[data-field="${field}"]`);
-                                if (cell) {
-                                    cell.innerHTML = value; // Cập nhật lại nội dung cell
+                            if (data.success) {
+                                // Cập nhật giao diện với dữ liệu trả về
+                                const updatedFields = data.updated;
+                                for (const [field, value] of Object.entries(updatedFields)) {
+                                    const cell = row.querySelector(`[data-field="${field}"]`);
+                                    if (cell) {
+                                        cell.innerHTML = value; // Cập nhật lại nội dung cell
+                                    }
                                 }
+
+                                // Xóa nút "Cập nhật" và hiển thị lại nút "Sửa"
+                                updateButton.remove();
+                                row.querySelector('.edit-btn').style.display = 'inline-block';
+
+                                // Hiển thị lại nút dropdown list
+                                row.querySelectorAll('.dropdown-btn').forEach(dropdown => {
+                                    dropdown.style.display = 'inline-block'; // Hiển thị lại dropdown
+                                });
+                            } else {
+                                alert('Cập nhật thất bại: ' + (data.message || 'Lỗi không xác định'));
                             }
-
-                            // Xóa nút "Cập nhật" và hiển thị lại nút "Sửa"
-                            updateButton.remove();
-                            row.querySelector('.edit-btn').style.display = 'inline-block';
-
-                            // Hiển thị lại nút dropdown list
-                            row.querySelectorAll('.dropdown-btn').forEach(dropdown => {
-                                dropdown.style.display = 'inline-block'; // Hiển thị lại dropdown
-                            });
-                        } else {
-                            alert('Cập nhật thất bại: ' + (data.message || 'Lỗi không xác định'));
-                        }
-                    })
+                        })
                         .catch(error => {
-                        console.error('Error updating book:', error);
-                        alert('Đã xảy ra lỗi trong quá trình cập nhật.');
-                    });
+                            console.error('Error updating book:', error);
+                            alert('Đã xảy ra lỗi trong quá trình cập nhật.');
+                        });
                 });
             });
         });
 
         document.querySelectorAll('.delete-btn').forEach(button => {
-            button.addEventListener('click', function(event) {
+            button.addEventListener('click', function (event) {
                 event.preventDefault();
 
                 // Lấy dòng tr và id sách
@@ -733,19 +744,19 @@
                     })
                         .then(response => response.json())  // Đảm bảo rằng response là JSON
                         .then(data => {
-                        if (data.success) {
-                            // Xóa dòng tr khỏi bảng nếu thành công
-                            row.remove();
-                            alert('Thể loại đã được xóa thành công!');
-                        } else {
-                            // Thông báo lỗi nếu xóa thất bại
-                            alert('Xóa thất bại: ' + (data.message || 'Lỗi không xác định'));
-                        }
-                    })
+                            if (data.success) {
+                                // Xóa dòng tr khỏi bảng nếu thành công
+                                row.remove();
+                                alert('Thể loại đã được xóa thành công!');
+                            } else {
+                                // Thông báo lỗi nếu xóa thất bại
+                                alert('Xóa thất bại: ' + (data.message || 'Lỗi không xác định'));
+                            }
+                        })
                         .catch(error => {
-                        console.error('Error deleting book:', error);
-                        alert('Đã xảy ra lỗi trong quá trình xóa.');
-                    });
+                            console.error('Error deleting book:', error);
+                            alert('Đã xảy ra lỗi trong quá trình xóa.');
+                        });
                 }
             });
         });
@@ -797,7 +808,7 @@
             item.textContent = gerne.name; // Hiển thị tên thể loại
             item.addEventListener("click", () => {
                 gerneSearch.value = gerne.name;
-                gerneSearch.setAttribute('value',gerne.id)
+                gerneSearch.setAttribute('value', gerne.id)
                 gerneList.style.display = "none";
 
                 // Redirect to statistic page with gerne_id
@@ -831,10 +842,8 @@
 <script>
     document.querySelector('#addBookGerneForm').addEventListener('submit', function (event) {
         event.preventDefault();
-
         const name = document.getElementById('name').value
         const gerneName = document.getElementById('gerneSearch').getAttribute('value')
-
 
 
         // Kiểm tra các trường nhập liệu
@@ -858,17 +867,17 @@
             body: JSON.stringify(payload)
         }).then(response => response.json())
             .then(data => {
-            if (data.success) {
-                alert('Thêm thành công!');
-                location.reload();  // Reload trang sau khi thành công
-            } else {
-                alert('Thất bại: ' + data.message);
-            }
-        })
+                if (data.success) {
+                    alert('Thêm thành công!');
+                    location.reload();  // Reload trang sau khi thành công
+                } else {
+                    alert('Thất bại: ' + data.message);
+                }
+            })
             .catch(error => {
-            console.error('Lỗi:', error);
-            alert('Đã xảy ra lỗi trong quá trình.');
-        });
+                console.error('Lỗi:', error);
+                alert('Đã xảy ra lỗi trong quá trình.');
+            });
     });
 </script>
 </body>

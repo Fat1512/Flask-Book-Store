@@ -309,8 +309,9 @@ def add_bookgerne():
 
     name = data.get('name')
     gerne_id = int(data.get('parent_id'))
+    attributes = data.get('attributes')
 
-    add_gerne(name, gerne_id)
+    add_gerne(name, gerne_id, attributes)
 
     return jsonify({'success': True, 'message': 'Thể loại mới đã được thêm'})
 

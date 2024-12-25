@@ -2,6 +2,7 @@ import pdb
 
 from flask_login import current_user
 
+from app.authentication.login_required import customer_required_api
 from app.dao.CartDao import delete_cart_item
 from app.dao.OrderDAO import *
 from app.dao.PaymentDAO import create_payment
@@ -75,6 +76,7 @@ def offline_order():
 
 
 @order_api_bp.route('/onlineOrder', methods=['POST'])
+@customer_required_api
 def online_order():
     data = request.json
     order = create_online_order(current_user.get_id(), data)
@@ -91,6 +93,7 @@ def online_order():
 
 
 @order_api_bp.route('/orderCancellation', methods=['POST'])
+@customer_required_api
 def cancel_order():
     data = request.json
     order_cancellation = create_order_cancellation(data)

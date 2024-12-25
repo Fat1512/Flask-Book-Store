@@ -3,6 +3,7 @@ import pdb
 from flask import Blueprint, request, jsonify
 from flask_login import current_user
 
+from app.authentication.login_required import customer_required_api
 from app.dao.CommentDAO import create_comment
 from app.dao.OrderDAO import find_add_by_user_id
 from app.dao.UserDao import add_address, delete_address, update_address
@@ -13,6 +14,7 @@ account_rest_bp = Blueprint('account_rest', __name__)
 
 
 @account_rest_bp.route('/purchase', methods=['GET'])
+@customer_required_api
 def get_purchase():
     status = request.args.get('status')
     page = request.args.get('page', type=int, default=1)
@@ -49,6 +51,7 @@ def add_address_user():
 
 
 @account_rest_bp.route('/address/<address_id>', methods=['PUT'])
+@customer_required_api
 def update_address_user(address_id):
     body = request.form
     full_name = body['name'].split(' ')
@@ -70,6 +73,7 @@ def update_address_user(address_id):
 
 
 @account_rest_bp.route('/address/<address_id>', methods=['DELETE'])
+@customer_required_api
 def delete_add_user(address_id):
     address = delete_address(current_user.get_id(), int(address_id))
     return jsonify({
@@ -80,6 +84,7 @@ def delete_add_user(address_id):
 
 
 @account_rest_bp.route('/comment', methods=['POST'])
+@customer_required_api
 def post_comment():
     data = request.json
     comment = create_comment(current_user.get_id(), data)

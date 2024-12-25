@@ -1,3 +1,5 @@
+from app.authentication.login_required import employee_sale_required, employee_manager_warehouse_required, \
+    employee_manager_required, employee_required
 from app.dao.OrderDAO import *
 from app.model.Book import BookFormat
 from app.dao.SearchDAO import search_book
@@ -21,58 +23,6 @@ from app.model.BookGerne import BookGerne
 employee_bp = Blueprint('employee', __name__)
 
 
-def employee_required(f):
-    def wrap(*args, **kwargs):
-        print("yest1", current_user.is_authenticated)
-        if not current_user.is_authenticated:
-            return redirect(url_for('account.employee_login'))
-        if current_user.user_role not in [UserRole.EMPLOYEE_MANAGER, UserRole.EMPLOYEE_MANAGER_WAREHOUSE,
-                                          UserRole.EMPLOYEE_SALE, UserRole.ADMIN]:
-            return redirect(url_for('account.employee_login'))
-        return f(*args, **kwargs)
-
-    wrap.__name__ = f.__name__
-    return wrap
-
-
-
-def employee_sale_required(f):
-    def wrap(*args, **kwargs):
-        print("yest1", current_user.is_authenticated)
-        if not current_user.is_authenticated:
-            return redirect(url_for('account.employee_login'))
-        if current_user.user_role not in [UserRole.EMPLOYEE_SALE, UserRole.ADMIN]:
-            return redirect(url_for('account.employee_login'))
-        return f(*args, **kwargs)
-
-    wrap.__name__ = f.__name__
-    return wrap
-
-
-def employee_manager_warehouse_required(f):
-    def wrap(*args, **kwargs):
-        print("yest1", current_user.is_authenticated)
-        if not current_user.is_authenticated:
-            return redirect(url_for('account.employee_login'))
-        if current_user.user_role not in [UserRole.EMPLOYEE_MANAGER_WAREHOUSE, UserRole.ADMIN]:
-            return redirect(url_for('account.employee_login'))
-        return f(*args, **kwargs)
-
-    wrap.__name__ = f.__name__
-    return wrap
-
-
-def employee_manager_required(f):
-    def wrap(*args, **kwargs):
-        print("yest1", current_user.is_authenticated)
-        if not current_user.is_authenticated:
-            return redirect(url_for('account.employee_login'))
-        if current_user.user_role not in [UserRole.EMPLOYEE_MANAGER, UserRole.ADMIN]:
-            return redirect(url_for('account.employee_login'))
-        return f(*args, **kwargs)
-
-    wrap.__name__ = f.__name__
-    return wrap
 
 
 @employee_bp.route("/checkout")
