@@ -1,212 +1,270 @@
 {% extends 'admin/layout/base.html' %}
 {% block title %} Quản lí thể loại {% endblock %}
 {% block css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/adminStatistic.css') }}">
-<style>
-    .modal {
-        display: none; /* Modal mặc định ẩn */
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5); /* Nền mờ */
-        justify-content: center;
-        align-items: center;
-        z-index: 1000000000; /* Đảm bảo modal nằm trên các phần tử khác */
-    }
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/adminStatistic.css') }}">
+    <style>
+        .modal {
+            display: none; /* Modal mặc định ẩn */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Nền mờ */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000000000; /* Đảm bảo modal nằm trên các phần tử khác */
+        }
 
-    .modal-content {
-        background-color: white;
-        padding: 20px;
-        border-radius: 5px;
-        width: 400px;
-        position: relative;
-    }
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            width: 400px;
+            position: relative;
+        }
 
-    .close-modal {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        font-size: 30px;
-        cursor: pointer;
-    }
-</style>
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 30px;
+            cursor: pointer;
+        }
+    </style>
 {% endblock %}
 {% block js %}
-<script src="{{ url_for('static', filename='js/adminAccountManager.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/adminAccountManager.js') }}"></script>
 {% endblock %}
 {% block content %}
-<div class="header bg-primary pb-6">
-    <div class="container-fluid">
-        <div class="header-body">
-            <div class="row align-items-center py-4" style="display: flex; width: 100%;">
-                <!-- Div 1: 23% -->
-                <div class="col-lg-6 col-7" style="flex: 0 0 23%; max-width: 23%;">
-                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
-                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
-                            <li class="breadcrumb-item"><a href="/admin/statistic-revenue"><i
-                                    class="fas fa-home"></i></a></li>
-                            <li class="breadcrumb-item"><a href="/admin/statistic-revenue">Quản lí thể loại</a>
-                            </li>
-                        </ol>
-                    </nav>
+    <div class="header bg-primary pb-6">
+        <div class="container-fluid">
+            <div class="header-body">
+                <div class="row align-items-center py-4" style="display: flex; width: 100%;">
+                    <!-- Div 1: 23% -->
+                    <div class="col-lg-6 col-7" style="flex: 0 0 23%; max-width: 23%;">
+                        <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                            <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                                <li class="breadcrumb-item"><a href="/admin/statistic-revenue"><i
+                                        class="fas fa-home"></i></a></li>
+                                <li class="breadcrumb-item"><a href="/admin/statistic-revenue">Quản lí thể loại</a>
+                                </li>
+                            </ol>
+                        </nav>
+                    </div>
+
+                    <!-- Div 2: 59% -->
+                    <div class="col-lg-6 col-7" style="flex: 0 0 59%; max-width: 59%;">
+                        <form class="" style="display: flex; gap: 10px; align-items: center;">
+                            <!--                            <div class="dropdown-container">-->
+                            <!--                                <input type="text" id="gerneSearch"-->
+                            <!--                                       class="dropdown-search product-publisher" autocomplete="off"-->
+                            <!--                                       placeholder="Chọn mục thống kê" style="box-sizing: border-box; width: 90%">-->
+                            <!--                                <div class="dropdown-list" id="gerneList"-->
+                            <!--                                     style="box-sizing: border-box; width: 90%"></div>-->
+                            <!--                            </div>-->
+                            <!--                                                        <div style="flex: 1;">-->
+                            <!--                                                            <input type="date" name="from_date" style="width: 100%; box-sizing: border-box;">-->
+                            <!--                                                        </div>-->
+                            <!--                                                        <div style="flex: 1;">-->
+                            <!--                                                            <input type="date" name="to_date" style="width: 100%; box-sizing: border-box;">-->
+                            <!--                                                        </div>-->
+                            <!--                                                        <div style="flex: 1;">-->
+                            <!--                                                            <input type="month" name="selected_month" style="width: 100%; box-sizing: border-box;">-->
+                            <!--                                                        </div>-->
+
+                            <div style="">
+                                <input type="text" name="kw" placeholder="Nhập từ khóa"
+                                       style="box-sizing: border-box;">
+                            </div>
+                            <div>
+                                <input type="submit" value="Xác nhận" class="btn btn-neutral"
+                                       style="cursor: pointer;background-color: #2196F3; color: white">
+                            </div>
+                            <div>
+                                <!-- Nút để hiển thị form thêm thể loại mới -->
+                                <input type="button" value="Thêm Thể Loại Mới" class="btn btn-neutral"
+                                       style="cursor: pointer; background-color: #2196F3; color: white"
+                                       id="addBookGerneButton">
+                            </div>
+
+                            <!--                            <div>-->
+                            <!--                                <input type="submit" value="SL Ban ra" class="btn btn-neutral"-->
+                            <!--                                       style="cursor: pointer;background-color: #2196F3; color: white">-->
+                            <!--                            </div>-->
+                            <!--                            <div>-->
+                            <!--                                <input type="submit" value="SL Con lai" class="btn btn-neutral"-->
+                            <!--                                       style="cursor: pointer;background-color: #2196F3; color: white">-->
+                            <!--                            </div>-->
+                        </form>
+                    </div>
+
+                    <!-- Div 3: 18% -->
+                    <!--                    <div class="col-lg-6 col-5 text-right" style="flex: 0 0 18%; max-width: 18%;">-->
+                    <!--                        <a href="#" class="btn btn-neutral" id="statistic-table-check">Bảng</a>-->
+                    <!--                        <a href="#" class="btn btn-neutral" id="statistic-chart-check">Biểu đồ</a>-->
+                    <!--                    </div>-->
                 </div>
 
-                <!-- Div 2: 59% -->
-                <div class="col-lg-6 col-7" style="flex: 0 0 59%; max-width: 59%;">
-                    <form class="" style="display: flex; gap: 10px; align-items: center;">
-                        <!--                            <div class="dropdown-container">-->
-                        <!--                                <input type="text" id="gerneSearch"-->
-                        <!--                                       class="dropdown-search product-publisher" autocomplete="off"-->
-                        <!--                                       placeholder="Chọn mục thống kê" style="box-sizing: border-box; width: 90%">-->
-                        <!--                                <div class="dropdown-list" id="gerneList"-->
-                        <!--                                     style="box-sizing: border-box; width: 90%"></div>-->
-                        <!--                            </div>-->
-                        <!--                                                        <div style="flex: 1;">-->
-                        <!--                                                            <input type="date" name="from_date" style="width: 100%; box-sizing: border-box;">-->
-                        <!--                                                        </div>-->
-                        <!--                                                        <div style="flex: 1;">-->
-                        <!--                                                            <input type="date" name="to_date" style="width: 100%; box-sizing: border-box;">-->
-                        <!--                                                        </div>-->
-                        <!--                                                        <div style="flex: 1;">-->
-                        <!--                                                            <input type="month" name="selected_month" style="width: 100%; box-sizing: border-box;">-->
-                        <!--                                                        </div>-->
-
-                        <div style="">
-                            <input type="text" name="kw" placeholder="Nhập từ khóa"
-                                   style="box-sizing: border-box;">
-                        </div>
-                        <div>
-                            <input type="submit" value="Xác nhận" class="btn btn-neutral"
-                                   style="cursor: pointer;background-color: #2196F3; color: white">
-                        </div>
-                        <div>
-                            <!-- Nút để hiển thị form thêm thể loại mới -->
-                            <input type="button" value="Thêm Thể Loại Mới" class="btn btn-neutral"
-                                   style="cursor: pointer; background-color: #2196F3; color: white"
-                                   id="addBookGerneButton">
-                        </div>
-
-                        <!--                            <div>-->
-                        <!--                                <input type="submit" value="SL Ban ra" class="btn btn-neutral"-->
-                        <!--                                       style="cursor: pointer;background-color: #2196F3; color: white">-->
-                        <!--                            </div>-->
-                        <!--                            <div>-->
-                        <!--                                <input type="submit" value="SL Con lai" class="btn btn-neutral"-->
-                        <!--                                       style="cursor: pointer;background-color: #2196F3; color: white">-->
-                        <!--                            </div>-->
-                    </form>
-                </div>
-
-                <!-- Div 3: 18% -->
-                <!--                    <div class="col-lg-6 col-5 text-right" style="flex: 0 0 18%; max-width: 18%;">-->
-                <!--                        <a href="#" class="btn btn-neutral" id="statistic-table-check">Bảng</a>-->
-                <!--                        <a href="#" class="btn btn-neutral" id="statistic-chart-check">Biểu đồ</a>-->
-                <!--                    </div>-->
             </div>
-
         </div>
     </div>
-</div>
-<!-- Page content -->
-<div class="container-fluid mt--6" id="statistic-table" style="display: block;">
-    <div class="row justify-content-center">
-        <div class=" col ">
-            <div class="card" style="margin-bottom: 0">
-                <div class="card-header bg-transparent" style="display: flex; justify-content: space-between">
-                    <h3 class="mb-0">Danh sách thể loại</h3>
-                    <ul class="pagination" style="margin: 0; display: flex; justify-content: center;">
-                        <!-- Nút Previous -->
-                        <li class="page-item{% if books['current_page'] == 1 %} disabled {% endif %}">
-                            <a class="page-link"
-                               href="?page={{ books['current_page'] - 1 }}{% if request.args.get('gerne_id') %}&gerne_id={{ request.args.get('gerne_id') }}{% endif %}{% if request.args.get('kw') %}&kw={{ request.args.get('kw') }}{% endif %}">
-                                <i class="fas fa-angle-left"></i>
-                                <span class="sr-only">Previous</span>
-                            </a>
-                        </li>
+    <!-- Page content -->
+    <div class="container-fluid mt--6" id="statistic-table" style="display: block;">
+        <div class="row justify-content-center">
+            <div class=" col ">
+                <div class="card" style="margin-bottom: 0">
+                    <div class="card-header bg-transparent" style="display: flex; justify-content: space-between">
+                        <h3 class="mb-0">Danh sách thể loại</h3>
+                        <ul class="pagination" style="margin: 0; display: flex; justify-content: center;">
+                            <!-- Nút Previous -->
+                            <li class="page-item{% if books['current_page'] == 1 %} disabled {% endif %}">
+                                <a class="page-link"
+                                   href="?page=
 
-                        <!-- Hiển thị các trang -->
-                        {% for page in books['pages'] %}
-                        <li class="page-item{% if page == books['current_page'] %} active {% endif %}">
-                            <a class="page-link"
-                               href="?page={{ page }}{% if request.args.get('gerne_id') %}&gerne_id={{ request.args.get('gerne_id') }}{% endif %}{% if request.args.get('kw') %}&kw={{ request.args.get('kw') }}{% endif %}">
-                                {{ page }}
-                            </a>
-                        </li>
-                        {% endfor %}
 
-                        <!-- Nút Next -->
-                        <li class="page-item{% if books['current_page'] == books['total_page'] %} disabled {% endif %}">
-                            <a class="page-link"
-                               href="?page={{ books['current_page'] + 1 }}{% if request.args.get('gerne_id') %}&gerne_id={{ request.args.get('gerne_id') }}{% endif %}{% if request.args.get('kw') %}&kw={{ request.args.get('kw') }}{% endif %}">
-                                <i class="fas fa-angle-right"></i>
-                                <span class="sr-only">Next</span>
-                            </a>
-                        </li>
-                    </ul>
 
-                </div>
 
-                <div class="card-body" style="padding-top: 0">
-                    <div class="row icon-examples">
-                        <div class="col-12">
-                            <div class="table-responsive"
-                                 style="max-height: 507px; overflow-y: auto; border: 1px solid #adb5bd; border-radius: 5px;">
-                                <table class="table align-items-center table-flush"
-                                       style="border-collapse: collapse; width: 100%; border: 1px solid #adb5bd;">
-                                    <thead class="thead-light" style="position: sticky; top: 0; z-index: 1;">
-                                    <tr>
-                                        <th scope="col" class="sort text-center" data-sort="budget"
-                                            style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
-                                            Cap nhat
-                                        </th>
-                                        <th scope="col" class="sort text-center" data-sort="budget"
-                                            style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
-                                            Ma the loai
-                                        </th>
-                                        <th scope="col" class="sort text-center" data-sort="name"
-                                            style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff; max-width: 200px; word-wrap: break-word;">
-                                            Ten the loai
-                                        </th>
 
-                                    </tr>
-                                    </thead>
-                                    <tbody class="list">
-                                    {% for s in stats %}
-                                    <tr data-id="{{ s[0] }}"> <!-- Lưu book_id vào data-id của thẻ <tr> -->
-                                        <td style="border: 1px solid #adb5bd; padding: 0;">
-                                            <div class="dropdown col-5 dropdown-btn align-content-center text-right">
-                                                <button type="button"
-                                                        class="btn btn-primary dropdown-toggle dropdown-btn-change justify-content-end"
-                                                        data-toggle="dropdown"
-                                                        style="background-color: white;color: #c92127;border: 2px solid;margin-left: 12px;">
-                                                </button>
-                                                <div class="dropdown-menu">
-                                                    <a class="dropdown-item edit-btn"
-                                                    >Sửa</a>
-                                                    <a class="dropdown-item delete-btn">Xóa</a>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <th scope="row" style="border: 1px solid #adb5bd;">
-                                            <div class="media align-items-center">
-                                                <div class="media-body text-center">
-                                                    <span class="name mb-0 text-sm text-center">{{ s[0] }}</span>
-                                                </div>
-                                            </div>
-                                        </th>
-                                        <td class="budget text-center"
-                                            style="border: 1px solid #adb5bd; max-width: 200px; word-wrap: break-word; overflow: hidden; text-overflow: ellipsis;"
-                                            data-field="name">
-                                            {{s[1]}}
-                                        </td>
 
-                                    </tr>
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
+
+
+
+
+
+
+
+
+
+
+
+
+                                           {{ books['current_page'] - 1 }}{% if request.args.get('gerne_id') %}&gerne_id={{ request.args.get('gerne_id') }}{% endif %}{% if request.args.get('kw') %}&kw={{ request.args.get('kw') }}{% endif %}">
+                                    <i class="fas fa-angle-left"></i>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                            </li>
+
+                            <!-- Hiển thị các trang -->
+                            {% for page in books['pages'] %}
+                                <li class="page-item{% if page == books['current_page'] %} active {% endif %}">
+                                    <a class="page-link"
+                                       href="?page=
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                               {{ page }}{% if request.args.get('gerne_id') %}&gerne_id={{ request.args.get('gerne_id') }}{% endif %}{% if request.args.get('kw') %}&kw={{ request.args.get('kw') }}{% endif %}">
+                                        {{ page }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+
+                            <!-- Nút Next -->
+                            <li class="page-item{% if books['current_page'] == books['total_page'] %} disabled {% endif %}">
+                                <a class="page-link"
+                                   href="?page=
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                           {{ books['current_page'] + 1 }}{% if request.args.get('gerne_id') %}&gerne_id={{ request.args.get('gerne_id') }}{% endif %}{% if request.args.get('kw') %}&kw={{ request.args.get('kw') }}{% endif %}">
+                                    <i class="fas fa-angle-right"></i>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </li>
+                        </ul>
+
+                    </div>
+
+                    <div class="card-body" style="padding-top: 0">
+                        <div class="row icon-examples">
+                            <div class="col-12">
+                                <div class="table-responsive"
+                                     style="max-height: 507px; overflow-y: auto; border: 1px solid #adb5bd; border-radius: 5px;">
+                                    <table class="table align-items-center table-flush"
+                                           style="border-collapse: collapse; width: 100%; border: 1px solid #adb5bd;">
+                                        <thead class="thead-light" style="position: sticky; top: 0; z-index: 1;">
+                                        <tr>
+                                            <th scope="col" class="sort text-center" data-sort="budget"
+                                                style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
+                                                Cap nhat
+                                            </th>
+                                            <th scope="col" class="sort text-center" data-sort="budget"
+                                                style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff;">
+                                                Ma the loai
+                                            </th>
+                                            <th scope="col" class="sort text-center" data-sort="name"
+                                                style="border: 1px solid #adb5bd;background-color: #c92127; color: #ffffff; max-width: 200px; word-wrap: break-word;">
+                                                Ten the loai
+                                            </th>
+
+                                        </tr>
+                                        </thead>
+                                        <tbody class="list">
+                                        {% for s in stats %}
+                                            <tr data-id="{{ s[0] }}"> <!-- Lưu book_id vào data-id của thẻ <tr> -->
+                                                <td style="border: 1px solid #adb5bd; padding: 0;">
+                                                    <div class="dropdown col-5 dropdown-btn align-content-center text-right">
+                                                        <button type="button"
+                                                                class="btn btn-primary dropdown-toggle dropdown-btn-change justify-content-end"
+                                                                data-toggle="dropdown"
+                                                                style="background-color: white;color: #c92127;border: 2px solid;margin-left: 12px;">
+                                                        </button>
+                                                        <div class="dropdown-menu">
+                                                            <a class="dropdown-item edit-btn"
+                                                            >Sửa</a>
+                                                            <a class="dropdown-item delete-btn">Xóa</a>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <th scope="row" style="border: 1px solid #adb5bd;">
+                                                    <div class="media align-items-center">
+                                                        <div class="media-body text-center">
+                                                            <span class="name mb-0 text-sm text-center">{{ s[0] }}</span>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <td class="budget text-center"
+                                                    style="border: 1px solid #adb5bd; max-width: 200px; word-wrap: break-word; overflow: hidden; text-overflow: ellipsis;"
+                                                    data-field="name">
+                                                    {{ s[1] }}
+                                                </td>
+
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -214,320 +272,356 @@
             </div>
         </div>
     </div>
-</div>
-<div id="addBookGerneModal" class="modal" style="display: none;">
-    <div class="modal-content"
-         style="width: 400px; margin: auto; background-color: white; padding: 20px; border-radius: 8px; position: relative;">
-        <!-- Nút đóng modal -->
-        <span id="close-modal" style="position: absolute; top: 10px; right: 15px; cursor: pointer;">&times;</span>
-        <h4 style="text-align: center; color: #333;">Thêm Thể Loại Mới</h4>
-        <form id="addBookGerneForm">
-            <div style="margin-bottom: 15px;">
-                <label for="name">Tên Thể Loại</label>
-                <input type="text" id="name" name="name" required
-                       style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ddd;">
-            </div>
-            <div class="dropdown-container">
-                <label for="gerneSearch">Thể loại gốc</label>
-                <input type="text" id="gerneSearch" name="gerneName"
-                       class="dropdown-search product-publisher" autocomplete="off"
-                       placeholder="" style="box-sizing: border-box; width: 100%; margin:0;"
-                       value="{{ genres_dict.get(request.args.get('gerne_id'), '') }}" readonly
-                       oninput="searchGenres()">
-                <div class="dropdown-list" id="gerneList"
-                     style="box-sizing: border-box; width: 100%; top: auto; left: auto; ">
-                    {% for genre in genres %}
-                    <div class="dropdown-item" data-value="{{ genre.id }}"
-                         onclick="selectGenre('{{ genre.id }}', '{{ genre.name }}')">
-                        {{ genre.name }}
-                    </div>
-                    {% endfor %}
+    <div id="addBookGerneModal" class="modal" style="display: none;">
+        <div class="modal-content"
+             style="width: 600px; margin: auto; background-color: white; padding: 20px; border-radius: 8px; position: relative;">
+            <!-- Nút đóng modal -->
+            <span id="close-modal" style="position: absolute; top: 10px; right: 15px; cursor: pointer;">&times;</span>
+            <h4 style="text-align: center; color: #333;">Thêm Thể Loại Mới</h4>
+            <form id="addBookGerneForm">
+                <div style="margin-bottom: 15px;">
+                    <label for="name">Tên Thể Loại</label>
+                    <input type="text" id="name" name="name" required
+                           style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ddd;">
                 </div>
-            </div>
-            <button type="submit"
-                    style="width: 100%; padding: 10px; background-color: #c92127; color: white; border: none; border-radius: 4px; cursor: pointer;margin-top: 20px;">
-                Xác Nhận
-            </button>
-        </form>
-    </div>
-</div>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
+                <div class="dropdown-container">
+                    <label for="gerneSearch">Thể loại gốc</label>
+                    <input type="text" id="gerneSearch" name="gerneName"
+                           class="dropdown-search product-publisher" autocomplete="off"
+                           placeholder="" style="box-sizing: border-box; width: 100%; margin:0;"
+                           value="{{ genres_dict.get(request.args.get('gerne_id'), '') }}" readonly
+                           oninput="searchGenres()">
+                    <div class="dropdown-list" id="gerneList"
+                         style="box-sizing: border-box; width: 100%; top: auto; left: auto; ">
+                        {% for genre in genres %}
+                            <div class="dropdown-item" data-value="{{ genre.id }}"
+                                 onclick="selectGenre('{{ genre.id }}', '{{ genre.name }}')">
+                                {{ genre.name }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div id="attribute-gerne" class="mt-2">
+                        <div class="attribute-list">
 
-        // Hiển thị modal khi bấm nút "Thêm Thể Loại Mới"
-        document.getElementById('addBookGerneButton').addEventListener('click', function() {
-            document.getElementById('addBookGerneModal').style.display = 'flex';
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <label for="gerneSearch">Các thuộc tính khác</label>
+                            <button class="btn-add-attribute"> +</button>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit"
+                        style="width: 100%; padding: 10px; background-color: #c92127; color: white; border: none; border-radius: 4px; cursor: pointer;margin-top: 20px;">
+                    Xác Nhận
+                </button>
+            </form>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // Hiển thị modal khi bấm nút "Thêm Thể Loại Mới"
+            document.getElementById('addBookGerneButton').addEventListener('click', function () {
+                document.getElementById('addBookGerneModal').style.display = 'flex';
+            });
+
+            // Đóng modal khi nhấn vào nút đóng (X)
+            var closeModalButton = document.getElementById('close-modal');
+            if (closeModalButton) {
+                closeModalButton.addEventListener('click', function () {
+                    document.getElementById('addBookGerneModal').style.display = 'none';
+                });
+            }
+
+            //    <!--        // Xử lý gửi form khi người dùng nhấn "Xác Nhận"-->
+            //    <!--        document.getElementById('addBookGerneForm').addEventListener('submit', function(event) {-->
+            //    <!--            event.preventDefault(); // Ngăn không cho form reload trang-->
+            //
+            //    <!--            const name = document.getElementById('name').value;-->
+            //
+            //    <!--            const payload = { name, lft, rgt };-->
+            //
+            //    <!--            fetch('/admin/add-bookgerne', {-->
+            //    <!--                method: 'POST',-->
+            //    <!--                headers: {-->
+            //    <!--                    'Content-Type': 'application/json',-->
+            //    <!--                },-->
+            //    <!--                body: JSON.stringify(payload),-->
+            //    <!--            })-->
+            //    <!--            .then(response => response.json())-->
+            //    <!--            .then(data => {-->
+            //    <!--                console.log(data); // In ra dữ liệu để kiểm tra-->
+            //    <!--                if (data.success) {-->
+            //    <!--                    alert('Thêm thành công: ' + data.message);-->
+            //    <!--                    location.reload(); // Reload lại trang để cập nhật bảng-->
+            //    <!--                } else {-->
+            //    <!--                    // Nếu không thành công, hiển thị thông báo chi tiết từ server-->
+            //    <!--                    alert('Thêm thất bại: ' + data.message + (data.error ? '\nLỗi chi tiết: ' + data.error : ''));-->
+            //    <!--                }-->
+            //    <!--            })-->
+            //    <!--            .catch(error => {-->
+            //    <!--                // Hiển thị lỗi chi tiết trong console và thông báo cho người dùng-->
+            //    <!--                console.log(error.message)-->
+            //    <!--                console.error('Lỗi khi thêm thể loại:', error);-->
+            //    <!--                alert('Đã xảy ra lỗi trong quá trình thêm. Chi tiết: ' + error.message);-->
+            //    <!--            });-->
+            //    <!--        });-->
         });
 
-        // Đóng modal khi nhấn vào nút đóng (X)
-        var closeModalButton = document.getElementById('close-modal');
-        if (closeModalButton) {
-            closeModalButton.addEventListener('click', function() {
-                document.getElementById('addBookGerneModal').style.display = 'none';
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.edit-btn').forEach(button => {
+                button.addEventListener('click', function (event) {
+                    event.preventDefault();
+
+                    // Lấy dòng tr và id sách
+                    const row = this.closest('tr');
+                    const bookId = row.getAttribute('data-id');
+
+                    // Chuyển các ô dữ liệu thành input
+                    row.querySelectorAll('.budget').forEach(cell => {
+                        const cellContent = cell.textContent.trim();
+                        const field = cell.dataset.field; // Lấy tên trường từ data-field
+                        if (field) {
+                            cell.innerHTML = `<input type="text" value="${cellContent}" class="edit-input" data-field="${field}">`;
+                        }
+                    });
+
+                    // Ẩn dropdown list khi chỉnh sửa
+                    row.querySelectorAll('.dropdown-btn').forEach(dropdown => {
+                        dropdown.style.display = 'none'; // Ẩn dropdown
+                    });
+
+                    // Thêm nút "Cập nhật"
+                    const updateButton = document.createElement('button');
+                    updateButton.style.marginLeft = '15px';
+                    updateButton.style.padding = '12px';
+                    updateButton.textContent = 'Cập nhật';
+                    updateButton.className = 'update-btn btn btn-success btn-sm';
+                    row.querySelector('td:first-child').appendChild(updateButton);
+
+                    // Ẩn nút "Sửa"
+                    this.style.display = 'none';
+
+                    // Xử lý khi bấm "Cập nhật"
+                    updateButton.addEventListener('click', function () {
+                        const updatedData = {};
+
+                        // Thu thập dữ liệu từ các ô input
+                        row.querySelectorAll('.edit-input').forEach(input => {
+                            const field = input.dataset.field;
+                            updatedData[field] = input.value;
+                        });
+
+                        console.log('Updated data being sent:', updatedData);
+
+                        // Gửi yêu cầu POST để cập nhật
+                        fetch(`/update-bookgerne/${bookId}`, {  // Đổi URL này
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(updatedData)
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    if (data.success) {
+                                        alert('Thể loại đã được cập nhật thành công!');
+                                    }
+
+                                    const updatedFields = data.updated;
+                                    for (const [field, value] of Object.entries(updatedFields)) {
+                                        const cell = row.querySelector(`[data-field="${field}"]`);
+                                        if (cell) {
+                                            cell.innerHTML = value; // Cập nhật lại nội dung cell
+                                        }
+                                    }
+
+                                    // Xóa nút "Cập nhật" và hiển thị lại nút "Sửa"
+                                    updateButton.remove();
+                                    row.querySelector('.edit-btn').style.display = 'inline-block';
+
+                                    // Hiển thị lại nút dropdown list
+                                    row.querySelectorAll('.dropdown-btn').forEach(dropdown => {
+                                        dropdown.style.display = 'inline-block'; // Hiển thị lại dropdown
+                                    });
+                                } else {
+                                    alert('Cập nhật thất bại: ' + (data.message || 'Lỗi không xác định'));
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error updating book:', error);
+                                alert('Đã xảy ra lỗi trong quá trình cập nhật.');
+                            });
+                    });
+                });
             });
-        }
 
-        //    <!--        // Xử lý gửi form khi người dùng nhấn "Xác Nhận"-->
-        //    <!--        document.getElementById('addBookGerneForm').addEventListener('submit', function(event) {-->
-        //    <!--            event.preventDefault(); // Ngăn không cho form reload trang-->
-        //
-        //    <!--            const name = document.getElementById('name').value;-->
-        //
-        //    <!--            const payload = { name, lft, rgt };-->
-        //
-        //    <!--            fetch('/admin/add-bookgerne', {-->
-        //    <!--                method: 'POST',-->
-        //    <!--                headers: {-->
-        //    <!--                    'Content-Type': 'application/json',-->
-        //    <!--                },-->
-        //    <!--                body: JSON.stringify(payload),-->
-        //    <!--            })-->
-        //    <!--            .then(response => response.json())-->
-        //    <!--            .then(data => {-->
-        //    <!--                console.log(data); // In ra dữ liệu để kiểm tra-->
-        //    <!--                if (data.success) {-->
-        //    <!--                    alert('Thêm thành công: ' + data.message);-->
-        //    <!--                    location.reload(); // Reload lại trang để cập nhật bảng-->
-        //    <!--                } else {-->
-        //    <!--                    // Nếu không thành công, hiển thị thông báo chi tiết từ server-->
-        //    <!--                    alert('Thêm thất bại: ' + data.message + (data.error ? '\nLỗi chi tiết: ' + data.error : ''));-->
-        //    <!--                }-->
-        //    <!--            })-->
-        //    <!--            .catch(error => {-->
-        //    <!--                // Hiển thị lỗi chi tiết trong console và thông báo cho người dùng-->
-        //    <!--                console.log(error.message)-->
-        //    <!--                console.error('Lỗi khi thêm thể loại:', error);-->
-        //    <!--                alert('Đã xảy ra lỗi trong quá trình thêm. Chi tiết: ' + error.message);-->
-        //    <!--            });-->
-        //    <!--        });-->
-    });
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', function (event) {
+                    event.preventDefault();
 
+                    // Lấy dòng tr và id sách
+                    const row = this.closest('tr');
+                    const bookId = row.getAttribute('data-id');
 
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.edit-btn').forEach(button => {
-            button.addEventListener('click', function(event) {
-                event.preventDefault();
-
-                // Lấy dòng tr và id sách
-                const row = this.closest('tr');
-                const bookId = row.getAttribute('data-id');
-
-                // Chuyển các ô dữ liệu thành input
-                row.querySelectorAll('.budget').forEach(cell => {
-                    const cellContent = cell.textContent.trim();
-                    const field = cell.dataset.field; // Lấy tên trường từ data-field
-                    if (field) {
-                        cell.innerHTML = `<input type="text" value="${cellContent}" class="edit-input" data-field="${field}">`;
+                    // Hiển thị thông báo xác nhận trước khi xóa
+                    if (confirm('Bạn có chắc chắn muốn xóa sách này không?')) {
+                        // Gửi yêu cầu POST để xóa sách
+                        fetch(`/delete-bookgerne/${bookId}`, {  // Đảm bảo URL đúng
+                            method: 'POST',
+                        })
+                            .then(response => response.json())  // Đảm bảo rằng response là JSON
+                            .then(data => {
+                                if (data.success) {
+                                    // Xóa dòng tr khỏi bảng nếu thành công
+                                    row.remove();
+                                    alert('Thể loại đã được xóa thành công!');
+                                } else {
+                                    // Thông báo lỗi nếu xóa thất bại
+                                    alert('Xóa thất bại: ' + (data.message || 'Lỗi không xác định'));
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error deleting book:', error);
+                                alert('Đã xảy ra lỗi trong quá trình xóa.');
+                            });
                     }
                 });
-
-                // Ẩn dropdown list khi chỉnh sửa
-                row.querySelectorAll('.dropdown-btn').forEach(dropdown => {
-                    dropdown.style.display = 'none'; // Ẩn dropdown
-                });
-
-                // Thêm nút "Cập nhật"
-                const updateButton = document.createElement('button');
-                updateButton.style.marginLeft = '15px';
-                updateButton.style.padding = '12px';
-                updateButton.textContent = 'Cập nhật';
-                updateButton.className = 'update-btn btn btn-success btn-sm';
-                row.querySelector('td:first-child').appendChild(updateButton);
-
-                // Ẩn nút "Sửa"
-                this.style.display = 'none';
-
-                // Xử lý khi bấm "Cập nhật"
-                updateButton.addEventListener('click', function() {
-                    const updatedData = {};
-
-                    // Thu thập dữ liệu từ các ô input
-                    row.querySelectorAll('.edit-input').forEach(input => {
-                        const field = input.dataset.field;
-                        updatedData[field] = input.value;
-                    });
-
-                    console.log('Updated data being sent:', updatedData);
-
-                    // Gửi yêu cầu POST để cập nhật
-                    fetch(`/update-bookgerne/${bookId}`, {  // Đổi URL này
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(updatedData)
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                        if (data.success) {
-                            if (data.success) {
-                                alert('Thể loại đã được cập nhật thành công!');
-                            }
-
-                            const updatedFields = data.updated;
-                            for (const [field, value] of Object.entries(updatedFields)) {
-                                const cell = row.querySelector(`[data-field="${field}"]`);
-                                if (cell) {
-                                    cell.innerHTML = value; // Cập nhật lại nội dung cell
-                                }
-                            }
-
-                            // Xóa nút "Cập nhật" và hiển thị lại nút "Sửa"
-                            updateButton.remove();
-                            row.querySelector('.edit-btn').style.display = 'inline-block';
-
-                            // Hiển thị lại nút dropdown list
-                            row.querySelectorAll('.dropdown-btn').forEach(dropdown => {
-                                dropdown.style.display = 'inline-block'; // Hiển thị lại dropdown
-                            });
-                        } else {
-                            alert('Cập nhật thất bại: ' + (data.message || 'Lỗi không xác định'));
-                        }
-                    })
-                        .catch(error => {
-                        console.error('Error updating book:', error);
-                        alert('Đã xảy ra lỗi trong quá trình cập nhật.');
-                    });
-                });
             });
         });
+    </script>
+    <script>
+        const gerneList = document.getElementById("gerneList");
+        const gerneSearch = document.getElementById("gerneSearch");
+        const newGerneContainer = document.getElementById("newGerneContainer");
+        const newGerneInput = document.getElementById("newGerne");
 
-        document.querySelectorAll('.delete-btn').forEach(button => {
-            button.addEventListener('click', function(event) {
-                event.preventDefault();
+        // Fetch genres from backend and populate dropdown list
+        async function fetchGernes() {
+            try {
+                const response = await fetch('/api/gernes'); // Gọi API backend
+                if (!response.ok) throw new Error('Failed to fetch gernes');
 
-                // Lấy dòng tr và id sách
-                const row = this.closest('tr');
-                const bookId = row.getAttribute('data-id');
-
-                // Hiển thị thông báo xác nhận trước khi xóa
-                if (confirm('Bạn có chắc chắn muốn xóa sách này không?')) {
-                    // Gửi yêu cầu POST để xóa sách
-                    fetch(`/delete-bookgerne/${bookId}`, {  // Đảm bảo URL đúng
-                        method: 'POST',
-                    })
-                        .then(response => response.json())  // Đảm bảo rằng response là JSON
-                        .then(data => {
-                        if (data.success) {
-                            // Xóa dòng tr khỏi bảng nếu thành công
-                            row.remove();
-                            alert('Thể loại đã được xóa thành công!');
-                        } else {
-                            // Thông báo lỗi nếu xóa thất bại
-                            alert('Xóa thất bại: ' + (data.message || 'Lỗi không xác định'));
-                        }
-                    })
-                        .catch(error => {
-                        console.error('Error deleting book:', error);
-                        alert('Đã xảy ra lỗi trong quá trình xóa.');
-                    });
-                }
-            });
-        });
-    });
-</script>
-<script>
-    const gerneList = document.getElementById("gerneList");
-    const gerneSearch = document.getElementById("gerneSearch");
-    const newGerneContainer = document.getElementById("newGerneContainer");
-    const newGerneInput = document.getElementById("newGerne");
-
-    // Fetch genres from backend and populate dropdown list
-    async function fetchGernes() {
-        try {
-            const response = await fetch('/api/gernes'); // Gọi API backend
-            if (!response.ok) throw new Error('Failed to fetch gernes');
-
-            const gernes = await response.json(); // Parse JSON từ API
-            populateGerneList(gernes); // Nạp dữ liệu vào dropdown
-        } catch (error) {
-            console.error('Error fetching gernes:', error);
-        }
-    }
-
-    // Populate gerne dropdown list
-    function populateGerneList(gernes, filter = "") {
-        gerneList.innerHTML = ""; // Clear the list
-        const filteredGernes = gernes.filter(gerne => gerne.name.toLowerCase().includes(filter.toLowerCase()));
-        filteredGernes.forEach(gerne => {
-
-            const item = document.createElement("div");
-            item.classList.add("dropdown-item");
-            item.textContent = gerne.name; // Hiển thị tên thể loại
-            item.addEventListener("click", () => {
-                gerneSearch.value = gerne.name;
-                gerneSearch.setAttribute('value',gerne.id)
-                gerneList.style.display = "none";
-
-                // Redirect to statistic page with gerne_id
-                //        <!--            window.location.href = `/admin/bookgerne-manager?gerne_id=${gerne.id}`;-->
-            });
-            gerneList.appendChild(item);
-        });
-    }
-
-    // Show dropdown list on click
-    gerneSearch.addEventListener("focus", () => {
-        fetchGernes(); // Fetch và hiển thị danh sách đầy đủ
-        gerneList.style.display = "block"; // Hiển thị dropdown
-    });
-
-    // Event listener cho tìm kiếm
-    gerneSearch.addEventListener("input", async () => {
-        const response = await fetch('/api/gernes'); // Fetch lại gernes
-        const gernes = await response.json();
-        populateGerneList(gernes, gerneSearch.value); // Filter theo input
-    });
-
-    // Ẩn dropdown khi click ra ngoài
-    document.addEventListener("click", (event) => {
-        if (!event.target.closest(".dropdown-container")) {
-            gerneList.style.display = "none";
-        }
-    });
-</script>
-
-<script>
-    document.querySelector('#addBookGerneForm').addEventListener('submit', function (event) {
-        event.preventDefault();
-
-        const name = document.getElementById('name').value
-        const gerneName = document.getElementById('gerneSearch').getAttribute('value')
-
-
-
-        // Kiểm tra các trường nhập liệu
-        if (!name || !gerneName) {
-            alert('Vui lòng điền đầy đủ thông tin!');
-            return;
-        }
-
-        // Tạo payload gửi lên server
-        const payload = {
-            name: name,
-            parent_id: gerneName
-        };
-
-        // Gửi yêu cầu POST đến server
-        fetch('/add-bookgerne', {  // Cập nhật URL của bạn ở đây
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload)
-        }).then(response => response.json())
-            .then(data => {
-            if (data.success) {
-                alert('Thêm thành công!');
-                location.reload();  // Reload trang sau khi thành công
-            } else {
-                alert('Thất bại: ' + data.message);
+                const gernes = await response.json(); // Parse JSON từ API
+                populateGerneList(gernes); // Nạp dữ liệu vào dropdown
+            } catch (error) {
+                console.error('Error fetching gernes:', error);
             }
-        })
-            .catch(error => {
-            console.error('Lỗi:', error);
-            alert('Đã xảy ra lỗi trong quá trình.');
+        }
+
+        // Populate gerne dropdown list
+        function populateGerneList(gernes, filter = "") {
+            gerneList.innerHTML = ""; // Clear the list
+            const filteredGernes = gernes.filter(gerne => gerne.name.toLowerCase().includes(filter.toLowerCase()));
+            filteredGernes.forEach(gerne => {
+
+                const item = document.createElement("div");
+                item.classList.add("dropdown-item");
+                item.textContent = gerne.name; // Hiển thị tên thể loại
+                item.addEventListener("click", () => {
+                    gerneSearch.value = gerne.name;
+                    gerneSearch.setAttribute('value', gerne.id)
+                    gerneList.style.display = "none";
+
+                    // Redirect to statistic page with gerne_id
+                    //        <!--            window.location.href = `/admin/bookgerne-manager?gerne_id=${gerne.id}`;-->
+                });
+                gerneList.appendChild(item);
+            });
+        }
+
+        // Show dropdown list on click
+        gerneSearch.addEventListener("focus", () => {
+            fetchGernes(); // Fetch và hiển thị danh sách đầy đủ
+            gerneList.style.display = "block"; // Hiển thị dropdown
         });
-    });
-</script>
+
+        // Event listener cho tìm kiếm
+        gerneSearch.addEventListener("input", async () => {
+            const response = await fetch('/api/gernes'); // Fetch lại gernes
+            const gernes = await response.json();
+            populateGerneList(gernes, gerneSearch.value); // Filter theo input
+        });
+
+        // Ẩn dropdown khi click ra ngoài
+        document.addEventListener("click", (event) => {
+            if (!event.target.closest(".dropdown-container")) {
+                gerneList.style.display = "none";
+            }
+        });
+    </script>
+
+    <script>
+
+        const btnAddAttribute = document.querySelector('.btn-add-attribute')
+        btnAddAttribute.addEventListener('click', (e) => {
+            e.preventDefault()
+            const attributeElement = document.getElementById('attribute-gerne')
+            attributeElement.querySelector('.attribute-list').insertAdjacentHTML('beforeend', `
+                <div style="margin-bottom: 15px;">
+                    <label for="name">Tên thuộc tính riêng</label>
+                   <div class="d-flex">
+                         <input type="text" id="name" name="attribute" required
+                           style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ddd;">
+                        <button class="ml-3 btn-remove-attribute">-</button>
+                    </div>
+                </div>
+            `
+            )
+            const newElement = attributeElement.querySelector('.attribute-list').lastElementChild
+            newElement.querySelector('.btn-remove-attribute').addEventListener('click', (e) => {
+                e.preventDefault()
+                newElement.remove()
+            })
+
+        })
+        document.querySelector('#addBookGerneForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const name = document.getElementById('name').value
+            const gerneName = document.getElementById('gerneSearch').getAttribute('value')
+            const attributeElement = document.getElementById('attribute-gerne')
+            const attributeItems = attributeElement.querySelector('.attribute-list').children
+            let attributeValue = []
+            for (let i = 0; i < attributeItems.length; i++) {
+                attributeValue.push(attributeItems[i].querySelector('input[name="attribute"]').value)
+            }
+
+            // Kiểm tra các trường nhập liệu
+            if (!name || !gerneName) {
+                alert('Vui lòng điền đầy đủ thông tin!');
+                return;
+            }
+
+            // Tạo payload gửi lên server
+            const payload = {
+                name: name,
+                parent_id: gerneName,
+                attributes: attributeValue
+            };
+            console.log(payload)
+            // Gửi yêu cầu POST đến server
+            fetch('/add-bookgerne', {  // Cập nhật URL của bạn ở đây
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            }).then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Thêm thành công!');
+                        location.reload();  // Reload trang sau khi thành công
+                    } else {
+                        alert('Thất bại: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi:', error);
+                    alert('Đã xảy ra lỗi trong quá trình.');
+                });
+        });
+    </script>
 {% endblock %}

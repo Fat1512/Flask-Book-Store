@@ -286,12 +286,14 @@ function updateSelectedDisplay() {
 async function confirmSelection() {
     const col2 = document.getElementById("col2");
     const col3 = document.getElementById("col3");
+
     try {
         let gerneId
         if (col3.querySelector('.menu-item.active'))
             gerneId = col3.querySelector('.menu-item.active').id
         else if (col2.querySelector('.menu-item.active'))
             gerneId = col2.querySelector('.menu-item.active').id
+
         else
             throw new Error("Vui lòng chọn thể loại cụ thể")
         document.querySelector('input[name="input-gerne"]').value = selectedPath

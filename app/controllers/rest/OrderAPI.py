@@ -1,5 +1,8 @@
+import pdb
+
 from flask_login import current_user
 
+from app.authentication.login_required import customer_required_api
 from app.dao.CartDao import delete_cart_item
 from app.dao.OrderDAO import *
 from app.dao.PaymentDAO import create_payment
@@ -8,6 +11,7 @@ from app.dao.FormImportDAO import *
 from flask import Blueprint, jsonify, session
 from flask import render_template, request
 from app.controllers.EmployeeController import employee_required
+
 order_api_bp = Blueprint('/api/v1/order', __name__)
 
 
@@ -72,6 +76,7 @@ def offline_order():
 
 
 @order_api_bp.route('/onlineOrder', methods=['POST'])
+@customer_required_api
 def online_order():
     data = request.json
     order = create_online_order(current_user.get_id(), data)
@@ -88,9 +93,11 @@ def online_order():
 
 
 @order_api_bp.route('/orderCancellation', methods=['POST'])
+@customer_required_api
 def cancel_order():
     data = request.json
     order_cancellation = create_order_cancellation(data)
+
     return jsonify({
         'message': 'Hủy thành công',
         'status': 200,

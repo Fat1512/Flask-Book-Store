@@ -4,6 +4,7 @@ from sqlalchemy import text
 
 import app.dao.BookDAO
 from app import db
+from app.model.Attribute import Attribute
 from app.model.BookGerne import BookGerne
 import json
 
@@ -16,10 +17,11 @@ def find_all_extend_attribute(gerne_id):
     book_gerne = BookGerne.query.get(gerne_id)
     return book_gerne.attributes
 
-def add_gerne(name,parent_id):
+
+def add_gerne(name, parent_id, attributes):
     parent_gerne = BookGerne.query.get(parent_id)
 
-    new_gerne = BookGerne(name = name, lft= parent_gerne.rgt, rgt=parent_gerne.rgt+1)
+    new_gerne = BookGerne(name=name, lft=parent_gerne.rgt, rgt=parent_gerne.rgt + 1)
     update_left = BookGerne.query.filter(BookGerne.lft >= parent_gerne.rgt).all()
     for item in update_left:
         item.lft += 2
@@ -28,29 +30,32 @@ def add_gerne(name,parent_id):
     for item in update_right:
         item.rgt += 2
 
-
+    if attributes:
+        for item in attributes:
+            attribute = Attribute(attribute_name=item)
+            new_gerne.attributes.append(attribute)
 
     db.session.add(new_gerne)
     db.session.commit()
 
+
 def remove_gerne(gerne_id):
     gerne = BookGerne.query.get(gerne_id)
 
-    step = gerne.rgt - gerne.lft +1
+    step = gerne.rgt - gerne.lft + 1
 
     update_left = BookGerne.query.filter(BookGerne.lft >= gerne.rgt).all()
     for item in update_left:
-        item.lft -=step
+        item.lft -= step
 
     update_right = BookGerne.query.filter(BookGerne.rgt >= gerne.rgt).all()
     for item in update_right:
-        item.rgt -=step
+        item.rgt -= step
 
     books = app.dao.BookDAO.find_by_gerne(gerne_id)
 
     for b in books:
         b.book_gerne = BookGerne.query.get(1)
-
 
     db.session.delete(gerne)
     db.session.commit()
@@ -84,8 +89,8 @@ def get_depth_gerne(id):
     current_gerne = [{
         "id": row[0],
         "name": row[1],
-        'rgt':row[2],
-        'lft':row[3],
+        'rgt': row[2],
+        'lft': row[3],
         "depth": row[4]
     } for row in rows if row.depth == 0]
     sub_gerne = [{
