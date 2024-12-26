@@ -6,7 +6,7 @@ from app.model.Order import OrderDetail, OnlineOrder, OfflineOrder
 from app.model.User import User
 from app.model.Account import Account
 from app.model.Publisher import Publisher
-from sqlalchemy import or_, func, case
+from sqlalchemy import or_, func, case, desc
 from datetime import datetime, timedelta, date
 from sqlalchemy.sql import extract
 from flask_login import current_user
@@ -501,6 +501,8 @@ def book_management(gerne_id=None, kw=None, price_start=None, price_end=None):
 
     if price_end is not None:
         query = query.filter(Book.price <= price_end)
+
+    query = query.order_by(desc(Book.created_at))
 
     return query.all()
 

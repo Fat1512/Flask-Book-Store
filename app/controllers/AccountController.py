@@ -15,24 +15,54 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from app import SENDGRID_API_KEY
 import threading
-from flask import flash
 import pdb
 
 account_bp = Blueprint('account', __name__)
 
-
-
-def employee_register_required(f):
+def email_register_required(f):
     def wrap(*args, **kwargs):
-        return redirect(url_for('account.verify_email'))
+        if not current_user.is_authenticated:
+            return redirect(url_for('account.verify_email'))
+        if current_user.user_role in [UserRole.EMPLOYEE_MANAGER, UserRole.EMPLOYEE_MANAGER_WAREHOUSE,
+                                          UserRole.EMPLOYEE_SALE, UserRole.ADMIN, UserRole.CUSTOMER]:
+            return redirect(url_for('account.verify_email'))
+        return f(*args, **kwargs)
 
     wrap.__name__ = f.__name__
     return wrap
 
-
 def email_forgot_customer_required(f):
     def wrap(*args, **kwargs):
-        return redirect(url_for('account.forgot_process'))
+        if not current_user.is_authenticated:
+            return redirect(url_for('account.verify_pass'))
+        if current_user.user_role in [UserRole.EMPLOYEE_MANAGER, UserRole.EMPLOYEE_MANAGER_WAREHOUSE,
+                                          UserRole.EMPLOYEE_SALE, UserRole.ADMIN, UserRole.CUSTOMER]:
+            return redirect(url_for('account.verify_pass'))
+        return f(*args, **kwargs)
+
+    wrap.__name__ = f.__name__
+    return wrap
+
+def email_forgot_employee_required(f):
+    def wrap(*args, **kwargs):
+        if not current_user.is_authenticated:
+            return redirect(url_for('account.employee_verify_pass'))
+        if current_user.user_role in [UserRole.EMPLOYEE_MANAGER, UserRole.EMPLOYEE_MANAGER_WAREHOUSE,
+                                          UserRole.EMPLOYEE_SALE, UserRole.ADMIN, UserRole.CUSTOMER]:
+            return redirect(url_for('account.employee_verify_pass'))
+        return f(*args, **kwargs)
+
+    wrap.__name__ = f.__name__
+    return wrap
+
+def email_forgot_admin_required(f):
+    def wrap(*args, **kwargs):
+        if not current_user.is_authenticated:
+            return redirect(url_for('account.admin_verify_pass'))
+        if current_user.user_role in [UserRole.EMPLOYEE_MANAGER, UserRole.EMPLOYEE_MANAGER_WAREHOUSE,
+                                          UserRole.EMPLOYEE_SALE, UserRole.ADMIN, UserRole.CUSTOMER]:
+            return redirect(url_for('account.admin_verify_pass'))
+        return f(*args, **kwargs)
 
     wrap.__name__ = f.__name__
     return wrap
@@ -82,6 +112,7 @@ def admin_logout():
 
 
 @account_bp.route("/admin-forgot", methods=['GET', 'POST'])
+@email_forgot_admin_required
 def admin_forgot():
     err_msg = ''
     if request.method == 'POST':
@@ -256,6 +287,7 @@ def employee_verify_pass():
 
 
 @account_bp.route("/employee-forgot", methods=['GET', 'POST'])
+@email_forgot_employee_required
 def employee_forgot():
     err_msg = ''
     if request.method == 'POST':
@@ -410,6 +442,7 @@ def verify_email():
 
 
 @account_bp.route("/register", methods=['get', 'post'])
+@email_register_required
 def register_process():
     err_msg = ''
     if request.method == 'POST':
@@ -549,6 +582,7 @@ def verify_pass():
 
 
 @account_bp.route("/forgot", methods=['GET', 'POST'])
+@email_forgot_customer_required
 def forgot_process():
     err_msg = ''
     if request.method == 'POST':

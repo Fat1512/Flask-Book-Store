@@ -1,6 +1,7 @@
 import pdb
 
 from app.dao.ConfigDAO import get_config
+from app.exception.ConfictError import ConflictError
 from app.exception.InsufficientError import InsufficientError
 from app.exception.GeneralInsufficientError import GeneralInsufficientError
 from app.exception.NotFoundError import NotFoundError
@@ -54,6 +55,10 @@ def find_add_by_user_id(user_id, status, page, limit):
 def create_order_cancellation(data):
     order = Order.query.get(data['orderId'])
     if order is None: raise NotFoundError("Không tìm thấy đơn hàng của bạn", 404)
+
+    allowed_status = [OrderStatus.DANG_XU_LY, OrderStatus.CHO_GIAO_HANG, OrderStatus.DANG_CHO_NHAN]
+    if order.online_order is None and order.payment_method is not PaymentMethod.TIEN_MAT and order.status not in allowed_status:
+        raise ConflictError("Điều kiện hủy đơn không đáp ứng")
 
     for order_detail in order.order_detail:
         order_detail.book.increase_book(quantity=order_detail.quantity)
@@ -139,12 +144,21 @@ def find_all(**kwargs):
 
 def update_order(order_id, order_list):
     query = OrderDetail.query
+    order = Order.query.get(order_id)
+
+    allowed_status = [OrderStatus.DANG_XU_LY, OrderStatus.CHO_GIAO_HANG, OrderStatus.DANG_CHO_NHAN]
+    if order.online_order is None and order.payment_method is not PaymentMethod.TIEN_MAT and order.status not in allowed_status:
+        raise ConflictError("Điều kiện cập nhật đơn đơn không đáp ứng")
+
+
     order_details = query.filter(OrderDetail.order_id == order_id).all()
 
     for order_detail in order_details:
         order_detail.book.increase_book(order_detail.quantity)
         db.session.delete(order_detail)
-    db.session.flush()
+
+
+
     for order_item in order_list:
         book_id = order_item['book_id']
 
@@ -207,9 +221,8 @@ def create_offline_order(order_list, employee_id, user=None):
                                  customer=user)
     if user is not None:
         user.orders.append(offline_order)
+    #
 
-    db.session.add(offline_order)
-    db.session.flush()
     total_amount = 0
 
     for order_item in order_list:
@@ -219,6 +232,7 @@ def create_offline_order(order_list, employee_id, user=None):
         if book_db is None: raise NotFoundError('Không tìm thấy sách')
 
         quantity = int(order_item['quantity'])
+
         res = book_db.decrease_book(quantity=quantity)
         if not res:
             raise GeneralInsufficientError("Không đủ sách")
@@ -227,11 +241,13 @@ def create_offline_order(order_list, employee_id, user=None):
         offline_order.order_detail.append(order_detail)
         total_amount = total_amount + quantity * price
 
-    payment_detail = PaymentDetail(order_id=offline_order.order_id, created_at=datetime.utcnow() + timedelta(hours=7),
+    payment_detail = PaymentDetail(order=offline_order, created_at=datetime.utcnow() + timedelta(hours=7),
                                    amount=total_amount)
     offline_order.payment_detail = payment_detail
 
+    db.session.add(offline_order)
     db.session.commit()
+
     return offline_order.to_detail_dict()
 
 

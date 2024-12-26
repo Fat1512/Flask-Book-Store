@@ -465,9 +465,9 @@
                     // Lấy dòng tr và id sách
                     const row = this.closest('tr');
                     const bookId = row.getAttribute('data-id');
-
+                    console.log(bookId)
                     // Hiển thị thông báo xác nhận trước khi xóa
-                    if (confirm('Bạn có chắc chắn muốn xóa sách này không?')) {
+                    if (confirm('Bạn có chắc chắn muốn xóa the loai này không?')) {
                         // Gửi yêu cầu POST để xóa sách
                         fetch(`/delete-bookgerne/${bookId}`, {  // Đảm bảo URL đúng
                             method: 'POST',

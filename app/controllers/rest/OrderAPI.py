@@ -2,7 +2,8 @@ import pdb
 
 from flask_login import current_user
 
-from app.authentication.login_required import customer_required_api
+from app.authentication.login_required import customer_required_api, employee_required_api, employee_sale_required, \
+    employee_manager_required, employee_sale_required_api, employee_manager_required_api
 from app.dao.CartDao import delete_cart_item
 from app.dao.OrderDAO import *
 from app.dao.PaymentDAO import create_payment
@@ -16,6 +17,7 @@ order_api_bp = Blueprint('/api/v1/order', __name__)
 
 
 @order_api_bp.route("/", methods=['GET'])
+@employee_sale_required_api
 def get_order():
     status = None
     if request.args.get("status"):
@@ -45,7 +47,7 @@ def get_order():
 
 
 @order_api_bp.route("/<int:order_id>/update", methods=['POST'])
-@employee_required
+@employee_sale_required_api
 def update(order_id):
     update_order(order_id, request.json)
     return jsonify({
@@ -56,7 +58,7 @@ def update(order_id):
 
 
 @order_api_bp.route("/add", methods=['POST'], endpoint='test_add')
-@employee_required
+@employee_sale_required_api
 def offline_order():
     order_list = request.json['orderList']
     customer_info = request.json['customerInfo']
@@ -94,6 +96,7 @@ def online_order():
 
 @order_api_bp.route('/orderCancellation', methods=['POST'])
 @customer_required_api
+@employee_sale_required_api
 def cancel_order():
     data = request.json
     order_cancellation = create_order_cancellation(data)
@@ -106,7 +109,7 @@ def cancel_order():
 
 
 @order_api_bp.route("/<order_id>/status", methods=['POST'])
-@employee_required
+@employee_sale_required_api
 def update_status(order_id):
     status = request.json.get("orderStatusId")
     status_enum = OrderStatus(int(status))
@@ -125,6 +128,7 @@ def update_status(order_id):
 
 
 @order_api_bp.route("/<order_id>/detail", methods=['GET', 'POST'])
+@employee_sale_required_api
 def find(order_id):
     order = find_by_id(order_id)
 

@@ -1,10 +1,11 @@
+from app.model.Book import Book
 from app.model.FormImport import FormImport
 from app.model.FormImportDetail import FormImportDetail
 from app import app, db
-from app.dao.BookDAO import increase_book_quantity
 from datetime import datetime
 import math
 from sqlalchemy import asc, desc
+
 
 def find_form_import_by_id(form_import_id):
     form_import = FormImport.query.get(form_import_id)
@@ -12,7 +13,6 @@ def find_form_import_by_id(form_import_id):
 
 
 def find_form_imports(**kwargs):
-
     form_imports = FormImport.query
 
     page = int(kwargs.get('page', 1))
@@ -46,18 +46,19 @@ def find_form_imports(**kwargs):
     }
 
 
-def create_form_import(form_import_items):
-    form_import = FormImport(created_at=datetime.utcnow(), employee_id=2)
-    db.session.add(form_import)
-    db.session.flush()
+def create_form_import(form_import_items, employee_id):
+    form_import = FormImport(created_at=datetime.utcnow(), employee_id=employee_id)
 
     for form_import_item in form_import_items:
         book_id = form_import_item['bookId']
         quantity = form_import_item['quantity']
-        form_import_detail = FormImportDetail(book_id=book_id, form_import_id=form_import.form_import_id,
-                                              quantity=quantity)
-        increase_book_quantity(book_id, quantity)
+        form_import_detail = FormImportDetail(book_id=book_id, form_import=form_import, quantity=quantity)
+
+        book = Book.query.get(book_id)
+        book.increase_book(quantity)
+
         form_import.form_import_detail.append(form_import_detail)
 
+    db.session.add(form_import)
     db.session.commit()
     return form_import.to_dict()

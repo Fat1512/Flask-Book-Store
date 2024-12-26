@@ -92,12 +92,6 @@ def create_book(data):
     db.session.commit()
 
 
-def increase_book_quantity(id, quantity):
-    book = Book.query.get(id)
-    book.quantity = book.quantity + quantity
-    db.session.commit()
-
-
 def find_by_barcode(barcode):
     book = Book.query
     book = book.filter(Book.barcode == barcode)

@@ -8,7 +8,7 @@ class Attribute(db.Model):
     attribute_name = db.Column(db.String(50), unique=True, nullable=False)
     book_gerne_id = db.Column(Integer, ForeignKey('book_gerne.book_gerne_id'))
 
-    extended_books = db.relationship('ExtendedBook', back_populates='attribute', lazy=True)
+    extended_books = db.relationship('ExtendedBook', back_populates='attribute', lazy=True, cascade="all,delete-orphan")
 
     def to_dict(self):
         return {

@@ -1,5 +1,7 @@
+import pdb
+
 from app.authentication.login_required import employee_sale_required, employee_manager_warehouse_required, \
-    employee_manager_required, employee_required
+    employee_manager_required, employee_required, employee_manager_required_api
 from app.dao.OrderDAO import *
 from app.model.Book import BookFormat
 from app.dao.SearchDAO import search_book
@@ -8,22 +10,14 @@ from app.dao.ConfigDAO import get_config
 from app.dao.PublisherDAO import find_all as find_all_publisher
 from flask import Blueprint
 from datetime import datetime
-from flask import render_template, request
-import json
-from app.model.User import UserRole
 from app.model.Publisher import Publisher
-from app.model.User import User
 from flask import jsonify
 from flask import render_template, redirect, url_for, request
-from flask_login import current_user
 from app.utils.admin import book_management, bookgerne_management
 from app.utils.helper import FORMAT_BOOK_TEXT
 from app.model.BookGerne import BookGerne
 
 employee_bp = Blueprint('employee', __name__)
-
-
-
 
 @employee_bp.route("/checkout")
 @employee_sale_required
@@ -65,22 +59,36 @@ def get_order():
 @employee_bp.route("/order/<order_id>/update")
 @employee_sale_required
 def update_order(order_id):
-    order = find_by_id(order_id)
+    try:
+        order = find_by_id(order_id)
 
-    books = search_book(limit=12, page=1, gerne_id=1, order="desc")
-    book_dto = []
-    for book in books['books']:
-        book_dto.append(book.to_dict())
-    books['books'] = book_dto
-    return render_template("employee/employeeOrderUpdate.html", order=order, books=books)
+        allowed_status = [OrderStatus.DANG_XU_LY.value, OrderStatus.CHO_GIAO_HANG.value,
+                          OrderStatus.DANG_CHO_NHAN.value]
+        if order['order_type']['id'] != 1 or order['payment']['payment_method']['id'] is not PaymentMethod.TIEN_MAT.value or \
+                order['status']['id'] not in allowed_status:
+            return redirect(url_for('employee.get_order'))
+
+        books = search_book(limit=12, page=1, gerne_id=1, order="desc")
+        book_dto = []
+        for book in books['books']:
+            book_dto.append(book.to_dict())
+        books['books'] = book_dto
+        return render_template("employee/employeeOrderUpdate.html", order=order, books=books)
+
+    except Exception as e:
+        return redirect(url_for('employee.get_order'))
 
 
 @employee_bp.route("/order/<order_id>/detail")
 @employee_sale_required
 def get_order_detail(order_id):
-    order = find_by_id(order_id)
-    today = datetime.utcnow()
-    return render_template("employee/employeeOrderDetail.html", order=order, today=today)
+    try:
+        order = find_by_id(order_id)
+        today = datetime.utcnow()
+        return render_template("employee/employeeOrderDetail.html", order=order, today=today)
+
+    except Exception as e:
+        return redirect(url_for('employee.get_order'))
 
 
 @employee_bp.route("/import")
@@ -114,11 +122,12 @@ def import_book_history():
 @employee_bp.route("/add-products")
 @employee_manager_required
 def add_products_process():
-    return render_template("employee/employeeAddProducts.html")
+    publishers = find_all_publisher()
+    return render_template("employee/employeeAddProducts.html", publishers=publishers, formats=FORMAT_BOOK_TEXT)
 
 
 @employee_bp.route("/book-manager")
-@employee_manager_required
+@employee_manager_required_api
 def book_manager():
     gerne_id = request.args.get('gerne_id', type=int)
     kw = request.args.get('kw')
@@ -151,7 +160,7 @@ def book_manager():
 
 
 @employee_bp.route('/update-book/<int:book_id>', methods=['POST'])
-@employee_manager_required
+@employee_manager_required_api
 def update_book(book_id):
     updated_data = request.get_json()
     book = Book.query.get(book_id)
@@ -207,7 +216,6 @@ def delete_book(book_id):
     return jsonify({"success": True})
 
 
-
 @employee_bp.route("/bookgerne-manager")
 @employee_manager_required
 def admin_bookgerne_manager():
@@ -233,8 +241,8 @@ def admin_bookgerne_manager():
                                'pages': range(1, math.ceil(total / page_size) + 1),
                            })
 
+
 @employee_bp.route("/profile")
 @employee_required
 def employee_profile():
     return render_template("/employee/employeeProfile.html")
-

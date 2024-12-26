@@ -10,7 +10,7 @@ class BookGerne(db.Model):
     rgt = db.Column(db.Integer)
     # books = db.relationship('Book', backref='book_gerne', lazy=True)
     books = db.relationship('Book', back_populates='book_gerne', lazy=True)
-    attributes = db.relationship('Attribute', backref='book_gerne', lazy=True)
+    attributes = db.relationship('Attribute', backref='book_gerne', lazy=True, cascade="all,delete-orphan")
 
     def __init__(self, name, lft, rgt):
         self.name = name
