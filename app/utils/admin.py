@@ -6,7 +6,7 @@ from app.model.Order import OrderDetail, OnlineOrder, OfflineOrder
 from app.model.User import User
 from app.model.Account import Account
 from app.model.Publisher import Publisher
-from sqlalchemy import or_, func, case
+from sqlalchemy import or_, func, case, desc
 from datetime import datetime, timedelta, date
 from sqlalchemy.sql import extract
 from flask_login import current_user
@@ -443,15 +443,22 @@ def total_quantity_all_books(kw=None, selected_month=None):
 
 
 
-def account_management(user_role=None, first_name=None, last_name=None):
-    query = (db.session.query(
-        User.user_id,
+def account_management(user_role=None, first_name=None, last_name=None, page=None):
+    """
+     User.user_id,
         User.first_name,
         User.last_name,
         Account.username,
         User.email,
-        User.user_role).join(Account, Account.user_id == User.user_id).group_by(User.user_id, User.first_name,
-                                                                                User.last_name))
+        User.user_role
+    """
+    query = User.query.join(Account, Account.user_id == User.user_id)
+
+    page_size = app.config['STATISTIC_FRE_PAGE_SIZE']
+
+    start_idx = (page - 1) * page_size
+    end_idx = start_idx + page_size
+
 
     if user_role is not None:
         query = query.filter(User.user_role == user_role)
@@ -461,6 +468,7 @@ def account_management(user_role=None, first_name=None, last_name=None):
 
     if last_name:
         query = query.filter(User.last_name.contains(last_name))
+    query = query.slice(start_idx, end_idx)
 
     return query.all()
 
@@ -501,6 +509,8 @@ def book_management(gerne_id=None, kw=None, price_start=None, price_end=None):
 
     if price_end is not None:
         query = query.filter(Book.price <= price_end)
+
+    query = query.order_by(desc(Book.created_at))
 
     return query.all()
 

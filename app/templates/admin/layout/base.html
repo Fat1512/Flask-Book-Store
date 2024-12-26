@@ -29,7 +29,6 @@
 <body>
 
 {% block sidebar %} {% include 'admin/layout/sidebar.html' %} {% endblock %}
-
 <div class="main-content" id="panel">
     <nav class="navbar navbar-top navbar-expand navbar-dark bg-primary border-bottom">
         <div class="container-fluid">
@@ -277,6 +276,7 @@
     {% endblock %}
 </div>
 {% block modal %} {% endblock %}
+
 </body>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
@@ -297,17 +297,25 @@
         type="text/javascript"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
+
+
+<script defer>
+    /**
+     *     document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', function (e) {
-                document.querySelectorAll('.nav-link').forEach(item => {
-                    item.style.color = '';
-                });
-                this.style.color = '#92127';
-            });
+            if(link.href + '/' === window.location.href) {
+                link.style.color = '#92127';
+                link.classList.add("active");
+                console.log(link.href + '/',  window.location.href , link.href + '/' === window.location.href)
+            }
         });
     });
+     *
+     */
+
 </script>
+
 {% block js %}{% endblock %}
 </html>
+
+

@@ -15,11 +15,9 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from app import SENDGRID_API_KEY
 import threading
-from flask import flash
 import pdb
 
 account_bp = Blueprint('account', __name__)
-
 
 @account_bp.route('/purchase', methods=['GET'])
 def purchase():
@@ -43,10 +41,10 @@ def purchase():
 def admin_login():
     err_msg = ''
     if request.method == 'POST':
-        username = request.form.get('username')
+        identifier = request.form.get('username')
         password = request.form.get('password')
 
-        user = UserDao.auth_user(username=username, password=password)
+        user = UserDao.auth_user(identifier=identifier, password=password)
         if user:
             if user.user_role == UserRole.ADMIN:
                 login_user(user=user)
@@ -92,10 +90,10 @@ def admin_forgot():
 def employee_login():
     err_msg = ''
     if request.method == 'POST':
-        username = request.form.get('username')
+        identifier = request.form.get('username')
         password = request.form.get('password')
 
-        user = UserDao.auth_user(username=username, password=password)
+        user = UserDao.auth_user(identifier=identifier, password=password)
         if user:
             login_user(user=user)
 
@@ -108,43 +106,6 @@ def employee_login():
 
     return render_template('employee-login.html', err_msg=err_msg)
 
-
-# @account_bp.route("/employee-register", methods=['GET', 'POST'])
-# def employee_register():
-#     err_msg = ''
-#     if request.method == 'POST':
-#         password = request.form.get('password')
-#         confirm = request.form.get('confirm')
-#         username = request.form.get('username')
-#         email = request.form.get('email')
-#
-#         if password == confirm:
-#             if UserDao.check_exists(username=username, email=email):
-#                 err_msg = 'Tên người dùng hoặc email đã tồn tại!'
-#             else:
-#                 data = request.form.copy()
-#                 del data['confirm']
-#
-#                 # Lấy user_role từ input hidden (Tên của vai trò)
-#                 user_role = request.form.get('user_role')
-#
-#                 avt_url = request.files.get('avt_url')
-#
-#                 optional_fields = ['sex', 'phone_number', 'date_of_birth', 'isActive', 'last_access']
-#                 for field in optional_fields:
-#                     data[field] = data.get(field, None)
-#
-#                 # Xóa user_role khỏi data để không bị truyền trùng
-#                 if 'user_role' in data:
-#                     del data['user_role']
-#
-#                 UserDao.add_employee(avt_url=avt_url, user_role=user_role, **data)
-#
-#                 return redirect(url_for('account.employee_login'))
-#         else:
-#             err_msg = 'Mật khẩu không khớp!'
-#
-#     return render_template('employee-register.html', err_msg=err_msg)
 
 
 @account_bp.route("/employee-logout")
@@ -266,7 +227,7 @@ def employee_forgot():
 def login_process():
     err_msg = ''
     if request.method == 'POST':
-        username = request.form.get('username')
+        identifier = request.form.get('username')
         password = request.form.get('password')
 
         roles = [UserRole.CUSTOMER, UserRole.ADMIN, UserRole.EMPLOYEE_SALE, UserRole.EMPLOYEE_MANAGER,
@@ -274,7 +235,7 @@ def login_process():
 
         u = None
         for role in roles:
-            u = UserDao.auth_user(username=username, password=password, role=role)
+            u = UserDao.auth_user(identifier=identifier, password=password, role=role)
             if u:
                 break
         if u:

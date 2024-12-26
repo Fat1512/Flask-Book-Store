@@ -105,7 +105,8 @@ async function handleOnClickPayment() {
         }
     )
     await moveCartItemToCheckOut(cartItemChecked)
-    window.location.href = 'http://127.0.0.1:5000/cart/checkout'
+    console.log(`${window.location.origin}/cart/checkout`)
+    window.location.href = `${window.location.origin}/cart/checkout`
 }
 
 buttonPayment && buttonPayment.addEventListener("click", () => handleOnClickPayment())

@@ -7,10 +7,12 @@ from app.model import Book, User, Address
 from enum import Enum as PythonEnum
 
 
-# TYPE = 1 => DAT_SHIP_VE_NHA
-# TYPE = 2 => DAT_DEN_LAY
-# TYPE = 3 => MUA_TAI_CHO
-
+# TYPE = 1 => DAT TREN WEB
+# TYPE = 2 => DEN LAY
+"""
+    update so luong don hang =>  dat tren web + tien mat + [dang xu ly, cho giao hang, dang cho nhan]
+    huy =>  dat tren web + tien mat + [dang xu ly, cho giao hang, dang cho nhan]
+"""
 
 class OrderStatus(PythonEnum):
     DANG_XU_LY = 1

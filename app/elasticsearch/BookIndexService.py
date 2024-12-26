@@ -6,7 +6,7 @@ from app.elasticsearch.BookIndex import BookIndex
 
 def create_document(document):
     try:
-        if es.indices.exists(index=BookIndex.index_name):
+        if not es.indices.exists(index=BookIndex.index_name):
             BookIndex.create_index()
 
         res = es.index(index=BookIndex.index_name, id=document['book_id'], body=document)

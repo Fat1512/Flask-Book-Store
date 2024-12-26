@@ -2,8 +2,11 @@ import json
 from datetime import datetime
 
 from flask import Blueprint, request, jsonify
+from flask_login import current_user
 
 from app import app
+from app.authentication.login_required import employee_manager_warehouse_required, \
+    employee_manager_warehouse_required_api
 from app.dao.FormImportDAO import find_form_imports, create_form_import, find_form_import_by_id
 from app.dao.BookDAO import find_by_id, find_by_barcode, create_book, count_book_sell, upload_images
 from app.dao.SearchDAO import search_book
@@ -157,9 +160,11 @@ def get_by_barcode(barcode):
 
 # -------------------------------import book-------------------------------
 @book_rest_bp.route('/import', methods=['POST'])
+@employee_manager_warehouse_required_api
 def create_import():
     data = request.json
-    form_import = create_form_import(data)
+    employee_id = current_user.get_id()
+    form_import = create_form_import(data, employee_id=employee_id)
 
     return jsonify({
         'message': 'Successfully Created',
@@ -169,6 +174,7 @@ def create_import():
 
 
 @book_rest_bp.route('/import/<int:import_id>/detail')
+@employee_manager_warehouse_required_api
 def get_import_form_detail(import_id):
     form_import = find_form_import_by_id(import_id)
 
@@ -180,6 +186,7 @@ def get_import_form_detail(import_id):
 
 
 @book_rest_bp.route('/import', methods=['GET'])
+@employee_manager_warehouse_required_api
 def get_import_form():
     form_import_id = request.args.get('formImportId', type=str)
     page = request.args.get('page', 1, type=int)

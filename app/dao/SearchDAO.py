@@ -1,4 +1,5 @@
 import math
+import pdb
 from colorsys import rgb_to_hls
 from sys import prefix
 
@@ -28,7 +29,8 @@ def get_suggest(keyword):
                             }
                         }
                     }
-                    , {
+                    ,
+                    {
                         "match_phrase_prefix": {
                             "author": {
                                 "query": keyword,
@@ -111,7 +113,8 @@ def search_book_es(keyword, min_price, max_price, extended_books,
                             }
                         }
                     }
-                    , {
+                    ,
+                    {
                         "nested": {
                             "path": "extended_books",
                             "query": {
@@ -121,6 +124,15 @@ def search_book_es(keyword, min_price, max_price, extended_books,
                                         "fuzziness": "AUTO"
                                     }
                                 }
+                            }
+                        }
+                    }
+                    ,
+                    {
+                        "match": {
+                            "extended_books.value": {
+                                "query": keyword,
+                                "fuzziness": "AUTO"
                             }
                         }
                     }
@@ -166,8 +178,8 @@ def search_book_es(keyword, min_price, max_price, extended_books,
                             "lte": max_price
                         }
                     },
-                }
-                , {
+                },
+                {
                     "nested": {
                         "path": "book_gerne",
                         "query": {
@@ -244,6 +256,7 @@ def search_book_es(keyword, min_price, max_price, extended_books,
         "_source": ["book_id", "title", "price", "extended_books", "book_image"]
     }
     try:
+
         response = es.search(index=index_name, body=query)
         aggregation = es.search(index=index_name, body=aggregation_query)
         return {

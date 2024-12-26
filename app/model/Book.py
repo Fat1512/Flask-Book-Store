@@ -47,7 +47,7 @@ class Book(db.Model):
     order_detail = relationship("OrderDetail", back_populates="book", lazy=True)
     form_import_detail = relationship("FormImportDetail", back_populates="book", lazy=True)
 
-    extended_books = db.relationship('ExtendedBook', back_populates='book', lazy=True)
+    extended_books = db.relationship('ExtendedBook', back_populates='book', lazy=True, cascade="all,delete-orphan")
     cart_item = db.relationship('CartItem', back_populates='book', lazy=True)
 
     def to_dict(self):

@@ -68,7 +68,14 @@ app.register_blueprint(account_bp, url_prefix='/account')
 app.register_blueprint(cart_bp, url_prefix='/cart')
 
 
+@app.errorhandler(Exception)
+def handle_all_exception(e):
+    return redirect(url_for('error'))
 
+
+@app.route('/error')
+def error():
+    return render_template('error-page.html')
 
 
 @app.errorhandler(NotFoundError)

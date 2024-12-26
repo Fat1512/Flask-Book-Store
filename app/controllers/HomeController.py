@@ -5,6 +5,7 @@ from flask import Blueprint
 from flask import render_template, request
 import json
 
+from app.authentication.login_required import customer_no_user_required
 from app.dao.BookDAO import find_by_gerne
 from app.dao.BookGerneDAO import get_depth_gerne
 from app.dao.SearchDAO import search_book
@@ -19,8 +20,8 @@ from app import db
 index_bp = Blueprint('index', __name__)
 
 
-
 @index_bp.route("/")
+@customer_no_user_required
 def index():
     book_gerne = get_depth_gerne(1)
 
@@ -99,6 +100,3 @@ def update_profile():
     except Exception as e:
         db.session.rollback()
         return jsonify({"success": False, "message": str(e)}), 500
-
-
-

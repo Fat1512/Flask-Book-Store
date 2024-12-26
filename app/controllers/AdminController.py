@@ -184,7 +184,9 @@ def admin_account_manager():
 
     return render_template(
         "/admin/adminAccountManager.html",
-        stats=paginated_stats, first_name=first_name, last_name=last_name,
+        stats=paginated_stats,
+        first_name=first_name,
+        last_name=last_name,
         books={
             'current_page': page,
             'total_page': math.ceil(total / page_size),

@@ -3,7 +3,7 @@ const searhButton = document.querySelector('.icon-search')
 searhButton.addEventListener('click', (e) => {
     e.preventDefault()
     const keyword = document.querySelector('input[name="keyword"]').value
-    window.location.href = `http://127.0.0.1:5000/search?keyword=${keyword}`
+    window.location.href = `${window.location.origin}/search?keyword=${keyword}`
 })
 
 async function fetchSuggestBook(params) {
@@ -32,7 +32,7 @@ const debounce = (callback, wait) => {
 
 const cartLink = document.querySelector('.cart-link')
 cartLink.addEventListener('click', (e) => {
-    window.location.href = `http://127.0.0.1:5000/cart`
+    window.location.href = `${window.location.origin}/cart`
 })
 const searchInput = document.getElementById("search-desktop")
 const suggestList = document.querySelector('.suggestion-list')
