@@ -78,7 +78,7 @@ function renderBookNull(bookElemnt, paginationElemnt) {
 }
 
 async function render_book(params, isFilter = false) {
-    console.log(params)
+
     const {data: books, current_page, pages, extended_books: filters} = await fetchBook(params)
 
     const bookElemnts = document.querySelector('.list-book')
@@ -362,7 +362,6 @@ const price = document.querySelector('#price.group-filter')
 price.addEventListener('click', (e) => handleSelectedFileter(price, e))
 
 function handleSelectedFileter(element, e) {
-
     if (e.target.tagName === 'A') {
         const prev = element.querySelector('.checkbox-checked')
         const listFiler = document.querySelector('.filter-list')

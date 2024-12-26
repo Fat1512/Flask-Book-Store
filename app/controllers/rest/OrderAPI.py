@@ -96,6 +96,7 @@ def online_order():
 
 
 @order_api_bp.route('/orderCancellation', methods=['POST'])
+@customer_required_api
 def cancel_order():
     data = request.json
 

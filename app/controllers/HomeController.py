@@ -19,6 +19,7 @@ from app import db
 
 index_bp = Blueprint('index', __name__)
 
+
 @index_bp.route("/")
 @customer_no_user_required
 def index():
@@ -99,6 +100,3 @@ def update_profile():
     except Exception as e:
         db.session.rollback()
         return jsonify({"success": False, "message": str(e)}), 500
-
-
-

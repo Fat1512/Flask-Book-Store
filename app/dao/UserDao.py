@@ -153,7 +153,7 @@ def find_by_customer_id_phone_number(user_id, phone_number):
 
 
 def find_user_address(user_id):
-    return Address.query.filter(Address.user_id == user_id).all()
+    return Address.query.filter_by(user_id=user_id, is_active=True).all()
 
 
 def add_address(user_id, data):
@@ -175,7 +175,7 @@ def delete_address(user_id, address_id):
 
     for a in user.address:
         if a.address_id == address_id:
-            user.address.remove(a)
+            a.is_active = False
             db.session.commit()
             return a
 

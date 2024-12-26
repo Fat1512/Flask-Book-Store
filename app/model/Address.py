@@ -1,5 +1,5 @@
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, Enum, DATETIME, Double
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, Enum, DATETIME, Double, Boolean
 from app import db, app
 from app.model import Book
 from enum import Enum as PythonEnum
@@ -14,6 +14,7 @@ class Address(db.Model):
     district = Column(String)
     ward = Column(String)
     address = Column(String)
+    is_active = Column(Boolean, default=True)
 
     user_id = Column(Integer, ForeignKey('user.user_id'))
     order = relationship("Order", back_populates="address")

@@ -29,8 +29,8 @@ KAFKA3 = os.getenv("KAFKA3")
 RETURN_URL = os.getenv("RETURN_URL")
 
 app.secret_key = "8923yhr9fuwnsejksnpokff@$I_I@$)opfk"
-app.config["SQLALCHEMY_DATABASE_URI"] = DB_URL % quote(DB_PASSWORD)
-# app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql+pymysql://root:%s@127.0.0.1:3307/book_store' % quote('15122004')
+# app.config["SQLALCHEMY_DATABASE_URI"] = DB_URL % quote(DB_PASSWORD)
+app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql+pymysql://root:%s@127.0.0.1:3307/book_store' % quote('15122004')
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 
 app.config["VNPAY_URL"] = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'  # Use the sandbox URL for testing
