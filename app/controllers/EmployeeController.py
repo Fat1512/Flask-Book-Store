@@ -158,50 +158,60 @@ def book_manager():
         }
     )
 
-
 @employee_bp.route('/update-book/<int:book_id>', methods=['POST'])
-@employee_manager_required_api
+@employee_manager_required
 def update_book(book_id):
-    updated_data = request.get_json()
-    book = Book.query.get(book_id)
-    if not book:
-        return jsonify({'success': False, 'message': 'Book not found'}), 404
+    try:
+        updated_data = request.get_json()
+        print("Received data:", updated_data)
+        book = Book.query.get(book_id)
+        if not book:
+            return jsonify({'success': False, 'message': 'Book not found'}), 404
 
-    book.title = updated_data.get('title', book.title)
-    book.author = updated_data.get('author', book.author)
-    book.book_gerne_id = updated_data.get('gerne', book.book_gerne_id)
+        book.title = updated_data.get('title', book.title)
+        book.author = updated_data.get('author', book.author)
+        book.book_gerne_id = updated_data.get('gerne', book.book_gerne_id)
 
-    barcode = updated_data.get('barcode')
-    if barcode:
-        existing_book = Book.query.filter_by(barcode=barcode).first()
-        if existing_book and existing_book.book_id != book.book_id:
-            return jsonify({'success': False, 'message': f"Barcode '{barcode}' already exists"}), 400
-        book.barcode = barcode
+        barcode = updated_data.get('barcode')
+        if barcode:
+            existing_book = Book.query.filter_by(barcode=barcode).first()
+            if existing_book and existing_book.book_id != book.book_id:
+                return jsonify({'success': False, 'message': f"Barcode '{barcode}' already exists"}), 400
+            book.barcode = barcode
 
-    publisher_name = updated_data.get('publisher')
-    if publisher_name:
-        publisher = Publisher.query.filter_by(publisher_name=publisher_name).first()
-        if publisher:
-            book.publisher_id = publisher.publisher_id
-        else:
-            return jsonify({'success': False, 'message': f"Publisher '{publisher_name}' not found"}), 400
-    format_value = updated_data.get('format')
-    if format_value:
-        if format_value.startswith('BookFormat.'):
-            format_value = format_value.split('BookFormat.')[1]
+        publisher_name = updated_data.get('publisher')
+        if publisher_name:
+            publisher = Publisher.query.filter_by(publisher_name=publisher_name).first()
+            if publisher:
+                book.publisher_id = publisher.publisher_id
+            else:
+                return jsonify({'success': False, 'message': f"Publisher '{publisher_name}' not found"}), 400
 
-        book.format = BookFormat[format_value]
+        format_value = updated_data.get('format')
+        if format_value:
+            try:
+                if isinstance(format_value, int):  # Nếu là số
+                    book.format = BookFormat(format_value)  # Chuyển trực tiếp từ số sang Enum
+                elif format_value.startswith('BookFormat.'):  # Nếu là chuỗi dạng 'BookFormat.BIA_MEM'
+                    book.format = BookFormat[format_value.split('BookFormat.')[1]]
+                else:  # Nếu là chuỗi tên Enum như 'BIA_MEM'
+                    book.format = BookFormat[format_value]
+            except KeyError:
+                return jsonify({'success': False, 'message': f"Invalid format value: {format_value}"}), 400
 
-    book.price = updated_data.get('price', book.price)
-    book.num_page = updated_data.get('num_page', book.num_page)
-    book.weight = updated_data.get('weight', book.weight)
-    book.format = updated_data.get('format', book.format)
-    book.dimension = updated_data.get('dimension', book.dimension)
+        book.price = updated_data.get('price', book.price)
+        book.num_page = updated_data.get('num_page', book.num_page)
+        book.weight = updated_data.get('weight', book.weight)
+        # book.format = updated_data.get('format', book.format)
+        book.dimension = updated_data.get('dimension', book.dimension)
 
-    db.session.commit()
+        db.session.commit()
 
-    return jsonify({'success': True, 'updated': updated_data})
+        return jsonify({'success': True, 'updated': updated_data})
 
+    except Exception as e:
+        app.logger.error(f"Error updating book: {str(e)}")
+        return jsonify({'success': False, 'message': str(e)}), 500
 
 @employee_bp.route('/delete-book/<int:book_id>', methods=['POST'])
 @employee_manager_required

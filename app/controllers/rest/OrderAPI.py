@@ -12,6 +12,7 @@ from app.dao.FormImportDAO import *
 from flask import Blueprint, jsonify, session
 from flask import render_template, request
 from app.controllers.EmployeeController import employee_required
+from app.exception.UnauthorizedAccessError import UnauthorizedAccess
 
 order_api_bp = Blueprint('/api/v1/order', __name__)
 
@@ -95,10 +96,12 @@ def online_order():
 
 
 @order_api_bp.route('/orderCancellation', methods=['POST'])
-@customer_required_api
-@employee_sale_required_api
 def cancel_order():
     data = request.json
+
+    if not current_user.is_authenticated or current_user.user_role not in [UserRole.EMPLOYEE_SALE, UserRole.ADMIN, UserRole.CUSTOMER]:
+        raise UnauthorizedAccess("Not allowed")
+
     order_cancellation = create_order_cancellation(data)
 
     return jsonify({

@@ -26,7 +26,6 @@ def generate_payment():
 
 
 @payment_rest_bp.route('/payment-ipn', methods=['GET'])
-@customer_required_api
 def process_ipn():
     res = request.args.to_dict()
     return VNPayConfig.process_ipn(res)

@@ -15,6 +15,8 @@ from app.model.Order import OrderStatus, PaymentMethod, OnlineOrder, OfflineOrde
 from decimal import *
 import math
 
+from app.model.User import UserRole
+
 
 # find by id, find by sdt khach hang
 # filter by status, PTTT
@@ -50,13 +52,35 @@ def find_add_by_user_id(user_id, status, page, limit):
     end = start + limit
     order = order.slice(start, end)
     return order.all()
+"""
+    order = Order.query.filter(Order.order_id == data['orderId']).first()
+    if user.user_roles == UserRole.CUSTOMER and order.user_id != user.get_id():
+        raise UnauthorizedAccess("You don't have permission for resource")
 
+    if order is None: raise NotFoundError("Không tìm thấy đơn hàng của bạn", 404)
+
+    for order_detail in order.order_detail:
+        order_detail.book.increase_book(quantity=order_detail.quantity)
+
+    order_cancellation = OrderCancellation(order_id=order.order_id, reason=data['reason'])
+    order.status = OrderStatus.DA_HUY
+    db.session.add(order_cancellation)
+    db.session.commit()
+
+    return order_cancellation
+"""
 
 def create_order_cancellation(data):
     order = Order.query.get(data['orderId'])
+
+    order = Order.query.filter(Order.order_id == data['orderId']).first()
+    if user.user_roles == UserRole.CUSTOMER and order.user_id != user.get_id():
+        raise UnauthorizedAccess("You don't have permission for resource")
+
     if order is None: raise NotFoundError("Không tìm thấy đơn hàng của bạn", 404)
 
-    allowed_status = [OrderStatus.DANG_XU_LY, OrderStatus.CHO_GIAO_HANG, OrderStatus.DANG_CHO_NHAN]
+    allowed_status = [OrderStatus.DANG_XU_LY, OrderStatus.CHO_GIAO_HANG, OrderStatus.DANG_CHO_NHAN,
+                      OrderStatus.DANG_CHO_THANH_TOAN]
     if order.online_order is None and order.payment_method is not PaymentMethod.TIEN_MAT and order.status not in allowed_status:
         raise ConflictError("Điều kiện hủy đơn không đáp ứng")
 
@@ -150,14 +174,11 @@ def update_order(order_id, order_list):
     if order.online_order is None and order.payment_method is not PaymentMethod.TIEN_MAT and order.status not in allowed_status:
         raise ConflictError("Điều kiện cập nhật đơn đơn không đáp ứng")
 
-
     order_details = query.filter(OrderDetail.order_id == order_id).all()
 
     for order_detail in order_details:
         order_detail.book.increase_book(order_detail.quantity)
         db.session.delete(order_detail)
-
-
 
     for order_item in order_list:
         book_id = order_item['book_id']

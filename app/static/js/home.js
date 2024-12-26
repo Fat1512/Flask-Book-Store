@@ -29,7 +29,8 @@ async function preLoadCategory() {
         })
         const book = await fetchBook(id)
 
-        all_data = subGerne;
+        all_data = subGerne.slice(0, 5);
+
         homeProductContainer.innerHTML = '';
         book['data']['books'].forEach(data => {
             renderProduct(data);

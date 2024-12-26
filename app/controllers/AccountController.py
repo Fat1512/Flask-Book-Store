@@ -19,54 +19,6 @@ import pdb
 
 account_bp = Blueprint('account', __name__)
 
-def email_register_required(f):
-    def wrap(*args, **kwargs):
-        if not current_user.is_authenticated:
-            return redirect(url_for('account.verify_email'))
-        if current_user.user_role in [UserRole.EMPLOYEE_MANAGER, UserRole.EMPLOYEE_MANAGER_WAREHOUSE,
-                                          UserRole.EMPLOYEE_SALE, UserRole.ADMIN, UserRole.CUSTOMER]:
-            return redirect(url_for('account.verify_email'))
-        return f(*args, **kwargs)
-
-    wrap.__name__ = f.__name__
-    return wrap
-
-def email_forgot_customer_required(f):
-    def wrap(*args, **kwargs):
-        if not current_user.is_authenticated:
-            return redirect(url_for('account.verify_pass'))
-        if current_user.user_role in [UserRole.EMPLOYEE_MANAGER, UserRole.EMPLOYEE_MANAGER_WAREHOUSE,
-                                          UserRole.EMPLOYEE_SALE, UserRole.ADMIN, UserRole.CUSTOMER]:
-            return redirect(url_for('account.verify_pass'))
-        return f(*args, **kwargs)
-
-    wrap.__name__ = f.__name__
-    return wrap
-
-def email_forgot_employee_required(f):
-    def wrap(*args, **kwargs):
-        if not current_user.is_authenticated:
-            return redirect(url_for('account.employee_verify_pass'))
-        if current_user.user_role in [UserRole.EMPLOYEE_MANAGER, UserRole.EMPLOYEE_MANAGER_WAREHOUSE,
-                                          UserRole.EMPLOYEE_SALE, UserRole.ADMIN, UserRole.CUSTOMER]:
-            return redirect(url_for('account.employee_verify_pass'))
-        return f(*args, **kwargs)
-
-    wrap.__name__ = f.__name__
-    return wrap
-
-def email_forgot_admin_required(f):
-    def wrap(*args, **kwargs):
-        if not current_user.is_authenticated:
-            return redirect(url_for('account.admin_verify_pass'))
-        if current_user.user_role in [UserRole.EMPLOYEE_MANAGER, UserRole.EMPLOYEE_MANAGER_WAREHOUSE,
-                                          UserRole.EMPLOYEE_SALE, UserRole.ADMIN, UserRole.CUSTOMER]:
-            return redirect(url_for('account.admin_verify_pass'))
-        return f(*args, **kwargs)
-
-    wrap.__name__ = f.__name__
-    return wrap
-
 @account_bp.route('/purchase', methods=['GET'])
 def purchase():
     payment_status = request.args.get('vnp_ResponseCode', default=None)
@@ -89,10 +41,10 @@ def purchase():
 def admin_login():
     err_msg = ''
     if request.method == 'POST':
-        username = request.form.get('username')
+        identifier = request.form.get('username')
         password = request.form.get('password')
 
-        user = UserDao.auth_user(username=username, password=password)
+        user = UserDao.auth_user(identifier=identifier, password=password)
         if user:
             if user.user_role == UserRole.ADMIN:
                 login_user(user=user)
@@ -112,7 +64,6 @@ def admin_logout():
 
 
 @account_bp.route("/admin-forgot", methods=['GET', 'POST'])
-@email_forgot_admin_required
 def admin_forgot():
     err_msg = ''
     if request.method == 'POST':
@@ -139,10 +90,10 @@ def admin_forgot():
 def employee_login():
     err_msg = ''
     if request.method == 'POST':
-        username = request.form.get('username')
+        identifier = request.form.get('username')
         password = request.form.get('password')
 
-        user = UserDao.auth_user(username=username, password=password)
+        user = UserDao.auth_user(identifier=identifier, password=password)
         if user:
             login_user(user=user)
 
@@ -155,43 +106,6 @@ def employee_login():
 
     return render_template('employee-login.html', err_msg=err_msg)
 
-
-# @account_bp.route("/employee-register", methods=['GET', 'POST'])
-# def employee_register():
-#     err_msg = ''
-#     if request.method == 'POST':
-#         password = request.form.get('password')
-#         confirm = request.form.get('confirm')
-#         username = request.form.get('username')
-#         email = request.form.get('email')
-#
-#         if password == confirm:
-#             if UserDao.check_exists(username=username, email=email):
-#                 err_msg = 'Tên người dùng hoặc email đã tồn tại!'
-#             else:
-#                 data = request.form.copy()
-#                 del data['confirm']
-#
-#                 # Lấy user_role từ input hidden (Tên của vai trò)
-#                 user_role = request.form.get('user_role')
-#
-#                 avt_url = request.files.get('avt_url')
-#
-#                 optional_fields = ['sex', 'phone_number', 'date_of_birth', 'isActive', 'last_access']
-#                 for field in optional_fields:
-#                     data[field] = data.get(field, None)
-#
-#                 # Xóa user_role khỏi data để không bị truyền trùng
-#                 if 'user_role' in data:
-#                     del data['user_role']
-#
-#                 UserDao.add_employee(avt_url=avt_url, user_role=user_role, **data)
-#
-#                 return redirect(url_for('account.employee_login'))
-#         else:
-#             err_msg = 'Mật khẩu không khớp!'
-#
-#     return render_template('employee-register.html', err_msg=err_msg)
 
 
 @account_bp.route("/employee-logout")
@@ -287,7 +201,6 @@ def employee_verify_pass():
 
 
 @account_bp.route("/employee-forgot", methods=['GET', 'POST'])
-@email_forgot_employee_required
 def employee_forgot():
     err_msg = ''
     if request.method == 'POST':
@@ -314,7 +227,7 @@ def employee_forgot():
 def login_process():
     err_msg = ''
     if request.method == 'POST':
-        username = request.form.get('username')
+        identifier = request.form.get('username')
         password = request.form.get('password')
 
         roles = [UserRole.CUSTOMER, UserRole.ADMIN, UserRole.EMPLOYEE_SALE, UserRole.EMPLOYEE_MANAGER,
@@ -322,7 +235,7 @@ def login_process():
 
         u = None
         for role in roles:
-            u = UserDao.auth_user(username=username, password=password, role=role)
+            u = UserDao.auth_user(identifier=identifier, password=password, role=role)
             if u:
                 break
         if u:
@@ -442,7 +355,6 @@ def verify_email():
 
 
 @account_bp.route("/register", methods=['get', 'post'])
-@email_register_required
 def register_process():
     err_msg = ''
     if request.method == 'POST':
@@ -582,7 +494,6 @@ def verify_pass():
 
 
 @account_bp.route("/forgot", methods=['GET', 'POST'])
-@email_forgot_customer_required
 def forgot_process():
     err_msg = ''
     if request.method == 'POST':

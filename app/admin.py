@@ -24,12 +24,13 @@ import math
 from app import app, db
 from app.model.BookGerne import BookGerne
 from app.model.User import User
-from app.model.Book import Book
+from app.model.Book import Book, BookFormat
 from app.model.Account import Account
 import hashlib
 from app.model.Publisher import Publisher
 from app.dao.BookGerneDAO import add_gerne, remove_gerne
 from app.model.Config import Config
+from app.utils.helper import FORMAT_ROLE_TEXT
 
 
 # class AuthenticatedAdmin(ModelView):
@@ -164,16 +165,21 @@ class AdminAccountManager(ModelView):
         user_role = request.args.get('user_role', type=int)
         first_name = request.args.get('first_name')
         last_name = request.args.get('last_name')
-
-        stats = account_management(user_role, first_name=first_name, last_name=last_name)
-
         page = int(request.args.get('page', 1))
-        page_size = app.config['STATISTIC_FRE_PAGE_SIZE']
-        total = len(stats)
+        paginated_stats = account_management(user_role, first_name=first_name, last_name=last_name, page=page)
 
-        start_idx = (page - 1) * page_size
-        end_idx = start_idx + page_size
-        paginated_stats = stats[start_idx:end_idx]
+        paginated_stats = [[
+            stat.user_id,
+            stat.first_name,
+            stat.last_name,
+            stat.account.username,
+            stat.email,
+            FORMAT_ROLE_TEXT[stat.user_role.value - 1]
+        ] for stat in paginated_stats]
+
+
+        total = len(paginated_stats)
+        page_size = app.config['STATISTIC_FRE_PAGE_SIZE']
 
         return self.render(
             "/admin/adminAccountManager.html",
@@ -276,6 +282,10 @@ def get_gernes():
     gernes = db.session.query(BookGerne.book_gerne_id, BookGerne.name).all()
     return jsonify([{"id": gerne.book_gerne_id, "name": gerne.name} for gerne in gernes])
 
+@app.route('/api/formats', methods=['GET'])
+def get_formats():
+    formats = [{"id": format.value, "name": f"BookFormat.{format.name}"} for format in BookFormat]
+    return jsonify(formats)
 
 @app.route("/api/user_roles", methods=["GET"])
 def get_user_roles():
@@ -297,7 +307,7 @@ def get_user_roles_employee():
             UserRole.EMPLOYEE_MANAGER_WAREHOUSE,
             UserRole.EMPLOYEE_MANAGER,
         ]
-        result = [{"user_role": role.name, "role_id": role.value} for role in employee_roles]
+        result = [{"user_role": FORMAT_ROLE_TEXT[role.value - 1], "role_id": role.value} for role in employee_roles]
         return jsonify(result)
     except Exception as e:
         return jsonify({"error": str(e)}), 500

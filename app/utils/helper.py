@@ -3,6 +3,7 @@ import locale
 from datetime import datetime
 
 FORMAT_BOOK_TEXT = ["Bìa cứng", "Bìa mềm"]
+FORMAT_ROLE_TEXT = ["Admin", "Khách hàng", "Ẩn danh", "Nhân viên bán hàng", "Nhân viên kho", "Nhân viên quản lý"]
 ORDER_TYPE_TEXT = ["Đặt online", "Mua trực tiếp"]
 ORDER_STATUS_TEXT = ["Đang xử lý", "Chờ giao hàng", "Đang giao hàng", "Đã hoàn thành", "Đã hủy", "Đang chờ thanh toán",
                      "Đã thanh toán", "Đang chờ nhận"]

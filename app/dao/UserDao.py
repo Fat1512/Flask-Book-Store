@@ -18,19 +18,18 @@ from sqlalchemy import or_, select
 from sqlalchemy.orm import joinedload
 import validators
 
-
-def auth_user(username, password, role=None):
+def auth_user(identifier, password, role=None):
+    # Mã hóa password
     password = hashlib.md5(password.strip().encode('utf-8')).hexdigest()
 
-    if not username or not password:
+    if not identifier or not password:
         return None
 
-    # Truy vấn từ Account và sử dụng quan hệ để lấy User
+    # Kiểm tra nếu identifier là email hay username
     query = Account.query.options(joinedload(Account.user)).filter(
-        Account.username == username.strip(),
+        (Account.username == identifier.strip()) | (Account.user.has(email=identifier.strip())),  # Truy vấn email qua mối quan hệ với User
         Account.password == password
     )
-
 
     if role:
         query = query.filter(Account.user.has(user_role=role))
@@ -39,7 +38,6 @@ def auth_user(username, password, role=None):
 
     # Trả về User nếu Account tồn tại
     return account.user if account else None
-
 
 
 # def auth_user(username, password, role=UserRole.USER):

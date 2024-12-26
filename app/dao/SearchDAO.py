@@ -29,7 +29,8 @@ def get_suggest(keyword):
                             }
                         }
                     }
-                    , {
+                    ,
+                    {
                         "match_phrase_prefix": {
                             "author": {
                                 "query": keyword,
@@ -255,7 +256,6 @@ def search_book_es(keyword, min_price, max_price, extended_books,
         "_source": ["book_id", "title", "price", "extended_books", "book_image"]
     }
     try:
-        pdb.set_trace()
 
         response = es.search(index=index_name, body=query)
         aggregation = es.search(index=index_name, body=aggregation_query)

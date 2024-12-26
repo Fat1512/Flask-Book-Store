@@ -5,6 +5,15 @@ from app.exception.Unauthorization import Unauthorization
 from app.exception.UnauthorizedAccessError import UnauthorizedAccess
 from app.model.User import UserRole
 
+def customer_no_user_required(f):
+    def wrap(*args, **kwargs):
+        if current_user.is_authenticated and current_user.user_role in [UserRole.EMPLOYEE_MANAGER, UserRole.EMPLOYEE_MANAGER_WAREHOUSE,
+                                      UserRole.EMPLOYEE_SALE, UserRole.ADMIN]:
+            return redirect(url_for('account.logout_process'))
+        return f(*args, **kwargs)
+
+    wrap.__name__ = f.__name__
+    return wrap
 
 def customer_required(f):
     def wrap(*args, **kwargs):

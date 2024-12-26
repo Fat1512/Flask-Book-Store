@@ -66,13 +66,13 @@ const createOrder = async function (data) {
             if (data['paymentMethod'] === 'VNPay')
                 await payment(result['orderId'])
             else {
-                window.location.replace('http://127.0.0.1:5000/account/purchase')
+                window.location.replace(`${window.location.origin}/account/purchase`)
             }
         } else {
             throw new Error(result['error'])
         }
     } catch (error) {
-        window.location.replace('http://127.0.0.1:5000/cart/')
+        window.location.replace(`${window.location.origin}/cart/`)
     }
 }
 

@@ -78,7 +78,7 @@ function renderBookNull(bookElemnt, paginationElemnt) {
 }
 
 async function render_book(params, isFilter = false) {
-
+    console.log(params)
     const {data: books, current_page, pages, extended_books: filters} = await fetchBook(params)
 
     const bookElemnts = document.querySelector('.list-book')
@@ -362,42 +362,44 @@ const price = document.querySelector('#price.group-filter')
 price.addEventListener('click', (e) => handleSelectedFileter(price, e))
 
 function handleSelectedFileter(element, e) {
-    if (e.target.tagName === 'SPAN') return
-    const prev = element.querySelector('.checkbox-checked')
-    const listFiler = document.querySelector('.filter-list')
-    e.target.classList.add('checkbox-checked')
-    window.history.pushState({}, '', CURRENT_URL);
-    if (prev && prev !== e.target) {
-        addParamURL(element.id, e.target.getAttribute('value'))
-        deleteParamURL("page")
-        listFiler.insertAdjacentHTML('beforeend',
-            `<li id ="${element.id}" class="filter-item mr-3 mb-3 price-filter">
-        <span >${element.getAttribute('value')}: ${e.target.textContent}</span>
-        <span class="cursor-pointer delete-filter ml-1"><i class="fa-solid fa-x"></i></span>
-        </li>`
-        )
-        prev.classList.remove('checkbox-checked')
-        listFiler.querySelector(
-            `#${element.id}`
-        ).remove()
-    } else if (prev === e.target) {
-        deleteParamURL(element.id)
-        deleteParamURL("page")
-        prev.classList.remove('checkbox-checked')
-        listFiler.querySelector(
-            `#${element.id}`
-        ).remove()
-    } else {
-        addParamURL(element.id, e.target.getAttribute('value'))
-        listFiler.insertAdjacentHTML('beforeend',
 
-            `<li id ="${element.id}" class="filter-item mr-3 mb-3 price-filter" value="${e.target.getAttribute('value')}">
+    if (e.target.tagName === 'A') {
+        const prev = element.querySelector('.checkbox-checked')
+        const listFiler = document.querySelector('.filter-list')
+        e.target.classList.add('checkbox-checked')
+        window.history.pushState({}, '', CURRENT_URL);
+        if (prev && prev !== e.target) {
+            addParamURL(element.id, e.target.getAttribute('value'))
+            deleteParamURL("page")
+            listFiler.insertAdjacentHTML('beforeend',
+                `<li id ="${element.id}" class="filter-item mr-3 mb-3 price-filter">
         <span >${element.getAttribute('value')}: ${e.target.textContent}</span>
         <span class="cursor-pointer delete-filter ml-1"><i class="fa-solid fa-x"></i></span>
         </li>`
-        )
+            )
+            prev.classList.remove('checkbox-checked')
+            listFiler.querySelector(
+                `#${element.id}`
+            ).remove()
+        } else if (prev === e.target) {
+            deleteParamURL(element.id)
+            deleteParamURL("page")
+            prev.classList.remove('checkbox-checked')
+            listFiler.querySelector(
+                `#${element.id}`
+            ).remove()
+        } else {
+            addParamURL(element.id, e.target.getAttribute('value'))
+            listFiler.insertAdjacentHTML('beforeend',
+
+                `<li id ="${element.id}" class="filter-item mr-3 mb-3 price-filter" value="${e.target.getAttribute('value')}">
+        <span >${element.getAttribute('value')}: ${e.target.textContent}</span>
+        <span class="cursor-pointer delete-filter ml-1"><i class="fa-solid fa-x"></i></span>
+        </li>`
+            )
+        }
+
+        window.history.pushState({}, '', CURRENT_URL);
+        render_book(getCurrentParams(), true)
     }
-
-    window.history.pushState({}, '', CURRENT_URL);
-    render_book(getCurrentParams(), true)
 }

@@ -54,20 +54,92 @@ document.addEventListener("click", (event) => {
         gerneList.style.display = "none";
     }
 });
-console.log(document.getElementById("bookForm"))
-// Form submission handler
-document.getElementById("bookForm").addEventListener("submit", function(event) {
-    event.preventDefault();
 
-    let selectedGerne = gerneSearch.value;
-    if (selectedGerne === "" && newGerneInput.value.trim() !== "") {
-        selectedGerne = newGerneInput.value.trim();
-        // Optionally, gửi thể loại mới lên server qua API POST (nếu cần)
-        console.log("New Gerne Added:", selectedGerne);
+// Form submission handler
+document.addEventListener('DOMContentLoaded', function () {
+    const formatList = document.getElementById("formatList");
+    const formatSearch = document.getElementById("formatSearch");
+
+    async function fetchFormats() {
+        try {
+            const response = await fetch('/api/formats'); // Gọi API backend để lấy enum
+            if (!response.ok) throw new Error('Failed to fetch formats');
+
+            const formats = await response.json(); // Parse JSON từ API
+            populateFormatList(formats);
+        } catch (error) {
+            console.error('Error fetching formats:', error);
+        }
     }
 
-    alert("Book added successfully!");
-    // Thêm logic xử lý form tại đây
+    function populateFormatList(formats, filter = "") {
+        formatList.innerHTML = ""; // Clear the list
+        const filteredFormats = formats.filter(format =>
+        format.name.toLowerCase().includes(filter.toLowerCase())
+        );
+
+        filteredFormats.forEach(format => {
+            const item = document.createElement("div");
+            item.classList.add("dropdown-item");
+            item.textContent = format.name;
+            item.dataset.value = format.id; // Gắn ID định dạng vào dataset
+            item.addEventListener("click", () => {
+                formatSearch.value = format.name; // Hiển thị tên trong input
+                formatSearch.dataset.value = format.id; // Lưu ID vào dataset
+                formatList.style.display = "none";
+
+                console.log(`Selected format: ${format.name} (ID: ${format.id})`);
+            });
+            formatList.appendChild(item);
+        });
+    }
+
+    // Show dropdown list on focus
+    formatSearch.addEventListener("focus", () => {
+        fetchFormats(); // Fetch và hiển thị danh sách đầy đủ
+        formatList.style.display = "block"; // Hiển thị dropdown
+    });
+
+    // Event listener cho tìm kiếm
+    formatSearch.addEventListener("input", async () => {
+        const response = await fetch('/api/formats'); // Fetch lại formats
+        const formats = await response.json();
+        populateFormatList(formats, formatSearch.value); // Filter theo input
+    });
+
+    // Ẩn dropdown khi click ra ngoài
+    document.addEventListener("click", (event) => {
+        if (!event.target.closest(".dropdown-container")) {
+            formatList.style.display = "none";
+        }
+    });
+
+    // Gửi dữ liệu đến backend
+    document.querySelector('.update-btn').addEventListener('click', () => {
+        const updatedFormatId = formatSearch.dataset.value; // Lấy ID từ dataset
+
+        fetch('/api/update-format', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ format: updatedFormatId })
+        })
+            .then(response => response.json())
+            .then(data => {
+            if (data.success) {
+                alert('Cập nhật thành công!');
+            } else {
+                alert(`Cập nhật thất bại: ${data.message || 'Unknown error'}`);
+            }
+        })
+            .catch(error => console.error('Error updating format:', error));
+    });
 });
+
+
+
+
+
 
 
