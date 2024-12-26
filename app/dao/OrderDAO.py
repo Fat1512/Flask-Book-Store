@@ -5,6 +5,7 @@ from app.exception.ConfictError import ConflictError
 from app.exception.InsufficientError import InsufficientError
 from app.exception.GeneralInsufficientError import GeneralInsufficientError
 from app.exception.NotFoundError import NotFoundError
+from app.exception.UnauthorizedAccessError import UnauthorizedAccess
 from app.model.Book import Book
 from app.model.Config import Config
 from app.model.Order import Order, PaymentDetail, ShippingMethod, OrderCancellation

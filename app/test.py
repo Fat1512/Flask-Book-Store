@@ -1,3 +1,6 @@
+import random
+import string
+
 from sqlalchemy import Column, Integer, String, ForeignKey, Double
 from app import db
 from enum import Enum
@@ -88,6 +91,8 @@ date_object = datetime.strptime(date_str, '%m-%d-%Y').date()
 print(type(date_object))
 print(datetime.utcnow() + timedelta(hours=7) - timedelta(minutes=2))
 
+username = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+print(username)
 # printed in default format
 # if obj["1"] is not None and obj["b"] is not None:
 #     print("ok")

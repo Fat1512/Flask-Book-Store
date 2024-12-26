@@ -23,8 +23,7 @@ def create_customer_phone_number(phone_number):
     if user:
         raise AlreadyExistedError("Số điện thoại đã được đăng ký")
 
-    user = add_offline_user("Default", "Default", "Default2", avt_url=None, sex=True,
-                        phone_number=str(phone_number), isActive=True)
+    user = add_offline_user(phone_number)
     user['phone_number'] = phone_number
     return {
         "message": "Tạo thành công",

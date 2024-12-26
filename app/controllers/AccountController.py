@@ -369,8 +369,9 @@ def register_process():
             return render_template('register.html', err_msg=err_msg)
 
         if password == confirm:
+            check =  UserDao.check_exists(username=username, email=email, phone_number=phone_number)
 
-            if UserDao.check_exists(username=username, email=email, phone_number=phone_number):
+            if check == 1:
                 err_msg = 'Tên người dùng hoặc email hoặc SĐT đã tồn tại!'
             else:
                 data = request.form.copy()
@@ -379,21 +380,34 @@ def register_process():
                 optional_fields = ['sex', 'phone_number', 'date_of_birth', 'isActive', 'last_access']
                 for field in optional_fields:
                     data[field] = data.get(field, None)
-
-                UserDao.add_user(
-                    first_name=data.get('first_name'),
-                    last_name=data.get('last_name'),
-                    username=username,
-                    password=password,
-                    email=email,
-                    phone_number=phone_number,
-                    avt_url=avt_url,
-                    sex=data.get('sex'),
-                    date_of_birth=data.get('date_of_birth'),
-                    isActive=data.get('isActive'),
-                    last_access=data.get('last_access')
-                )
-
+                if check == 0:
+                    UserDao.add_user(
+                        first_name=data.get('first_name'),
+                        last_name=data.get('last_name'),
+                        username=username,
+                        password=password,
+                        email=email,
+                        phone_number=phone_number,
+                        avt_url=avt_url,
+                        sex=data.get('sex', True),
+                        date_of_birth=data.get('date_of_birth'),
+                        isActive=data.get('isActive'),
+                        last_access=data.get('last_access')
+                    )
+                else:
+                    UserDao.add_account_user(
+                        first_name=data.get('first_name'),
+                        last_name=data.get('last_name'),
+                        username=username,
+                        password=password,
+                        email=email,
+                        phone_number=phone_number,
+                        avt_url=avt_url,
+                        sex=data.get('sex', True),
+                        date_of_birth=data.get('date_of_birth'),
+                        isActive=data.get('isActive'),
+                        last_access=data.get('last_access')
+                    )
                 return redirect(url_for('account.login_process'))
         else:
             err_msg = 'Mật khẩu không khớp!'

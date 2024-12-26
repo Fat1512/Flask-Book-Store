@@ -7,6 +7,7 @@ from app.model.Address import Address
 from app.model.Cart import Cart
 from app.model.User import User
 from app.model.Account import Account
+from sqlalchemy import and_
 import hashlib
 from app import db
 import cloudinary.uploader
@@ -18,6 +19,7 @@ from sqlalchemy import or_, select
 from sqlalchemy.orm import joinedload
 import validators
 
+
 def auth_user(identifier, password, role=None):
     # Mã hóa password
     password = hashlib.md5(password.strip().encode('utf-8')).hexdigest()
@@ -27,7 +29,8 @@ def auth_user(identifier, password, role=None):
 
     # Kiểm tra nếu identifier là email hay username
     query = Account.query.options(joinedload(Account.user)).filter(
-        (Account.username == identifier.strip()) | (Account.user.has(email=identifier.strip())),  # Truy vấn email qua mối quan hệ với User
+        (Account.username == identifier.strip()) | (Account.user.has(email=identifier.strip())),
+        # Truy vấn email qua mối quan hệ với User
         Account.password == password
     )
 
@@ -47,24 +50,18 @@ def auth_user(identifier, password, role=None):
 #                              User.password.__eq__(password),
 #                              User.user_role.__eq__(role)).first()
 
-def add_offline_user(first_name, last_name, email, avt_url=None, sex=None, phone_number=None, date_of_birth=None,
-                     isActive=None, last_access=None):
-    u = User(first_name=first_name, last_name=last_name, email=email,
-             avt_url='https://png.pngtree.com/png-vector/20191101/ourmid/pngtree-cartoon-color-simple-male-avatar-png-image_1934459.jpg',
-             sex=sex, phone_number=phone_number, date_of_birth=date_of_birth, isActive=isActive,
-             last_access=last_access)
-    if not avt_url:
-        avt_url = 'https://png.pngtree.com/png-vector/20191101/ourmid/pngtree-cartoon-color-simple-male-avatar-png-image_1934459.jpg'
-    if avt_url:
-        res = cloudinary.uploader.upload(avt_url)
-        u.avt_url = res.get('secure_url')
+def add_offline_user(phone_number):
+    avt_url = 'https://png.pngtree.com/png-vector/20191101/ourmid/pngtree-cartoon-color-simple-male-avatar-png-image_1934459.jpg'
+    u = User(first_name="default", last_name="default", phone_number=phone_number, avt_url=avt_url, isActive=False)
+    res = cloudinary.uploader.upload(avt_url)
+    u.avt_url = res.get('secure_url')
+
     db.session.add(u)
     db.session.commit()
     return {
         'id': u.user_id,
         'fullname': u.full_name
     }
-
 
 
 def add_user(first_name, last_name, username, password, email, phone_number, avt_url=None, sex=None,
@@ -84,21 +81,41 @@ def add_user(first_name, last_name, username, password, email, phone_number, avt
         last_access=last_access
     )
     u.cart = Cart(user=u)
-    db.session.add(u)
-    db.session.flush()  # Flush để có user_id
 
     account = Account(
         username=username,
         password=password,
-        user_id=u.user_id
+        user=u
     )
     db.session.add(account)
     db.session.commit()
+    find_customer_phone_number(phone_number)
 
+def add_account_user(first_name, last_name, username, password, email, avt_url=None, sex=None, phone_number=None,
+                 date_of_birth=None, isActive=None, last_access=None):
+    password = hashlib.md5(password.strip().encode('utf-8')).hexdigest()
+    user = find_by_phone_number(phone_number)
 
+    user.first_name = first_name
+    user.last_name = last_name
+    user.email=email
+    user.avt_url=avt_url or 'https://png.pngtree.com/png-vector/20191101/ourmid/pngtree-cartoon-color-simple-male-avatar-png-image_1934459.jpg'
+    user.sex=True
+    user.phone_number=phone_number
+    user.date_of_birth=date_of_birth
+    user.isActive=isActive
+    user.last_access=last_access
+
+    user.account = Account(
+        username=username,
+        password=password,
+        user=user
+    )
+
+    db.session.commit()
 
 def add_employee(first_name, last_name, username, password, email, avt_url=None, sex=None, phone_number=None,
-             date_of_birth=None, isActive=None, last_access=None, user_role=None):
+                 date_of_birth=None, isActive=None, last_access=None, user_role=None):
     password = hashlib.md5(password.strip().encode('utf-8')).hexdigest()
 
     # Tạo bản ghi User
@@ -114,14 +131,12 @@ def add_employee(first_name, last_name, username, password, email, avt_url=None,
         last_access=last_access,
         user_role=user_role  # Thêm user_role vào đây
     )
-    db.session.add(u)
-    db.session.flush()  # Flush để có user_id
 
     # Tạo bản ghi Account
     account = Account(
         username=username,
         password=password,
-        user_id=u.user_id
+        user=u
     )
     db.session.add(account)
     db.session.commit()
@@ -195,28 +210,40 @@ def find_customer_phone_number(phone_number):
         'phone_number': item[3]
     }
         for item in db.session.execute(
-            select(User.user_id, User.first_name, User.last_name, User.phone_number).where(User.phone_number.contains(phone_number)))
-    ]
+            select(User.user_id, User.first_name, User.last_name, User.phone_number)
+            .where(and_(User.phone_number.contains(phone_number), User.user_role == UserRole.CUSTOMER)))]
     return obj
+
+
+"""
+    Tra ve 1: username, email, so dien thoai da ton tai => Co the tao
+    Tra ve 2: so dien thoai da ton tai nhung chua co account => Co the tao
+    Tra ve 0: username, email, so dien thoai da ton tai => Khong the tao
+"""
 
 
 def check_exists(username=None, email=None, phone_number=None):
     if username and Account.query.filter_by(username=username).first():
-        return True
+        return 1
 
     if email and User.query.filter_by(email=email).first():
-        return True
+        return 1
 
-    if phone_number and User.query.filter_by(phone_number=phone_number).first():
-        return True
+    if phone_number:
+        user = User.query.filter_by(phone_number=phone_number).first()
+        if user and user.account:
+            return 1
+        elif user and not user.account:
+            return 2
 
-    return False
+    return 0
 
 
 def check_exists_email(email=None):
     if email and User.query.filter_by(email=email).first():
         return True
     return False
+
 
 # def get_user_by_id(user_id):
 #     return User.query.get(user_id)
@@ -245,4 +272,3 @@ def update_password(username, password):
     if account:
         account.password = hashed_password
         db.session.commit()
-
