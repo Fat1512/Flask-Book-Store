@@ -4,6 +4,7 @@ from app.dao.ConfigDAO import get_config
 from app.exception.InsufficientError import InsufficientError
 from app.exception.GeneralInsufficientError import GeneralInsufficientError
 from app.exception.NotFoundError import NotFoundError
+from app.exception.UnauthorizedAccessError import UnauthorizedAccess
 from app.model.Book import Book
 from app.model.Config import Config
 from app.model.Order import Order, PaymentDetail, ShippingMethod, OrderCancellation
@@ -13,6 +14,8 @@ from app import app, db
 from app.model.Order import OrderStatus, PaymentMethod, OnlineOrder, OfflineOrder, OrderDetail
 from decimal import *
 import math
+
+from app.model.User import UserRole
 
 
 # find by id, find by sdt khach hang
@@ -51,8 +54,11 @@ def find_add_by_user_id(user_id, status, page, limit):
     return order.all()
 
 
-def create_order_cancellation(data):
-    order = Order.query.get(data['orderId'])
+def create_order_cancellation(user, data):
+    order = Order.query.filter(Order.order_id == data['orderId']).first()
+    if user.user_roles == UserRole.CUSTOMER and order.user_id != user.get_id():
+        raise UnauthorizedAccess("You don't have permission for resource")
+
     if order is None: raise NotFoundError("Không tìm thấy đơn hàng của bạn", 404)
 
     for order_detail in order.order_detail:
@@ -68,6 +74,13 @@ def create_order_cancellation(data):
 
 def find_order_by_id(id):
     order = Order.query.get(id)
+    if not order: raise NotFoundError("Không tìm thấy đơn để cập nhật")
+    return order
+
+
+def find_order_by_user_and_id(user_id, id):
+    order = Order.query.get(id)
+    if order.customer_id != user_id: raise UnauthorizedAccess("You don't have permission for resource")
     if not order: raise NotFoundError("Không tìm thấy đơn để cập nhật")
     return order
 

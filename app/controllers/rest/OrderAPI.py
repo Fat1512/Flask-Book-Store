@@ -11,6 +11,7 @@ from app.dao.FormImportDAO import *
 from flask import Blueprint, jsonify, session
 from flask import render_template, request
 from app.controllers.EmployeeController import employee_required
+from app.exception.Unauthorization import Unauthorization
 
 order_api_bp = Blueprint('/api/v1/order', __name__)
 
@@ -93,10 +94,11 @@ def online_order():
 
 
 @order_api_bp.route('/orderCancellation', methods=['POST'])
-@customer_required_api
 def cancel_order():
     data = request.json
-    order_cancellation = create_order_cancellation(data)
+    if not current_user.is_authenticated:
+        raise Unauthorization("Login required")
+    order_cancellation = create_order_cancellation(current_user, data)
 
     return jsonify({
         'message': 'Hủy thành công',

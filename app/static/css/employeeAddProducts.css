@@ -9,9 +9,11 @@
     width: 340px;
 
 }
+
 .message-error {
     color: transparent;
 }
+
 .dropdown-toggle:hover {
     background-color: transparent !important;
     color: inherit;
@@ -131,7 +133,7 @@ textarea {
     margin-right: 20px;
     max-width: 475px;
 
-    overflow-x: scroll;
+    overflow-x: auto;
 }
 
 .image-item {
@@ -150,7 +152,6 @@ textarea {
     cursor: pointer;
     min-width: 120px;
 }
-
 
 
 .description-upload {

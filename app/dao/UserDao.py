@@ -31,7 +31,6 @@ def auth_user(username, password, role=None):
         Account.password == password
     )
 
-
     if role:
         query = query.filter(Account.user.has(user_role=role))
 
@@ -39,7 +38,6 @@ def auth_user(username, password, role=None):
 
     # Trả về User nếu Account tồn tại
     return account.user if account else None
-
 
 
 # def auth_user(username, password, role=UserRole.USER):
@@ -66,7 +64,6 @@ def add_offline_user(first_name, last_name, email, avt_url=None, sex=None, phone
         'id': u.user_id,
         'fullname': u.full_name
     }
-
 
 
 def add_user(first_name, last_name, username, password, email, phone_number, avt_url=None, sex=None,
@@ -98,9 +95,8 @@ def add_user(first_name, last_name, username, password, email, phone_number, avt
     db.session.commit()
 
 
-
 def add_employee(first_name, last_name, username, password, email, avt_url=None, sex=None, phone_number=None,
-             date_of_birth=None, isActive=None, last_access=None, user_role=None):
+                 date_of_birth=None, isActive=None, last_access=None, user_role=None):
     password = hashlib.md5(password.strip().encode('utf-8')).hexdigest()
 
     # Tạo bản ghi User
@@ -162,7 +158,7 @@ def delete_address(user_id, address_id):
 
     for a in user.address:
         if a.address_id == address_id:
-            user.address.remove(a)
+            user.address.is_active = False
             db.session.commit()
             return a
 
@@ -197,7 +193,8 @@ def find_customer_phone_number(phone_number):
         'phone_number': item[3]
     }
         for item in db.session.execute(
-            select(User.user_id, User.first_name, User.last_name, User.phone_number).where(User.phone_number.contains(phone_number)))
+            select(User.user_id, User.first_name, User.last_name, User.phone_number).where(
+                User.phone_number.contains(phone_number)))
     ]
     return obj
 
@@ -219,6 +216,7 @@ def check_exists_email(email=None):
     if email and User.query.filter_by(email=email).first():
         return True
     return False
+
 
 # def get_user_by_id(user_id):
 #     return User.query.get(user_id)
@@ -247,4 +245,3 @@ def update_password(username, password):
     if account:
         account.password = hashed_password
         db.session.commit()
-

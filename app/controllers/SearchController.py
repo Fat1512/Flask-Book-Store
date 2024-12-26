@@ -7,7 +7,7 @@ from flask import Blueprint, request, render_template
 from flask_login import current_user
 
 from app import app
-from app.dao.BookDAO import find_all, paginate_book, find_by_gerne, find_by_id, count_book_sell
+from app.dao.BookDAO import paginate_book, find_by_gerne, find_by_id, count_book_sell
 from app.dao.BookGerneDAO import get_depth_gerne
 from app.dao.CartDao import find_by_cart_id
 from app.dao.SearchDAO import search_book, search_book_es
@@ -28,8 +28,8 @@ def search_main():
     limit = int(all_query_params.pop('limit', app.config['ORDER_PAGE_SIZE']))
     page = int(all_query_params.pop('page', 1))
     gerne_id = int(all_query_params.pop('gerneId', 1))
-
     book_gerne = get_depth_gerne(gerne_id)
+
 
     book = search_book_es(keyword=keyword, min_price=min_price, max_price=max_price, order=order_type[order]
                           , limit=limit
@@ -64,7 +64,7 @@ def get_detail():
         "Số trang": book.num_page,
         "Hình thức": FORMAT_BOOK_TEXT[book.format.value - 1],
     }
-    print('test', book.price)
+
 
     comments = book.comments
     comments = sorted(comments, key=lambda x: x.created_at, reverse=True)
