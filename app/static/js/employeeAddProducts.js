@@ -14,13 +14,12 @@ async function fetchGerne(id) {
 
 function showSpinner() {
     document.querySelector('.spinner').style.display = 'block';
-    document.querySelector('.overlay').style.display = 'block';
+
 }
 
 // HIDE SPINNER
 function hideSpinner() {
     document.querySelector('.spinner').style.display = 'none';
-    document.querySelector('.overlay').style.display = 'none';
 }
 
 async function fetchExtendAttribute(id) {
@@ -35,10 +34,9 @@ async function fetchExtendAttribute(id) {
 }
 
 const createBook = async function (data) {
-    data.forEach((value, key) => {
-        console.log(`${key}: ${value}`);
-    });
+
     try {
+        showSpinner()
         const res = await fetch(`${BOOK_API}`, {
             method: 'POST', // HTTP PUT method
             body: data
@@ -51,6 +49,8 @@ const createBook = async function (data) {
         return result
     } catch (error) {
         showToast(error.message, true)
+    } finally {
+        hideSpinner()
     }
 }
 const showToast = function (message, isError) {
@@ -474,6 +474,7 @@ function clearValue() {
 
 //Form submission handler
 function handleCreateBook(e) {
+
     try {
         const title = document.querySelector('input[name ="title"]').value.trim()
         const gerneId = document.querySelector('input[name="input-gerne"]').id
@@ -572,7 +573,7 @@ function handleCreateBook(e) {
             barcodeDigits.push(checkDigit)
             const checkedBarcode = barcodeDigits.join('');
 
-            if(checkedBarcode !== barcode) {
+            if (checkedBarcode !== barcode) {
                 throw new Error("Sai định dạng barcode UPC 8");
             }
             document.getElementById('error-barcode').classList.remove('text-primary')

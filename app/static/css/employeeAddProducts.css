@@ -362,24 +362,34 @@ textarea {
     animation: rotation 1s linear infinite;
 }
 
+.spinner-border {
+    position: absolute;
+    background-color: #ffedd1;
+    z-index: 10;
+    top: 50%;
+    right: 22%;
+    padding: 30px;
+    border-radius: 5px;
+    width: 50%;
+}
+
 .spinner {
-    position: relative;
+    position: absolute;
     z-index: 3;
+    background-color: transparent;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 5;
-    background-color: #ffedd1;
     padding: 15px 50px;
     text-align: center;
     border: 1px solid var(--yellow-color);
-    display: block;
+    display: none;
 
 }
 
 .overlay {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     right: 0;
@@ -387,7 +397,7 @@ textarea {
     z-index: 2;
     background-color: rgba(0, 0, 0, 0.2);
     animation: fadein linear 0.2s;
-    display: none;
+    display: block;
 }
 
 .dropdown-search {
