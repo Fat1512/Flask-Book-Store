@@ -235,7 +235,7 @@ class AdminProfile(ModelView):
         return self.render("/admin/adminProfile.html")
 
 
-admin = Admin(app=app, name='ok', index_view=AdminHome())
+admin = Admin(app=app, name='ok', index_view=AdminHome(), template_mode='bootstrap4')
 admin.add_view(AdminStatisticRevenue(BookGerne, db.session, name='Statistic Revenue', endpoint='statistic-revenue',
                                      url="/admin/statistic-revenue"))
 admin.add_view(

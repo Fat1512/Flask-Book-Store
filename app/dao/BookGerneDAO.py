@@ -41,7 +41,6 @@ def add_gerne(name, parent_id, attributes):
 
 def remove_gerne(gerne_id):
     gerne = BookGerne.query.get(gerne_id)
-    pdb.set_trace()
     step = gerne.rgt - gerne.lft + 1
 
     update_left = BookGerne.query.filter(BookGerne.lft >= gerne.rgt).all()

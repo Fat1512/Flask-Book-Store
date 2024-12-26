@@ -58,7 +58,7 @@ def generate_vnpay_url(order):
     }
 
     # Add Expire Date
-    vnp_expire_date = (datetime.now() + timedelta(minutes=1)).strftime("%Y%m%d%H%M%S")
+    vnp_expire_date = (datetime.now() + timedelta(hours=7, minutes=5)).strftime("%Y%m%d%H%M%S")
     vnpay_data["vnp_ExpireDate"] = vnp_expire_date
 
     # Sort and encode parameters
@@ -95,14 +95,16 @@ def process_ipn(params):
     # Step 2: Process the transaction reference (txnRef)
     order_id = params.get("vnp_TxnRef")
     try:
-        if params.get("status").__eq__('00'):
+        if params.get("vnp_ResponseCode").__eq__('00'):
+            print("process_ipn", params)
+
             order_id = int(order_id)
             order = find_order_by_id(order_id)
 
             payment_detail = PaymentDetail(order_id=order.order_id, created_at=datetime.utcnow(),
                                            amount=order.get_amount())
             create_payment(payment_detail)
-            update_order_status(order_id, OrderStatus.DA_THANH_TOAN)  # Simulated booking service
+            update_order_status(order_id, OrderStatus.DANG_XU_LY)  # Simulated booking service
             response = {
                 "code": "00",
                 "message": "Successful"

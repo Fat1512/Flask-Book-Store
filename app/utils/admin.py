@@ -493,7 +493,7 @@ def book_management(gerne_id=None, kw=None, price_start=None, price_end=None):
         Book.weight,
         Book.format,
         Book.dimension,
-    ).outerjoin(BookGerne, BookGerne.book_gerne_id == Book.book_gerne_id) \
+    ).filter(Book.is_active == True).outerjoin(BookGerne, BookGerne.book_gerne_id == Book.book_gerne_id) \
         .outerjoin(Publisher, Publisher.publisher_id == Book.publisher_id) \
         .group_by(Book.book_id, Book.title, BookGerne.name)
 

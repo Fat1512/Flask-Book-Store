@@ -100,10 +100,11 @@ def online_order():
 def cancel_order():
     data = request.json
 
-    if not current_user.is_authenticated or current_user.user_role not in [UserRole.EMPLOYEE_SALE, UserRole.ADMIN, UserRole.CUSTOMER]:
+    if not current_user.is_authenticated or current_user.user_role not in [UserRole.EMPLOYEE_SALE, UserRole.ADMIN,
+                                                                           UserRole.CUSTOMER]:
         raise UnauthorizedAccess("Not allowed")
 
-    order_cancellation = create_order_cancellation(current_user, data)
+    order_cancellation = create_order_cancellation(data)
 
     return jsonify({
         'message': 'Hủy thành công',

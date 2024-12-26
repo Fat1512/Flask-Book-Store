@@ -23,6 +23,7 @@ class BookIndex:
                         "title": {"type": "text"},
                         "quantity": {"type": "integer"},
                         "price": {"type": "float"},
+                        "is_active": {"type": "boolean"},
                         "description": {"type": "text"},
                         "num_page": {"type": "integer"},
                         "weight": {"type": "float"},

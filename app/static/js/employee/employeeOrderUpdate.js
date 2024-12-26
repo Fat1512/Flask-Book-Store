@@ -254,6 +254,14 @@ updateBtn.addEventListener("click", async function (e) {
         });
 
         if (!res.ok) throw new Error("Có lỗi xảy ra !");
+        const data = await res.json();
+        if(data['status'] !== 200) {
+            renderToast(data['message'], Color.ERROR); return;
+        }
+
+        const books = await fetchBooks();
+        renderBookItem(books['books'])
+
         initialOrderItemsState = JSON.parse(JSON.stringify(currentOrderItemsState));
         renderToast("Cập nhật thành công !", Color.SUCCESS)
     } catch (err) {

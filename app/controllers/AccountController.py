@@ -1,3 +1,4 @@
+from app.authentication.login_required import customer_required
 from app.dao import UserDao
 from app import login
 from app.dao.OrderDAO import find_all, find_add_by_user_id
@@ -20,11 +21,12 @@ import pdb
 account_bp = Blueprint('account', __name__)
 
 @account_bp.route('/purchase', methods=['GET'])
+@customer_required
 def purchase():
     payment_status = request.args.get('vnp_ResponseCode', default=None)
 
     if payment_status:
-        return redirect(f'http://127.0.0.1:5000/account/purchase?payment={payment_status}')
+        return redirect(f'/account/purchase?payment={payment_status}')
 
     status = request.args.get('type', type=int)
 
@@ -48,7 +50,7 @@ def admin_login():
         if user:
             if user.user_role == UserRole.ADMIN:
                 login_user(user=user)
-                return redirect(url_for('admin.index'))
+                return redirect('/admin/')
             else:
                 err_msg = "Vai trò không hợp lệ!"
         else:
@@ -249,12 +251,14 @@ def login_process():
 
 
 @account_bp.route('/address')
+@customer_required
 def address():
     address_list = find_user_address(current_user.get_id())
     return render_template('profile/address.html', address_list=address_list)
 
 
 @account_bp.route('/profile')
+@customer_required
 def profile():
     return render_template('profile/profileUser.html')
 
@@ -364,53 +368,65 @@ def register_process():
         email = session.get('registration_data', {}).get('email', '')
         phone_number = request.form.get('phone_number')
 
-        if len(phone_number) > 10:
+        if not username:
+            err_msg = "Vui lòng nhập tên người dùng!"
+        elif not password:
+            err_msg = "Vui lòng nhập mật khẩu!"
+        elif not confirm:
+            err_msg = "Vui lòng xác nhận mật khẩu!"
+        elif not phone_number:
+            err_msg = "Vui lòng nhập số điện thoại!"
+        elif len(phone_number) > 10:
             err_msg = "Số điện thoại quá dài. Vui lòng nhập lại."
-            return render_template('register.html', err_msg=err_msg)
-
-        if password == confirm:
-            check =  UserDao.check_exists(username=username, email=email, phone_number=phone_number)
-
-            if check == 1:
-                err_msg = 'Tên người dùng hoặc email hoặc SĐT đã tồn tại!'
-            else:
-                data = request.form.copy()
-                del data['confirm']
-                avt_url = request.files.get('avt_url')
-                optional_fields = ['sex', 'phone_number', 'date_of_birth', 'isActive', 'last_access']
-                for field in optional_fields:
-                    data[field] = data.get(field, None)
-                if check == 0:
-                    UserDao.add_user(
-                        first_name=data.get('first_name'),
-                        last_name=data.get('last_name'),
-                        username=username,
-                        password=password,
-                        email=email,
-                        phone_number=phone_number,
-                        avt_url=avt_url,
-                        sex=data.get('sex', True),
-                        date_of_birth=data.get('date_of_birth'),
-                        isActive=data.get('isActive'),
-                        last_access=data.get('last_access')
-                    )
-                else:
-                    UserDao.add_account_user(
-                        first_name=data.get('first_name'),
-                        last_name=data.get('last_name'),
-                        username=username,
-                        password=password,
-                        email=email,
-                        phone_number=phone_number,
-                        avt_url=avt_url,
-                        sex=data.get('sex', True),
-                        date_of_birth=data.get('date_of_birth'),
-                        isActive=data.get('isActive'),
-                        last_access=data.get('last_access')
-                    )
-                return redirect(url_for('account.login_process'))
+        elif password != confirm:
+            err_msg = "Mật khẩu không khớp!"
         else:
-            err_msg = 'Mật khẩu không khớp!'
+            if len(phone_number) > 10:
+                err_msg = "Số điện thoại quá dài. Vui lòng nhập lại."
+                return render_template('register.html', err_msg=err_msg)
+
+            if password == confirm:
+                check =  UserDao.check_exists(username=username, email=email, phone_number=phone_number)
+                if check == 1:
+                    err_msg = 'Tên người dùng hoặc email hoặc SĐT đã tồn tại!'
+                else:
+                    data = request.form.copy()
+                    del data['confirm']
+                    avt_url = request.files.get('avt_url')
+                    optional_fields = ['sex', 'phone_number', 'date_of_birth', 'isActive', 'last_access']
+                    for field in optional_fields:
+                        data[field] = data.get(field, None)
+                    if check == 0:
+                        UserDao.add_user(
+                            first_name=data.get('first_name'),
+                            last_name=data.get('last_name'),
+                            username=username,
+                            password=password,
+                            email=email,
+                            phone_number=phone_number,
+                            avt_url=avt_url,
+                            sex=data.get('sex', True),
+                            date_of_birth=data.get('date_of_birth'),
+                            isActive=data.get('isActive'),
+                            last_access=data.get('last_access')
+                        )
+                    else:
+                        UserDao.add_account_user(
+                            first_name=data.get('first_name'),
+                            last_name=data.get('last_name'),
+                            username=username,
+                            password=password,
+                            email=email,
+                            phone_number=phone_number,
+                            avt_url=avt_url,
+                            sex=data.get('sex', True),
+                            date_of_birth=data.get('date_of_birth'),
+                            isActive=data.get('isActive'),
+                            last_access=data.get('last_access')
+                        )
+                    return redirect(url_for('account.login_process'))
+            else:
+                err_msg = 'Mật khẩu không khớp!'
 
     return render_template('register.html', err_msg=err_msg)
 

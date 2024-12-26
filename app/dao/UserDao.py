@@ -216,9 +216,10 @@ def find_customer_phone_number(phone_number):
 
 
 """
-    Tra ve 1: username, email, so dien thoai da ton tai => Co the tao
+    Tra ve 1: username, email, so dien thoai da ton tai => Khong  the tao
     Tra ve 2: so dien thoai da ton tai nhung chua co account => Co the tao
-    Tra ve 0: username, email, so dien thoai da ton tai => Khong the tao
+    
+    Tra ve 0: username, email, so dien thoai chua ton tai => Co the tao
 """
 
 

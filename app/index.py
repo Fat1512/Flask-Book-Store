@@ -39,7 +39,6 @@ from app.controllers.rest.UserAPI import user_api_bp
 from app.controllers.rest.OrderAPI import order_api_bp, update
 from app.controllers.rest.BookGerneAPI import book_gerne_rest_bp
 from app.controllers.AccountController import account_bp
-from app.controllers.AdminController import admin_bp
 from app.controllers.CartController import cart_bp
 from app.controllers.rest.CartAPI import cart_rest_bp
 from app.utils.admin import profile
@@ -200,10 +199,12 @@ def handle_topic_book(data):
             before_data = data.get('before')
             after_data = data.get('after')
             updated_fields = {}
+
             for field in before_data.keys():
                 if before_data[field] != after_data[field]:
-                    updated_fields[field] = after_data[field]
-
+                    if field == 'is_active':
+                        updated_fields[field] = True if after_data[field] == 1 else False
+                    else: updated_fields[field] = after_data[field]
             update_book_document(after_data['book_id'], updated_fields)
 
         elif action == 'd':
@@ -270,12 +271,12 @@ def handle_topic_attribute(data):
         print(f"Error handling topic1 message: {e}")
 
 
-@scheduler.task('interval', id='my_job', seconds=3600)
+@scheduler.task('interval', id='my_job', minutes=2)
 def my_job():
     with app.app_context():
         delete_orders_after_48hrs()
         delete_payment_after_48hrs()
-        print('This job is executed every 5 seconds.')
+        print('This job is executed every 2 minutes.')
 
 
 @app.route('/status', methods=['GET'])

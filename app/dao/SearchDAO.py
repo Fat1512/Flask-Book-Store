@@ -164,7 +164,11 @@ def search_book_es(keyword, min_price, max_price, extended_books,
 
         }
         array_condition.append(ex_condition)
-
+    array_condition.append({
+        "term": {
+            "is_active": True  # Ensure is_active is True
+        }
+    })
     prefix_query = {
         'bool': {
             'must':
@@ -288,6 +292,8 @@ def search_book(keyword=None, min_price=None, max_price=None,
         query = query.filter(Book.quantity >= Config.min_restock_level)
     elif quantity_status == 2:
         query = query.filter(Book.quantity < Config.min_restock_level)
+
+    query.filter(Book.is_active == True)
 
     start = (page - 1) * limit
     end = start + limit

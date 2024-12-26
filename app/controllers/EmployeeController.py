@@ -218,8 +218,7 @@ def delete_book(book_id):
     book = Book.query.get(book_id)
     if not book:
         return jsonify({"success": False, "message": "Book not found"}), 404
-
-    db.session.delete(book)
+    book.is_active = False
     db.session.commit()
 
     return jsonify({"success": True})

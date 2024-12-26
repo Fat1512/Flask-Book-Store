@@ -105,9 +105,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     } else if (data.message === 'Mật khẩu không trùng khớp') {
                         document.querySelector('#confirmError').style.display = 'block';
                     } else {
-                        alert('Cập nhật thất bại: ' + (data.message || 'Lỗi không xác định'));
+                        // alert('Cập nhật thất bại: ' + (data.message || 'Lỗi không xác định'));
                     }
+                    throw new Error('Cập nhật thất bại')
                 }
+            })
+            .then(() => {
+                window.location.reload();
             })
             .catch(error => {
                 console.error('Error updating profile:', error);

@@ -55,12 +55,8 @@ def find_add_by_user_id(user_id, status, page, limit):
     return order.all()
 
 
-def create_order_cancellation(user, data):
+def create_order_cancellation(data):
     order = Order.query.get(data['orderId'])
-
-    order = Order.query.filter(Order.order_id == data['orderId']).first()
-    if user.user_role == UserRole.CUSTOMER and order.user_id != user.get_id():
-        raise UnauthorizedAccess("You don't have permission for resource")
 
     if order is None: raise NotFoundError("Không tìm thấy đơn hàng của bạn", 404)
 
@@ -72,7 +68,7 @@ def create_order_cancellation(user, data):
     for order_detail in order.order_detail:
         order_detail.book.increase_book(quantity=order_detail.quantity)
 
-    order_cancellation = OrderCancellation(order_id=order.order_id, reason=data['reason'])
+    order_cancellation = OrderCancellation(order_id=order.order_id, reason=data['reason'], created_at=datetime.utcnow() + timedelta(hours=7))
     order.status = OrderStatus.DA_HUY
     db.session.add(order_cancellation)
     db.session.commit()
@@ -200,12 +196,11 @@ def create_online_order(user_id, request):
     shipping_fee = request.get('shippingFee')
     online_order = OnlineOrder(status=status,
                                payment_method=payment_method,
-                               created_at=datetime.now(),
+                               created_at=datetime.utcnow() + timedelta(hours=7),
                                address_id=request['addressId'],
                                shipping_method=shipping_method,
                                shipping_fee=shipping_fee,
-                               customer_id=user_id
-                               )
+                               customer_id=user_id)
 
     for book in request['books']:
         book_db = Book.query.get(book['bookId'])
@@ -250,6 +245,7 @@ def create_offline_order(order_list, employee_id, user=None):
         if not res:
             raise GeneralInsufficientError("Không đủ sách")
         price = int(order_item['price'])
+
         order_detail = OrderDetail(order_id=offline_order.order_id, book_id=book_id, quantity=quantity, price=price)
         offline_order.order_detail.append(order_detail)
         total_amount = total_amount + quantity * price
@@ -292,8 +288,8 @@ def delete_orders_after_48hrs():
 
 
 def delete_payment_after_48hrs():
-    print("ok")
-    expired_time = datetime.utcnow() + timedelta(hours=7) - timedelta(hours=48)
+    config = get_config()
+    expired_time = datetime.utcnow() + timedelta(hours=7) - timedelta(seconds=config.order_cancel_period)
     orders = Order.query.filter(Order.created_at < expired_time,
                                 Order.payment_method == PaymentMethod.THE,
                                 Order.status == OrderStatus.DANG_CHO_THANH_TOAN)

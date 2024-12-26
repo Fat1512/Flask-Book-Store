@@ -479,7 +479,11 @@ openAddPhoneModalBtn.addEventListener("click", function () {
 searchBtn.addEventListener("click", async function () {
     try {
         const barcode = inputBookSearch.value;
+        if(isNaN(barcode) || barcode == '') {
+            renderToast( "Khong tim thay barcode", Color.ERROR); return;
+        }
         const book = await fetchBookByBarcode(barcode);
+
         renderBookItem([book]);
     } catch (err) {
         renderToast(err.message, Color.ERROR);

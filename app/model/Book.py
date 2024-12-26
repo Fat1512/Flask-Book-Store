@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, ForeignKey, Double, DATETIME, DATE, Enum
+from sqlalchemy import Column, Integer, String, ForeignKey, Double, DATETIME, DATE, Enum, Boolean
 from app import db, app
 from sqlalchemy.orm import relationship
 from app.model.BookImage import BookImage
@@ -32,6 +32,7 @@ class Book(db.Model):
     description = Column(String)
     release_date = Column(DATE)
     created_at = Column(DATETIME, default=datetime.now())
+    is_active = Column(Boolean, default=True)
     num_page = Column(Integer)
     dimension = Column(String)
     weight = Column(Double)
@@ -82,6 +83,7 @@ class Book(db.Model):
             'release_date': self.release_date,
             "quantity": self.quantity,
             "price": self.price,
+            "is_active": self.is_active,
             "description": self.description,
             "book_gerne": self.book_gerne.to_dto(),
             "page_number": self.num_page,

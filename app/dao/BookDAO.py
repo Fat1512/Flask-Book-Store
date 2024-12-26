@@ -1,3 +1,4 @@
+import pdb
 import random
 from datetime import datetime, timedelta
 from platform import release
@@ -128,8 +129,6 @@ def paginate_book(page=1, limit=app.config['PAGE_SIZE']):
 
 def find_by_barcode(barcode):
     book = Book.query.filter(Book.barcode.__eq__(barcode)).first()
-    if not book:
-        raise NotFoundError("Barcode không tồn tại")
     return book
 
 

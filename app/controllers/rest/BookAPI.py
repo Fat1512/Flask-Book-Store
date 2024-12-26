@@ -1,5 +1,6 @@
 import json
 from datetime import datetime
+from xml.dom import NotFoundErr
 
 from flask import Blueprint, request, jsonify
 from flask_login import current_user
@@ -10,6 +11,7 @@ from app.authentication.login_required import employee_manager_warehouse_require
 from app.dao.FormImportDAO import find_form_imports, create_form_import, find_form_import_by_id
 from app.dao.BookDAO import find_by_id, find_by_barcode, create_book, count_book_sell, upload_images
 from app.dao.SearchDAO import search_book
+from app.exception.NotFoundError import NotFoundError
 
 book_rest_bp = Blueprint('book_rest', __name__)
 
@@ -149,7 +151,11 @@ def get_manage_book(book_id):
 
 @book_rest_bp.route('/barcode/<barcode>', methods=['GET'])
 def get_by_barcode(barcode):
-    barcode = find_by_barcode(barcode).to_dict()
+    barcode = find_by_barcode(barcode)
+    if barcode:
+        barcode = barcode.to_dict()
+    else:
+        raise NotFoundError("Khong tim thay barcode")
 
     return jsonify({
         'message': 'Success',
