@@ -59,7 +59,7 @@ def create_order_cancellation(user, data):
     order = Order.query.get(data['orderId'])
 
     order = Order.query.filter(Order.order_id == data['orderId']).first()
-    if user.user_roles == UserRole.CUSTOMER and order.user_id != user.get_id():
+    if user.user_role == UserRole.CUSTOMER and order.user_id != user.get_id():
         raise UnauthorizedAccess("You don't have permission for resource")
 
     if order is None: raise NotFoundError("Không tìm thấy đơn hàng của bạn", 404)
@@ -88,7 +88,7 @@ def find_order_by_id(id):
 
 def find_order_by_user_and_id(user_id, id):
     order = Order.query.get(id)
-    if order.customer_id != user_id: raise UnauthorizedAccess("You don't have permission for resource")
+    if order.customer_id != int(user_id): raise UnauthorizedAccess("You don't have permission for resource")
     if not order: raise NotFoundError("Không tìm thấy đơn để cập nhật")
     return order
 

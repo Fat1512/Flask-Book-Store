@@ -138,7 +138,6 @@ def book_manager():
         stats = book_management(kw=kw, price_start=price_start, price_end=price_end)
     else:
         stats = book_management(gerne_id, kw=kw, price_start=price_start, price_end=price_end)
-
     page = int(request.args.get('page', 1))
     page_size = app.config['BOOK_PAGE_SIZE']
     total = len(stats)

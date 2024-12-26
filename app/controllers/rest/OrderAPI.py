@@ -103,7 +103,7 @@ def cancel_order():
     if not current_user.is_authenticated or current_user.user_role not in [UserRole.EMPLOYEE_SALE, UserRole.ADMIN, UserRole.CUSTOMER]:
         raise UnauthorizedAccess("Not allowed")
 
-    order_cancellation = create_order_cancellation(data)
+    order_cancellation = create_order_cancellation(current_user, data)
 
     return jsonify({
         'message': 'Hủy thành công',

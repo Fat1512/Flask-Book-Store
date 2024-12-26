@@ -1,3 +1,5 @@
+import pdb
+
 from app import db, app
 from app.model.BookGerne import BookGerne
 from app.model.Book import Book
@@ -455,12 +457,12 @@ def account_management(user_role=None, first_name=None, last_name=None, page=Non
     query = User.query.join(Account, Account.user_id == User.user_id)
 
     page_size = app.config['STATISTIC_FRE_PAGE_SIZE']
+    total = count_account()
 
     start_idx = (page - 1) * page_size
     end_idx = start_idx + page_size
 
-
-    if user_role is not None:
+    if user_role:
         query = query.filter(User.user_role == user_role)
 
     if first_name:
@@ -470,8 +472,13 @@ def account_management(user_role=None, first_name=None, last_name=None, page=Non
         query = query.filter(User.last_name.contains(last_name))
     query = query.slice(start_idx, end_idx)
 
-    return query.all()
+    return {
+        'total_page': total,
+        'data': query.all()
+    }
 
+def count_account():
+    return Account.query.count()
 
 def book_management(gerne_id=None, kw=None, price_start=None, price_end=None):
     query = db.session.query(

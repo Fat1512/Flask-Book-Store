@@ -168,26 +168,25 @@ class AdminAccountManager(ModelView):
         page = int(request.args.get('page', 1))
         paginated_stats = account_management(user_role, first_name=first_name, last_name=last_name, page=page)
 
-        paginated_stats = [[
+        paginated_stats['data'] = [[
             stat.user_id,
             stat.first_name,
             stat.last_name,
             stat.account.username,
             stat.email,
             FORMAT_ROLE_TEXT[stat.user_role.value - 1]
-        ] for stat in paginated_stats]
+        ] for stat in paginated_stats['data']]
 
 
-        total = len(paginated_stats)
         page_size = app.config['STATISTIC_FRE_PAGE_SIZE']
 
         return self.render(
             "/admin/adminAccountManager.html",
-            stats=paginated_stats, first_name=first_name, last_name=last_name,
+            stats=paginated_stats['data'], first_name=first_name, last_name=last_name,
             books={
                 'current_page': page,
-                'total_page': math.ceil(total / page_size),
-                'pages': range(1, math.ceil(total / page_size) + 1),
+                'total_page': math.ceil(paginated_stats['total_page'] / page_size),
+                'pages': range(1, math.ceil(paginated_stats['total_page'] / page_size) + 1),
             }
         )
 
@@ -369,8 +368,7 @@ def add_employee():
         username = data.get('username')
         email = data.get('email')
         password = data.get('password')
-        user_role = data.get('user_role')
-
+        user_role = UserRole(FORMAT_ROLE_TEXT.index(data.get('user_role')) + 1)
         if User.query.join(Account).filter(Account.username.__eq__(username)).first() or User.query.filter_by(
                 email=email).first():
             return jsonify({'success': False, 'message': 'Tên người dùng hoặc email đã tồn tại!'}), 400
