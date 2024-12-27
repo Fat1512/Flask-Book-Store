@@ -58,7 +58,7 @@ def generate_vnpay_url(order):
     }
 
     # Add Expire Date
-    vnp_expire_date = (datetime.now() + timedelta(hours=7, minutes=5)).strftime("%Y%m%d%H%M%S")
+    vnp_expire_date = (datetime.now() + timedelta(minutes=5)).strftime("%Y%m%d%H%M%S")
     vnpay_data["vnp_ExpireDate"] = vnp_expire_date
 
     # Sort and encode parameters

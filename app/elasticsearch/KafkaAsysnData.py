@@ -8,7 +8,7 @@ from app.exception.NotFoundError import NotFoundError
 
 
 def create(book_id):
-    book_document = find_by_id(book_id).to_dto()
+    book_document = find_by_id(int(book_id)).to_dto()
     if book_document is None: raise NotFoundError("Khong tim thay sach")
     create_document(book_document)
 

@@ -7,7 +7,7 @@ const Color = {
 //---------------------------------------------DOM ELEMENTS & STATES---------------------------------------------
 const printInvoiceBtn = document.querySelector(".btn-invoice");
 const modal = document.querySelector(".modal");
-const overlay = document.querySelector(".overlay");
+const overlay = modal.querySelector(".overlay");
 
 //---------------------------------------------RENDER---------------------------------------------
 const renderToast = function (text, background) {
@@ -26,6 +26,7 @@ const renderToast = function (text, background) {
 }
 //---------------------------------------------DOM UTILITY---------------------------------------------
 const toggleModal = function() {
+    console.log(overlay)
     modal.classList.toggle("d-flex");
     overlay.classList.toggle("d-flex");
 }

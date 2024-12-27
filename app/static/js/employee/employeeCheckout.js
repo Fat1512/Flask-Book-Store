@@ -36,7 +36,7 @@ const modalAddPhoneBody = document.querySelector(".modal-add-phone-body")
 const modalScannerBody = document.querySelector(".modal-scanner-body")
 const modalInvoiceBody = document.querySelector(".modal-invoice-body")
 
-const overlay = document.querySelector(".overlay")
+const overlay = modal.querySelector(".overlay")
 
 const orderContainer = document.querySelector(".order-container");
 const productContainer = document.querySelector(".product-container");

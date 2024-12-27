@@ -36,7 +36,7 @@ const Color = {
 const modalBodyExport = document.querySelector(".modal-body-export")
 const pagination = document.querySelector(".pagination");
 const modal = document.querySelector(".modal");
-const overlay = document.querySelector(".overlay");
+const overlay = modal.querySelector(".overlay");
 
 const inputStartDate = document.querySelector(".input-start-date");
 const inputEndDate = document.querySelector(".input-end-date");

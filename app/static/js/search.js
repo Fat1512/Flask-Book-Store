@@ -6,7 +6,11 @@ const SEARCH_API = '/api/v1/search'
 // DECLARE VARIABLE
 var margin = 0
 const CURRENT_URL = new URL(window.location);
+const clearURLParams = () => {
 
+    CURRENT_URL.search = ''; // Clear all query parameters
+    window.history.replaceState({}, '', CURRENT_URL);
+};
 //DECALE FUNCTION
 const getCurrentParams = function () {
     return CURRENT_URL.toString().split("?")[1] || ""
@@ -15,10 +19,10 @@ const VND = new Intl.NumberFormat('vi-VN', {
     style: 'currency',
     currency: 'VND',
 });
-const addParamURL = function (param, value) {
-    CURRENT_URL.searchParams.set(param, value)
-    window.history.pushState({}, '', CURRENT_URL);
-}
+const addParamURL = (key, value) => {
+    CURRENT_URL.searchParams.set(key, value); // Set the new parameter (it replaces if it already exists)
+    window.history.replaceState({}, '', CURRENT_URL); // Update the URL in the address bar
+};
 const deleteParamURL = function (param) {
     CURRENT_URL.searchParams.delete(param);
     window.history.pushState({}, '', CURRENT_URL);
@@ -78,7 +82,6 @@ function renderBookNull(bookElemnt, paginationElemnt) {
 }
 
 async function render_book(params, isFilter = false) {
-
     const {data: books, current_page, pages, extended_books: filters} = await fetchBook(params)
 
     const bookElemnts = document.querySelector('.list-book')
@@ -109,8 +112,10 @@ async function render_book(params, isFilter = false) {
     `).join("")
         render_pagination(current_page, pages)
     }
-    if (!isFilter)
+    if (!isFilter) {
         renderGroupFiler(filters)
+
+    }
 
 }
 
@@ -214,7 +219,10 @@ const renderParentGerne = function () {
     const current = document.querySelector(".current-gerne").lastElementChild
 
     async function handleParentOnclick(elements, id) {
+        clearURLParams();
         addParamURL('gerneId', id)
+        document.querySelector('.filter-list').innerHTML = ''
+        price.querySelector('.checkbox-checked') && price.querySelector('.checkbox-checked').classList.remove('checkbox-checked')
         const res = await fetchGerne(id)
         const {current_gerne: currentGerne, sub_gerne: subGerne} = res['data']
         let rmElement = []
@@ -266,7 +274,11 @@ const renderSubGerne = function (listBookGerne) {
     const el = document.querySelector(".children-gerne")
 
     async function handleOnClickSubItem(id) {
+        clearURLParams();
         addParamURL('gerneId', id)
+
+        price.querySelector('.checkbox-checked') && price.querySelector('.checkbox-checked').classList.remove('checkbox-checked')
+        document.querySelector('.filter-list').innerHTML = ''
         const res = await fetchGerne(id)
         const {current_gerne: currentGerne, sub_gerne: subGerne} = res['data']
         margin += 10
@@ -297,6 +309,7 @@ const handleDeleteFilter = async function (e) {
         `#${parent.id} .checkbox-checked`
     )
 
+
     delete extendBookParams[parent.id]
     deleteParamURL(parent.id);
     deleteParamURL('page')
@@ -305,7 +318,7 @@ const handleDeleteFilter = async function (e) {
     ).remove()
     checkboxEl.classList.remove('checkbox-checked')
     window.history.pushState({}, '', CURRENT_URL);
-    render_book(getCurrentParams())
+    render_book(getCurrentParams(), true)
 
 }
 
@@ -351,12 +364,12 @@ async function test() {
 }
 
 test()
-const deleteFilter = document.querySelectorAll('.filter-list')
-deleteFilter && deleteFilter.forEach(item => item.addEventListener('click',
-    (e) => handleDeleteFilter(e)))
+const deleteFilter = document.querySelector('.filter-list')
+deleteFilter && deleteFilter.addEventListener('click',
+    (e) => handleDeleteFilter(e))
 handleSelectOrder('pagination', 'limit')
 handleSelectOrder('order', 'order')
-render_book(getCurrentParams())
+
 
 const price = document.querySelector('#price.group-filter')
 price.addEventListener('click', (e) => handleSelectedFileter(price, e))
@@ -402,3 +415,8 @@ function handleSelectedFileter(element, e) {
         render_book(getCurrentParams(), true)
     }
 }
+
+window.addEventListener('DOMContentLoaded', () => {
+    deleteParamURL('gerneId'); // Remove the parameter immediately on page load
+    render_book(getCurrentParams())
+});

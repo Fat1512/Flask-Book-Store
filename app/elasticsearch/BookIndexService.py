@@ -13,7 +13,7 @@ def create_document(document):
         if res['result'] == 'created':
             print(f"Document {document} updated successfully in index {BookIndex.index_name}.")
         else:
-            print(f"Failed to update document {document} in index {BookIndex.index_name}.")
+            print(f"Failed to create document {document} in index {BookIndex.index_name}.")
     except Exception as e:
         print(f"Error create document: {e}")
 

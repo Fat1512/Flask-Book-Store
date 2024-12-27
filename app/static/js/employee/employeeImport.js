@@ -29,7 +29,7 @@ const Color = {
 const modal = document.querySelector(".modal");
 const modalExport = document.querySelector(".modal-export");
 const modalBook = document.querySelector(".modal-book");
-const overlay = document.querySelector(".overlay");
+const overlay = modal.querySelector(".overlay");
 
 const openModalBookBtn = document.querySelector(".open-modal-book-btn");
 const addBookBtn = document.querySelector(".add-book-btn");
