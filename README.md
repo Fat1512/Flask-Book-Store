@@ -24,7 +24,7 @@ Tên chủ thẻ: NGUYEN VAN A
 Ngày phát hành: 07/15
 Mật khẩu OTP: 123456
 ```
-## Author
+## Authors
 - **[Le Tan Phat](https://github.com/Fat1512)**
 - **[Le Tan](https://github.com/tanle9t2)**
 - **[Trinh Gia Phuc](https://github.com/trinhgiaphuc24)**
